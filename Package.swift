@@ -27,6 +27,22 @@ let package = Package(
             dependencies: [],
        	    path: "framework/lodepng"),
 	.target(
+            name: "CPPAGGRenderer",
+            dependencies: ["AGG","lodepng"],
+    	    path: "framework/CPPAGGRenderer"),
+	.target(
+            name: "CAGGRenderer",
+            dependencies: ["CPPAGGRenderer"],
+    	    path: "framework/CAGGRenderer"),
+	.target(
+            name: "Util",
+            dependencies: [],
+       	    path: "framework/Util"),
+	.target(
+            name: "Renderer",
+            dependencies: ["Util","CAGGRenderer"],
+       	    path: "framework/Renderer"),
+	.target(
             name: "LinePlot",
             dependencies: [],
   	    path: "framework/LinePlot"),
