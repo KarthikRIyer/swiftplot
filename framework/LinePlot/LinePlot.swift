@@ -190,6 +190,13 @@ public class LineGraph {
 
   func calcMarkerLocAndScalePts(){
 
+    x_markers = [Point]()
+    y_markers = [Point]()
+    x_markers_text_loc = [Point]()
+    y_markers_text_loc = [Point]()
+    x_markers_text = [String]()
+    y_markers_text = [String]()
+
     var maximumX : Float = getMaxX(points: series[0].points)
     var maximumY : Float = getMaxY(points: series[0].points)
 
@@ -267,6 +274,7 @@ public class LineGraph {
 
       for i in 0..<series.count {
           let pts = series[i].points
+          series[i].scaledPoints.removeAll();
           for j in 0..<pts.count {
               let pt : Point = Point(pts[j].x*scaleXInv, pts[j].y*scaleYInv)
               series[i].scaledPoints.append(pt)
@@ -301,6 +309,7 @@ public class LineGraph {
         vectorizer!.drawTransformedLine(p1, p2, border_thickness)
         vectorizer!.drawTransformedText(x_markers_text[index], x_markers_text_loc[index], marker_text_size, 0.7)
     }
+
     for index in 0..<y_markers.count {
         let p1 : Point = Point(-3, y_markers[index].y)
         let p2 : Point = Point(0, y_markers[index].y)
@@ -312,7 +321,7 @@ public class LineGraph {
 
   func drawPlots() {
       for s in series {
-          vectorizer!.drawPlotLines(s.scaledPoints, plot_line_thickness, s.color)
+        vectorizer!.drawPlotLines(s.scaledPoints, plot_line_thickness, s.color)
       }
   }
 

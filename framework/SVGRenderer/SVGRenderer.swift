@@ -117,7 +117,7 @@ public class SVGRenderer{
     do {
         try image.write(to: url, atomically: true, encoding: String.Encoding.utf8)
     } catch {
-        print("Unable to save image!")
+        print("Unable to save SVG image!")
     }
   }
 

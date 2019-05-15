@@ -288,7 +288,7 @@ namespace AGGRenderer{
       // fileBase64<<write_base64(buffer, frame_width, frame_height);
       // fileBase64.close();
 
-      delete[] buffer;
+      // delete[] buffer;
     }
 
   };
