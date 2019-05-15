@@ -47,9 +47,9 @@ let package = Package(
             dependencies: ["Vectorizer"],
   	    path: "framework/LinePlot"),
 	.target(
-            name: "GraphPlot",
+            name: "LineChart",
             dependencies: ["LinePlot"],
-  	    path: "framework/GraphPlot"),
+  	    path: "examples/LineChart/Source"),
         //.testTarget(
         //  name: "swiftplotTests",
         //  dependencies: ["swiftplot"]),
