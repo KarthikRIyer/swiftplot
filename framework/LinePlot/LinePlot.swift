@@ -31,13 +31,6 @@ public class LineGraph {
 
   public init(points p: [Point], width width : Float = 1000, height height : Float = 660){
     plotDimensions = PlotDimensions(frameWidth : width, frameHeight : height)
-
-    // plotBorder.topLeft       = Point(plotDimensions.frameWidth*0.1, plotDimensions.frameHeight*0.9)
-    // plotBorder.topRight      = Point(plotDimensions.frameWidth*0.9, plotDimensions.frameHeight*0.9)
-    // plotBorder.bottomLeft    = Point(plotDimensions.frameWidth*0.1, plotDimensions.frameHeight*0.1)
-    // plotBorder.bottomRight   = Point(plotDimensions.frameWidth*0.9, plotDimensions.frameHeight*0.1)
-    // plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + 20, plotBorder.topLeft.y - 20)
-
     plotDimensions.calculateGraphDimensions()
 
     let s = Series(points: p,label: "Plot")
@@ -46,13 +39,6 @@ public class LineGraph {
 
   public init(width width : Float = 1000, height height : Float = 660){
     plotDimensions = PlotDimensions(frameWidth : width, frameHeight : height)
-
-    // plotBorder.topLeft       = Point(plotDimensions.frameWidth*0.1, plotDimensions.frameHeight*0.9)
-    // plotBorder.topRight      = Point(plotDimensions.frameWidth*0.9, plotDimensions.frameHeight*0.9)
-    // plotBorder.bottomLeft    = Point(plotDimensions.frameWidth*0.1, plotDimensions.frameHeight*0.1)
-    // plotBorder.bottomRight   = Point(plotDimensions.frameWidth*0.9, plotDimensions.frameHeight*0.1)
-    // plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + 20, plotBorder.topLeft.y - 20)
-
     plotDimensions.calculateGraphDimensions()
   }
 
