@@ -39,12 +39,12 @@ let package = Package(
             dependencies: [],
        	    path: "framework/Util"),
 	.target(
-            name: "Renderer",
+            name: "Renderers",
             dependencies: ["Util","CAGGRenderer"],
-       	    path: "framework/Renderer"),
+       	    path: "framework/Renderers"),
 	.target(
             name: "LinePlot",
-            dependencies: [],
+            dependencies: ["Util", "Renderers"],
   	    path: "framework/LinePlot"),
         //.testTarget(
         //  name: "swiftplotTests",

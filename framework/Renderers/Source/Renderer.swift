@@ -1,5 +1,5 @@
 import Util
-protocol Renderer {
+public protocol Renderer {
 
   mutating func drawRect(topLeftPoint p1 : Point, topRightPoint p2 : Point, bottomRightPoint p3 : Point, bottomLeftPoint p4 : Point, strokeWidth thickness : Float, strokeColor strokeColor : Color)
   mutating func drawSolidRect(topLeftPoint p1 : Point, topRightPoint p2 : Point, bottomRightPoint p3 : Point, bottomLeftPoint p4 : Point, fillColor fillColor : Color)
@@ -11,5 +11,6 @@ protocol Renderer {
   mutating func drawRotatedText(text s : String, location p : Point, textSize size : Float, strokeWidth thickness : Float, angle angle : Float)
   mutating func drawSolidRectWithBorder(topLeftPoint p1 : Point,topRightPoint p2 : Point,bottomRightPoint p3 : Point,bottomLeftPoint p4 : Point, strokeWidth thickness : Float, fillColor fillColor : Color, borderColor borderColor : Color)
   func getTextWidth(text text : String, textSize size : Float) -> Float
+  mutating func drawOutput(fileName name : String)
 
 }

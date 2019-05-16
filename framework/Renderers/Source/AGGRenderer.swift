@@ -112,7 +112,7 @@ public class AGGRenderer : Renderer{
     return get_text_width(text, size, agg_object)
   }
 
-  public func savePlotImage(fileName name : String) {
+  public func drawOutput(fileName name : String) {
     save_image(name, agg_object)
   }
 

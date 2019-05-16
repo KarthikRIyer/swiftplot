@@ -59,7 +59,7 @@ public struct SVGRenderer : Renderer{
       image = image + "\n" + line
   }
 
-  public mutating func drawTransformedLine(startPoint p1 : Point, endPoint p2 : Point, strokeWidth thickness : Float, strokeColor strokeColor : Color) {
+  public mutating func drawTransformedLine(startPoint p1 : Point, endPoint p2 : Point, strokeWidth thickness : Float, strokeColor strokeColor : Color = black) {
       let x0 = p1.x + (0.1*width)
       var y0 = p1.y + (0.1*height)
       let x1 = p2.x + (0.1*width)
@@ -107,7 +107,11 @@ public struct SVGRenderer : Renderer{
     return width*scaleFactor + 25
   }
 
-  public mutating func savePlotImage(fileName name : String) {
+  public mutating func drawOutput(fileName name : String) {
+      savePlotImage(fileName : name)
+  }
+
+  mutating func savePlotImage(fileName name : String) {
     image = image + "\n" + "</svg>"
     let url = URL(fileURLWithPath: "\(name).svg")
     do {
