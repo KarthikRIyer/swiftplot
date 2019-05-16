@@ -46,6 +46,10 @@ let package = Package(
             name: "LinePlot",
             dependencies: ["Util", "Renderers"],
   	    path: "framework/LinePlot"),
+	.target(
+            name: "LineChartExamples",
+            dependencies: ["Util", "Renderers", "LinePlot"],
+  	    path: "examples/LineChart/Source"),
         //.testTarget(
         //  name: "swiftplotTests",
         //  dependencies: ["swiftplot"]),
