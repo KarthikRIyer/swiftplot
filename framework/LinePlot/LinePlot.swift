@@ -46,11 +46,11 @@ public class LineGraph {
   public func addSeries(subPlot s: Series){
     series.append(s)
   }
-  public func addSeries(points p: [Point], label l: String, color c : Color = lightBlue){
+  public func addSeries(points p: [Point], label l: String, color c : Color = Color.lightBlue){
     let s = Series(points: p,label: "Plot", color: c)
     series.append(s)
   }
-  public func addSeries(_ x : [Float], _ y : [Float], label l: String, color c : Color = lightBlue){
+  public func addSeries(_ x : [Float], _ y : [Float], label l: String, color c : Color = Color.lightBlue){
     var pts = [Point]()
     for i in 0..<x.count {
         pts.append(Point(x[i], y[i]))
@@ -64,21 +64,21 @@ public class LineGraph {
 extension LineGraph{
 
     // call functions to draw the graph
-    public func drawGraph(fileName name : String = "swift_plot_line_graph", renderer renderer : inout Renderer){
+    public func drawGraph(fileName name : String = "swift_plot_line_graph", renderer renderer : Renderer){
       plotBorder.topLeft       = Point(plotDimensions.frameWidth*0.1, plotDimensions.frameHeight*0.9)
       plotBorder.topRight      = Point(plotDimensions.frameWidth*0.9, plotDimensions.frameHeight*0.9)
       plotBorder.bottomLeft    = Point(plotDimensions.frameWidth*0.1, plotDimensions.frameHeight*0.1)
       plotBorder.bottomRight   = Point(plotDimensions.frameWidth*0.9, plotDimensions.frameHeight*0.1)
       plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + 20, plotBorder.topLeft.y - 20)
-      calcLabelLocations(renderer : &renderer)
-      calcMarkerLocAndScalePts(renderer : &renderer)
-      drawBorder(renderer : &renderer)
-      drawMarkers(renderer : &renderer)
-      drawPlots(renderer : &renderer)
-      drawTitle(renderer : &renderer)
-      drawLabels(renderer : &renderer)
-      drawLegends(renderer : &renderer)
-      saveImage(fileName : name, renderer : &renderer)
+      calcLabelLocations(renderer : renderer)
+      calcMarkerLocAndScalePts(renderer : renderer)
+      drawBorder(renderer : renderer)
+      drawMarkers(renderer : renderer)
+      drawPlots(renderer : renderer)
+      drawTitle(renderer : renderer)
+      drawLabels(renderer : renderer)
+      drawLegends(renderer : renderer)
+      saveImage(fileName : name, renderer : renderer)
     }
 
   // utility functions for implementing logic
@@ -115,7 +115,7 @@ extension LineGraph{
   }
 
   // functions implementing plotting logic
-  func calcLabelLocations(renderer renderer : inout Renderer){
+  func calcLabelLocations(renderer renderer : Renderer){
 
     let xWidth    : Float = renderer.getTextWidth(text : plotLabel.xLabel, textSize : plotLabel.labelSize)
     let yWidth     : Float = renderer.getTextWidth(text : plotLabel.yLabel, textSize : plotLabel.labelSize)
@@ -127,7 +127,7 @@ extension LineGraph{
 
   }
 
-  func calcMarkerLocAndScalePts(renderer renderer : inout Renderer){
+  func calcMarkerLocAndScalePts(renderer renderer : Renderer){
 
     plotMarkers.xMarkers = [Point]()
     plotMarkers.yMarkers = [Point]()
@@ -222,44 +222,44 @@ extension LineGraph{
   }
 
 //functions to draw the plot
-  func drawBorder(renderer renderer : inout Renderer){
-    renderer.drawRect(topLeftPoint : plotBorder.topLeft, topRightPoint : plotBorder.topRight, bottomRightPoint: plotBorder.bottomRight, bottomLeftPoint : plotBorder.bottomLeft, strokeWidth : plotBorder.borderThickness, strokeColor : black)
+  func drawBorder(renderer renderer : Renderer){
+    renderer.drawRect(topLeftPoint : plotBorder.topLeft, topRightPoint : plotBorder.topRight, bottomRightPoint: plotBorder.bottomRight, bottomLeftPoint : plotBorder.bottomLeft, strokeWidth : plotBorder.borderThickness, strokeColor : Color.black)
   }
 
-  func drawMarkers(renderer renderer : inout Renderer) {
+  func drawMarkers(renderer renderer : Renderer) {
 
     for index in 0..<plotMarkers.xMarkers.count {
         let p1 : Point = Point(plotMarkers.xMarkers[index].x, -3)
         let p2 : Point = Point(plotMarkers.xMarkers[index].x, 0)
-        renderer.drawTransformedLine(startPoint : p1, endPoint : p2, strokeWidth : plotBorder.borderThickness, strokeColor : black)
+        renderer.drawTransformedLine(startPoint : p1, endPoint : p2, strokeWidth : plotBorder.borderThickness, strokeColor : Color.black)
         renderer.drawTransformedText(text : plotMarkers.xMarkersText[index], location : plotMarkers.xMarkersTextLocation[index], textSize : plotMarkers.markerTextSize, strokeWidth : 0.7, angle : 0)
     }
 
     for index in 0..<plotMarkers.yMarkers.count {
         let p1 : Point = Point(-3, plotMarkers.yMarkers[index].y)
         let p2 : Point = Point(0, plotMarkers.yMarkers[index].y)
-        renderer.drawTransformedLine(startPoint : p1, endPoint : p2, strokeWidth : plotBorder.borderThickness, strokeColor : black)
+        renderer.drawTransformedLine(startPoint : p1, endPoint : p2, strokeWidth : plotBorder.borderThickness, strokeColor : Color.black)
         renderer.drawTransformedText(text : plotMarkers.yMarkersText[index], location : plotMarkers.yMarkersTextLocation[index], textSize : plotMarkers.markerTextSize, strokeWidth : 0.7, angle : 0)
     }
 
   }
 
-  func drawPlots(renderer renderer : inout Renderer) {
+  func drawPlots(renderer renderer : Renderer) {
       for s in series {
         renderer.drawPlotLines(points : s.scaledPoints, strokeWidth : plotLineThickness, strokeColor : s.color)
       }
   }
 
-  func drawTitle(renderer renderer : inout Renderer) {
+  func drawTitle(renderer renderer : Renderer) {
       renderer.drawText(text : plotTitle.title, location : plotTitle.titleLocation, textSize : plotTitle.titleSize, strokeWidth : 1.2)
   }
 
-  func drawLabels(renderer renderer : inout Renderer) {
+  func drawLabels(renderer renderer : Renderer) {
       renderer.drawText(text : plotLabel.xLabel, location : plotLabel.xLabelLocation, textSize : plotLabel.labelSize, strokeWidth : 1.2)
       renderer.drawRotatedText(text : plotLabel.yLabel, location : plotLabel.yLabelLocation, textSize : plotLabel.labelSize, strokeWidth : 1.2, angle : 90)
   }
 
-  func drawLegends(renderer renderer : inout Renderer) {
+  func drawLegends(renderer renderer : Renderer) {
       var maxWidth : Float = 0
       for s in series {
           let w = renderer.getTextWidth(text : s.label, textSize : plotLegend.legendTextSize)
@@ -276,7 +276,7 @@ extension LineGraph{
       let p3 : Point = Point(plotLegend.legendTopLeft.x + plotLegend.legendWidth, plotLegend.legendTopLeft.y - plotLegend.legendHeight)
       let p4 : Point = Point(plotLegend.legendTopLeft.x, plotLegend.legendTopLeft.y - plotLegend.legendHeight)
 
-      renderer.drawSolidRectWithBorder(topLeftPoint : p1, topRightPoint : p2, bottomRightPoint : p3, bottomLeftPoint : p4, strokeWidth : plotBorder.borderThickness, fillColor : transluscentWhite, borderColor : black)
+      renderer.drawSolidRectWithBorder(topLeftPoint : p1, topRightPoint : p2, bottomRightPoint : p3, bottomLeftPoint : p4, strokeWidth : plotBorder.borderThickness, fillColor : Color.transluscentWhite, borderColor : Color.black)
 
       for i in 0..<series.count {
           let tL : Point = Point(plotLegend.legendTopLeft.x + plotLegend.legendTextSize, plotLegend.legendTopLeft.y - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize)
@@ -290,7 +290,7 @@ extension LineGraph{
 
   }
 
-  func saveImage(fileName name : String, renderer renderer : inout Renderer) {
+  func saveImage(fileName name : String, renderer renderer : Renderer) {
       renderer.drawOutput(fileName : name)
   }
 }
