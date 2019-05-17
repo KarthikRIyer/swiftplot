@@ -13,7 +13,7 @@ func _01_single_series_line_chart() {
   var svg_renderer : Renderer = SVGRenderer()
 
   var lineGraph : LineGraph = LineGraph()
-  lineGraph.addSeries(x, y, label: "Plot 1", color: lightBlue)
-  lineGraph.drawGraph(fileName : filePath+"agg/"+fileName, renderer : &agg_renderer)
-  lineGraph.drawGraph(fileName : filePath+"svg/"+fileName, renderer : &svg_renderer)
+  lineGraph.addSeries(x, y, label: "Plot 1", color: Color.lightBlue)
+  lineGraph.drawGraph(fileName : filePath+"agg/"+fileName, renderer : agg_renderer)
+  lineGraph.drawGraph(fileName : filePath+"svg/"+fileName, renderer : svg_renderer)
 }
