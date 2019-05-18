@@ -11,7 +11,7 @@ extension Character {
     }
 }
 
-public struct SVGRenderer : Renderer{
+public class SVGRenderer : Renderer{
 
   var LCARS_CHAR_SIZE_ARRAY : [Int]?
 
@@ -27,28 +27,28 @@ public struct SVGRenderer : Renderer{
     LCARS_CHAR_SIZE_ARRAY = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 26, 46, 63, 42, 105, 45, 20, 25, 25, 47, 39, 21, 34, 26, 36, 36, 28, 36, 36, 36, 36, 36, 36, 36, 36, 27, 27, 36, 35, 36, 35, 65, 42, 43, 42, 44, 35, 34, 43, 46, 25, 39, 40, 31, 59, 47, 43, 41, 43, 44, 39, 28, 44, 43, 65, 37, 39, 34, 37, 42, 37, 50, 37, 32, 43, 43, 39, 43, 40, 30, 42, 45, 23, 25, 39, 23, 67, 45, 41, 43, 42, 30, 40, 28, 45, 33, 52, 33, 36, 31, 39, 26, 39, 55]
   }
 
-  public mutating func drawRect(topLeftPoint p1 : Point, topRightPoint p2 : Point, bottomRightPoint p3 : Point, bottomLeftPoint p4 : Point, strokeWidth thickness : Float, strokeColor strokeColor : Color = black) {
+  public func drawRect(topLeftPoint p1 : Point, topRightPoint p2 : Point, bottomRightPoint p3 : Point, bottomLeftPoint p4 : Point, strokeWidth thickness : Float, strokeColor strokeColor : Color = Color.black) {
     let w : Float = abs(p2.x - p1.x)
     let h : Float = abs(p2.y - p3.y)
     let rect : String = "<rect x=\"\(p1.x)\" y=\"\(height - p1.y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(255,255,255);stroke-width:\(thickness);stroke:rgb(strokeColor.r*255.0,strokeColor.g*255.0,strokeColor.b*255.0)\" />"
     image = image + "\n" + rect
   }
 
-  public mutating func drawSolidRect(topLeftPoint p1 : Point, topRightPoint p2 : Point, bottomRightPoint p3 : Point, bottomLeftPoint p4 : Point, fillColor fillColor : Color = white) {
+  public func drawSolidRect(topLeftPoint p1 : Point, topRightPoint p2 : Point, bottomRightPoint p3 : Point, bottomLeftPoint p4 : Point, fillColor fillColor : Color = Color.white) {
     let w : Float = abs(p2.x - p1.x)
     let h : Float = abs(p2.y - p3.y)
     let rect : String = "<rect x=\"\(p1.x)\" y=\"\(height - p1.y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0)\" />"
     image = image + "\n" + rect
   }
 
-  public mutating func drawSolidRectWithBorder(topLeftPoint p1 : Point,topRightPoint p2 : Point,bottomRightPoint p3 : Point,bottomLeftPoint p4 : Point, strokeWidth thickness : Float, fillColor fillColor : Color = white, borderColor borderColor : Color = black) {
+  public func drawSolidRectWithBorder(topLeftPoint p1 : Point,topRightPoint p2 : Point,bottomRightPoint p3 : Point,bottomLeftPoint p4 : Point, strokeWidth thickness : Float, fillColor fillColor : Color = Color.white, borderColor borderColor : Color = Color.black) {
     let w : Float = abs(p2.x - p1.x)
     let h : Float = abs(p2.y - p3.y)
     let rect : String = "<rect x=\"\(p1.x)\" y=\"\(height - p1.y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:\(thickness);stroke:rgb(borderColor.r*255.0,borderColor.g*255.0,borderColor.b*255.0)\" />"
     image = image + "\n" + rect
   }
 
-  public mutating func drawLine(startPoint p1 : Point, endPoint p2 : Point, strokeWidth thickness : Float, strokeColor strokeColor : Color = black) {
+  public func drawLine(startPoint p1 : Point, endPoint p2 : Point, strokeWidth thickness : Float, strokeColor strokeColor : Color = Color.black) {
       let x0 = p1.x
       var y0 = p1.y
       let x1 = p2.x
@@ -59,7 +59,7 @@ public struct SVGRenderer : Renderer{
       image = image + "\n" + line
   }
 
-  public mutating func drawTransformedLine(startPoint p1 : Point, endPoint p2 : Point, strokeWidth thickness : Float, strokeColor strokeColor : Color) {
+  public func drawTransformedLine(startPoint p1 : Point, endPoint p2 : Point, strokeWidth thickness : Float, strokeColor strokeColor : Color = Color.black) {
       let x0 = p1.x + (0.1*width)
       var y0 = p1.y + (0.1*height)
       let x1 = p2.x + (0.1*width)
@@ -70,26 +70,26 @@ public struct SVGRenderer : Renderer{
       image = image + "\n" + line
   }
 
-  public mutating func drawPlotLines(points p : [Point], strokeWidth thickness : Float, strokeColor strokeColor : Color) {
+  public func drawPlotLines(points p : [Point], strokeWidth thickness : Float, strokeColor strokeColor : Color) {
     for i in 0..<p.count-1 {
       drawTransformedLine(startPoint : p[i], endPoint : p[i+1], strokeWidth: thickness, strokeColor : strokeColor)
     }
   }
 
-  public mutating func drawText(text s : String, location p : Point, textSize size : Float, strokeWidth thickness : Float){
+  public func drawText(text s : String, location p : Point, textSize size : Float, strokeWidth thickness : Float){
     let y1 = height - p.y
     let text = "<text x=\"\(p.x)\" y=\"\(y1)\" stroke=\"#000000\" stroke-width=\"\(thickness)\"  transform=\"rotate(0,\(p.x),\(y1))\">\(s)</text>"
     image = image + "\n" + text
   }
 
-  public mutating func drawTransformedText(text s : String, location p : Point, textSize size : Float, strokeWidth thickness : Float, angle angle : Float = 0){
+  public func drawTransformedText(text s : String, location p : Point, textSize size : Float, strokeWidth thickness : Float, angle angle : Float = 0){
     let x1 = p.x + 0.1*width
     let y1 = height - p.y - 0.1*height
     let text = "<text x=\"\(x1)\" y=\"\(y1)\" stroke=\"#000000\" stroke-width=\"\(thickness)\" transform=\"rotate(\(-angle),\(x1),\(y1))\">\(s)</text>"
     image = image + "\n" + text
   }
 
-  public mutating func drawRotatedText(text s : String, location p : Point, textSize size : Float, strokeWidth thickness : Float, angle angle : Float = 0){
+  public func drawRotatedText(text s : String, location p : Point, textSize size : Float, strokeWidth thickness : Float, angle angle : Float = 0){
     let y1 = height - p.y
     let text = "<text x=\"\(p.x)\" y=\"\(y1)\" stroke=\"#000000\" stroke-width=\"\(thickness)\"  transform=\"rotate(\(-angle),\(p.x),\(y1))\">\(s)</text>"
     image = image + "\n" + text
@@ -107,7 +107,11 @@ public struct SVGRenderer : Renderer{
     return width*scaleFactor + 25
   }
 
-  public mutating func savePlotImage(fileName name : String) {
+  public func drawOutput(fileName name : String) {
+      savePlotImage(fileName : name)
+  }
+
+  func savePlotImage(fileName name : String) {
     image = image + "\n" + "</svg>"
     let url = URL(fileURLWithPath: "\(name).svg")
     do {

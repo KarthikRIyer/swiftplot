@@ -15,7 +15,7 @@ public class AGGRenderer : Renderer{
     agg_object = initializePlot(width, height)
   }
 
-  public func drawRect(topLeftPoint p1 : Point, topRightPoint p2 : Point, bottomRightPoint p3 : Point, bottomLeftPoint p4 : Point, strokeWidth thickness : Float, strokeColor strokeColor : Color = black) {
+  public func drawRect(topLeftPoint p1 : Point, topRightPoint p2 : Point, bottomRightPoint p3 : Point, bottomLeftPoint p4 : Point, strokeWidth thickness : Float, strokeColor strokeColor : Color = Color.black) {
     var x = [Float]()
     var y = [Float]()
     x.append(p1.x)
@@ -29,7 +29,7 @@ public class AGGRenderer : Renderer{
     draw_rect(x, y, thickness, strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a, agg_object)
   }
 
-  public func drawSolidRect(topLeftPoint p1 : Point, topRightPoint p2 : Point, bottomRightPoint p3 : Point, bottomLeftPoint p4 : Point, fillColor fillColor : Color = white) {
+  public func drawSolidRect(topLeftPoint p1 : Point, topRightPoint p2 : Point, bottomRightPoint p3 : Point, bottomLeftPoint p4 : Point, fillColor fillColor : Color = Color.white) {
     var x = [Float]()
     var y = [Float]()
     x.append(p1.x)
@@ -43,7 +43,7 @@ public class AGGRenderer : Renderer{
     draw_solid_rect(x, y, fillColor.r, fillColor.g, fillColor.b, fillColor.a, agg_object)
   }
 
-  public func drawSolidRectWithBorder(topLeftPoint p1 : Point,topRightPoint p2 : Point,bottomRightPoint p3 : Point,bottomLeftPoint p4 : Point, strokeWidth thickness : Float, fillColor fillColor : Color = white, borderColor borderColor : Color = black) {
+  public func drawSolidRectWithBorder(topLeftPoint p1 : Point,topRightPoint p2 : Point,bottomRightPoint p3 : Point,bottomLeftPoint p4 : Point, strokeWidth thickness : Float, fillColor fillColor : Color = Color.white, borderColor borderColor : Color = Color.black) {
     var x = [Float]()
     var y = [Float]()
 
@@ -60,7 +60,7 @@ public class AGGRenderer : Renderer{
     draw_rect(x, y, thickness, borderColor.r, borderColor.g, borderColor.b, borderColor.a, agg_object)
   }
 
-  public func drawLine(startPoint p1 : Point, endPoint p2 : Point, strokeWidth thickness : Float, strokeColor strokeColor : Color = black) {
+  public func drawLine(startPoint p1 : Point, endPoint p2 : Point, strokeWidth thickness : Float, strokeColor strokeColor : Color = Color.black) {
     var x = [Float]()
     var y = [Float]()
 
@@ -72,7 +72,7 @@ public class AGGRenderer : Renderer{
     draw_line(x, y, thickness, strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a, agg_object)
   }
 
-  public func drawTransformedLine(startPoint p1 : Point, endPoint p2 : Point, strokeWidth thickness : Float, strokeColor strokeColor : Color = black) {
+  public func drawTransformedLine(startPoint p1 : Point, endPoint p2 : Point, strokeWidth thickness : Float, strokeColor strokeColor : Color = Color.black) {
     var x = [Float]()
     var y = [Float]()
 
@@ -112,7 +112,7 @@ public class AGGRenderer : Renderer{
     return get_text_width(text, size, agg_object)
   }
 
-  public func savePlotImage(fileName name : String) {
+  public func drawOutput(fileName name : String) {
     save_image(name, agg_object)
   }
 
