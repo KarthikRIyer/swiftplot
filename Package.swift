@@ -66,6 +66,10 @@ let package = Package(
             name: "LineChartSubPlotVerticallyStackedExample",
             dependencies: ["Util", "Renderers", "LinePlot", "SubPlot"],
             path: "examples/LineChartSubPlotVerticallyStacked"),
+  .target(
+            name: "LineChartSubPlotGridStackedExample",
+            dependencies: ["Util", "Renderers", "LinePlot", "SubPlot"],
+            path: "examples/LineChartSubPlotGridStacked"),
         //.testTarget(
         //  name: "swiftplotTests",
         //  dependencies: ["swiftplot"]),
