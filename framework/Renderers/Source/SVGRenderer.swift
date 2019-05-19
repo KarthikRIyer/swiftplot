@@ -48,14 +48,14 @@ public class SVGRenderer : Renderer{
   public func drawSolidRect(topLeftPoint p1 : Point, topRightPoint p2 : Point, bottomRightPoint p3 : Point, bottomLeftPoint p4 : Point, fillColor fillColor : Color = Color.white) {
     let w : Float = abs(p2.x - p1.x)
     let h : Float = abs(p2.y - p3.y)
-    let rect : String = "<rect x=\"\(p1.x + xOffset)\" y=\"\(height - p1.y + yOffset)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0)\" />"
+    let rect : String = "<rect x=\"\(p1.x + xOffset)\" y=\"\(height - p1.y + yOffset)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0);opacity:\(fillColor.a)\" />"
     image = image + "\n" + rect
   }
 
   public func drawSolidRectWithBorder(topLeftPoint p1 : Point,topRightPoint p2 : Point,bottomRightPoint p3 : Point,bottomLeftPoint p4 : Point, strokeWidth thickness : Float, fillColor fillColor : Color = Color.white, borderColor borderColor : Color = Color.black) {
     let w : Float = abs(p2.x - p1.x)
     let h : Float = abs(p2.y - p3.y)
-    let rect : String = "<rect x=\"\(p1.x + xOffset)\" y=\"\(height - p1.y + yOffset)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:\(thickness);stroke:rgb(\(borderColor.r*255.0),\(borderColor.g*255.0),\(borderColor.b*255.0))\" />"
+    let rect : String = "<rect x=\"\(p1.x + xOffset)\" y=\"\(height - p1.y + yOffset)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:\(thickness);stroke:rgb(\(borderColor.r*255.0),\(borderColor.g*255.0),\(borderColor.b*255.0));opacity:\(fillColor.a)\" />"
     image = image + "\n" + rect
   }
 
@@ -66,7 +66,7 @@ public class SVGRenderer : Renderer{
       var y1 = p2.y
       y0 = height - y0
       y1 = height - y1
-      let line = "<line x1=\"\(x0 + xOffset)\" y1=\"\(y0 + yOffset)\" x2=\"\(x1 + xOffset)\" y2=\"\(y1 + yOffset)\" style=\"stroke:rgb(\(strokeColor.r*255.0),\(strokeColor.g*255.0),\(strokeColor.b*255.0));stroke-width:\(thickness)\" />"
+      let line = "<line x1=\"\(x0 + xOffset)\" y1=\"\(y0 + yOffset)\" x2=\"\(x1 + xOffset)\" y2=\"\(y1 + yOffset)\" style=\"stroke:rgb(\(strokeColor.r*255.0),\(strokeColor.g*255.0),\(strokeColor.b*255.0));stroke-width:\(thickness);opacity:\(strokeColor.a);stroke-linecap:round\" />"
       image = image + "\n" + line
   }
 
@@ -77,7 +77,7 @@ public class SVGRenderer : Renderer{
       var y1 = p2.y + (0.1*height)
       y0 = height - y0
       y1 = height - y1
-      let line = "<line x1=\"\(x0 + xOffset)\" y1=\"\(y0 + yOffset)\" x2=\"\(x1 + xOffset)\" y2=\"\(y1 + yOffset)\" style=\"stroke:rgb(\(strokeColor.r*255.0),\(strokeColor.g*255.0),\(strokeColor.b*255.0));stroke-width:\(thickness)\" />"
+      let line = "<line x1=\"\(x0 + xOffset)\" y1=\"\(y0 + yOffset)\" x2=\"\(x1 + xOffset)\" y2=\"\(y1 + yOffset)\" style=\"stroke:rgb(\(strokeColor.r*255.0),\(strokeColor.g*255.0),\(strokeColor.b*255.0));stroke-width:\(thickness);opacity:\(strokeColor.a);stroke-linecap:round\" />"
       image = image + "\n" + line
   }
 
