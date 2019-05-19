@@ -1,3 +1,0 @@
-swift build
-swift run LineChartSingleSeriesExample
-swift run LineChartMultipleSeriesExample
