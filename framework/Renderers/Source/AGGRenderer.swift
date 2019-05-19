@@ -7,11 +7,22 @@ public class AGGRenderer : Renderer{
   var width : Float
   var height : Float
 
+  public var xOffset : Float = 0
+  public var yOffset : Float = 0
+
+  public var plotDimensions : PlotDimensions {
+    willSet{
+      width = newValue.subWidth
+      height = newValue.subHeight
+    }
+  }
+
   var agg_object : UnsafeRawPointer
 
   public init(width w : Float = 1000, height h : Float = 660) {
     width = w
     height = h
+    plotDimensions = PlotDimensions(frameWidth : width, frameHeight : height)
     agg_object = initializePlot(width, height)
   }
 

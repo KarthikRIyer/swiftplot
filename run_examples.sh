@@ -1,3 +1,5 @@
 swift build
 swift run LineChartSingleSeriesExample
 swift run LineChartMultipleSeriesExample
+swift run LineChartSubPlotHorizontallyStackedExample
+swift run LineChartSubPlotVerticallyStackedExample

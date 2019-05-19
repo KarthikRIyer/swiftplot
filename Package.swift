@@ -42,9 +42,13 @@ let package = Package(
             name: "Renderers",
             dependencies: ["Util","CAGGRenderer"],
        	    path: "framework/Renderers"),
-	.target(
+  .target(
+            name: "SubPlot",
+            dependencies: ["Util","Renderers"],
+       	    path: "framework/SubPlot"),
+  .target(
             name: "LinePlot",
-            dependencies: ["Util", "Renderers"],
+            dependencies: ["Util", "Renderers", "SubPlot"],
   	        path: "framework/LinePlot"),
 	.target(
             name: "LineChartSingleSeriesExample",
@@ -54,6 +58,14 @@ let package = Package(
             name: "LineChartMultipleSeriesExample",
             dependencies: ["Util", "Renderers", "LinePlot"],
         	  path: "examples/LineChartMultipleSeries"),
+  .target(
+            name: "LineChartSubPlotHorizontallyStackedExample",
+            dependencies: ["Util", "Renderers", "LinePlot", "SubPlot"],
+            path: "examples/LineChartSubPlotHorizontallyStacked"),
+  .target(
+            name: "LineChartSubPlotVerticallyStackedExample",
+            dependencies: ["Util", "Renderers", "LinePlot", "SubPlot"],
+            path: "examples/LineChartSubPlotVerticallyStacked"),
         //.testTarget(
         //  name: "swiftplotTests",
         //  dependencies: ["swiftplot"]),
