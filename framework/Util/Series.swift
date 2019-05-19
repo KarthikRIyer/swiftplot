@@ -5,7 +5,7 @@ public struct Series {
   public var scaledPoints = [Point]()
   public var label: String = "Plot"
   public var color : Color
-  public init(points p: [Point], label l: String, color c: Color = lightBlue){
+  public init(points p: [Point], label l: String, color c: Color = Color.lightBlue){
     points = p
     label = l
     color = c
