@@ -45,11 +45,15 @@ let package = Package(
 	.target(
             name: "LinePlot",
             dependencies: ["Util", "Renderers"],
-  	    path: "framework/LinePlot"),
+  	        path: "framework/LinePlot"),
 	.target(
-            name: "LineChartExamples",
+            name: "LineChartSingleSeriesExample",
             dependencies: ["Util", "Renderers", "LinePlot"],
-  	    path: "examples/LineChart/Source"),
+  	        path: "examples/LineChartSingleSeries"),
+  .target(
+            name: "LineChartMultipleSeriesExample",
+            dependencies: ["Util", "Renderers", "LinePlot"],
+        	  path: "examples/LineChartMultipleSeries"),
         //.testTarget(
         //  name: "swiftplotTests",
         //  dependencies: ["swiftplot"]),
