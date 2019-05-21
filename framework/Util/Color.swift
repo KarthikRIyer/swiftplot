@@ -11,7 +11,7 @@ public struct Color{
   }
   public static let black : Color = Color(0.0, 0.0, 0.0, 1.0)
   public static let white : Color = Color(1.0, 1.0, 1.0, 1.0)
-  public static let transluscentWhite : Color = Color(1.0, 1.0, 1.0, 0.8)
+  public static let transluscentWhite : Color = Color(1.0, 1.0, 1.0, 0.7)
   public static let purple : Color = Color(0.5, 0.0, 0.5, 1.0)
   public static let lightBlue : Color = Color(0.529, 0.808, 0.922, 1.0)
   public static let blue : Color = Color(0.0, 0.0, 1.0, 1.0)
