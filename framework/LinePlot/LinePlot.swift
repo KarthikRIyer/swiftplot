@@ -47,7 +47,7 @@ public class LineGraph : Plot {
   }
 
   // functions to add series
-  public func addSeries(series s: Series){
+  public func addSeries(_ s: Series){
     series.append(s)
   }
   public func addSeries(points p: [Point], label l: String, color c : Color = Color.lightBlue){
@@ -62,25 +62,25 @@ public class LineGraph : Plot {
     let s = Series(points: pts, label: l, color: c)
     series.append(s)
   }
-  public func addSeries(function f : (Float)->Float, x1 a : Float, x2 b : Float, numberOfSamples numberOfSamples : Int = 400, label l: String, color c : Color = Color.lightBlue) {
+  public func addFunction(_ function : (Float)->Float, minX : Float, maxX : Float, numberOfSamples numberOfSamples : Int = 400, label : String, color : Color = Color.lightBlue) {
       var x = [Float]()
       var y = [Float]()
-      let step : Float = (b-a)/Float(numberOfSamples)
+      let step : Float = (maxX-minX)/Float(numberOfSamples)
       var r : Float = 0
-      for i in stride(from: a, through: b, by: step) {
-        r = f(i)
+      for i in stride(from: minX, through: maxX, by: step) {
+        r = function(i)
         if (r.isNaN || r.isInfinite) {
             continue
         }
         x.append(i)
-        y.append(cap(value : r, min : -10.0*(b-a), max : 10.0*(b-a)))
+        y.append(clamp(r, minValue : -10.0*(maxX-minX), maxValue : 10.0*(maxX-minX)))
         // y.append(r)
       }
       var pts = [Point]()
       for i in 0..<x.count {
           pts.append(Point(x[i], y[i]))
       }
-      let s = Series(points: pts, label: l, color: c)
+      let s = Series(points: pts, label: label, color: color)
       series.append(s)
   }
 }
