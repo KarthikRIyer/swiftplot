@@ -1,5 +1,5 @@
 import Util
-public protocol Renderer {
+public protocol Renderer : AnyObject{
 
   var xOffset : Float { get set }
   var yOffset : Float { get set }

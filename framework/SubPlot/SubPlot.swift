@@ -65,7 +65,7 @@ public class SubPlot{
   //   yOffset = subHeight
   // }
 
-  public func draw(plots plots : [Plot], renderer renderer : inout Renderer, fileName fileName : String = "subPlot_output") {
+  public func draw(plots plots : [Plot], renderer renderer : Renderer, fileName fileName : String = "subPlot_output") {
     calculateSubPlotParams(numberOfPlots : plots.count)
     for index in 0..<plots.count {
       var plot : Plot = plots[index]
@@ -75,7 +75,7 @@ public class SubPlot{
       plot.yOffset = Float(i)*yOffset
       plot.plotDimensions = plotDimensions
       renderer.plotDimensions = plotDimensions
-      plot.drawGraph(renderer : &renderer)
+      plot.drawGraph(renderer : renderer)
     }
       renderer.drawOutput(fileName : fileName)
   }
