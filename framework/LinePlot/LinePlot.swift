@@ -47,7 +47,7 @@ public class LineGraph : Plot {
   }
 
   // functions to add series
-  public func addSeries(subPlot s: Series){
+  public func addSeries(series s: Series){
     series.append(s)
   }
   public func addSeries(points p: [Point], label l: String, color c : Color = Color.lightBlue){
@@ -62,13 +62,34 @@ public class LineGraph : Plot {
     let s = Series(points: pts, label: l, color: c)
     series.append(s)
   }
+  public func addSeries(function f : (Float)->Float, x1 a : Float, x2 b : Float, numberOfSamples numberOfSamples : Int = 400, label l: String, color c : Color = Color.lightBlue) {
+      var x = [Float]()
+      var y = [Float]()
+      let step : Float = (b-a)/Float(numberOfSamples)
+      var r : Float = 0
+      for i in stride(from: a, through: b, by: step) {
+        r = f(i)
+        if (r.isNaN || r.isInfinite) {
+            continue
+        }
+        x.append(i)
+        y.append(cap(value : r, min : -10.0*(b-a), max : 10.0*(b-a)))
+        // y.append(r)
+      }
+      var pts = [Point]()
+      for i in 0..<x.count {
+          pts.append(Point(x[i], y[i]))
+      }
+      let s = Series(points: pts, label: l, color: c)
+      series.append(s)
+  }
 }
 
 // extension containing drawing logic
 extension LineGraph{
 
     // call functions to draw the graph
-    public func drawGraphAndOutput(fileName name : String = "swift_plot_line_graph", renderer renderer : inout Renderer){
+    public func drawGraphAndOutput(fileName name : String = "swift_plot_line_graph", renderer renderer : Renderer){
       renderer.xOffset = xOffset
       renderer.yOffset = yOffset
       plotBorder.topLeft       = Point(plotDimensions.subWidth*0.1, plotDimensions.subHeight*0.9)
@@ -76,18 +97,18 @@ extension LineGraph{
       plotBorder.bottomLeft    = Point(plotDimensions.subWidth*0.1, plotDimensions.subHeight*0.1)
       plotBorder.bottomRight   = Point(plotDimensions.subWidth*0.9, plotDimensions.subHeight*0.1)
       plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + 20, plotBorder.topLeft.y - 20)
-      calcLabelLocations(renderer : &renderer)
-      calcMarkerLocAndScalePts(renderer : &renderer)
-      drawBorder(renderer : &renderer)
-      drawMarkers(renderer : &renderer)
-      drawPlots(renderer : &renderer)
-      drawTitle(renderer : &renderer)
-      drawLabels(renderer : &renderer)
-      drawLegends(renderer : &renderer)
-      saveImage(fileName : name, renderer : &renderer)
+      calcLabelLocations(renderer : renderer)
+      calcMarkerLocAndScalePts(renderer : renderer)
+      drawBorder(renderer : renderer)
+      drawMarkers(renderer : renderer)
+      drawPlots(renderer : renderer)
+      drawTitle(renderer : renderer)
+      drawLabels(renderer : renderer)
+      drawLegends(renderer : renderer)
+      saveImage(fileName : name, renderer : renderer)
     }
 
-    public func drawGraph(renderer renderer : inout Renderer){
+    public func drawGraph(renderer renderer : Renderer){
       renderer.xOffset = xOffset
       renderer.yOffset = yOffset
       plotBorder.topLeft       = Point(plotDimensions.subWidth*0.1, plotDimensions.subHeight*0.9)
@@ -95,17 +116,17 @@ extension LineGraph{
       plotBorder.bottomLeft    = Point(plotDimensions.subWidth*0.1, plotDimensions.subHeight*0.1)
       plotBorder.bottomRight   = Point(plotDimensions.subWidth*0.9, plotDimensions.subHeight*0.1)
       plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + 20, plotBorder.topLeft.y - 20)
-      calcLabelLocations(renderer : &renderer)
-      calcMarkerLocAndScalePts(renderer : &renderer)
-      drawBorder(renderer : &renderer)
-      drawMarkers(renderer : &renderer)
-      drawPlots(renderer : &renderer)
-      drawTitle(renderer : &renderer)
-      drawLabels(renderer : &renderer)
-      drawLegends(renderer : &renderer)
+      calcLabelLocations(renderer : renderer)
+      calcMarkerLocAndScalePts(renderer : renderer)
+      drawBorder(renderer : renderer)
+      drawMarkers(renderer : renderer)
+      drawPlots(renderer : renderer)
+      drawTitle(renderer : renderer)
+      drawLabels(renderer : renderer)
+      drawLegends(renderer : renderer)
     }
 
-    public func drawGraphOutput(fileName name : String = "swift_plot_line_graph", renderer renderer : inout Renderer){
+    public func drawGraphOutput(fileName name : String = "swift_plot_line_graph", renderer renderer : Renderer){
       renderer.drawOutput(fileName : name)
     }
 
@@ -142,8 +163,28 @@ extension LineGraph{
     return max
   }
 
+  func getMinX(points p : [Point]) -> Float {
+    var min = p[0].x
+    for index in 1..<p.count {
+      if (p[index].x < min) {
+          min = p[index].y
+      }
+    }
+    return min
+  }
+
+  func getMinY(points p : [Point]) -> Float {
+    var min = p[0].y
+    for index in 1..<p.count {
+      if (p[index].y < min) {
+          min = p[index].y
+      }
+    }
+    return min
+  }
+
   // functions implementing plotting logic
-  func calcLabelLocations(renderer renderer : inout Renderer){
+  func calcLabelLocations(renderer renderer : Renderer){
 
     let xWidth    : Float = renderer.getTextWidth(text : plotLabel.xLabel, textSize : plotLabel.labelSize)
     let yWidth     : Float = renderer.getTextWidth(text : plotLabel.yLabel, textSize : plotLabel.labelSize)
@@ -155,7 +196,7 @@ extension LineGraph{
 
   }
 
-  func calcMarkerLocAndScalePts(renderer renderer : inout Renderer){
+  func calcMarkerLocAndScalePts(renderer renderer : Renderer){
 
     plotMarkers.xMarkers = [Point]()
     plotMarkers.yMarkers = [Point]()
@@ -166,27 +207,39 @@ extension LineGraph{
 
     var maximumX : Float = getMaxX(points: series[0].points)
     var maximumY : Float = getMaxY(points: series[0].points)
+    var minimumX : Float = getMinX(points: series[0].points)
+    var minimumY : Float = getMinY(points: series[0].points)
 
     for index in 1..<series.count {
 
         let s : Series = series[index]
         let pts = s.points
-        let x : Float = getMaxX(points: pts)
-        let y : Float = getMaxY(points: pts)
+        var x : Float = getMaxX(points: pts)
+        var y : Float = getMaxY(points: pts)
         if (x > maximumX) {
           maximumX = x
         }
         if (y > maximumY) {
           maximumY = y
         }
+        x = getMinX(points: pts)
+        y = getMinY(points: pts)
+        if (x < minimumX) {
+          minimumX = x
+        }
+        if (y < minimumY) {
+          minimumY = y
+        }
       }
+
+      var origin : Point = Point((plotDimensions.graphWidth/(maximumX-minimumX))*(-minimumX), (plotDimensions.graphHeight/(maximumY-minimumY))*(-minimumY))
 
       let rightScaleMargin : Float = (plotDimensions.subWidth - plotDimensions.graphWidth)/2.0 - 10.0;
       let topScaleMargin : Float = (plotDimensions.subHeight - plotDimensions.graphHeight)/2.0 - 10.0;
-      scaleX = maximumX / (plotDimensions.graphWidth - rightScaleMargin);
-      scaleY = maximumY / (plotDimensions.graphHeight - topScaleMargin);
+      scaleX = (maximumX - minimumX) / (plotDimensions.graphWidth - rightScaleMargin);
+      scaleY = (maximumY - minimumY) / (plotDimensions.graphHeight - topScaleMargin);
 
-      let nD1 : Int = getNumberOfDigits(maximumY)
+      let nD1 : Int = max(getNumberOfDigits(maximumY), getNumberOfDigits(minimumY))
       var v1 : Float
       if (nD1 > 1 && maximumY <= pow(Float(10), Float(nD1 - 1))) {
           v1 = Float(pow(Float(10), Float(nD1 - 2)))
@@ -202,7 +255,7 @@ extension LineGraph{
           inc1 = (plotDimensions.graphHeight/nY)*inc1/MAX_DIV
       }
 
-      let nD2 : Int = getNumberOfDigits(maximumX)
+      let nD2 : Int = max(getNumberOfDigits(maximumY), getNumberOfDigits(minimumY))
       var v2 : Float
       if (nD2 > 1 && maximumX <= pow(Float(10), Float(nD2 - 1))) {
           v2 = Float(pow(Float(10), Float(nD2 - 2)))
@@ -220,42 +273,85 @@ extension LineGraph{
           noXD = MAX_DIV
       }
 
-      // calculate axes marker co-ordinates
-      for i in stride(from: v1/scaleY, through: plotDimensions.graphHeight, by: inc1) {
-          let p : Point = Point(0, i)
-          plotMarkers.yMarkers.append(p)
-          let text_p : Point = Point(-(renderer.getTextWidth(text : "\(ceil(scaleY*i))", textSize : plotMarkers.markerTextSize)+5), i - 4)
-          plotMarkers.yMarkersTextLocation.append(text_p)
-          plotMarkers.yMarkersText.append("\(ceil(scaleY*i))")
+      var xM : Float = origin.x
+      while xM<=plotDimensions.graphWidth {
+        if(xM+inc2<0.0 || xM<0.0) {
+            xM = xM+inc2
+            continue
+        }
+        let p : Point = Point(xM, 0)
+        plotMarkers.xMarkers.append(p)
+        let text_p : Point = Point(xM - (renderer.getTextWidth(text : "\(floor(scaleX*(xM-origin.x)))", textSize : plotMarkers.markerTextSize)/2.0) + 8, -15)
+        plotMarkers.xMarkersTextLocation.append(text_p)
+        plotMarkers.xMarkersText.append("\(floor(scaleX*(xM-origin.x)))")
+        xM = xM + inc2
       }
-      for i in stride(from: v2/scaleX, through: plotDimensions.graphWidth, by: inc2) {
-          let p : Point = Point(i, 0)
-          plotMarkers.xMarkers.append(p)
-          let text_p : Point = Point(i - (renderer.getTextWidth(text : "\(ceil(scaleX*i))", textSize : plotMarkers.markerTextSize)/2.0), -15)
-          plotMarkers.xMarkersTextLocation.append(text_p)
-          plotMarkers.xMarkersText.append("\(ceil(scaleX*i))")
+
+      xM = origin.x - inc2
+      while xM>0.0 {
+        if (xM > plotDimensions.graphWidth) {
+            xM = xM - inc2
+            continue
+        }
+        let p : Point = Point(xM, 0)
+        plotMarkers.xMarkers.append(p)
+        let text_p : Point = Point(xM - (renderer.getTextWidth(text : "\(ceil(scaleX*(xM-origin.x)))", textSize : plotMarkers.markerTextSize)/2.0) + 8, -15)
+        plotMarkers.xMarkersTextLocation.append(text_p)
+        plotMarkers.xMarkersText.append("\(ceil(scaleX*(xM-origin.x)))")
+        xM = xM - inc2
       }
+
+      var yM : Float = origin.y
+      while yM<=plotDimensions.graphHeight {
+        if(yM+inc1<0.0 || yM<0.0){
+            yM = yM + inc1
+            continue
+        }
+        let p : Point = Point(0, yM)
+        plotMarkers.yMarkers.append(p)
+        let text_p : Point = Point(-(renderer.getTextWidth(text : "\(ceil(scaleY*(yM-origin.y)))", textSize : plotMarkers.markerTextSize)+5), yM - 4)
+        plotMarkers.yMarkersTextLocation.append(text_p)
+        plotMarkers.yMarkersText.append("\(ceil(scaleY*(yM-origin.y)))")
+        yM = yM + inc1
+      }
+      yM = origin.y - inc1
+      while yM>0.0 {
+        let p : Point = Point(0, yM)
+        plotMarkers.yMarkers.append(p)
+        let text_p : Point = Point(-(renderer.getTextWidth(text : "\(floor(scaleY*(yM-origin.y)))", textSize : plotMarkers.markerTextSize)+5), yM - 4)
+        plotMarkers.yMarkersTextLocation.append(text_p)
+        plotMarkers.yMarkersText.append("\(floor(scaleY*(yM-origin.y)))")
+        yM = yM - inc1
+      }
+
+
+
       // scale points to be plotted according to plot size
       let scaleXInv : Float = 1.0/scaleX;
-      let scaleYInv : Float = 1.0/scaleY;
-
+      let scaleYInv : Float = 1.0/scaleY
       for i in 0..<series.count {
           let pts = series[i].points
           series[i].scaledPoints.removeAll();
+
           for j in 0..<pts.count {
-              let pt : Point = Point(pts[j].x*scaleXInv, pts[j].y*scaleYInv)
-              series[i].scaledPoints.append(pt)
+
+              let pt : Point = Point((pts[j].x)*scaleXInv + origin.x, (pts[j].y)*scaleYInv + origin.y)
+              if (pt.x >= 0.0 && pt.x <= plotDimensions.graphWidth && pt.y >= 0.0 && pt.y <= plotDimensions.graphHeight) {
+                  series[i].scaledPoints.append(pt)
+              }
           }
       }
   }
 
 //functions to draw the plot
-  func drawBorder(renderer renderer : inout Renderer){
+  func drawBorder(renderer renderer : Renderer){
     renderer.drawRect(topLeftPoint : plotBorder.topLeft, topRightPoint : plotBorder.topRight, bottomRightPoint: plotBorder.bottomRight, bottomLeftPoint : plotBorder.bottomLeft, strokeWidth : plotBorder.borderThickness, strokeColor : Color.black)
   }
 
-  func drawMarkers(renderer renderer : inout Renderer) {
-
+  func drawMarkers(renderer renderer : Renderer) {
+    // print("plotMarkers.xMarkersText \(plotMarkers.xMarkersText.count)")
+    // print("plotMarkers.xMarkersTextLocation \(plotMarkers.xMarkersTextLocation.count)")
+    // print("plotMarkers.xMarkers \(plotMarkers.xMarkers.count)")
     for index in 0..<plotMarkers.xMarkers.count {
         let p1 : Point = Point(plotMarkers.xMarkers[index].x, -3)
         let p2 : Point = Point(plotMarkers.xMarkers[index].x, 0)
@@ -272,22 +368,22 @@ extension LineGraph{
 
   }
 
-  func drawPlots(renderer renderer : inout Renderer) {
+  func drawPlots(renderer renderer : Renderer) {
       for s in series {
         renderer.drawPlotLines(points : s.scaledPoints, strokeWidth : plotLineThickness, strokeColor : s.color)
       }
   }
 
-  func drawTitle(renderer renderer : inout Renderer) {
+  func drawTitle(renderer renderer : Renderer) {
       renderer.drawText(text : plotTitle.title, location : plotTitle.titleLocation, textSize : plotTitle.titleSize, strokeWidth : 1.2)
   }
 
-  func drawLabels(renderer renderer : inout Renderer) {
+  func drawLabels(renderer renderer : Renderer) {
       renderer.drawText(text : plotLabel.xLabel, location : plotLabel.xLabelLocation, textSize : plotLabel.labelSize, strokeWidth : 1.2)
       renderer.drawRotatedText(text : plotLabel.yLabel, location : plotLabel.yLabelLocation, textSize : plotLabel.labelSize, strokeWidth : 1.2, angle : 90)
   }
 
-  func drawLegends(renderer renderer : inout Renderer) {
+  func drawLegends(renderer renderer : Renderer) {
       var maxWidth : Float = 0
       for s in series {
           let w = renderer.getTextWidth(text : s.label, textSize : plotLegend.legendTextSize)
@@ -318,7 +414,7 @@ extension LineGraph{
 
   }
 
-  func saveImage(fileName name : String, renderer renderer : inout Renderer) {
+  func saveImage(fileName name : String, renderer renderer : Renderer) {
       renderer.drawOutput(fileName : name)
   }
 }

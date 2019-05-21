@@ -21,5 +21,5 @@ lineGraph.addSeries(x2, y2, label: "Plot 2", color: Color.orange)
 plotTitle.title = "MULTIPLE SERIES"
 lineGraph.plotTitle = plotTitle
 
-lineGraph.drawGraphAndOutput(fileName : filePath+"agg/"+fileName, renderer : &agg_renderer)
-lineGraph.drawGraphAndOutput(fileName : filePath+"svg/"+fileName, renderer : &svg_renderer)
+lineGraph.drawGraphAndOutput(fileName : filePath+"agg/"+fileName, renderer : agg_renderer)
+lineGraph.drawGraphAndOutput(fileName : filePath+"svg/"+fileName, renderer : svg_renderer)

@@ -18,5 +18,5 @@ lineGraph.addSeries(x, y, label: "Plot 1", color: Color.lightBlue)
 plotTitle.title = "PLOT 1"
 lineGraph.plotTitle = plotTitle
 
-lineGraph.drawGraphAndOutput(fileName : filePath+"agg/"+fileName, renderer : &agg_renderer)
-lineGraph.drawGraphAndOutput(fileName : filePath+"svg/"+fileName, renderer : &svg_renderer)
+lineGraph.drawGraphAndOutput(fileName : filePath+"agg/"+fileName, renderer : agg_renderer)
+lineGraph.drawGraphAndOutput(fileName : filePath+"svg/"+fileName, renderer : svg_renderer)

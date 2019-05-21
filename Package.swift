@@ -70,6 +70,10 @@ let package = Package(
             name: "LineChartSubPlotGridStackedExample",
             dependencies: ["Util", "Renderers", "LinePlot", "SubPlot"],
             path: "examples/LineChartSubPlotGridStacked"),
+  .target(
+            name: "LineChartFunctionPlotExample",
+            dependencies: ["Util", "Renderers", "LinePlot"],
+            path: "examples/LineChartFunctionPlot"),
         //.testTarget(
         //  name: "swiftplotTests",
         //  dependencies: ["swiftplot"]),
