@@ -16,5 +16,6 @@ public protocol Renderer: AnyObject{
 	func drawSolidRectWithBorder(topLeftPoint p1: Point,topRightPoint p2: Point,bottomRightPoint p3: Point,bottomLeftPoint p4: Point, strokeWidth thickness: Float, fillColor: Color, borderColor: Color)
 	func getTextWidth(text: String, textSize size: Float) -> Float
 	func drawOutput(fileName name: String)
+	func base64Png(fileName name : String) -> String
 
 }
