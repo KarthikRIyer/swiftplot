@@ -4,3 +4,4 @@ swift run LineChartMultipleSeriesExample
 swift run LineChartSubPlotHorizontallyStackedExample
 swift run LineChartSubPlotVerticallyStackedExample
 swift run LineChartSubPlotGridStackedExample
+swift run LineChartFunctionPlotExample
