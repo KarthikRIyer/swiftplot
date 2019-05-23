@@ -31,5 +31,5 @@ plots.append(lineGraph2)
 // lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
 // lineGraph.drawGraphAndOutput(fileName: filePath+"svg/"+fileName, renderer: svg_renderer)
 
-var subPlot: SubPlot = SubPlot(numberOfPlots: 2, stackingPattern: SubPlot.HORIZONTALLY_STACKED)
+var subPlot: SubPlot = SubPlot(numberOfPlots: 2, stackPattern: SubPlot.HORIZONTALLY_STACKED)
 subPlot.draw(plots: plots, renderer: svg_renderer, fileName: filePath+"svg/"+fileName)

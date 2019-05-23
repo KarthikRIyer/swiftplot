@@ -73,7 +73,7 @@ public class LineGraph: Plot {
 				continue
 			}
 			x.append(i)
-			y.append(clamp(r, minValue: -10.0*(maxX-minX), maxValue: 10.0*(maxX-minX)))
+			y.append(clamp(r, minValue: -1.0/step, maxValue: 1.0/step))
 			// y.append(r)
 		}
 		var pts = [Point]()
