@@ -45,3 +45,7 @@ float get_text_width(const char *s, float size, const void *object){
 void save_image(const char *s, const void *object){
   CPPAGGRenderer::save_image(s, object);
 }
+
+const char* base_64_png(const char *s, const void *object){
+  return CPPAGGRenderer::base_64_png(s, object);
+}

@@ -22,4 +22,6 @@ namespace CPPAGGRenderer{
 
   void save_image(const char *s, const void *object);
 
+  const char* base_64_png(const char *s, const void *object);
+
 }

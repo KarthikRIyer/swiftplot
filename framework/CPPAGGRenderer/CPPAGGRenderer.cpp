@@ -54,10 +54,10 @@ namespace CPPAGGRenderer{
                                      41,  42,  43,  44,  45,  46,  47,  48,  49,  50,  51, 255, 255, 255, 255, 255};
 
 
-  static const char to_base64[] =
-             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-             "abcdefghijklmnopqrstuvwxyz"
-             "0123456789+/";
+  static const std::string base64_chars =
+              "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+              "abcdefghijklmnopqrstuvwxyz"
+              "0123456789+/";
 
   void write_bmp(const unsigned char* buf, unsigned width, unsigned height, const char* file_name){
     saveBMP(buf, width, height, file_name);
@@ -86,31 +86,50 @@ namespace CPPAGGRenderer{
                     return false;
   }
 
-  std::string write_base64(unsigned char const* buf, float width, float height) {
-    float bufLen = width*height*3;
-    size_t ret_size = bufLen+2;
+  std::string base64_encode(unsigned char const *bytes_to_encode, unsigned int in_len)
+  {
+  	std::string ret;
+  	int i = 0;
+  	int j = 0;
+  	unsigned char char_array_3[3];
+  	unsigned char char_array_4[4];
 
-    ret_size = 4*ret_size/3;
+  	while (in_len--)
+  	{
+  		char_array_3[i++] = *(bytes_to_encode++);
+  		if (i == 3)
+  		{
+  			char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+  			char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+  			char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+  			char_array_4[3] = char_array_3[2] & 0x3f;
 
-    std::string ret;
-    ret.reserve(ret_size);
+  			for (i = 0; (i < 4); i++)
+  				ret += base64_chars[char_array_4[i]];
+  			i = 0;
+  		}
+  	}
 
-    for (unsigned int i=0; i<ret_size/4; ++i)
-    {
-        size_t index = i*3;
-        unsigned char b3[3];
-        b3[0] = buf[index+0];
-        b3[1] = buf[index+1];
-        b3[2] = buf[index+2];
+  	if (i)
+  	{
+  		for (j = i; j < 3; j++)
+  			char_array_3[j] = '\0';
 
-        ret.push_back(to_base64[ ((b3[0] & 0xfc) >> 2) ]);
-        ret.push_back(to_base64[ ((b3[0] & 0x03) << 4) + ((b3[1] & 0xf0) >> 4) ]);
-        ret.push_back(to_base64[ ((b3[1] & 0x0f) << 2) + ((b3[2] & 0xc0) >> 6) ]);
-        ret.push_back(to_base64[ ((b3[2] & 0x3f)) ]);
-    }
+  		char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+  		char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+  		char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
 
-    return ret;
-}
+  		for (j = 0; (j < i + 1); j++)
+  			ret += base64_chars[char_array_4[j]];
+
+  		while ((i++ < 3))
+  			ret += '=';
+
+  	}
+
+  	return ret;
+
+  }
 
   class Plot{
 
@@ -119,6 +138,8 @@ namespace CPPAGGRenderer{
     agg::scanline_p8              m_sl_p8;
     renderer_base rb;
     renderer_aa ren_aa;
+
+    const char* imageString;
 
     Plot(){
       rb = renderer_base(pixf);
@@ -270,28 +291,37 @@ namespace CPPAGGRenderer{
     }
 
     void save_image(const char *s){
-      char* file_ppm = (char *) malloc(1 + strlen(s)+ strlen(".ppm") );
-      strcpy(file_ppm, s);
-      strcat(file_ppm, ".ppm");
+      // char* file_ppm = (char *) malloc(1 + strlen(s)+ strlen(".ppm") );
+      // strcpy(file_ppm, s);
+      // strcat(file_ppm, ".ppm");
       char* file_png = (char *) malloc(1 + strlen(s)+ strlen(".png") );
       strcpy(file_png, s);
       strcat(file_png, ".png");
-      char* file_bmp = (char *) malloc(1 + strlen(s)+ strlen(".bmp") );
-      strcpy(file_bmp, s);
-      strcat(file_bmp, ".bmp");
+      // char* file_bmp = (char *) malloc(1 + strlen(s)+ strlen(".bmp") );
+      // strcpy(file_bmp, s);
+      // strcat(file_bmp, ".bmp");
       // write_ppm(buffer, frame_width, frame_height, file_ppm);
-
       std::vector<unsigned char> image(buffer, buffer + (frame_width*frame_height*3));
       write_png(image, frame_width, frame_height, file_png);
-
       // write_bmp(buffer, frame_width, frame_height, file_bmp);
 
-      // ofstream fileBase64;
-      // fileBase64.open("base64Plot.txt");
-      // fileBase64<<write_base64(buffer, frame_width, frame_height);
-      // fileBase64.close();
+      imageString = file_png;
 
       // delete[] buffer;
+    }
+
+    const char* base64Png(const char *file_png){
+
+      this->save_image(file_png);
+
+      std::ifstream in(imageString, std::ios::binary);
+    	in.seekg(0, std::ios::end);
+      std::cout << in.tellg() << '\n';
+    	std::vector<unsigned char> b(in.tellg());
+    	in.seekg(0, std::ios::beg);
+    	in.read((char*)b.data(), b.size());
+    	std::string str = base64_encode(b.data(), b.size());
+    	return str.c_str();
     }
 
   };
@@ -371,6 +401,13 @@ namespace CPPAGGRenderer{
 
     Plot *plot = (Plot *)object;
     plot -> save_image(s);
+
+  }
+
+  const char* base_64_png(const char *s, const void *object){
+
+    Plot *plot = (Plot *)object;
+    return plot -> base64Png(s);
 
   }
 

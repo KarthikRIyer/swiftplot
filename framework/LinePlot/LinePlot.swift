@@ -349,9 +349,6 @@ extension LineGraph{
 	}
 
 	func drawMarkers(renderer: Renderer) {
-		// print("plotMarkers.xMarkersText \(plotMarkers.xMarkersText.count)")
-		// print("plotMarkers.xMarkersTextLocation \(plotMarkers.xMarkersTextLocation.count)")
-		// print("plotMarkers.xMarkers \(plotMarkers.xMarkers.count)")
 		for index in 0..<plotMarkers.xMarkers.count {
 			let p1: Point = Point(plotMarkers.xMarkers[index].x, -3)
 			let p2: Point = Point(plotMarkers.xMarkers[index].x, 0)
