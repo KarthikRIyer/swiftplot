@@ -46,6 +46,10 @@ void save_image(const char *s, const void *object){
   CPPAGGRenderer::save_image(s, object);
 }
 
-const char* base_64_png(const char *s, const void *object){
-  return CPPAGGRenderer::base_64_png(s, object);
+const unsigned char* get_png_buffer(const void *object){
+  return CPPAGGRenderer::get_png_buffer(object);
+}
+
+int get_png_buffer_size(const void *object){
+  return CPPAGGRenderer::get_png_buffer_size(object);
 }

@@ -127,8 +127,10 @@ public class AGGRenderer: Renderer{
 		save_image(name, agg_object)
 	}
 
-	public func base64Png(fileName name : String = "agg_plot_png") -> String{
-		return String(cString: base_64_png(name, agg_object)!)
+	public func base64Png() -> String{
+		let pngBufferPointer: UnsafePointer<UInt8> = get_png_buffer(agg_object)
+		let bufferSize: Int = Int(get_png_buffer_size(agg_object))
+		return encodeBase64PNG(pngBufferPointer: pngBufferPointer, bufferSize: bufferSize)
 	}
 
 }

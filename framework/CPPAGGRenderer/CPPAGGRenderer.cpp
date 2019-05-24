@@ -44,21 +44,6 @@ namespace CPPAGGRenderer{
                               -frame_width*3);
   pixfmt pixf(rbuf);
 
-  static const unsigned char from_base64[] = { 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-                                    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-                                    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,  62, 255,  62, 255,  63,
-                                     52,  53,  54,  55,  56,  57,  58,  59,  60,  61, 255, 255, 255, 255, 255, 255,
-                                    255,   0,   1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  13,  14,
-                                     15,  16,  17,  18,  19,  20,  21,  22,  23,  24,  25, 255, 255, 255, 255,  63,
-                                    255,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,  38,  39,  40,
-                                     41,  42,  43,  44,  45,  46,  47,  48,  49,  50,  51, 255, 255, 255, 255, 255};
-
-
-  static const std::string base64_chars =
-              "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-              "abcdefghijklmnopqrstuvwxyz"
-              "0123456789+/";
-
   void write_bmp(const unsigned char* buf, unsigned width, unsigned height, const char* file_name){
     saveBMP(buf, width, height, file_name);
   }
@@ -72,63 +57,15 @@ namespace CPPAGGRenderer{
     if(error) std::cout << "encoder error " << error << ": "<< lodepng_error_text(error) << std::endl;
   }
 
-  bool write_ppm(const unsigned char* buf,
-                  unsigned width,
-                  unsigned height,
-                  const char* file_name){
-                    FILE* fd = fopen(file_name, "wb");
-                    if(fd){
-                      fprintf(fd, "P6 %d %d 255 ", width, height);
-                      fwrite(buf, 1, width*height*3, fd);
-                      fclose(fd);
-                      return true;
-                    }
-                    return false;
-  }
+  std::vector<unsigned char> write_png_memory(const unsigned char* buf, unsigned width, unsigned height){
+    //Encode the image
+    LodePNGColorType colorType = LCT_RGB;
+    std::vector<unsigned char> out;
+    unsigned error = lodepng::encode(out, buf, width, height, colorType);
 
-  std::string base64_encode(unsigned char const *bytes_to_encode, unsigned int in_len)
-  {
-  	std::string ret;
-  	int i = 0;
-  	int j = 0;
-  	unsigned char char_array_3[3];
-  	unsigned char char_array_4[4];
-
-  	while (in_len--)
-  	{
-  		char_array_3[i++] = *(bytes_to_encode++);
-  		if (i == 3)
-  		{
-  			char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-  			char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
-  			char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
-  			char_array_4[3] = char_array_3[2] & 0x3f;
-
-  			for (i = 0; (i < 4); i++)
-  				ret += base64_chars[char_array_4[i]];
-  			i = 0;
-  		}
-  	}
-
-  	if (i)
-  	{
-  		for (j = i; j < 3; j++)
-  			char_array_3[j] = '\0';
-
-  		char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
-  		char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
-  		char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
-
-  		for (j = 0; (j < i + 1); j++)
-  			ret += base64_chars[char_array_4[j]];
-
-  		while ((i++ < 3))
-  			ret += '=';
-
-  	}
-
-  	return ret;
-
+    //if there's an error, display it
+    if(error) std::cout << "encoder error " << error << ": "<< lodepng_error_text(error) << std::endl;
+    return out;
   }
 
   class Plot{
@@ -138,8 +75,7 @@ namespace CPPAGGRenderer{
     agg::scanline_p8              m_sl_p8;
     renderer_base rb;
     renderer_aa ren_aa;
-
-    const char* imageString;
+    int pngBufferSize = 0;
 
     Plot(){
       rb = renderer_base(pixf);
@@ -291,37 +227,23 @@ namespace CPPAGGRenderer{
     }
 
     void save_image(const char *s){
-      // char* file_ppm = (char *) malloc(1 + strlen(s)+ strlen(".ppm") );
-      // strcpy(file_ppm, s);
-      // strcat(file_ppm, ".ppm");
       char* file_png = (char *) malloc(1 + strlen(s)+ strlen(".png") );
       strcpy(file_png, s);
       strcat(file_png, ".png");
-      // char* file_bmp = (char *) malloc(1 + strlen(s)+ strlen(".bmp") );
-      // strcpy(file_bmp, s);
-      // strcat(file_bmp, ".bmp");
-      // write_ppm(buffer, frame_width, frame_height, file_ppm);
       std::vector<unsigned char> image(buffer, buffer + (frame_width*frame_height*3));
       write_png(image, frame_width, frame_height, file_png);
-      // write_bmp(buffer, frame_width, frame_height, file_bmp);
-
-      imageString = file_png;
 
       // delete[] buffer;
     }
 
-    const char* base64Png(const char *file_png){
+    const unsigned char* getPngBuffer(){
+      std::vector<unsigned char> outputImage = write_png_memory(buffer, frame_width, frame_height);
+      pngBufferSize = outputImage.size();
+    	return outputImage.data();
+    }
 
-      this->save_image(file_png);
-
-      std::ifstream in(imageString, std::ios::binary);
-    	in.seekg(0, std::ios::end);
-      std::cout << in.tellg() << '\n';
-    	std::vector<unsigned char> b(in.tellg());
-    	in.seekg(0, std::ios::beg);
-    	in.read((char*)b.data(), b.size());
-    	std::string str = base64_encode(b.data(), b.size());
-    	return str.c_str();
+    int getPngBufferSize(){
+      return pngBufferSize;
     }
 
   };
@@ -404,10 +326,17 @@ namespace CPPAGGRenderer{
 
   }
 
-  const char* base_64_png(const char *s, const void *object){
+  const unsigned char* get_png_buffer(const void *object){
 
     Plot *plot = (Plot *)object;
-    return plot -> base64Png(s);
+    return plot -> getPngBuffer();
+
+  }
+
+  int get_png_buffer_size(const void *object){
+
+    Plot *plot = (Plot *)object;
+    return plot -> getPngBufferSize();
 
   }
 
