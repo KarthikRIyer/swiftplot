@@ -9,8 +9,8 @@ let fileName = "_04_sub_plot_vertically_stacked_line_chart"
 let x:[Float] = [0,100,263,489]
 let y:[Float] = [0,320,310,170]
 
-// var agg_renderer: Renderer = AGGRenderer()
-var svg_renderer: Renderer = SVGRenderer()
+var agg_renderer: AGGRenderer = AGGRenderer()
+var svg_renderer: SVGRenderer = SVGRenderer()
 
 var plotTitle: PlotTitle = PlotTitle()
 
@@ -33,3 +33,4 @@ plots.append(lineGraph2)
 
 var subPlot: SubPlot = SubPlot(numberOfPlots: 2, stackPattern: SubPlot.VERTICALLY_STACKED)
 subPlot.draw(plots: plots, renderer: svg_renderer, fileName: filePath+"svg/"+fileName)
+subPlot.draw(plots: plots, renderer: agg_renderer, fileName: filePath+"agg/"+fileName)

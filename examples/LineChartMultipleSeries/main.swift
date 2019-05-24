@@ -10,8 +10,8 @@ let y1:[Float] = [0,320,310,170]
 let x2:[Float] = [0,50,113,250]
 let y2:[Float] = [0,20,100,170]
 
-var agg_renderer: Renderer = AGGRenderer()
-var svg_renderer: Renderer = SVGRenderer()
+var agg_renderer: AGGRenderer = AGGRenderer()
+var svg_renderer: SVGRenderer = SVGRenderer()
 
 var plotTitle: PlotTitle = PlotTitle()
 

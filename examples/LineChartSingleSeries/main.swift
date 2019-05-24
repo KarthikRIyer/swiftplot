@@ -8,8 +8,8 @@ let fileName = "_01_single_series_line_chart"
 let x:[Float] = [0,100,263,489]
 let y:[Float] = [0,320,310,170]
 
-var agg_renderer: Renderer = AGGRenderer()
-var svg_renderer: Renderer = SVGRenderer()
+var agg_renderer: AGGRenderer = AGGRenderer()
+var svg_renderer: SVGRenderer = SVGRenderer()
 
 var plotTitle: PlotTitle = PlotTitle()
 
