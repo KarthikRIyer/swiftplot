@@ -14,6 +14,7 @@ public class AGGRenderer: Renderer{
 		willSet{
 			width = newValue.subWidth
 			height = newValue.subHeight
+			agg_object = initializePlot(width, height)
 		}
 	}
 

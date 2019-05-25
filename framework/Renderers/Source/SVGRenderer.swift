@@ -26,6 +26,8 @@ public class SVGRenderer: Renderer{
 		willSet{
 			width = newValue.subWidth
 			height = newValue.subHeight
+			image = "<svg height=\"\(height)\" width=\"\(width)\" version=\"4.0\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink= \"http://www.w3.org/1999/xlink\">"
+			image = image + "\n" + "<rect width=\"100%\" height=\"100%\" fill=\"white\"/>";
 		}
 	}
 
