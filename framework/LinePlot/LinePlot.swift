@@ -111,6 +111,7 @@ extension LineGraph{
 	public func drawGraph(renderer: Renderer){
 		renderer.xOffset = xOffset
 		renderer.yOffset = yOffset
+		renderer.plotDimensions = plotDimensions
 		plotBorder.topLeft       = Point(plotDimensions.subWidth*0.1, plotDimensions.subHeight*0.9)
 		plotBorder.topRight      = Point(plotDimensions.subWidth*0.9, plotDimensions.subHeight*0.9)
 		plotBorder.bottomLeft    = Point(plotDimensions.subWidth*0.1, plotDimensions.subHeight*0.1)
