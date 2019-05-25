@@ -2,7 +2,7 @@
 extern "C"  {
 #endif
 
-const void * initializePlot(float w, float h);
+const void * initializePlot(float w, float h, float subW, float subH);
 
 void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a, const void *object);
 

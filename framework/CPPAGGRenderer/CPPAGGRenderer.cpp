@@ -35,6 +35,8 @@ const Color white_translucent(1.0,1.0,1.0,0.8);
 
 int frame_width = 1000;
 int frame_height = 660;
+int sub_width = 1000;
+int sub_height = 660;
 
 namespace CPPAGGRenderer{
   unsigned char* buffer = new unsigned char[frame_width*frame_height*3];
@@ -120,7 +122,7 @@ namespace CPPAGGRenderer{
       rect_path.move_to(*x, *y);
       rect_path.line_to(*(x+1),*(y+1));
       agg::trans_affine matrix;
-      matrix *= agg::trans_affine_translation(frame_width*0.1f, frame_height*0.1f);
+      matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
       agg::conv_transform<agg::path_storage, agg::trans_affine> trans(rect_path, matrix);
       agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>> curve(trans);
       agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>> stroke(curve);
@@ -154,7 +156,7 @@ namespace CPPAGGRenderer{
         rect_path.line_to(*(x+i),*(y+i));
       }
       agg::trans_affine matrix;
-      matrix *= agg::trans_affine_translation(frame_width*0.1f, frame_height*0.1f);
+      matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
       agg::conv_transform<agg::path_storage, agg::trans_affine> trans(rect_path, matrix);
       agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>> curve(trans);
       agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>> stroke(curve);
@@ -187,7 +189,7 @@ namespace CPPAGGRenderer{
       t.text(s);
       t.start_point(x,y);
       agg::trans_affine matrix;
-      matrix *= agg::trans_affine_translation(frame_width*0.1f, frame_height*0.1f);
+      matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
       agg::conv_transform<agg::gsv_text, agg::trans_affine> trans(t, matrix);
       agg::conv_curve<agg::conv_transform<agg::gsv_text, agg::trans_affine>> curve(trans);
       agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::gsv_text, agg::trans_affine>>> stroke(curve);
@@ -248,9 +250,11 @@ namespace CPPAGGRenderer{
 
   };
 
-  const void * initializePlot(float w, float h){
+  const void * initializePlot(float w, float h, float subW, float subH){
     frame_width = w;
     frame_height = h;
+    sub_width = subW;
+    sub_height = subH;
     memset(buffer, 255, frame_width*frame_height*3);
     Plot *plot = new Plot();
     return (void *)plot;
