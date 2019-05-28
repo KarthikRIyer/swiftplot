@@ -1,7 +1,6 @@
-import LinePlot
-import Util
-import Renderers
-import SubPlot
+import SwiftPlot
+import AGGRenderer
+import SVGRenderer
 
 var filePath = "examples/Reference/"
 let fileName = "_04_sub_plot_vertically_stacked_line_chart"

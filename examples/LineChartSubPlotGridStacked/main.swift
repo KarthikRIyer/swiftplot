@@ -1,7 +1,6 @@
-import LinePlot
-import Util
-import Renderers
-import SubPlot
+import SwiftPlot
+import AGGRenderer
+import SVGRenderer
 
 var filePath = "examples/Reference/"
 let fileName = "_05_sub_plot_grid_stacked_line_chart"

@@ -1,5 +1,3 @@
-import Renderers
-import Util
 public protocol Plot {
 	var xOffset: Float { get set }
 	var yOffset: Float { get set }

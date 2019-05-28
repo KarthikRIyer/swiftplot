@@ -1,6 +1,6 @@
-import LinePlot
-import Util
-import Renderers
+import SwiftPlot
+import AGGRenderer
+import SVGRenderer
 
 var filePath = "examples/Reference/"
 let fileName = "_01_single_series_line_chart"

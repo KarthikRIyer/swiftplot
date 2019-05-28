@@ -1,7 +1,4 @@
 import Foundation
-import Util
-import Renderers
-import SubPlot
 
 // class defining a lineGraph and all its logic
 public class LineGraph: Plot {
