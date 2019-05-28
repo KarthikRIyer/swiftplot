@@ -1,7 +1,7 @@
 import Foundation
-import LinePlot
-import Util
-import Renderers
+import SwiftPlot
+import AGGRenderer
+import SVGRenderer
 
 func logC(val: Float, forBase base: Float) -> Float {
     return (log(val)/log(base))

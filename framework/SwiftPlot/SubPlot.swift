@@ -1,6 +1,3 @@
-import Util
-import Renderers
-
 public class SubPlot{
 	public static let VERTICALLY_STACKED: Int = 0
 	public static let HORIZONTALLY_STACKED: Int = 1

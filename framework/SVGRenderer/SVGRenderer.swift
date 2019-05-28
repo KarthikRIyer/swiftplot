@@ -1,5 +1,5 @@
 import Foundation
-import Util
+import SwiftPlot
 
 //extension to get ascii value of character
 extension Character {

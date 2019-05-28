@@ -4,12 +4,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "swiftplot",
+    name: "SwiftPlot",
     products: [
        // Products define the executables and libraries produced by a package, and make them visible to other packages.
        .library(
-       name: "swiftplot",
-       targets: ["AGG","lodepng","CPPAGGRenderer","CAGGRenderer","Util","Renderers","SubPlot","LinePlot"]),
+       name: "SwiftPlot",
+       targets: ["AGG", "lodepng", "CPPAGGRenderer", "CAGGRenderer", "SwiftPlot", "SVGRenderer", "AGGRenderer"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -29,50 +29,46 @@ let package = Package(
 	.target(
             name: "CPPAGGRenderer",
             dependencies: ["AGG","lodepng"],
-    	    path: "framework/CPPAGGRenderer"),
+    	    path: "framework/AGGRenderer/CPPAGGRenderer"),
 	.target(
             name: "CAGGRenderer",
             dependencies: ["CPPAGGRenderer"],
-    	    path: "framework/CAGGRenderer"),
-	.target(
-            name: "Util",
+    	    path: "framework/AGGRenderer/CAGGRenderer"),
+  .target(
+            name: "SwiftPlot",
             dependencies: [],
-       	    path: "framework/Util"),
-	.target(
-            name: "Renderers",
-            dependencies: ["Util","CAGGRenderer"],
-       	    path: "framework/Renderers"),
+  	        path: "framework/SwiftPlot"),
   .target(
-            name: "SubPlot",
-            dependencies: ["Util","Renderers"],
-       	    path: "framework/SubPlot"),
+            name: "AGGRenderer",
+            dependencies: ["CAGGRenderer","SwiftPlot"],
+            path: "framework/AGGRenderer/AGGRenderer"),
   .target(
-            name: "LinePlot",
-            dependencies: ["Util", "Renderers", "SubPlot"],
-  	        path: "framework/LinePlot"),
+            name: "SVGRenderer",
+            dependencies: ["SwiftPlot"],
+            path: "framework/SVGRenderer"),
 	.target(
             name: "LineChartSingleSeriesExample",
-            dependencies: ["Util", "Renderers", "LinePlot"],
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
   	        path: "examples/LineChartSingleSeries"),
   .target(
             name: "LineChartMultipleSeriesExample",
-            dependencies: ["Util", "Renderers", "LinePlot"],
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
         	  path: "examples/LineChartMultipleSeries"),
   .target(
             name: "LineChartSubPlotHorizontallyStackedExample",
-            dependencies: ["Util", "Renderers", "LinePlot", "SubPlot"],
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/LineChartSubPlotHorizontallyStacked"),
   .target(
             name: "LineChartSubPlotVerticallyStackedExample",
-            dependencies: ["Util", "Renderers", "LinePlot", "SubPlot"],
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/LineChartSubPlotVerticallyStacked"),
   .target(
             name: "LineChartSubPlotGridStackedExample",
-            dependencies: ["Util", "Renderers", "LinePlot", "SubPlot"],
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/LineChartSubPlotGridStacked"),
   .target(
             name: "LineChartFunctionPlotExample",
-            dependencies: ["Util", "Renderers", "LinePlot"],
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/LineChartFunctionPlot"),
         //.testTarget(
         //  name: "swiftplotTests",

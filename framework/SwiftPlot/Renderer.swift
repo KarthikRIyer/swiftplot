@@ -1,4 +1,3 @@
-import Util
 public protocol Renderer: AnyObject{
 
 	var xOffset: Float { get set }

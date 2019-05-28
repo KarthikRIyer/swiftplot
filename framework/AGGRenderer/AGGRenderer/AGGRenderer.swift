@@ -1,6 +1,6 @@
 import Foundation
-import Util
 import CAGGRenderer
+import SwiftPlot
 
 public class AGGRenderer: Renderer{
 
