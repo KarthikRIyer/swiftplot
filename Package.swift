@@ -29,11 +29,11 @@ let package = Package(
 	.target(
             name: "CPPAGGRenderer",
             dependencies: ["AGG","lodepng"],
-    	    path: "framework/CPPAGGRenderer"),
+    	    path: "framework/AGGRenderer/CPPAGGRenderer"),
 	.target(
             name: "CAGGRenderer",
             dependencies: ["CPPAGGRenderer"],
-    	    path: "framework/CAGGRenderer"),
+    	    path: "framework/AGGRenderer/CAGGRenderer"),
   .target(
             name: "SwiftPlot",
             dependencies: [],
@@ -41,7 +41,7 @@ let package = Package(
   .target(
             name: "AGGRenderer",
             dependencies: ["CAGGRenderer","SwiftPlot"],
-            path: "framework/AGGRenderer"),
+            path: "framework/AGGRenderer/AGGRenderer"),
   .target(
             name: "SVGRenderer",
             dependencies: ["SwiftPlot"],
