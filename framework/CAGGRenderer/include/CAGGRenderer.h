@@ -2,7 +2,7 @@
 extern "C"  {
 #endif
 
-const void * initializePlot(float w, float h);
+const void * initializePlot(float w, float h, float subW, float subH);
 
 void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a, const void *object);
 
@@ -23,6 +23,10 @@ void draw_rotated_text(const char *s, float x, float y, float size, float thickn
 float get_text_width(const char *s, float size, const void *object);
 
 void save_image(const char *s, const void *object);
+
+const unsigned char* get_png_buffer(const void *object);
+
+int get_png_buffer_size(const void *object);
 
 #ifdef __cplusplus
 }

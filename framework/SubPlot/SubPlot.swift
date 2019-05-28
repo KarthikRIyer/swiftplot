@@ -6,10 +6,10 @@ public class SubPlot{
 	public static let HORIZONTALLY_STACKED: Int = 1
 	public static let GRID_STACKED: Int = 2
 
-	var frameWidth: Float = 1000
-	var frameHeight: Float = 660
-	var subWidth: Float = 1000
-	var subHeight: Float = 660
+	var frameWidth: Float
+	var frameHeight: Float
+	var subWidth: Float
+	var subHeight: Float
 	var numberOfPlots: Int = 1
 	var numberOfRows: Int = 1
 	var numberOfColumns: Int = 1
@@ -19,9 +19,11 @@ public class SubPlot{
 
 	var plotDimensions: PlotDimensions = PlotDimensions()
 
-	public init(frameWidth width: Float = 1000, frameHeight height: Float = 660, numberOfPlots n: Int = 1, numberOfRows nR: Int = 1, numberOfColumns nC: Int = 1, stackPattern: Int = 0) {
+	public init(width: Float = 1000, height: Float = 660, numberOfPlots n: Int = 1, numberOfRows nR: Int = 1, numberOfColumns nC: Int = 1, stackPattern: Int = 0) {
 		frameWidth = width
 		frameHeight = height
+		subWidth = width
+		subHeight = height
 		stackingPattern = stackPattern
 		numberOfRows = nR
 		numberOfColumns = nC
@@ -67,6 +69,7 @@ public class SubPlot{
 
 	public func draw(plots: [Plot], renderer: Renderer, fileName: String = "subPlot_output") {
 		calculateSubPlotParams(numberOfPlots: plots.count)
+		renderer.plotDimensions = plotDimensions
 		for index in 0..<plots.count {
 			var plot: Plot = plots[index]
 			let j: Int = index%numberOfColumns
@@ -74,7 +77,6 @@ public class SubPlot{
 			plot.xOffset = Float(j)*xOffset
 			plot.yOffset = Float(i)*yOffset
 			plot.plotDimensions = plotDimensions
-			renderer.plotDimensions = plotDimensions
 			plot.drawGraph(renderer: renderer)
 		}
 		renderer.drawOutput(fileName: fileName)

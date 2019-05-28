@@ -19,8 +19,8 @@ func function(_ x: Float)->Float {
 var filePath = "examples/Reference/"
 let fileName = "_06_function_plot_line_chart"
 
-var agg_renderer: Renderer = AGGRenderer()
-var svg_renderer: Renderer = SVGRenderer()
+var agg_renderer: AGGRenderer = AGGRenderer()
+var svg_renderer: SVGRenderer = SVGRenderer()
 
 var plotTitle: PlotTitle = PlotTitle()
 

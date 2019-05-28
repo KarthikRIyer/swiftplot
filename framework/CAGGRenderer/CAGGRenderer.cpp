@@ -2,8 +2,8 @@
 #include "CPPAGGRenderer.h"
 #include <iostream>
 
-const void * initializePlot(float w, float h){
-  return CPPAGGRenderer::initializePlot(w, h);
+const void * initializePlot(float w, float h, float subW, float subH){
+  return CPPAGGRenderer::initializePlot(w, h, subW, subH);
 }
 
 void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a, const void *object){
@@ -44,4 +44,12 @@ float get_text_width(const char *s, float size, const void *object){
 
 void save_image(const char *s, const void *object){
   CPPAGGRenderer::save_image(s, object);
+}
+
+const unsigned char* get_png_buffer(const void *object){
+  return CPPAGGRenderer::get_png_buffer(object);
+}
+
+int get_png_buffer_size(const void *object){
+  return CPPAGGRenderer::get_png_buffer_size(object);
 }

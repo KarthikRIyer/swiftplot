@@ -9,8 +9,8 @@ let fileName = "_05_sub_plot_grid_stacked_line_chart"
 let x:[Float] = [0,100,263,489]
 let y:[Float] = [0,320,310,170]
 
-// var agg_renderer: Renderer = AGGRenderer()
-var svg_renderer: Renderer = SVGRenderer()
+var agg_renderer: AGGRenderer = AGGRenderer()
+var svg_renderer: SVGRenderer = SVGRenderer()
 
 var plotTitle: PlotTitle = PlotTitle()
 
@@ -40,8 +40,7 @@ plots.append(lineGraph1)
 plots.append(lineGraph2)
 plots.append(lineGraph3)
 plots.append(lineGraph4)
-// lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
-// lineGraph.drawGraphAndOutput(fileName: filePath+"svg/"+fileName, renderer: svg_renderer)
 
 var subPlot: SubPlot = SubPlot(numberOfPlots: 4, numberOfRows: 2, numberOfColumns: 2, stackPattern: SubPlot.GRID_STACKED)
 subPlot.draw(plots: plots, renderer: svg_renderer, fileName: filePath+"svg/"+fileName)
+subPlot.draw(plots: plots, renderer: agg_renderer, fileName: filePath+"agg/"+fileName)
