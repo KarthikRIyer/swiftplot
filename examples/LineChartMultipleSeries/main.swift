@@ -1,5 +1,4 @@
 import SwiftPlot
-import SwiftPlot
 import AGGRenderer
 import SVGRenderer
 
