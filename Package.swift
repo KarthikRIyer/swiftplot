@@ -70,6 +70,10 @@ let package = Package(
             name: "LineChartFunctionPlotExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/LineChartFunctionPlot"),
+  .target(
+            name: "LineChartSecondaryAxisExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/LineChartSecondaryAxis"),
         //.testTarget(
         //  name: "swiftplotTests",
         //  dependencies: ["swiftplot"]),

@@ -77,7 +77,7 @@ public class AGGRenderer: Renderer{
 		draw_line(x, y, thickness, strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a, agg_object)
 	}
 
-	public func drawTransformedLine(startPoint p1: Point, endPoint p2: Point, strokeWidth thickness: Float, strokeColor: Color = Color.black) {
+	public func drawTransformedLine(startPoint p1: Point, endPoint p2: Point, strokeWidth thickness: Float, strokeColor: Color = Color.black, isDashed: Bool) {
 		var x = [Float]()
 		var y = [Float]()
 
@@ -86,10 +86,10 @@ public class AGGRenderer: Renderer{
 		y.append(p1.y + yOffset)
 		y.append(p2.y + yOffset)
 
-		draw_transformed_line(x, y, thickness, strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a, agg_object)
+		draw_transformed_line(x, y, thickness, strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a, isDashed, agg_object)
 	}
 
-	public func drawPlotLines(points p: [Point], strokeWidth thickness: Float, strokeColor: Color) {
+	public func drawPlotLines(points p: [Point], strokeWidth thickness: Float, strokeColor: Color, isDashed: Bool) {
 		var x = [Float]()
 		var y = [Float]()
 
@@ -98,7 +98,7 @@ public class AGGRenderer: Renderer{
 			y.append(p[index].y + yOffset)
 		}
 
-		draw_plot_lines(x, y, Int32(p.count), thickness, strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a, agg_object)
+		draw_plot_lines(x, y, Int32(p.count), thickness, strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a, isDashed, agg_object)
 	}
 
 	public func drawText(text s: String, location p: Point, textSize size: Float, strokeWidth thickness: Float){

@@ -12,6 +12,7 @@
 #include "platform/agg_platform_support.h"
 #include "agg_gsv_text.h"
 #include "agg_conv_curve.h"
+#include "agg_conv_dash.h"
 //lodepng library
 #include "lodepng.h"
 //header to save bitmaps
@@ -75,6 +76,7 @@ namespace CPPAGGRenderer{
   public:
     agg::rasterizer_scanline_aa<> m_ras;
     agg::scanline_p8              m_sl_p8;
+    agg::line_cap_e roundCap = agg::round_cap;
     renderer_base rb;
     renderer_aa ren_aa;
     int pngBufferSize = 0;
@@ -116,7 +118,7 @@ namespace CPPAGGRenderer{
 
     }
 
-    void draw_transformed_line(const float *x, const float *y, float thickness, float r, float g, float b, float a){
+    void draw_transformed_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool isDashed){
 
       agg::path_storage rect_path;
       rect_path.move_to(*x, *y);
@@ -127,7 +129,17 @@ namespace CPPAGGRenderer{
       agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>> curve(trans);
       agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>> stroke(curve);
       stroke.width(thickness);
-      m_ras.add_path(stroke);
+      if (isDashed) {
+        agg::conv_dash<agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>>> poly2_dash(stroke);
+        agg::conv_stroke<agg::conv_dash<agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>>>> poly2(poly2_dash);
+        poly2.width(thickness);
+        poly2_dash.add_dash(thickness + 1, thickness + 1);
+        poly2.line_cap(roundCap);
+        m_ras.add_path(poly2);
+      }
+      else {
+        m_ras.add_path(stroke);
+      }
       Color c(r, g, b, a);
       ren_aa.color(c);
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
@@ -148,7 +160,7 @@ namespace CPPAGGRenderer{
 
     }
 
-    void draw_plot_lines(const float *x, const float *y, int size, float thickness, float r, float g, float b, float a){
+    void draw_plot_lines(const float *x, const float *y, int size, float thickness, float r, float g, float b, float a, bool isDashed){
 
       agg::path_storage rect_path;
       rect_path.move_to(*x, *y);
@@ -161,7 +173,18 @@ namespace CPPAGGRenderer{
       agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>> curve(trans);
       agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>> stroke(curve);
       stroke.width(thickness);
-      m_ras.add_path(stroke);
+      if (isDashed) {
+        agg::conv_dash<agg::conv_transform<agg::path_storage, agg::trans_affine>> poly2_dash(trans);
+        agg::conv_curve<agg::conv_dash<agg::conv_transform<agg::path_storage, agg::trans_affine>>> curve(poly2_dash);
+        agg::conv_stroke<agg::conv_curve<agg::conv_dash<agg::conv_transform<agg::path_storage, agg::trans_affine>>>> poly2(curve);
+        poly2.width(thickness);
+        poly2_dash.add_dash(thickness + 1, thickness + 1);
+        poly2.line_cap(roundCap);
+        m_ras.add_path(poly2);
+      }
+      else {
+        m_ras.add_path(stroke);
+      }
       Color c(r, g, b, a);
       ren_aa.color(c);
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
@@ -281,17 +304,17 @@ namespace CPPAGGRenderer{
 
   }
 
-  void draw_transformed_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, const void *object){
+  void draw_transformed_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool isDashed, const void *object){
 
     Plot *plot = (Plot *)object;
-    plot -> draw_transformed_line(x, y, thickness, r, g, b, a);
+    plot -> draw_transformed_line(x, y, thickness, r, g, b, a, isDashed);
 
   }
 
-  void draw_plot_lines(const float *x, const float *y, int size, float thickness, float r, float g, float b, float a, const void *object){
+  void draw_plot_lines(const float *x, const float *y, int size, float thickness, float r, float g, float b, float a, bool isDashed, const void *object){
 
     Plot *plot = (Plot *)object;
-    plot -> draw_plot_lines(x, y, size, thickness, r, g, b, a);
+    plot -> draw_plot_lines(x, y, size, thickness, r, g, b, a, isDashed);
 
   }
 

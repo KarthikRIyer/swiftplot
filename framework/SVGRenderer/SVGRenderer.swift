@@ -65,20 +65,26 @@ public class SVGRenderer: Renderer{
 		image = image + "\n" + line
 	}
 
-	public func drawTransformedLine(startPoint p1: Point, endPoint p2: Point, strokeWidth thickness: Float, strokeColor: Color = Color.black) {
+	public func drawTransformedLine(startPoint p1: Point, endPoint p2: Point, strokeWidth thickness: Float, strokeColor: Color = Color.black, isDashed: Bool) {
 		let x0 = p1.x + (0.1*plotDimensions.subWidth)
 		var y0 = p1.y + (0.1*plotDimensions.subHeight)
 		let x1 = p2.x + (0.1*plotDimensions.subWidth)
 		var y1 = p2.y + (0.1*plotDimensions.subHeight)
 		y0 = plotDimensions.subHeight - y0
 		y1 = plotDimensions.subHeight - y1
-		let line = "<line x1=\"\(x0 + xOffset)\" y1=\"\(y0 + yOffset)\" x2=\"\(x1 + xOffset)\" y2=\"\(y1 + yOffset)\" style=\"stroke:rgb(\(strokeColor.r*255.0),\(strokeColor.g*255.0),\(strokeColor.b*255.0));stroke-width:\(thickness);opacity:\(strokeColor.a);stroke-linecap:round\" />"
+		var line : String
+		if (isDashed) {
+		    line = "<line x1=\"\(x0 + xOffset)\" y1=\"\(y0 + yOffset)\" x2=\"\(x1 + xOffset)\" y2=\"\(y1 + yOffset)\" style=\"stroke:rgb(\(strokeColor.r*255.0),\(strokeColor.g*255.0),\(strokeColor.b*255.0));stroke-width:\(thickness);opacity:\(strokeColor.a);stroke-linecap:round;stroke-dasharray:4 1\" />"
+		}
+		else {
+			line = "<line x1=\"\(x0 + xOffset)\" y1=\"\(y0 + yOffset)\" x2=\"\(x1 + xOffset)\" y2=\"\(y1 + yOffset)\" style=\"stroke:rgb(\(strokeColor.r*255.0),\(strokeColor.g*255.0),\(strokeColor.b*255.0));stroke-width:\(thickness);opacity:\(strokeColor.a);stroke-linecap:round\" />"
+		}
 		image = image + "\n" + line
 	}
 
-	public func drawPlotLines(points p: [Point], strokeWidth thickness: Float, strokeColor: Color) {
+	public func drawPlotLines(points p: [Point], strokeWidth thickness: Float, strokeColor: Color, isDashed: Bool) {
 		for i in 0..<p.count-1 {
-			drawTransformedLine(startPoint: p[i], endPoint: p[i+1], strokeWidth: thickness, strokeColor: strokeColor)
+			drawTransformedLine(startPoint: p[i], endPoint: p[i+1], strokeWidth: thickness, strokeColor: strokeColor, isDashed: isDashed)
 		}
 	}
 
