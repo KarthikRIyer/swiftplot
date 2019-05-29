@@ -68,7 +68,7 @@ public class LineGraph: Plot {
 	public func addSeries(_ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Int = Axis.PRIMARY_AXIS){
 		var pts = [Point]()
 		for i in 0..<y.count {
-			pts.append(Point(i+1, y[i]))
+			pts.append(Point(Float(i+1), y[i]))
 		}
 		let s = Series(points: pts, label: label, color: color)
 		addSeries(s, axisType: axisType)
