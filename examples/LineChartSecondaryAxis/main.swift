@@ -16,8 +16,8 @@ var svg_renderer: SVGRenderer = SVGRenderer()
 var plotTitle: PlotTitle = PlotTitle()
 
 var lineGraph: LineGraph = LineGraph()
-lineGraph.addSeries(x1, y1, label: "Plot 1", color: Color.lightBlue, axisType: Axis.Location.primaryAxis)
-lineGraph.addSeries(x, y, label: "Plot 2", color: Color.orange, axisType: Axis.Location.secondaryAxis)
+lineGraph.addSeries(x1, y1, label: "Plot 1", color: .lightBlue, axisType: .primaryAxis)
+lineGraph.addSeries(x, y, label: "Plot 2", color: .orange, axisType: .secondaryAxis)
 plotTitle.title = "SECONDARY AXIS"
 lineGraph.plotTitle = plotTitle
 
