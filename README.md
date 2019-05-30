@@ -7,6 +7,7 @@
 # Table of contents
 
   * [Overview](#overview)
+  * [License](#license)
   * [How to include the library in your package](#how-to-include-the-library-in-your-package)
   * [How to include the library in your Jupyter Notebook](#how-to-include-the-library-in-your-jupyter-notebook)
   * [Examples](#examples)
@@ -19,7 +20,6 @@
   * [Documentation](#documentation)
   * [Limitations](#limitations)
   * [Credits](#credits)
-  * [License](#license)
 
 ## Overview
 The SwiftPlot framework is a cross-platform library that lets you plot graphs natively in Swift.
@@ -43,6 +43,11 @@ run_examples.sh
 ```
 
 The resultant images are stored in the `examples/Reference` directory. The images rendered by each of the backends are stored their respective directories: [agg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/agg) and [svg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/svg)
+
+
+## License
+
+<b>SwiftPlot</b> is licensed under `Apache 2.0`. View [license](https://github.com/KarthikRIyer/swiftplot/blob/master/LICENSE)
 
 ## How to include the library in your package
 Add the library to your projects dependencies in the Package.swift file as shown below.
@@ -265,7 +270,3 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 1. Maxim Shemanarev : The AGG library is directly used to render plots.
 2. [Lode Vandevenne](https://github.com/lvandeve) : The lodepng library is directly used to encode PNG images.
 3. [Brad Larson](https://github.com/BradLarson) and [Marc Rasi](https://github.com/marcrasi) for their invaluable guidance
-
-## License
-
-<b>SwiftPlot</b> is licensed under `Apache 2.0`. View [license](https://github.com/KarthikRIyer/swiftplot/blob/master/LICENSE)
