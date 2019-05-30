@@ -65,6 +65,14 @@ public class LineGraph: Plot {
 		let s = Series(points: pts, label: label, color: color)
 		addSeries(s, axisType: axisType)
 	}
+	public func addSeries(_ x: [String], _ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Int = Axis.PRIMARY_AXIS){
+		var pts = [Point]()
+		for i in 0..<x.count {
+			pts.append(Point(x[i], y[i]))
+		}
+		let s = Series(points: pts, label: label, color: color)
+		addSeries(s, axisType: axisType)
+	}
 	public func addSeries(_ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Int = Axis.PRIMARY_AXIS){
 		var pts = [Point]()
 		for i in 0..<y.count {
@@ -141,59 +149,6 @@ extension LineGraph{
 	public func drawGraphOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer){
 		renderer.plotDimensions = plotDimensions
 		renderer.drawOutput(fileName: name)
-	}
-
-	// utility functions for implementing logic
-	func getNumberOfDigits(_ n: Float) -> Int{
-
-		var x: Int = Int(n)
-		var count: Int = 0
-		while (x != 0){
-			x /= 10;
-			count += 1
-		}
-		return count
-
-	}
-
-	func getMaxX(points p: [Point]) -> Float {
-		var max = p[0].x
-		for index in 1..<p.count {
-			if (p[index].x > max) {
-				max = p[index].x
-			}
-		}
-		return max
-	}
-
-	func getMaxY(points p: [Point]) -> Float {
-		var max = p[0].y
-		for index in 1..<p.count {
-			if (p[index].y > max) {
-				max = p[index].y
-			}
-		}
-		return max
-	}
-
-	func getMinX(points p: [Point]) -> Float {
-		var min = p[0].x
-		for index in 1..<p.count {
-			if (p[index].x < min) {
-				min = p[index].y
-			}
-		}
-		return min
-	}
-
-	func getMinY(points p: [Point]) -> Float {
-		var min = p[0].y
-		for index in 1..<p.count {
-			if (p[index].y < min) {
-				min = p[index].y
-			}
-		}
-		return min
 	}
 
 	// functions implementing plotting logic

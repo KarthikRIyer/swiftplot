@@ -21,19 +21,19 @@ let package = Package(
 	.target(
             name: "AGG",
             dependencies: [],
-    	    path: "framework/AGG"),
-        .target(
+    	      path: "framework/AGG"),
+  .target(
             name: "lodepng",
             dependencies: [],
-       	    path: "framework/lodepng"),
+            path: "framework/lodepng"),
 	.target(
             name: "CPPAGGRenderer",
             dependencies: ["AGG","lodepng"],
-    	    path: "framework/AGGRenderer/CPPAGGRenderer"),
+    	       path: "framework/AGGRenderer/CPPAGGRenderer"),
 	.target(
             name: "CAGGRenderer",
             dependencies: ["CPPAGGRenderer"],
-    	    path: "framework/AGGRenderer/CAGGRenderer"),
+    	       path: "framework/AGGRenderer/CAGGRenderer"),
   .target(
             name: "SwiftPlot",
             dependencies: [],
@@ -74,6 +74,10 @@ let package = Package(
             name: "LineChartSecondaryAxisExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/LineChartSecondaryAxis"),
+  .target(
+            name: "BarChartExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/BarChart"),
         //.testTarget(
         //  name: "swiftplotTests",
         //  dependencies: ["swiftplot"]),
