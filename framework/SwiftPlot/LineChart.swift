@@ -40,24 +40,22 @@ public class LineGraph: Plot {
 	}
 
 	// functions to add series
-	public func addSeries(_ s: Series, axisType: Int = Axis.PRIMARY_AXIS){
+	public func addSeries(_ s: Series, axisType: Axis.Location = Axis.Location.primaryAxis){
 		switch axisType {
-			case Axis.PRIMARY_AXIS:
+			case Axis.Location.primaryAxis:
 				primaryAxis.series.append(s)
-			case Axis.SECONDARY_AXIS:
+			case Axis.Location.secondaryAxis:
 				if secondaryAxis == nil {
 				    secondaryAxis = Axis()
 				}
 				secondaryAxis!.series.append(s)
-			default:
-				primaryAxis.series.append(s)
 		}
 	}
-	public func addSeries(points p: [Point], label: String, color: Color = Color.lightBlue, axisType: Int = Axis.PRIMARY_AXIS){
+	public func addSeries(points p: [Point], label: String, color: Color = Color.lightBlue, axisType: Axis.Location = Axis.Location.primaryAxis){
 		let s = Series(points: p,label: label, color: color)
 		addSeries(s, axisType: axisType)
 	}
-	public func addSeries(_ x: [Float], _ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Int = Axis.PRIMARY_AXIS){
+	public func addSeries(_ x: [Float], _ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Axis.Location = Axis.Location.primaryAxis){
 		var pts = [Point]()
 		for i in 0..<x.count {
 			pts.append(Point(x[i], y[i]))
@@ -65,7 +63,7 @@ public class LineGraph: Plot {
 		let s = Series(points: pts, label: label, color: color)
 		addSeries(s, axisType: axisType)
 	}
-	public func addSeries(_ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Int = Axis.PRIMARY_AXIS){
+	public func addSeries(_ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Axis.Location = Axis.Location.primaryAxis){
 		var pts = [Point]()
 		for i in 0..<y.count {
 			pts.append(Point(Float(i+1), y[i]))
@@ -73,7 +71,7 @@ public class LineGraph: Plot {
 		let s = Series(points: pts, label: label, color: color)
 		addSeries(s, axisType: axisType)
 	}
-	public func addFunction(_ function: (Float)->Float, minX: Float, maxX: Float, numberOfSamples: Int = 400, label: String, color: Color = Color.lightBlue, axisType: Int = Axis.PRIMARY_AXIS) {
+	public func addFunction(_ function: (Float)->Float, minX: Float, maxX: Float, numberOfSamples: Int = 400, label: String, color: Color = Color.lightBlue, axisType: Axis.Location = Axis.Location.primaryAxis) {
 		var x = [Float]()
 		var y = [Float]()
 		let step: Float = (maxX-minX)/Float(numberOfSamples)
