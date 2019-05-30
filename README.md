@@ -1,6 +1,25 @@
-# SwiftPlot
+<div><img src="swiftplot.png" width="600"></div>
+<br>
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+<br>
+
+# Table of contents
+
+  * [Overview](#overview)
+  * [How to include the library in your package](#how-to-include-the-library-in-your-package)
+  * [How to include the library in your Jupyter Notebook](#how-to-include-the-library-in-your-jupyter-notebook)
+  * [Examples](#examples)
+    * [Simple Line Graph](#simple-line-graph)
+    * [Line Graph with multiple series of data](#line-graph-with-multiple-series-of-data)
+    * [Line Graph with Sub Plots stacked horizontally](#line-graph-with-sub-plots-stacked-horizontally)
+    * [Plot functions using LineGraph](#plot-functions-using-linegraph)
+    * [Displaying plots in Jupyter Notebook](#displaying-plots-in-jupyter-notebook)
+  * [How does this work ?](#how-does-this-work)
+  * [Documentation](#documentation)
+  * [Limitations](#limitations)
+  * [Credits](#credits)
+  * [License](#license)
 
 ## Overview
 The SwiftPlot framework is a cross-platform library that lets you plot graphs natively in Swift.
@@ -47,7 +66,7 @@ In order to display the generated plot in the notebook, add this line:
 Here are some examples to provide you with a headstart to using this library. Here we will be looking at plots using only the AGGRenderer, but the procedure will remain the same for SVGRenderer too.
 To use the library in your package, include it as a dependency to your target, in the Package.swift file.
 
-<b>Simple Line Graph</b>
+#### Simple Line Graph
 
 ```swift
 import SwiftPlot
@@ -66,7 +85,7 @@ lineGraph.drawGraphAndOutput(fileName: "lineChartSingleSeries", renderer: agg_re
 ```
 <img src="examples/Reference/agg/_01_single_series_line_chart.png" width="500">
 
-<b>Line Graph with multiple series of data</b>
+#### Line Graph with multiple series of data
 
 ```swift
 import SwiftPlot
@@ -90,7 +109,7 @@ lineGraph.drawGraphAndOutput(fileName: "lineChartMultipleSeries", renderer: agg_
 
 <img src="examples/Reference/agg/_02_multiple_series_line_chart.png" width="500">
 
-<b>Line Graph with Sub Plots stacked horizontally</b>
+#### Line Graph with Sub Plots stacked horizontally
 
 ```swift
 import SwiftPlot
@@ -122,7 +141,7 @@ subPlot.draw(plots: plots, renderer: agg_renderer, fileName: "subPlotsHorizontal
 
 <img src="examples/Reference/agg/_03_sub_plot_horizontally_stacked_line_chart.png" width="500">
 
-<b>Plot functions using LineGraph</b>
+#### Plot functions using LineGraph
 
 ```swift
 import Foundation
@@ -144,7 +163,7 @@ lineGraph.drawGraphAndOutput(fileName: "functionPlotLineGraph", renderer: agg_re
 
 <img src="examples/Reference/agg/_06_function_plot_line_chart.png" width="500">
 
-<b>Displaying plots in Jupyter Notebook</b>
+#### Displaying plots in Jupyter Notebook
 
 You can display plots in Jupyter Notebook using only the AGGRenderer.
 To do so, create the plots as shown in the above examples and instead of using the `drawGraphAndOutput` function from LineGraph, use the `drawGraph` function, then get a base64 encoded image from the AGGRenderer and pass it to the display function as showm below:
@@ -153,7 +172,7 @@ lineGraph.drawGraph(renderer: agg_renderer)
 display(base64EncodedPNG: agg_renderer.base64Png())
 ```
 
-## How does it work
+## How does this work
 
 All the plotting code, utility functions, and necessary types are included in the SwiftPlot module. Each Renderer is implemented as a separate module. Each Renderer must have SwiftPlot as its dependency and must conform to the Renderer protocol defined in Renderer.swift in the SwiftPlot module.
 The Renderer protocol defines all the necessary functions that a Renderer needs to implement. 
