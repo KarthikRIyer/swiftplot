@@ -186,7 +186,7 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 
 ## Documentation
 
-<b>LineGraph</b>
+### LineGraph
 
 |Function                                                                            |Description                                 |
 |------------------------------------------------------------------------------------|--------------------------------------------|
@@ -199,7 +199,7 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |drawGraphAndOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer)|Generate the plot and save the resultant image|
 |drawGraphOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer)|Save the generated plot to disk|
 
-<b>SubPlot</b>
+### SubPlot
 
 |Static Constants(to be passed in place of stackPattern in the initializer)|
 |--------------------------------------------------------------------------|
@@ -212,13 +212,13 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |init(width: Float = 1000, height: Float = 660, numberOfPlots n: Int = 1, numberOfRows nR: Int = 1, numberOfColumns nC: Int = 1, stackPattern: Int = 0)|Initialize a SubPlot |
 |draw(plots: [Plot], renderer: Renderer, fileName: String = "subPlot_output")|Generate plot with the plots passed in as Sub Plots and save the image to disk|
 
-<b>PlotDimensions</b>
+### PlotDimensions
 
 |Function                                                  |Description                                                    |
 |----------------------------------------------------------|---------------------------------------------------------------|
 |init(frameWidth : Float = 1000, frameHeight : Float = 660)|Create a PlotDimensions variable with a frame width and height |
 
-<b>Point</b>
+### Point
 
 |Property            |
 |--------------------|
@@ -229,7 +229,7 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |----------------------------|-----------------------------------------|
 |init(_ x: Float, _ y: Float)|Create a Point with an x and y coordinate|
 
-<b>PlotLabel</b>
+### PlotLabel
 
 |Property                          |
 |----------------------------------|
@@ -237,20 +237,20 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |yLabel: String = "Y-Axis"         |
 |labelSize: Float = 10             |
 
-<b>PlotTitle</b>
+### PlotTitle
 
 |Property                |
 |------------------------|
 |title : String = "TITLE"|
 |titleSize : Float = 15  |
 
-<b>Color</b>
+### Color
 
 |Function                                            |Description                                                                |
 |----------------------------------------------------|--------------------------------------------------------------------------|
 |init(_ r: Float, _ g: Float, _ b: Float, _ a: Float)|Create a Color r, g, b and a values. Each of them being between 0.0 and 1.0|
 
-<b>PlotLabel</b>
+### PlotLabel
 
 |Property                          |
 |----------------------------------|
