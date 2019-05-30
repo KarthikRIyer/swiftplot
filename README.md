@@ -42,7 +42,7 @@ To run the examples, clone the repository, and run the run_examples.sh script as
 run_examples.sh
 ```
 
-The resultant images are stored in the `examples/Reference` directory. The images rendered by each of the backends are stored their respective directories: agg and svg.Examples
+The resultant images are stored in the `examples/Reference` directory. The images rendered by each of the backends are stored their respective directories: [agg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/agg) and [svg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/svg)
 
 ## How to include the library in your package
 Add the library to your projects dependencies in the Package.swift file as shown below.
