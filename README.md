@@ -15,6 +15,7 @@
     * [Line Graph with multiple series of data](#line-graph-with-multiple-series-of-data)
     * [Line Graph with Sub Plots stacked horizontally](#line-graph-with-sub-plots-stacked-horizontally)
     * [Plot functions using LineGraph](#plot-functions-using-linegraph)
+    * [Using a secondary axis in LineGraph](#using-a-secondary-axis-in-linegraph)
     * [Displaying plots in Jupyter Notebook](#displaying-plots-in-jupyter-notebook)
   * [How does this work ?](#how-does-this-work)
   * [Documentation](#documentation)
@@ -35,12 +36,14 @@ To encode the plots as PNG images it uses the [lodepng](https://github.com/lvand
 </br>
 SwiftPlot can also be used in Jupyter Notebooks.
 </br>
+
 Examples, demonstrating all the features, have been included with the repository under the `examples` directory.
 To run the examples, clone the repository, and run the run_examples.sh script as shown below.
 
 ```console
 run_examples.sh
 ```
+Jupyter Notebook examples are under the `Notebooks` directory.
 
 The resultant images are stored in the `examples/Reference` directory. The images rendered by each of the backends are stored their respective directories: [agg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/agg) and [svg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/svg)
 
@@ -83,7 +86,7 @@ let y:[Float] = [0,320,310,170]
 var agg_renderer: AGGRenderer = AGGRenderer()
 var plotTitle: PlotTitle = PlotTitle()
 var lineGraph: LineGraph = LineGraph()
-lineGraph.addSeries(x, y, label: "Plot 1", color: Color.lightBlue)
+lineGraph.addSeries(x, y, label: "Plot 1", color: .lightBlue)
 plotTitle.title = "SINGLE SERIES"
 lineGraph.plotTitle = plotTitle
 lineGraph.drawGraphAndOutput(fileName: "lineChartSingleSeries", renderer: agg_renderer)
@@ -105,8 +108,8 @@ let y2:[Float] = [0,20,100,170]
 var agg_renderer: AGGRenderer = AGGRenderer()
 var plotTitle: PlotTitle = PlotTitle()
 var lineGraph: LineGraph = LineGraph()
-lineGraph.addSeries(x1, y1, label: "Plot 1", color: Color.lightBlue)
-lineGraph.addSeries(x2, y2, label: "Plot 2", color: Color.orange)
+lineGraph.addSeries(x1, y1, label: "Plot 1", color: .lightBlue)
+lineGraph.addSeries(x2, y2, label: "Plot 2", color: .orange)
 plotTitle.title = "MULTIPLE SERIES"
 lineGraph.plotTitle = plotTitle
 lineGraph.drawGraphAndOutput(fileName: "lineChartMultipleSeries", renderer: agg_renderer)
@@ -128,19 +131,19 @@ var plotTitle: PlotTitle = PlotTitle()
 var plots = [Plot]()
 
 var lineGraph1: LineGraph = LineGraph()
-lineGraph1.addSeries(x, y, label: "Plot 1", color: Color.lightBlue)
+lineGraph1.addSeries(x, y, label: "Plot 1", color: .lightBlue)
 plotTitle.title = "PLOT 1"
 lineGraph1.plotTitle = plotTitle
 
 var lineGraph2: LineGraph = LineGraph()
-lineGraph2.addSeries(x, y, label: "Plot 2", color: Color.orange)
+lineGraph2.addSeries(x, y, label: "Plot 2", color: .orange)
 plotTitle.title = "PLOT 2"
 lineGraph2.plotTitle = plotTitle
 
 plots.append(lineGraph1)
 plots.append(lineGraph2)
 
-var subPlot: SubPlot = SubPlot(numberOfPlots: 2, stackPattern: SubPlot.HORIZONTALLY_STACKED)
+var subPlot: SubPlot = SubPlot(numberOfPlots: 2, stackPattern: .horizontallyStacked)
 subPlot.draw(plots: plots, renderer: agg_renderer, fileName: "subPlotsHorizontallyStacked")
 ```
 
@@ -160,13 +163,37 @@ func function(_ x: Float)->Float {
 var agg_renderer: AGGRenderer = AGGRenderer()
 var plotTitle: PlotTitle = PlotTitle()
 var lineGraph: LineGraph = LineGraph()
-lineGraph.addFunction(function, minX: -5.0, maxX: 5.0, numberOfSamples: 400, label: "Function", color: Color.orange)
+lineGraph.addFunction(function, minX: -5.0, maxX: 5.0, numberOfSamples: 400, label: "Function", color: .orange)
 plotTitle.title = "FUNCTION"
 lineGraph.plotTitle = plotTitle
 lineGraph.drawGraphAndOutput(fileName: "functionPlotLineGraph", renderer: agg_renderer)
 ```
 
 <img src="examples/Reference/agg/_06_function_plot_line_chart.png" width="500">
+
+#### Using a secondary axis in LineGraph
+
+```swift
+import SwiftPlot
+import AGGRenderer
+
+let x:[Float] = [0,100,263,489]
+let y:[Float] = [0,320,310,170]
+let x1:[Float] = [0,200,361,672]
+let y1:[Float] = [0,250,628,241]
+
+var agg_renderer: AGGRenderer = AGGRenderer()
+var plotTitle: PlotTitle = PlotTitle()
+var lineGraph: LineGraph = LineGraph()
+lineGraph.addSeries(x1, y1, label: "Plot 1", color: .lightBlue, axisType: .primaryAxis)
+lineGraph.addSeries(x, y, label: "Plot 2", color: .orange, axisType: .secondaryAxis)
+plotTitle.title = "SECONDARY AXIS"
+lineGraph.plotTitle = plotTitle
+lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
+```
+The series plotted on the secondary axis are drawn dashed.
+
+<img src="examples/Reference/agg/_07_secondary_axis_line_chart.png" width="500">
 
 #### Displaying plots in Jupyter Notebook
 
@@ -197,20 +224,21 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |------------------------------------------------------------------------------------|--------------------------------------------|
 |init(points: [Point], width: Float = 1000, height: Float = 660)                     |Initialize a LineGraph with a set of points |
 |init(width: Float = 1000, height: Float = 660)                                      |Initialize a LineGraph                      |
-|addSeries(_ s: Series)                                                              |Add a series to the plot                    |
-|addSeries(points p: [Point], label: String, color: Color = Color.lightBlue)         |Add a series to the plot with a set of points, a label and a color for the series |
-|addSeries(_ x: [Float], _ y: [Float], label: String, color: Color = Color.lightBlue)|Add a series to the plot with a set of x and y coordinates, a label and a color for the series|
-|addFunction(_ function: (Float)->Float, minX: Float, maxX: Float, numberOfSamples: Int = 400, label: String, color: Color = Color.lightBlue)|Add a function to plot along with the range of x-coordinates over which to plot, number of samples of the function to take for plotting, a label, and color for the plot|
+|addSeries(_ s: Series, axisType: Axis.Location = Axis.Location.primaryAxis)         |Add a series to the plot                    |
+|addSeries(points p: [Point], label: String, color: Color = Color.lightBlue, axisType: Axis.Location = Axis.Location.primaryAxis)         |Add a series to the plot with a set of points, a label and a color for the series |
+|addSeries(_ x: [Float], _ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Axis.Location = Axis.Location.primaryAxis)|Add a series to the plot with a set of x and y coordinates, a label and a color for the series|
+|addSeries(_ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Axis.Location = Axis.Location.primaryAxis)|Add a series to the plot with only the y-coordinates. The x-coordinates are automatically enumerated [1, 2, 3, ...]|
+|addFunction(_ function: (Float)->Float, minX: Float, maxX: Float, numberOfSamples: Int = 400, label: String, color: Color = Color.lightBlue, axisType: Axis.Location = Axis.Location.primaryAxis)|Add a function to plot along with the range of x-coordinates over which to plot, number of samples of the function to take for plotting, a label, and color for the plot|
 |drawGraphAndOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer)|Generate the plot and save the resultant image|
 |drawGraphOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer)|Save the generated plot to disk|
 
 ### SubPlot
 
-|Static Constants(to be passed in place of stackPattern in the initializer)|
-|--------------------------------------------------------------------------|
-|VERTICALLY_STACKED: Int = 0                                               |
-|HORIZONTALLY_STACKED: Int = 1                                             |
-|GRID_STACKED: Int = 2                                                     |
+|enum stackPattern (to be passed in place of stackPattern in the initializer)|
+|----------------------------------------------------------------------------|
+|verticallyStacked                                                           |
+|horizontallyStacked                                                         |
+|gridStacked                                                                 |
 
 |Function                                                                            |Description                                 |
 |------------------------------------------------------------------------------------|--------------------------------------------|
@@ -253,7 +281,7 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 
 |Function                                            |Description                                                                |
 |----------------------------------------------------|--------------------------------------------------------------------------|
-|init(_ r: Float, _ g: Float, _ b: Float, _ a: Float)|Create a Color r, g, b and a values. Each of them being between 0.0 and 1.0|
+|init(_ r: Float, _ g: Float, _ b: Float, _ a: Float)|Create a Color with r, g, b and a values. Each of them being between 0.0 and 1.0|
 
 ### PlotLabel
 
@@ -262,6 +290,13 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |xLabel: String = "X-Axis"         |
 |yLabel: String = "Y-Axis"         |
 |labelSize: Float = 10             |
+
+### Axis
+
+|enum Location (to be passed into addSeries function in LineGraph)|
+|-----------------------------------------------------------------|
+|primaryAxis                                                      |
+|secondaryAxis                                                    |
 
 ## Limitations
 - Currently we cannot change the plot dimensions in case the AGGRenderer is used. The plot can be generated with the default dimensions i.e. 1000x660. This issue will be fixed in the future.
