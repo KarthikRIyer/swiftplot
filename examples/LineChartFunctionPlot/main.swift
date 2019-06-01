@@ -25,7 +25,7 @@ var svg_renderer: SVGRenderer = SVGRenderer()
 var plotTitle: PlotTitle = PlotTitle()
 
 var lineGraph: LineGraph = LineGraph()
-lineGraph.addFunction(function, minX: -5.0, maxX: 5.0, numberOfSamples: 400, label: "Function", color: Color.orange)
+lineGraph.addFunction(function, minX: -5.0, maxX: 5.0, numberOfSamples: 400, label: "Function", color: .orange)
 plotTitle.title = "FUNCTION"
 lineGraph.plotTitle = plotTitle
 

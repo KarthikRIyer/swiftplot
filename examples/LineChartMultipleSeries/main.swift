@@ -16,8 +16,8 @@ var svg_renderer: SVGRenderer = SVGRenderer()
 var plotTitle: PlotTitle = PlotTitle()
 
 var lineGraph: LineGraph = LineGraph()
-lineGraph.addSeries(x1, y1, label: "Plot 1", color: Color.lightBlue)
-lineGraph.addSeries(x2, y2, label: "Plot 2", color: Color.orange)
+lineGraph.addSeries(x1, y1, label: "Plot 1", color: .lightBlue)
+lineGraph.addSeries(x2, y2, label: "Plot 2", color: .orange)
 plotTitle.title = "MULTIPLE SERIES"
 lineGraph.plotTitle = plotTitle
 
