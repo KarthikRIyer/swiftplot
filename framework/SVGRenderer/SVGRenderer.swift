@@ -47,6 +47,16 @@ public class SVGRenderer: Renderer{
 		image = image + "\n" + rect
 	}
 
+	public func drawSolidRectTransformed(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, fillColor: Color = Color.white) {
+		let w: Float = abs(p2.x - p1.x)
+		let h: Float = abs(p2.y - p3.y)
+		var y = max(p1.y,p2.y,p3.y,p4.y) + (0.1*plotDimensions.subHeight) + yOffset
+		y = plotDimensions.subHeight - y
+		let x = p1.x + xOffset + (0.1*plotDimensions.subWidth)
+		let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0);opacity:\(fillColor.a)\" />"
+		image = image + "\n" + rect
+	}
+
 	public func drawSolidRectWithBorder(topLeftPoint p1: Point,topRightPoint p2: Point,bottomRightPoint p3: Point,bottomLeftPoint p4: Point, strokeWidth thickness: Float, fillColor: Color = Color.white, borderColor: Color = Color.black) {
 		let w: Float = abs(p2.x - p1.x)
 		let h: Float = abs(p2.y - p3.y)

@@ -6,6 +6,7 @@ public protocol Renderer: AnyObject{
 
 	func drawRect(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, strokeWidth thickness: Float, strokeColor: Color)
 	func drawSolidRect(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, fillColor: Color)
+	func drawSolidRectTransformed(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, fillColor: Color)
 	func drawLine(startPoint p1: Point, endPoint p2: Point, strokeWidth thickness: Float, strokeColor: Color)
 	func drawTransformedLine(startPoint p1: Point, endPoint p2: Point, strokeWidth thickness: Float, strokeColor: Color, isDashed: Bool)
 	func drawPlotLines(points p: [Point], strokeWidth thickness: Float, strokeColor: Color, isDashed: Bool)

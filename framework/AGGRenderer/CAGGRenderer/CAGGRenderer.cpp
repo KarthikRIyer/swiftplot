@@ -14,6 +14,10 @@ void draw_solid_rect(const float *x, const float *y, float r, float g, float b, 
   CPPAGGRenderer::draw_solid_rect(x, y, r, g, b, a, object);
 }
 
+void draw_solid_rect_transformed(const float *x, const float *y, float r, float g, float b, float a, const void *object){
+  CPPAGGRenderer::draw_solid_rect_transformed(x, y, r, g, b, a, object);
+}
+
 void draw_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, const void *object){
   CPPAGGRenderer::draw_line(x, y, thickness, r, g, b, a, object);
 }

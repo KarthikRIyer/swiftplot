@@ -101,6 +101,24 @@ namespace CPPAGGRenderer{
 
     }
 
+    void draw_solid_rect_transformed(const float *x, const float *y, float r, float g, float b, float a){
+
+      agg::path_storage rect_path;
+      rect_path.move_to(*x, *y);
+      for (int i = 1; i < 4; i++) {
+        rect_path.line_to(*(x+i),*(y+i));
+      }
+      rect_path.close_polygon();
+      agg::trans_affine matrix;
+      matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
+      agg::conv_transform<agg::path_storage, agg::trans_affine> trans(rect_path, matrix);
+      m_ras.add_path(trans);
+      Color c(r, g, b, a);
+      ren_aa.color(c);
+      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
+
+    }
+
     void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a){
 
       agg::path_storage rect_path;
@@ -294,6 +312,13 @@ namespace CPPAGGRenderer{
 
     Plot *plot = (Plot *)object;
     plot -> draw_solid_rect(x, y, r, g, b, a);
+
+  }
+
+  void draw_solid_rect_transformed(const float *x, const float *y, float r, float g, float b, float a, const void *object){
+
+    Plot *plot = (Plot *)object;
+    plot -> draw_solid_rect_transformed(x, y, r, g, b, a);
 
   }
 

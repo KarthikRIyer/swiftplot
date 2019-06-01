@@ -6,6 +6,8 @@ namespace CPPAGGRenderer{
 
   void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, const void *object);
 
+  void draw_solid_rect_transformed(const float *x, const float *y, float r, float g, float b, float a, const void *object);
+
   void draw_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, const void *object);
 
   void draw_transformed_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool isDashed, const void *object);

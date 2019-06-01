@@ -27,7 +27,9 @@ public class BarGraph: Plot {
   public var series: Series = Series()
 
   var barWidth : Int = 0
-  public var space: Int = 10
+  public var space: Int = 20
+
+  var origin: Point = Point.zero
 
   public init(width: Float = 1000, height: Float = 660){
 		plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
@@ -142,7 +144,13 @@ extension BarGraph {
       minimumY = y
     }
 
-		let origin: Point = Point(0.0, (plotDimensions.graphHeight/(maximumY-minimumY))*(-minimumY))
+    if minimumY>=0.0 {
+        origin = Point.zero
+        minimumY = 0.0
+    }
+    else{
+        origin = Point(0.0, (plotDimensions.graphHeight/(maximumY-minimumY))*(-minimumY))
+    }
 
 		let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)/2.0 - 10.0;
 		scaleY = (maximumY - minimumY) / (plotDimensions.graphHeight - topScaleMargin);
@@ -195,15 +203,15 @@ extension BarGraph {
       plotMarkers.xMarkersTextLocation.append(text_p)
       plotMarkers.xMarkersText.append("\(series.points[i].xString)")
     }
-
+    
 		// scale points to be plotted according to plot size
 		let scaleYInv: Float = 1.0/scaleY
     series.scaledPoints.removeAll();
     for j in 0..<pts.count {
       let pt: Point = Point(pts[j].x, (pts[j].y)*scaleYInv + origin.y)
-      if (pt.x >= 0.0 && pt.x <= plotDimensions.graphWidth && pt.y >= 0.0 && pt.y <= plotDimensions.graphHeight) {
+      // if (pt.y >= 0.0 && pt.y <= plotDimensions.graphHeight) {
         series.scaledPoints.append(pt)
-      }
+      // }
     }
 
 	}
@@ -231,14 +239,13 @@ extension BarGraph {
 	}
 
 	func drawPlots(renderer: Renderer) {
-
     for index in 0..<series.points.count {
-        let tL: Point = Point(plotMarkers.xMarkers[index].x - Float(barWidth)/2.0, series.scaledPoints[index].y)
-        let tR: Point = Point(plotMarkers.xMarkers[index].x + Float(barWidth)/2.0, series.scaledPoints[index].y)
-        let bL: Point = Point(plotMarkers.xMarkers[index].x - Float(barWidth)/2.0, 0.0)
-        let bR: Point = Point(plotMarkers.xMarkers[index].x + Float(barWidth)/2.0, 0.0)
+        let tL: Point = Point(plotMarkers.xMarkers[index].x - Float(barWidth)/2.0 + Float(space)/2.0, series.scaledPoints[index].y)
+        let tR: Point = Point(plotMarkers.xMarkers[index].x + Float(barWidth)/2.0 - Float(space)/2.0, series.scaledPoints[index].y)
+        let bL: Point = Point(plotMarkers.xMarkers[index].x - Float(barWidth)/2.0 + Float(space)/2.0, origin.y)
+        let bR: Point = Point(plotMarkers.xMarkers[index].x + Float(barWidth)/2.0 - Float(space)/2.0, origin.y)
 
-        renderer.drawSolidRect(topLeftPoint: tL, topRightPoint: tR, bottomRightPoint: bR, bottomLeftPoint: bL, fillColor: series.color)
+        renderer.drawSolidRectTransformed(topLeftPoint: tL, topRightPoint: tR, bottomRightPoint: bR, bottomLeftPoint: bL, fillColor: series.color)
     }
 
 	}
