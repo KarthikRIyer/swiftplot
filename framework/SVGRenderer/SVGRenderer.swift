@@ -26,6 +26,11 @@ public class SVGRenderer: Renderer{
 		}
 	}
 
+	var hatchingIncluded = Array(repeating: false, count: Series.hatching.allCases.count)
+
+	let forwardSlashHatch: String = "<defs><pattern id=\"forwardSlashHatch\" width=\"10\" height=\"10\" patternTransform=\"rotate(45 0 0)\" patternUnits=\"userSpaceOnUse\"><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"10\" style=\"stroke:black; stroke-width:5\" /></pattern></defs>"
+	let backwardSlashHatch: String = "<defs><pattern id=\"backwardSlashHatch\" width=\"10\" height=\"10\" patternTransform=\"rotate(-45 0 0)\" patternUnits=\"userSpaceOnUse\"><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"10\" style=\"stroke:black; stroke-width:5\" /></pattern></defs>"
+
 	public init(width w: Float = 1000, height h: Float = 660) {
 		plotDimensions = PlotDimensions(frameWidth: w, frameHeight: h)
 		image = "<svg height=\"\(h)\" width=\"\(w)\" version=\"4.0\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink= \"http://www.w3.org/1999/xlink\">"
@@ -47,7 +52,30 @@ public class SVGRenderer: Renderer{
 		image = image + "\n" + rect
 	}
 
-	public func drawSolidRectTransformed(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, fillColor: Color = Color.white) {
+	func drawHatchingRect(x: Float, y: Float, width w: Float, height h: Float, hatchPattern: Series.hatching) {
+		switch (hatchPattern.rawValue) {
+			case 0:
+				break
+		  case 1:
+				if (!hatchingIncluded[hatchPattern.rawValue]) {
+				    image = image + forwardSlashHatch;
+						hatchingIncluded[hatchPattern.rawValue] = true
+				}
+				let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#forwardSlashHatch);opacity:\(0.6)\" />"
+				image = image + rect
+			case 2:
+				if (!hatchingIncluded[hatchPattern.rawValue]) {
+				    image = image + backwardSlashHatch;
+						hatchingIncluded[hatchPattern.rawValue] = true
+				}
+				let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#backwardSlashHatch);opacity:\(0.6)\" />"
+				image = image + rect
+			default:
+				break
+		}
+	}
+
+	public func drawSolidRectTransformed(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, fillColor: Color = Color.white, hatchPattern: Series.hatching) {
 		let w: Float = abs(p2.x - p1.x)
 		let h: Float = abs(p2.y - p3.y)
 		var y = max(p1.y,p2.y,p3.y,p4.y) + (0.1*plotDimensions.subHeight) + yOffset
@@ -55,6 +83,7 @@ public class SVGRenderer: Renderer{
 		let x = p1.x + xOffset + (0.1*plotDimensions.subWidth)
 		let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0);opacity:\(fillColor.a)\" />"
 		image = image + "\n" + rect
+		drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
 	}
 
 	public func drawSolidRectWithBorder(topLeftPoint p1: Point,topRightPoint p2: Point,bottomRightPoint p3: Point,bottomLeftPoint p4: Point, strokeWidth thickness: Float, fillColor: Color = Color.white, borderColor: Color = Color.black) {

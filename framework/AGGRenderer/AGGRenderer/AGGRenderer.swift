@@ -48,7 +48,7 @@ public class AGGRenderer: Renderer{
 		draw_solid_rect(x, y, fillColor.r, fillColor.g, fillColor.b, fillColor.a, agg_object)
 	}
 
-	public func drawSolidRectTransformed(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, fillColor: Color = Color.white) {
+	public func drawSolidRectTransformed(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, fillColor: Color = Color.white, hatchPattern: Series.hatching) {
 		var x = [Float]()
 		var y = [Float]()
 		x.append(p1.x + xOffset)

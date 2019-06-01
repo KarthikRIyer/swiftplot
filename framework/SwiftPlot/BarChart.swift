@@ -37,24 +37,24 @@ public class BarGraph: Plot {
   public func addSeries(_ s: Series){
 		series = s
 	}
-  public func addSeries(points p: [Point], label: String, color: Color = Color.lightBlue){
-		let s = Series(points: p,label: label, color: color)
+  public func addSeries(points p: [Point], label: String, color: Color = Color.lightBlue, hatchPattern: Series.hatching = .none){
+		let s = Series(points: p,label: label, color: color, hatchPattern: hatchPattern)
 		addSeries(s)
 	}
-  public func addSeries(_ x: [Float], _ y: [Float], label: String, color: Color = Color.lightBlue){
+  public func addSeries(_ x: [Float], _ y: [Float], label: String, color: Color = Color.lightBlue, hatchPattern: Series.hatching = .none){
 		var pts = [Point]()
 		for i in 0..<x.count {
 			pts.append(Point(x[i], y[i]))
 		}
-		let s = Series(points: pts, label: label, color: color)
+		let s = Series(points: pts, label: label, color: color, hatchPattern: hatchPattern)
 		addSeries(s)
 	}
-  public func addSeries(_ x: [String], _ y: [Float], label: String, color: Color = Color.lightBlue){
+  public func addSeries(_ x: [String], _ y: [Float], label: String, color: Color = Color.lightBlue, hatchPattern: Series.hatching = .none){
 		var pts = [Point]()
 		for i in 0..<x.count {
 			pts.append(Point(x[i], y[i]))
 		}
-		let s = Series(points: pts, label: label, color: color)
+		let s = Series(points: pts, label: label, color: color, hatchPattern: hatchPattern)
 		addSeries(s)
 	}
 
@@ -203,7 +203,7 @@ extension BarGraph {
       plotMarkers.xMarkersTextLocation.append(text_p)
       plotMarkers.xMarkersText.append("\(series.points[i].xString)")
     }
-    
+
 		// scale points to be plotted according to plot size
 		let scaleYInv: Float = 1.0/scaleY
     series.scaledPoints.removeAll();
@@ -245,7 +245,7 @@ extension BarGraph {
         let bL: Point = Point(plotMarkers.xMarkers[index].x - Float(barWidth)/2.0 + Float(space)/2.0, origin.y)
         let bR: Point = Point(plotMarkers.xMarkers[index].x + Float(barWidth)/2.0 - Float(space)/2.0, origin.y)
 
-        renderer.drawSolidRectTransformed(topLeftPoint: tL, topRightPoint: tR, bottomRightPoint: bR, bottomLeftPoint: bL, fillColor: series.color)
+        renderer.drawSolidRectTransformed(topLeftPoint: tL, topRightPoint: tR, bottomRightPoint: bR, bottomLeftPoint: bL, fillColor: series.color, hatchPattern: series.hatchPattern)
     }
 
 	}
