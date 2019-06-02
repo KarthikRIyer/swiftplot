@@ -7,9 +7,9 @@ const void * initializePlot(float w, float h, float subW, float subH);
 
 void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a, const void *object);
 
-void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, const void *object);
+void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern, const void *object);
 
-void draw_solid_rect_transformed(const float *x, const float *y, float r, float g, float b, float a, const void *object);
+void draw_solid_rect_transformed(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern, const void *object);
 
 void draw_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, const void *object);
 

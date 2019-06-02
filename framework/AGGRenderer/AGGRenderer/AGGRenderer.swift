@@ -34,7 +34,7 @@ public class AGGRenderer: Renderer{
 		draw_rect(x, y, thickness, strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a, agg_object)
 	}
 
-	public func drawSolidRect(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, fillColor: Color = Color.white) {
+	public func drawSolidRect(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, fillColor: Color = Color.white, hatchPattern: Series.hatching) {
 		var x = [Float]()
 		var y = [Float]()
 		x.append(p1.x + xOffset)
@@ -45,7 +45,7 @@ public class AGGRenderer: Renderer{
 		y.append(p2.y + yOffset)
 		y.append(p3.y + yOffset)
 		y.append(p4.y + yOffset)
-		draw_solid_rect(x, y, fillColor.r, fillColor.g, fillColor.b, fillColor.a, agg_object)
+		draw_solid_rect(x, y, fillColor.r, fillColor.g, fillColor.b, fillColor.a, Int32(hatchPattern.rawValue), agg_object)
 	}
 
 	public func drawSolidRectTransformed(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, fillColor: Color = Color.white, hatchPattern: Series.hatching) {
@@ -59,7 +59,7 @@ public class AGGRenderer: Renderer{
 		y.append(p2.y + yOffset)
 		y.append(p3.y + yOffset)
 		y.append(p4.y + yOffset)
-		draw_solid_rect_transformed(x, y, fillColor.r, fillColor.g, fillColor.b, fillColor.a, agg_object)
+		draw_solid_rect_transformed(x, y, fillColor.r, fillColor.g, fillColor.b, fillColor.a, Int32(hatchPattern.rawValue), agg_object)
 	}
 
 	public func drawSolidRectWithBorder(topLeftPoint p1: Point,topRightPoint p2: Point,bottomRightPoint p3: Point,bottomLeftPoint p4: Point, strokeWidth thickness: Float, fillColor: Color = Color.white, borderColor: Color = Color.black) {
@@ -75,7 +75,7 @@ public class AGGRenderer: Renderer{
 		y.append(p3.y + yOffset)
 		y.append(p4.y + yOffset)
 
-		draw_solid_rect(x, y, fillColor.r, fillColor.g, fillColor.b, fillColor.a, agg_object)
+		draw_solid_rect(x, y, fillColor.r, fillColor.g, fillColor.b, fillColor.a, 0, agg_object)
 		draw_rect(x, y, thickness, borderColor.r, borderColor.g, borderColor.b, borderColor.a, agg_object)
 	}
 

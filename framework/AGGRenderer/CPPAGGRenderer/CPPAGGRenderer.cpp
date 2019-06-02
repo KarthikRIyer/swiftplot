@@ -13,16 +13,23 @@
 #include "agg_gsv_text.h"
 #include "agg_conv_curve.h"
 #include "agg_conv_dash.h"
+#include "agg_span_allocator.h"
+#include "agg_span_pattern_gray.h"
+#include "agg_span_pattern_rgb.h"
+#include "agg_span_pattern_rgba.h"
+#include "agg_image_accessors.h"
 //lodepng library
 #include "lodepng.h"
 //header to save bitmaps
 #include "savebmp.h"
 
 #define AGG_RGB24
+// #define AGG_BGRA32
 #include "include/pixel_formats.h"
 
 typedef agg::pixfmt_rgb24 pixfmt;
 typedef agg::renderer_base<pixfmt> renderer_base;
+typedef agg::renderer_base<pixfmt_pre> renderer_base_pre;
 typedef agg::renderer_scanline_aa_solid<renderer_base> renderer_aa;
 typedef agg::renderer_scanline_bin_solid<renderer_base> renderer_bin;
 typedef agg::rasterizer_scanline_aa<> rasterizer_scanline;
@@ -46,6 +53,7 @@ namespace CPPAGGRenderer{
                               frame_height,
                               -frame_width*3);
   pixfmt pixf(rbuf);
+  pixfmt_pre pixf_pre(rbuf);
 
   void write_bmp(const unsigned char* buf, unsigned width, unsigned height, const char* file_name){
     saveBMP(buf, width, height, file_name);
@@ -81,12 +89,18 @@ namespace CPPAGGRenderer{
     renderer_aa ren_aa;
     int pngBufferSize = 0;
 
+    agg::int8u*           m_pattern;
+    agg::rendering_buffer m_pattern_rbuf;
+    agg::path_storage m_ps;
+    renderer_base_pre rb_pre;
+
     Plot(){
       rb = renderer_base(pixf);
       ren_aa = renderer_aa(rb);
+      rb_pre = renderer_base_pre(pixf_pre);
     }
 
-    void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a){
+    void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern){
 
       agg::path_storage rect_path;
       rect_path.move_to(*x, *y);
@@ -94,15 +108,60 @@ namespace CPPAGGRenderer{
         rect_path.line_to(*(x+i),*(y+i));
       }
       rect_path.close_polygon();
-      m_ras.add_path(rect_path);
-      Color c(r, g, b, a);
-      ren_aa.color(c);
-      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
+      if (hatch_pattern == 0) {
+        Color c(r, g, b, a);
+        m_ras.add_path(rect_path);
+        ren_aa.color(c);
+        agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
+      }
+      else {
+        generate_pattern(r, g, b, a, hatch_pattern);
+        typedef agg::wrap_mode_repeat_auto_pow2 wrap_x_type;
+        typedef agg::wrap_mode_repeat_auto_pow2 wrap_y_type;
+        typedef agg::image_accessor_wrap<pixfmt, wrap_x_type, wrap_y_type> img_source_type;
+        typedef agg::span_pattern_rgb<img_source_type> span_gen_type;
+        agg::span_allocator<color_type> sa;
+        pixfmt          img_pixf(m_pattern_rbuf);
+        img_source_type img_src(img_pixf);
+        span_gen_type sg(img_src, 0,0);
+        sg.alpha(span_gen_type::value_type(255.0));
+
+        m_ras.add_path(rect_path);
+        agg::render_scanlines_aa(m_ras, m_sl_p8, rb_pre, sa, sg);
+      }
 
     }
 
-    void draw_solid_rect_transformed(const float *x, const float *y, float r, float g, float b, float a){
+    void generate_pattern(float r, float g, float b, float a, int hatch_pattern){
+      int size = 10;
+      m_pattern = new agg::int8u[size * size * 3];
+      m_pattern_rbuf.attach(m_pattern, size, size, size*3);
+      pixfmt pixf_pattern(m_pattern_rbuf);
+      agg::renderer_base<pixfmt> rb_pattern(pixf_pattern);
+      agg::renderer_scanline_aa_solid<agg::renderer_base<pixfmt> > rs_pattern(rb_pattern);
+      rb_pattern.clear(agg::rgba_pre(r, g, b, a));
 
+      switch (hatch_pattern) {
+        case 0:
+          break;
+        case 1:
+          m_ps.move_to(0,0);
+          m_ps.line_to(size, size);
+          break;
+        case 2:
+          m_ps.move_to(0,size);
+          m_ps.line_to(size, 0);
+          break;
+      }
+      agg::conv_stroke<agg::path_storage> stroke(m_ps);
+      stroke.width(1);
+      stroke.line_cap(agg::butt_cap);
+      m_ras.add_path(stroke);
+      rs_pattern.color(agg::rgba8(0,0,0));
+      agg::render_scanlines(m_ras, m_sl_p8, rs_pattern);
+    }
+
+    void draw_solid_rect_transformed(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern){
       agg::path_storage rect_path;
       rect_path.move_to(*x, *y);
       for (int i = 1; i < 4; i++) {
@@ -112,11 +171,28 @@ namespace CPPAGGRenderer{
       agg::trans_affine matrix;
       matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
       agg::conv_transform<agg::path_storage, agg::trans_affine> trans(rect_path, matrix);
-      m_ras.add_path(trans);
-      Color c(r, g, b, a);
-      ren_aa.color(c);
-      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
 
+      if (hatch_pattern == 0) {
+        Color c(r, g, b, a);
+        m_ras.add_path(trans);
+        ren_aa.color(c);
+        agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
+      }
+      else {
+        generate_pattern(r, g, b, a, hatch_pattern);
+        typedef agg::wrap_mode_repeat_auto_pow2 wrap_x_type;
+        typedef agg::wrap_mode_repeat_auto_pow2 wrap_y_type;
+        typedef agg::image_accessor_wrap<pixfmt, wrap_x_type, wrap_y_type> img_source_type;
+        typedef agg::span_pattern_rgb<img_source_type> span_gen_type;
+        agg::span_allocator<color_type> sa;
+        pixfmt          img_pixf(m_pattern_rbuf);
+        img_source_type img_src(img_pixf);
+        span_gen_type sg(img_src, 0,0);
+        sg.alpha(span_gen_type::value_type(255.0));
+
+        m_ras.add_path(trans);
+        agg::render_scanlines_aa(m_ras, m_sl_p8, rb_pre, sa, sg);
+      }
     }
 
     void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a){
@@ -308,17 +384,17 @@ namespace CPPAGGRenderer{
 
   }
 
-  void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, const void *object){
+  void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern, const void *object){
 
     Plot *plot = (Plot *)object;
-    plot -> draw_solid_rect(x, y, r, g, b, a);
+    plot -> draw_solid_rect(x, y, r, g, b, a, hatch_pattern);
 
   }
 
-  void draw_solid_rect_transformed(const float *x, const float *y, float r, float g, float b, float a, const void *object){
+  void draw_solid_rect_transformed(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern, const void *object){
 
     Plot *plot = (Plot *)object;
-    plot -> draw_solid_rect_transformed(x, y, r, g, b, a);
+    plot -> draw_solid_rect_transformed(x, y, r, g, b, a, hatch_pattern);
 
   }
 

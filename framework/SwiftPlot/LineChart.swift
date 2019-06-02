@@ -483,7 +483,7 @@ extension LineGraph{
 			let bR: Point = Point(tL.x + plotLegend.legendTextSize, tL.y - plotLegend.legendTextSize)
 			let tR: Point = Point(bR.x, tL.y)
 			let bL: Point = Point(tL.x, bR.y)
-			renderer.drawSolidRect(topLeftPoint: tL, topRightPoint: tR, bottomRightPoint: bR, bottomLeftPoint: bL, fillColor: allSeries[i].color)
+			renderer.drawSolidRect(topLeftPoint: tL, topRightPoint: tR, bottomRightPoint: bR, bottomLeftPoint: bL, fillColor: allSeries[i].color, hatchPattern: .none)
 			let p: Point = Point(bR.x + plotLegend.legendTextSize, bR.y)
 			renderer.drawText(text: allSeries[i].label, location: p, textSize: plotLegend.legendTextSize, strokeWidth: 1.2)
 		}

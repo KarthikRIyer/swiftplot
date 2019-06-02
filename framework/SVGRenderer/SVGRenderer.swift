@@ -45,11 +45,14 @@ public class SVGRenderer: Renderer{
 		image = image + "\n" + rect
 	}
 
-	public func drawSolidRect(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, fillColor: Color = Color.white) {
+	public func drawSolidRect(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, fillColor: Color = Color.white, hatchPattern: Series.hatching) {
 		let w: Float = abs(p2.x - p1.x)
 		let h: Float = abs(p2.y - p3.y)
-		let rect: String = "<rect x=\"\(p1.x + xOffset)\" y=\"\(plotDimensions.subHeight - p1.y + yOffset)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0);opacity:\(fillColor.a)\" />"
+		var y = plotDimensions.subHeight - p1.y + yOffset
+		let x = p1.x + xOffset
+		let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0);opacity:\(fillColor.a)\" />"
 		image = image + "\n" + rect
+		drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
 	}
 
 	func drawHatchingRect(x: Float, y: Float, width w: Float, height h: Float, hatchPattern: Series.hatching) {

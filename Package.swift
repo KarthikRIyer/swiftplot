@@ -78,6 +78,10 @@ let package = Package(
             name: "BarChartExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/BarChart"),
+  .target(
+            name: "BarChartHatchedExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/BarChartHatched"),
         //.testTarget(
         //  name: "swiftplotTests",
         //  dependencies: ["swiftplot"]),
