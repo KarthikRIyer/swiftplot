@@ -4,7 +4,7 @@ public class Axis{
     public var plotMarkers: PlotMarkers = PlotMarkers()
     public var series = [Series]()
     public init(){}
-
+  
     public enum Location {
         case primaryAxis
         case secondaryAxis
