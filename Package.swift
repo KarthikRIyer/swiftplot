@@ -21,19 +21,19 @@ let package = Package(
 	.target(
             name: "AGG",
             dependencies: [],
-    	    path: "framework/AGG"),
-        .target(
+    	      path: "framework/AGG"),
+  .target(
             name: "lodepng",
             dependencies: [],
-       	    path: "framework/lodepng"),
+            path: "framework/lodepng"),
 	.target(
             name: "CPPAGGRenderer",
             dependencies: ["AGG","lodepng"],
-    	    path: "framework/AGGRenderer/CPPAGGRenderer"),
+    	       path: "framework/AGGRenderer/CPPAGGRenderer"),
 	.target(
             name: "CAGGRenderer",
             dependencies: ["CPPAGGRenderer"],
-    	    path: "framework/AGGRenderer/CAGGRenderer"),
+    	       path: "framework/AGGRenderer/CAGGRenderer"),
   .target(
             name: "SwiftPlot",
             dependencies: [],
@@ -74,6 +74,42 @@ let package = Package(
             name: "LineChartSecondaryAxisExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/LineChartSecondaryAxis"),
+  .target(
+            name: "BarChartExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/BarChart"),
+  .target(
+            name: "BarChartForwardSlashHatchedExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/BarChartForwardSlashHatched"),
+  .target(
+            name: "BarChartBackwardSlashHatchedExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/BarChartBackwardSlashHatched"),
+  .target(
+            name: "BarChartVerticalHatchedExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/BarChartVerticalHatched"),
+  .target(
+            name: "BarChartHorizontalHatchedExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/BarChartHorizontalHatched"),
+  .target(
+            name: "BarChartGridHatchedExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/BarChartGridHatched"),
+  .target(
+            name: "BarChartCrossHatchedExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/BarChartCrossHatched"),
+  .target(
+            name: "BarChartHollowCircleHatchedExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/BarChartHollowCircleHatched"),
+  .target(
+            name: "BarChartFilledCircleHatchedExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/BarChartFilledCircleHatched"),
         //.testTarget(
         //  name: "swiftplotTests",
         //  dependencies: ["swiftplot"]),

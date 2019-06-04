@@ -6,3 +6,12 @@ swift run LineChartSubPlotVerticallyStackedExample
 swift run LineChartSubPlotGridStackedExample
 swift run LineChartFunctionPlotExample
 swift run LineChartSecondaryAxisExample
+swift run BarChartExample
+swift run BarChartForwardSlashHatchedExample
+swift run BarChartBackwardSlashHatchedExample
+swift run BarChartVerticalHatchedExample
+swift run BarChartHorizontalHatchedExample
+swift run BarChartGridHatchedExample
+swift run BarChartCrossHatchedExample
+swift run BarChartHollowCircleHatchedExample
+swift run BarChartFilledCircleHatchedExample
