@@ -9,6 +9,7 @@
 #include "agg_scanline_p.h"
 #include "agg_pixfmt_rgb.h"
 #include "agg_path_storage.h"
+#include "agg_ellipse.h"
 #include "platform/agg_platform_support.h"
 #include "agg_gsv_text.h"
 #include "agg_conv_curve.h"
@@ -100,38 +101,6 @@ namespace CPPAGGRenderer{
       rb_pre = renderer_base_pre(pixf_pre);
     }
 
-    void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern){
-
-      agg::path_storage rect_path;
-      rect_path.move_to(*x, *y);
-      for (int i = 1; i < 4; i++) {
-        rect_path.line_to(*(x+i),*(y+i));
-      }
-      rect_path.close_polygon();
-      if (hatch_pattern == 0) {
-        Color c(r, g, b, a);
-        m_ras.add_path(rect_path);
-        ren_aa.color(c);
-        agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
-      }
-      else {
-        generate_pattern(r, g, b, a, hatch_pattern);
-        typedef agg::wrap_mode_repeat_auto_pow2 wrap_x_type;
-        typedef agg::wrap_mode_repeat_auto_pow2 wrap_y_type;
-        typedef agg::image_accessor_wrap<pixfmt, wrap_x_type, wrap_y_type> img_source_type;
-        typedef agg::span_pattern_rgb<img_source_type> span_gen_type;
-        agg::span_allocator<color_type> sa;
-        pixfmt          img_pixf(m_pattern_rbuf);
-        img_source_type img_src(img_pixf);
-        span_gen_type sg(img_src, 0,0);
-        sg.alpha(span_gen_type::value_type(255.0));
-
-        m_ras.add_path(rect_path);
-        agg::render_scanlines_aa(m_ras, m_sl_p8, rb_pre, sa, sg);
-      }
-
-    }
-
     void generate_pattern(float r, float g, float b, float a, int hatch_pattern){
       int size = 10;
       m_pattern = new agg::int8u[size * size * 3];
@@ -145,23 +114,43 @@ namespace CPPAGGRenderer{
         case 0:
           break;
         case 1:
-          m_ps.move_to(0,0);
-          m_ps.line_to(size, size);
-          break;
+          {
+            m_ps.move_to(0,0);
+            m_ps.line_to(size, size);
+            agg::conv_stroke<agg::path_storage> stroke(m_ps);
+            stroke.width(1);
+            stroke.line_cap(agg::butt_cap);
+            m_ras.add_path(stroke);
+            break;
+          }
         case 2:
-          m_ps.move_to(0,size);
-          m_ps.line_to(size, 0);
+          {
+            m_ps.move_to(0,size);
+            m_ps.line_to(size, 0);
+            agg::conv_stroke<agg::path_storage> stroke(m_ps);
+            stroke.width(1);
+            stroke.line_cap(agg::butt_cap);
+            m_ras.add_path(stroke);
+            break;
+          }
+        case 3:
+          {
+            agg::ellipse circle(size/2, size/2, size/2 - 2, size/2 - 2, 100);
+            agg::conv_stroke<agg::ellipse> stroke(circle);
+            stroke.width(1);
+            // stroke.line_cap(agg::butt_cap);
+            m_ras.add_path(stroke);
+            break;
+          }
+        default:
           break;
       }
-      agg::conv_stroke<agg::path_storage> stroke(m_ps);
-      stroke.width(1);
-      stroke.line_cap(agg::butt_cap);
-      m_ras.add_path(stroke);
       rs_pattern.color(agg::rgba8(0,0,0));
       agg::render_scanlines(m_ras, m_sl_p8, rs_pattern);
     }
 
-    void draw_solid_rect_transformed(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern){
+    void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern, bool is_origin_shifted){
+
       agg::path_storage rect_path;
       rect_path.move_to(*x, *y);
       for (int i = 1; i < 4; i++) {
@@ -169,9 +158,11 @@ namespace CPPAGGRenderer{
       }
       rect_path.close_polygon();
       agg::trans_affine matrix;
-      matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
+      matrix *= agg::trans_affine_translation(0, 0);
+      if (is_origin_shifted) {
+        matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
+      }
       agg::conv_transform<agg::path_storage, agg::trans_affine> trans(rect_path, matrix);
-
       if (hatch_pattern == 0) {
         Color c(r, g, b, a);
         m_ras.add_path(trans);
@@ -193,9 +184,10 @@ namespace CPPAGGRenderer{
         m_ras.add_path(trans);
         agg::render_scanlines_aa(m_ras, m_sl_p8, rb_pre, sa, sg);
       }
+
     }
 
-    void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a){
+    void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_origin_shifted){
 
       agg::path_storage rect_path;
       rect_path.move_to(*x, *y);
@@ -204,26 +196,36 @@ namespace CPPAGGRenderer{
       }
       rect_path.close_polygon();
       agg::conv_stroke<agg::path_storage> rect_path_line(rect_path);
-      rect_path_line.width(thickness);
-      m_ras.add_path(rect_path_line);
+      agg::trans_affine matrix;
+      matrix *= agg::trans_affine_translation(0, 0);
+      if (is_origin_shifted) {
+        matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
+      }
+      agg::conv_transform<agg::path_storage, agg::trans_affine> trans(rect_path, matrix);
+      agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>> curve(trans);
+      agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>> stroke(curve);
+      stroke.width(thickness);
+      m_ras.add_path(stroke);
       Color c(r, g, b, a);
       ren_aa.color(c);
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
 
     }
 
-    void draw_transformed_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool isDashed){
-
+    void draw_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_dashed, bool is_origin_shifted){
       agg::path_storage rect_path;
       rect_path.move_to(*x, *y);
       rect_path.line_to(*(x+1),*(y+1));
+
       agg::trans_affine matrix;
-      matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
+      matrix *= agg::trans_affine_translation(0, 0);
+      if (is_origin_shifted) {
+        matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
+      }
       agg::conv_transform<agg::path_storage, agg::trans_affine> trans(rect_path, matrix);
       agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>> curve(trans);
       agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>> stroke(curve);
-      stroke.width(thickness);
-      if (isDashed) {
+      if (is_dashed) {
         agg::conv_dash<agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>>> poly2_dash(stroke);
         agg::conv_stroke<agg::conv_dash<agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>>>> poly2(poly2_dash);
         poly2.width(thickness);
@@ -237,25 +239,9 @@ namespace CPPAGGRenderer{
       Color c(r, g, b, a);
       ren_aa.color(c);
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
-
-    }
-
-    void draw_line(const float *x, const float *y, float thickness, float r, float g, float b, float a){
-
-      agg::path_storage rect_path;
-      rect_path.move_to(*x, *y);
-      rect_path.line_to(*(x+1),*(y+1));
-      agg::conv_stroke<agg::path_storage> rect_path_line(rect_path);
-      rect_path_line.width(thickness);
-      m_ras.add_path(rect_path_line);
-      Color c(r, g, b, a);
-      ren_aa.color(c);
-      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
-
     }
 
     void draw_plot_lines(const float *x, const float *y, int size, float thickness, float r, float g, float b, float a, bool isDashed){
-
       agg::path_storage rect_path;
       rect_path.move_to(*x, *y);
       for (int i = 1; i < size; i++) {
@@ -282,43 +268,9 @@ namespace CPPAGGRenderer{
       Color c(r, g, b, a);
       ren_aa.color(c);
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
-
     }
 
-    void draw_text(const char *s, float x, float y, float size, float thickness){
-
-      agg::gsv_text t;
-      t.size(size);
-      t.text(s);
-      t.start_point(x,y);
-      agg::conv_stroke<agg::gsv_text> stroke(t);
-      stroke.width(thickness);
-      m_ras.add_path(stroke);
-      ren_aa.color(black);
-      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
-
-    }
-
-    void draw_transformed_text(const char *s, float x, float y, float size, float thickness){
-
-      agg::gsv_text t;
-      t.size(size);
-      t.text(s);
-      t.start_point(x,y);
-      agg::trans_affine matrix;
-      matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
-      agg::conv_transform<agg::gsv_text, agg::trans_affine> trans(t, matrix);
-      agg::conv_curve<agg::conv_transform<agg::gsv_text, agg::trans_affine>> curve(trans);
-      agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::gsv_text, agg::trans_affine>>> stroke(curve);
-      stroke.width(thickness);
-      m_ras.add_path(stroke);
-      ren_aa.color(black);
-      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
-
-    }
-
-    void draw_rotated_text(const char *s, float x, float y, float size, float thickness, float angle){
-
+    void draw_text(const char *s, float x, float y, float size, float thickness, float angle, bool is_origin_shifted){
       agg::gsv_text t;
       t.size(size);
       t.text(s);
@@ -326,6 +278,9 @@ namespace CPPAGGRenderer{
       agg::trans_affine matrix;
       matrix *= agg::trans_affine_rotation(agg::deg2rad(angle));
       matrix *= agg::trans_affine_translation(x, y);
+      if (is_origin_shifted) {
+        matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
+      }
       agg::conv_transform<agg::gsv_text, agg::trans_affine> trans(t, matrix);
       agg::conv_curve<agg::conv_transform<agg::gsv_text, agg::trans_affine>> curve(trans);
       agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::gsv_text, agg::trans_affine>>> stroke(curve);
@@ -333,7 +288,6 @@ namespace CPPAGGRenderer{
       m_ras.add_path(stroke);
       ren_aa.color(black);
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
-
     }
 
     float get_text_width(const char *s, float size){
@@ -377,38 +331,24 @@ namespace CPPAGGRenderer{
     return (void *)plot;
   }
 
-  void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a, const void *object){
+  void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_origin_shifted, const void *object){
 
     Plot *plot = (Plot *)object;
-    plot -> draw_rect(x, y, thickness, r, g, b, a);
+    plot -> draw_rect(x, y, thickness, r, g, b, a, is_origin_shifted);
 
   }
 
-  void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern, const void *object){
+  void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern, bool is_origin_shifted, const void *object){
 
     Plot *plot = (Plot *)object;
-    plot -> draw_solid_rect(x, y, r, g, b, a, hatch_pattern);
+    plot -> draw_solid_rect(x, y, r, g, b, a, hatch_pattern, is_origin_shifted);
 
   }
 
-  void draw_solid_rect_transformed(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern, const void *object){
+  void draw_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_dashed, bool is_origin_shifted, const void *object){
 
     Plot *plot = (Plot *)object;
-    plot -> draw_solid_rect_transformed(x, y, r, g, b, a, hatch_pattern);
-
-  }
-
-  void draw_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, const void *object){
-
-    Plot *plot = (Plot *)object;
-    plot -> draw_line(x, y, thickness, r, g, b, a);
-
-  }
-
-  void draw_transformed_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool isDashed, const void *object){
-
-    Plot *plot = (Plot *)object;
-    plot -> draw_transformed_line(x, y, thickness, r, g, b, a, isDashed);
+    plot -> draw_line(x, y, thickness, r, g, b, a, is_dashed, is_origin_shifted);
 
   }
 
@@ -419,24 +359,10 @@ namespace CPPAGGRenderer{
 
   }
 
-  void draw_text(const char *s, float x, float y, float size, float thickness, const void *object){
+  void draw_text(const char *s, float x, float y, float size, float thickness, float angle, bool is_origin_shifted, const void *object){
 
     Plot *plot = (Plot *)object;
-    plot -> draw_text(s, x, y, size, thickness);
-
-  }
-
-  void draw_transformed_text(const char *s, float x, float y, float size, float thickness, const void *object){
-
-    Plot *plot = (Plot *)object;
-    plot -> draw_transformed_text(s, x, y, size, thickness);
-
-  }
-
-  void draw_rotated_text(const char *s, float x, float y, float size, float thickness, float angle, const void *object){
-
-    Plot *plot = (Plot *)object;
-    plot -> draw_rotated_text(s, x, y, size, thickness, angle);
+    plot -> draw_text(s, x, y, size, thickness, angle, is_origin_shifted);
 
   }
 

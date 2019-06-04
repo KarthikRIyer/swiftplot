@@ -3,176 +3,202 @@ import SwiftPlot
 
 //extension to get ascii value of character
 extension Character {
-	var isAscii: Bool {
-		return unicodeScalars.allSatisfy { $0.isASCII }
-	}
-	var ascii: UInt32? {
-		return isAscii ? unicodeScalars.first?.value: nil
-	}
+    var isAscii: Bool {
+        return unicodeScalars.allSatisfy { $0.isASCII }
+    }
+    var ascii: UInt32? {
+        return isAscii ? unicodeScalars.first?.value: nil
+    }
 }
 
 public class SVGRenderer: Renderer{
 
-	var LCARS_CHAR_SIZE_ARRAY: [Int]?
+    var LCARS_CHAR_SIZE_ARRAY: [Int]?
 
-	var image: String
+    var image: String
 
-	public var xOffset: Float = 0
-	public var yOffset: Float = 0
+    public var xOffset: Float = 0
+    public var yOffset: Float = 0
 
-	public var plotDimensions: PlotDimensions {
-		willSet{
-			image = image.replacingOccurrences(of: "<svg height=\"\(plotDimensions.frameHeight)\" width=\"\(plotDimensions.frameWidth)\"", with: "<svg height=\"\(newValue.frameHeight)\" width=\"\(newValue.frameWidth)\"")
-		}
-	}
+    public var plotDimensions: PlotDimensions {
+        willSet{
+            image = image.replacingOccurrences(of: "<svg height=\"\(plotDimensions.frameHeight)\" width=\"\(plotDimensions.frameWidth)\"", with: "<svg height=\"\(newValue.frameHeight)\" width=\"\(newValue.frameWidth)\"")
+        }
+    }
 
-	var hatchingIncluded = Array(repeating: false, count: Series.hatching.allCases.count)
+    var hatchingIncluded = Array(repeating: false, count: BarGraphSeriesOptions.Hatching.allCases.count)
 
-	let forwardSlashHatch: String = "<defs><pattern id=\"forwardSlashHatch\" width=\"10\" height=\"10\" patternTransform=\"rotate(45 0 0)\" patternUnits=\"userSpaceOnUse\"><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"10\" style=\"stroke:black; stroke-width:5\" /></pattern></defs>"
-	let backwardSlashHatch: String = "<defs><pattern id=\"backwardSlashHatch\" width=\"10\" height=\"10\" patternTransform=\"rotate(-45 0 0)\" patternUnits=\"userSpaceOnUse\"><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"10\" style=\"stroke:black; stroke-width:5\" /></pattern></defs>"
+    let forwardSlashHatch: String = "<defs><pattern id=\"forwardSlashHatch\" width=\"10\" height=\"10\" patternTransform=\"rotate(45 0 0)\" patternUnits=\"userSpaceOnUse\"><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"10\" style=\"stroke:black; stroke-width:5\" /></pattern></defs>"
+    let backwardSlashHatch: String = "<defs><pattern id=\"backwardSlashHatch\" width=\"10\" height=\"10\" patternTransform=\"rotate(-45 0 0)\" patternUnits=\"userSpaceOnUse\"><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"10\" style=\"stroke:black; stroke-width:5\" /></pattern></defs>"
+    let hollowCircleHatch: String = "<defs><pattern id=\"hollowCircleHatch\" width=\"10\" height=\"10\" patternUnits=\"userSpaceOnUse\"><circle cx=\"5\" cy=\"5\" r=\"3\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/></pattern></defs>"
+    let filledCircleHatch: String = "<defs><pattern id=\"filledCircleHatch\" width=\"10\" height=\"10\" patternUnits=\"userSpaceOnUse\"><circle cx=\"5\" cy=\"5\" r=\"3\" stroke=\"black\" stroke-width=\"1\"/></pattern></defs>"
 
-	public init(width w: Float = 1000, height h: Float = 660) {
-		plotDimensions = PlotDimensions(frameWidth: w, frameHeight: h)
-		image = "<svg height=\"\(h)\" width=\"\(w)\" version=\"4.0\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink= \"http://www.w3.org/1999/xlink\">"
-		image = image + "\n" + "<rect width=\"100%\" height=\"100%\" fill=\"white\"/>";
-		LCARS_CHAR_SIZE_ARRAY = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 26, 46, 63, 42, 105, 45, 20, 25, 25, 47, 39, 21, 34, 26, 36, 36, 28, 36, 36, 36, 36, 36, 36, 36, 36, 27, 27, 36, 35, 36, 35, 65, 42, 43, 42, 44, 35, 34, 43, 46, 25, 39, 40, 31, 59, 47, 43, 41, 43, 44, 39, 28, 44, 43, 65, 37, 39, 34, 37, 42, 37, 50, 37, 32, 43, 43, 39, 43, 40, 30, 42, 45, 23, 25, 39, 23, 67, 45, 41, 43, 42, 30, 40, 28, 45, 33, 52, 33, 36, 31, 39, 26, 39, 55]
-	}
+    public init(width w: Float = 1000, height h: Float = 660) {
+        plotDimensions = PlotDimensions(frameWidth: w, frameHeight: h)
+        image = "<svg height=\"\(h)\" width=\"\(w)\" version=\"4.0\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink= \"http://www.w3.org/1999/xlink\">"
+        image = image + "\n" + "<rect width=\"100%\" height=\"100%\" fill=\"white\"/>";
+        LCARS_CHAR_SIZE_ARRAY = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 26, 46, 63, 42, 105, 45, 20, 25, 25, 47, 39, 21, 34, 26, 36, 36, 28, 36, 36, 36, 36, 36, 36, 36, 36, 27, 27, 36, 35, 36, 35, 65, 42, 43, 42, 44, 35, 34, 43, 46, 25, 39, 40, 31, 59, 47, 43, 41, 43, 44, 39, 28, 44, 43, 65, 37, 39, 34, 37, 42, 37, 50, 37, 32, 43, 43, 39, 43, 40, 30, 42, 45, 23, 25, 39, 23, 67, 45, 41, 43, 42, 30, 40, 28, 45, 33, 52, 33, 36, 31, 39, 26, 39, 55]
+    }
 
-	public func drawRect(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, strokeWidth thickness: Float, strokeColor: Color = Color.black) {
-		let w: Float = abs(p2.x - p1.x)
-		let h: Float = abs(p2.y - p3.y)
-		let rect: String = "<rect x=\"\(p1.x + xOffset)\" y=\"\(plotDimensions.subHeight - p1.y + yOffset)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(255,255,255);stroke-width:\(thickness);stroke:rgb(\(strokeColor.r*255.0),\(strokeColor.g*255.0),\(strokeColor.b*255.0))\" />"
-		image = image + "\n" + rect
-	}
+    public func drawRect(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, strokeWidth thickness: Float, strokeColor: Color = Color.black, isOriginShifted: Bool) {
+        let w: Float = abs(p2.x - p1.x)
+        let h: Float = abs(p2.y - p3.y)
+        var y = max(p1.y,p2.y,p3.y,p4.y) - yOffset
+        var x = p1.x + xOffset
+        if (isOriginShifted) {
+            y = y + (0.1*plotDimensions.subHeight)
+            y = plotDimensions.subHeight - y
+            x = x + (0.1*plotDimensions.subWidth)
+        }
+        else {
+            y = plotDimensions.subHeight - y
+        }
+        let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(255,255,255);stroke-width:\(thickness);stroke:rgb(0,0,0);opacity:1\" />"
+        image = image + "\n" + rect
+    }
 
-	public func drawSolidRect(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, fillColor: Color = Color.white, hatchPattern: Series.hatching) {
-		let w: Float = abs(p2.x - p1.x)
-		let h: Float = abs(p2.y - p3.y)
-		var y = plotDimensions.subHeight - p1.y + yOffset
-		let x = p1.x + xOffset
-		let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0);opacity:\(fillColor.a)\" />"
-		image = image + "\n" + rect
-		drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
-	}
+    public func drawSolidRect(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, fillColor: Color = Color.white, hatchPattern: BarGraphSeriesOptions.Hatching, isOriginShifted: Bool) {
+        if (isOriginShifted) {
+            let w: Float = abs(p2.x - p1.x)
+            let h: Float = abs(p2.y - p3.y)
+            var y = max(p1.y,p2.y,p3.y,p4.y) + (0.1*plotDimensions.subHeight) - yOffset
+            y = plotDimensions.subHeight - y
+            let x = p1.x + xOffset + (0.1*plotDimensions.subWidth)
+            let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0);opacity:\(fillColor.a)\" />"
+            image = image + "\n" + rect
+            drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
+        }
+        else {
+            let w: Float = abs(p2.x - p1.x)
+            let h: Float = abs(p2.y - p3.y)
+            var y = max(p1.y,p2.y,p3.y,p4.y) - yOffset
+            y = plotDimensions.subHeight - y
+            let x = p1.x + xOffset
+            let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0);opacity:\(fillColor.a)\" />"
+            image = image + "\n" + rect
+            drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
+        }
+    }
 
-	func drawHatchingRect(x: Float, y: Float, width w: Float, height h: Float, hatchPattern: Series.hatching) {
-		switch (hatchPattern.rawValue) {
-			case 0:
-				break
-		  case 1:
-				if (!hatchingIncluded[hatchPattern.rawValue]) {
-				    image = image + forwardSlashHatch;
-						hatchingIncluded[hatchPattern.rawValue] = true
-				}
-				let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#forwardSlashHatch);opacity:\(0.6)\" />"
-				image = image + rect
-			case 2:
-				if (!hatchingIncluded[hatchPattern.rawValue]) {
-				    image = image + backwardSlashHatch;
-						hatchingIncluded[hatchPattern.rawValue] = true
-				}
-				let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#backwardSlashHatch);opacity:\(0.6)\" />"
-				image = image + rect
-			default:
-				break
-		}
-	}
+    func drawHatchingRect(x: Float, y: Float, width w: Float, height h: Float, hatchPattern: BarGraphSeriesOptions.Hatching) {
+        switch (hatchPattern.rawValue) {
+        case 0:
+            break
+        case 1:
+            if (!hatchingIncluded[hatchPattern.rawValue]) {
+                image = image + forwardSlashHatch;
+                hatchingIncluded[hatchPattern.rawValue] = true
+            }
+            let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#forwardSlashHatch);opacity:\(0.6)\" />"
+            image = image + rect
+        case 2:
+            if (!hatchingIncluded[hatchPattern.rawValue]) {
+                image = image + backwardSlashHatch;
+                hatchingIncluded[hatchPattern.rawValue] = true
+            }
+            let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#backwardSlashHatch);opacity:\(0.6)\" />"
+            image = image + rect
+        case 3:
+            if (!hatchingIncluded[hatchPattern.rawValue]) {
+                image = image + hollowCircleHatch;
+                hatchingIncluded[hatchPattern.rawValue] = true
+            }
+            let hollowCircle: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#hollowCircleHatch);opacity:\(0.6)\" />"
+            image = image + hollowCircle
+        case 4:
+            if (!hatchingIncluded[hatchPattern.rawValue]) {
+                image = image + filledCircleHatch;
+                hatchingIncluded[hatchPattern.rawValue] = true
+            }
+            let filledCircle: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#filledCircleHatch);opacity:\(0.6)\" />"
+            image = image + filledCircle
+        default:
+            break
+        }
+    }
 
-	public func drawSolidRectTransformed(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, fillColor: Color = Color.white, hatchPattern: Series.hatching) {
-		let w: Float = abs(p2.x - p1.x)
-		let h: Float = abs(p2.y - p3.y)
-		var y = max(p1.y,p2.y,p3.y,p4.y) + (0.1*plotDimensions.subHeight) + yOffset
-		y = plotDimensions.subHeight - y
-		let x = p1.x + xOffset + (0.1*plotDimensions.subWidth)
-		let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0);opacity:\(fillColor.a)\" />"
-		image = image + "\n" + rect
-		drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
-	}
+    public func drawSolidRectWithBorder(topLeftPoint p1: Point,topRightPoint p2: Point,bottomRightPoint p3: Point,bottomLeftPoint p4: Point, strokeWidth thickness: Float, fillColor: Color = Color.white, borderColor: Color = Color.black, isOriginShifted: Bool) {
+        let w: Float = abs(p2.x - p1.x)
+        let h: Float = abs(p2.y - p3.y)
+        var y = max(p1.y,p2.y,p3.y,p4.y) - yOffset
+        var x = p1.x + xOffset
+        if (isOriginShifted) {
+            y = y + (0.1*plotDimensions.subHeight)
+            y = plotDimensions.subHeight - y
+            x = x + (0.1*plotDimensions.subWidth)
+        }
+        else {
+            y = plotDimensions.subHeight - y
+        }
 
-	public func drawSolidRectWithBorder(topLeftPoint p1: Point,topRightPoint p2: Point,bottomRightPoint p3: Point,bottomLeftPoint p4: Point, strokeWidth thickness: Float, fillColor: Color = Color.white, borderColor: Color = Color.black) {
-		let w: Float = abs(p2.x - p1.x)
-		let h: Float = abs(p2.y - p3.y)
-		let rect: String = "<rect x=\"\(p1.x + xOffset)\" y=\"\(plotDimensions.subHeight - p1.y + yOffset)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:\(thickness);stroke:rgb(\(borderColor.r*255.0),\(borderColor.g*255.0),\(borderColor.b*255.0));opacity:\(fillColor.a)\" />"
-		image = image + "\n" + rect
-	}
+        let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:\(thickness);stroke:rgb(\(borderColor.r*255.0),\(borderColor.g*255.0),\(borderColor.b*255.0));opacity:\(fillColor.a)\" />"
+        image = image + "\n" + rect
+    }
 
-	public func drawLine(startPoint p1: Point, endPoint p2: Point, strokeWidth thickness: Float, strokeColor: Color = Color.black) {
-		let x0 = p1.x
-		var y0 = p1.y
-		let x1 = p2.x
-		var y1 = p2.y
-		y0 = plotDimensions.subHeight - y0
-		y1 = plotDimensions.subHeight - y1
-		let line = "<line x1=\"\(x0 + xOffset)\" y1=\"\(y0 + yOffset)\" x2=\"\(x1 + xOffset)\" y2=\"\(y1 + yOffset)\" style=\"stroke:rgb(\(strokeColor.r*255.0),\(strokeColor.g*255.0),\(strokeColor.b*255.0));stroke-width:\(thickness);opacity:\(strokeColor.a);stroke-linecap:round\" />"
-		image = image + "\n" + line
-	}
+    public func drawLine(startPoint p1: Point, endPoint p2: Point, strokeWidth thickness: Float, strokeColor: Color = Color.black, isDashed: Bool, isOriginShifted: Bool) {
+        var x0 = p1.x
+        var y0 = p1.y
+        var x1 = p2.x
+        var y1 = p2.y
+        if (isOriginShifted) {
+            x0 = x0 + (0.1*plotDimensions.subWidth)
+            y0 = y0 + (0.1*plotDimensions.subHeight)
+            x1 = x1 + (0.1*plotDimensions.subWidth)
+            y1 = y1 + (0.1*plotDimensions.subHeight)
+        }
+        y0 = plotDimensions.subHeight - y0
+        y1 = plotDimensions.subHeight - y1
+        var line : String
+        if (isDashed) {
+            line = "<line x1=\"\(x0 + xOffset)\" y1=\"\(y0 + yOffset)\" x2=\"\(x1 + xOffset)\" y2=\"\(y1 + yOffset)\" style=\"stroke:rgb(\(strokeColor.r*255.0),\(strokeColor.g*255.0),\(strokeColor.b*255.0));stroke-width:\(thickness);opacity:\(strokeColor.a);stroke-linecap:round;stroke-dasharray:4 1\" />"
+        }
+        else {
+            line = "<line x1=\"\(x0 + xOffset)\" y1=\"\(y0 + yOffset)\" x2=\"\(x1 + xOffset)\" y2=\"\(y1 + yOffset)\" style=\"stroke:rgb(\(strokeColor.r*255.0),\(strokeColor.g*255.0),\(strokeColor.b*255.0));stroke-width:\(thickness);opacity:\(strokeColor.a);stroke-linecap:round\" />"
+        }
+        image = image + "\n" + line
+    }
 
-	public func drawTransformedLine(startPoint p1: Point, endPoint p2: Point, strokeWidth thickness: Float, strokeColor: Color = Color.black, isDashed: Bool) {
-		let x0 = p1.x + (0.1*plotDimensions.subWidth)
-		var y0 = p1.y + (0.1*plotDimensions.subHeight)
-		let x1 = p2.x + (0.1*plotDimensions.subWidth)
-		var y1 = p2.y + (0.1*plotDimensions.subHeight)
-		y0 = plotDimensions.subHeight - y0
-		y1 = plotDimensions.subHeight - y1
-		var line : String
-		if (isDashed) {
-		    line = "<line x1=\"\(x0 + xOffset)\" y1=\"\(y0 + yOffset)\" x2=\"\(x1 + xOffset)\" y2=\"\(y1 + yOffset)\" style=\"stroke:rgb(\(strokeColor.r*255.0),\(strokeColor.g*255.0),\(strokeColor.b*255.0));stroke-width:\(thickness);opacity:\(strokeColor.a);stroke-linecap:round;stroke-dasharray:4 1\" />"
-		}
-		else {
-			line = "<line x1=\"\(x0 + xOffset)\" y1=\"\(y0 + yOffset)\" x2=\"\(x1 + xOffset)\" y2=\"\(y1 + yOffset)\" style=\"stroke:rgb(\(strokeColor.r*255.0),\(strokeColor.g*255.0),\(strokeColor.b*255.0));stroke-width:\(thickness);opacity:\(strokeColor.a);stroke-linecap:round\" />"
-		}
-		image = image + "\n" + line
-	}
+    public func drawPlotLines(points p: [Point], strokeWidth thickness: Float, strokeColor: Color, isDashed: Bool) {
+        for i in 0..<p.count-1 {
+            drawLine(startPoint: p[i], endPoint: p[i+1], strokeWidth: thickness, strokeColor: strokeColor, isDashed: isDashed, isOriginShifted: true)
+        }
+    }
 
-	public func drawPlotLines(points p: [Point], strokeWidth thickness: Float, strokeColor: Color, isDashed: Bool) {
-		for i in 0..<p.count-1 {
-			drawTransformedLine(startPoint: p[i], endPoint: p[i+1], strokeWidth: thickness, strokeColor: strokeColor, isDashed: isDashed)
-		}
-	}
+    public func drawText(text s: String, location p: Point, textSize size: Float, strokeWidth thickness: Float, angle: Float, isOriginShifted: Bool){
+        var x1 = p.x
+        var y1 = plotDimensions.subHeight - p.y
+        if (isOriginShifted) {
+            x1 = x1 + 0.1*plotDimensions.subWidth
+            y1 = y1 - 0.1*plotDimensions.subHeight
+        }
+        let text = "<text x=\"\(x1 + xOffset)\" y=\"\(y1 + yOffset)\" stroke=\"#000000\" stroke-width=\"\(thickness)\" transform=\"rotate(\(-angle),\(x1+xOffset),\(y1 + yOffset))\">\(s)</text>"
+        image = image + "\n" + text
+    }
 
-	public func drawText(text s: String, location p: Point, textSize size: Float, strokeWidth thickness: Float){
-		let y1 = plotDimensions.subHeight - p.y
-		let text = "<text x=\"\(p.x + xOffset)\" y=\"\(y1 + yOffset)\" stroke=\"#000000\" stroke-width=\"\(thickness)\"  transform=\"rotate(0,\(p.x+xOffset),\(y1 + yOffset))\">\(s)</text>"
-		image = image + "\n" + text
-	}
+    public func getTextWidth(text: String, textSize size: Float) -> Float {
+        var width: Float = 0
+        let scaleFactor = size/100.0
 
-	public func drawTransformedText(text s: String, location p: Point, textSize size: Float, strokeWidth thickness: Float, angle: Float = 0){
-		let x1 = p.x + 0.1*plotDimensions.subWidth
-		let y1 = plotDimensions.subHeight - p.y - 0.1*plotDimensions.subHeight
-		let text = "<text x=\"\(x1 + xOffset)\" y=\"\(y1 + yOffset)\" stroke=\"#000000\" stroke-width=\"\(thickness)\" transform=\"rotate(\(-angle),\(x1+xOffset),\(y1 + yOffset))\">\(s)</text>"
-		image = image + "\n" + text
-	}
+        for i in 0..<text.count {
+            let index =  text.index(text.startIndex, offsetBy: i)
+            width = width + Float(LCARS_CHAR_SIZE_ARRAY![Int(text[index].ascii!)])
+        }
 
-	public func drawRotatedText(text s: String, location p: Point, textSize size: Float, strokeWidth thickness: Float, angle: Float = 0){
-		let y1 = plotDimensions.subHeight - p.y
-		let text = "<text x=\"\(p.x + xOffset)\" y=\"\(y1 + yOffset)\" stroke=\"#000000\" stroke-width=\"\(thickness)\"  transform=\"rotate(\(-angle),\(p.x+xOffset),\(y1 + yOffset))\">\(s)</text>"
-		image = image + "\n" + text
-	}
+        return width*scaleFactor + 25
+    }
 
-	public func getTextWidth(text: String, textSize size: Float) -> Float {
-		var width: Float = 0
-		let scaleFactor = size/100.0
+    public func drawOutput(fileName name: String) {
+        savePlotImage(fileName: name)
+    }
 
-		for i in 0..<text.count {
-			let index =  text.index(text.startIndex, offsetBy: i)
-			width = width + Float(LCARS_CHAR_SIZE_ARRAY![Int(text[index].ascii!)])
-		}
-
-		return width*scaleFactor + 25
-	}
-
-	public func drawOutput(fileName name: String) {
-		savePlotImage(fileName: name)
-	}
-
-	func savePlotImage(fileName name: String) {
-		image = image + "\n" + "</svg>"
-		let url = URL(fileURLWithPath: "\(name).svg")
-		do {
-			try image.write(to: url, atomically: true, encoding: String.Encoding.utf8)
-		} catch {
-			print("Unable to save SVG image!")
-		}
-	}
+    func savePlotImage(fileName name: String) {
+        image = image + "\n" + "</svg>"
+        let url = URL(fileURLWithPath: "\(name).svg")
+        do {
+            try image.write(to: url, atomically: true, encoding: String.Encoding.utf8)
+        } catch {
+            print("Unable to save SVG image!")
+        }
+    }
 
 }
