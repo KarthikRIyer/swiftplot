@@ -92,7 +92,6 @@ namespace CPPAGGRenderer{
 
     agg::int8u*           m_pattern;
     agg::rendering_buffer m_pattern_rbuf;
-    agg::path_storage m_ps;
     renderer_base_pre rb_pre;
 
     Plot(){
@@ -102,6 +101,7 @@ namespace CPPAGGRenderer{
     }
 
     void generate_pattern(float r, float g, float b, float a, int hatch_pattern){
+      agg::path_storage m_ps;
       int size = 10;
       m_pattern = new agg::int8u[size * size * 3];
       m_pattern_rbuf.attach(m_pattern, size, size, size*3);
@@ -129,7 +129,6 @@ namespace CPPAGGRenderer{
             m_ps.line_to(size, 0);
             agg::conv_stroke<agg::path_storage> stroke(m_ps);
             stroke.width(1);
-            stroke.line_cap(agg::butt_cap);
             m_ras.add_path(stroke);
             break;
           }
@@ -138,7 +137,52 @@ namespace CPPAGGRenderer{
             agg::ellipse circle(size/2, size/2, size/2 - 2, size/2 - 2, 100);
             agg::conv_stroke<agg::ellipse> stroke(circle);
             stroke.width(1);
-            // stroke.line_cap(agg::butt_cap);
+            m_ras.add_path(stroke);
+            break;
+          }
+        case 4:
+          {
+            agg::ellipse circle(size/2, size/2, size/2 - 2, size/2 - 2, 100);
+            m_ras.add_path(circle);
+            break;
+          }
+        case 5:
+          {
+            m_ps.move_to(size/2, 0);
+            m_ps.line_to(size/2, size);
+            agg::conv_stroke<agg::path_storage> stroke(m_ps);
+            stroke.width(1);
+            m_ras.add_path(stroke);
+            break;
+          }
+        case 6:
+          {
+            m_ps.move_to(0, size/2);
+            m_ps.line_to(size, size/2);
+            agg::conv_stroke<agg::path_storage> stroke(m_ps);
+            stroke.width(1);
+            m_ras.add_path(stroke);
+            break;
+          }
+        case 7:
+          {
+            m_ps.move_to(size/2, 0);
+            m_ps.line_to(size/2, size);
+            m_ps.move_to(0, size/2);
+            m_ps.line_to(size, size/2);
+            agg::conv_stroke<agg::path_storage> stroke(m_ps);
+            stroke.width(1);
+            m_ras.add_path(stroke);
+            break;
+          }
+        case 8:
+          {
+            m_ps.move_to(0, 0);
+            m_ps.line_to(size, size);
+            m_ps.move_to(0, size);
+            m_ps.line_to(size, 0);
+            agg::conv_stroke<agg::path_storage> stroke(m_ps);
+            stroke.width(1);
             m_ras.add_path(stroke);
             break;
           }

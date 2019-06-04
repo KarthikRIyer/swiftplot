@@ -28,10 +28,14 @@ public class SVGRenderer: Renderer{
 
     var hatchingIncluded = Array(repeating: false, count: BarGraphSeriesOptions.Hatching.allCases.count)
 
-    let forwardSlashHatch: String = "<defs><pattern id=\"forwardSlashHatch\" width=\"10\" height=\"10\" patternTransform=\"rotate(45 0 0)\" patternUnits=\"userSpaceOnUse\"><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"10\" style=\"stroke:black; stroke-width:5\" /></pattern></defs>"
-    let backwardSlashHatch: String = "<defs><pattern id=\"backwardSlashHatch\" width=\"10\" height=\"10\" patternTransform=\"rotate(-45 0 0)\" patternUnits=\"userSpaceOnUse\"><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"10\" style=\"stroke:black; stroke-width:5\" /></pattern></defs>"
+    let forwardSlashHatch: String = "<defs><pattern id=\"forwardSlashHatch\" width=\"10\" height=\"10\" patternTransform=\"rotate(45 0 0)\" patternUnits=\"userSpaceOnUse\"><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"10\" style=\"stroke:black; stroke-width:1\" /></pattern></defs>"
+    let backwardSlashHatch: String = "<defs><pattern id=\"backwardSlashHatch\" width=\"10\" height=\"10\" patternTransform=\"rotate(-45 0 0)\" patternUnits=\"userSpaceOnUse\"><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"10\" style=\"stroke:black; stroke-width:1\" /></pattern></defs>"
     let hollowCircleHatch: String = "<defs><pattern id=\"hollowCircleHatch\" width=\"10\" height=\"10\" patternUnits=\"userSpaceOnUse\"><circle cx=\"5\" cy=\"5\" r=\"3\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/></pattern></defs>"
     let filledCircleHatch: String = "<defs><pattern id=\"filledCircleHatch\" width=\"10\" height=\"10\" patternUnits=\"userSpaceOnUse\"><circle cx=\"5\" cy=\"5\" r=\"3\" stroke=\"black\" stroke-width=\"1\"/></pattern></defs>"
+    let verticalHatch: String = "<defs><pattern id=\"verticalHatch\" width=\"10\" height=\"10\" patternUnits=\"userSpaceOnUse\"><line x1=\"5\" y1=\"0\" x2=\"5\" y2=\"10\" style=\"stroke:black; stroke-width:1\" /></pattern></defs>"
+    let horizontalHatch: String = "<defs><pattern id=\"horizontalHatch\" width=\"10\" height=\"10\" patternUnits=\"userSpaceOnUse\"><line x1=\"0\" y1=\"5\" x2=\"10\" y2=\"5\" style=\"stroke:black; stroke-width:1\" /></pattern></defs>"
+    let gridHatch: String = "<defs><pattern id=\"gridHatch\" width=\"10\" height=\"10\" patternUnits=\"userSpaceOnUse\"><line x1=\"0\" y1=\"5\" x2=\"10\" y2=\"5\" style=\"stroke:black; stroke-width:1\" /><line x1=\"5\" y1=\"0\" x2=\"5\" y2=\"10\" style=\"stroke:black; stroke-width:1\" /></pattern></defs>"
+    let crossHatch: String = "<defs><pattern id=\"crossHatch\" width=\"10\" height=\"10\" patternUnits=\"userSpaceOnUse\"><line x1=\"0\" y1=\"0\" x2=\"10\" y2=\"10\" style=\"stroke:black; stroke-width:1\" /><line x1=\"0\" y1=\"10\" x2=\"10\" y2=\"0\" style=\"stroke:black; stroke-width:1\" /></pattern></defs>"
 
     public init(width w: Float = 1000, height h: Float = 660) {
         plotDimensions = PlotDimensions(frameWidth: w, frameHeight: h)
@@ -89,29 +93,57 @@ public class SVGRenderer: Renderer{
                 image = image + forwardSlashHatch;
                 hatchingIncluded[hatchPattern.rawValue] = true
             }
-            let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#forwardSlashHatch);opacity:\(0.6)\" />"
+            let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#forwardSlashHatch);opacity:\(1)\" />"
             image = image + rect
         case 2:
             if (!hatchingIncluded[hatchPattern.rawValue]) {
                 image = image + backwardSlashHatch;
                 hatchingIncluded[hatchPattern.rawValue] = true
             }
-            let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#backwardSlashHatch);opacity:\(0.6)\" />"
+            let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#backwardSlashHatch);opacity:\(1)\" />"
             image = image + rect
         case 3:
             if (!hatchingIncluded[hatchPattern.rawValue]) {
                 image = image + hollowCircleHatch;
                 hatchingIncluded[hatchPattern.rawValue] = true
             }
-            let hollowCircle: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#hollowCircleHatch);opacity:\(0.6)\" />"
+            let hollowCircle: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#hollowCircleHatch);opacity:\(1)\" />"
             image = image + hollowCircle
         case 4:
             if (!hatchingIncluded[hatchPattern.rawValue]) {
                 image = image + filledCircleHatch;
                 hatchingIncluded[hatchPattern.rawValue] = true
             }
-            let filledCircle: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#filledCircleHatch);opacity:\(0.6)\" />"
+            let filledCircle: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#filledCircleHatch);opacity:\(1)\" />"
             image = image + filledCircle
+        case 5:
+            if (!hatchingIncluded[hatchPattern.rawValue]) {
+                image = image + verticalHatch;
+                hatchingIncluded[hatchPattern.rawValue] = true
+            }
+            let verticalLine: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#verticalHatch);opacity:\(1)\" />"
+            image = image + verticalLine
+        case 6:
+            if (!hatchingIncluded[hatchPattern.rawValue]) {
+                image = image + horizontalHatch;
+                hatchingIncluded[hatchPattern.rawValue] = true
+            }
+            let horizontalLine: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#horizontalHatch);opacity:\(1)\" />"
+            image = image + horizontalLine
+        case 7:
+            if (!hatchingIncluded[hatchPattern.rawValue]) {
+                image = image + gridHatch;
+                hatchingIncluded[hatchPattern.rawValue] = true
+            }
+            let grid: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#gridHatch);opacity:\(1)\" />"
+            image = image + grid
+        case 8:
+            if (!hatchingIncluded[hatchPattern.rawValue]) {
+                image = image + crossHatch;
+                hatchingIncluded[hatchPattern.rawValue] = true
+            }
+            let cross: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#crossHatch);opacity:\(1)\" />"
+            image = image + cross
         default:
             break
         }
