@@ -514,33 +514,34 @@ extension BarGraph {
     }
 
     func drawLegends(renderer: Renderer) {
-        // var maxWidth: Float = 0
-        // for s in series {
-        // 	let w = renderer.getTextWidth(text: s.label, textSize: plotLegend.legendTextSize)
-        // 	if (w > maxWidth) {
-        // 		maxWidth = w
-        // 	}
-        // }
-        //
-        // plotLegend.legendWidth  = maxWidth + 3.5*plotLegend.legendTextSize
-        // plotLegend.legendHeight = (Float(series.count)*2.0 + 1.0)*plotLegend.legendTextSize
-        //
-        // let p1: Point = Point(plotLegend.legendTopLeft.x, plotLegend.legendTopLeft.y)
-        // let p2: Point = Point(plotLegend.legendTopLeft.x + plotLegend.legendWidth, plotLegend.legendTopLeft.y)
-        // let p3: Point = Point(plotLegend.legendTopLeft.x + plotLegend.legendWidth, plotLegend.legendTopLeft.y - plotLegend.legendHeight)
-        // let p4: Point = Point(plotLegend.legendTopLeft.x, plotLegend.legendTopLeft.y - plotLegend.legendHeight)
-        //
-        // renderer.drawSolidRectWithBorder(topLeftPoint: p1, topRightPoint: p2, bottomRightPoint: p3, bottomLeftPoint: p4, strokeWidth: plotBorder.borderThickness, fillColor: Color.transluscentWhite, borderColor: Color.black)
-        //
-        // for i in 0..<primaryAxis.series.count {
-        // 	let tL: Point = Point(plotLegend.legendTopLeft.x + plotLegend.legendTextSize, plotLegend.legendTopLeft.y - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize)
-        // 	let bR: Point = Point(tL.x + plotLegend.legendTextSize, tL.y - plotLegend.legendTextSize)
-        // 	let tR: Point = Point(bR.x, tL.y)
-        // 	let bL: Point = Point(tL.x, bR.y)
-        // 	renderer.drawSolidRect(topLeftPoint: tL, topRightPoint: tR, bottomRightPoint: bR, bottomLeftPoint: bL, fillColor: primaryAxis.series[i].color)
-        // 	let p: Point = Point(bR.x + plotLegend.legendTextSize, bR.y)
-        // 	renderer.drawText(text: primaryAxis.series[i].label, location: p, textSize: plotLegend.legendTextSize, strokeWidth: 1.2)
-        // }
+        var maxWidth: Float = 0
+        var legendSeries = stackSeries
+        legendSeries.insert(series, at: 0)
+        for s in legendSeries {
+        	let w = renderer.getTextWidth(text: s.label, textSize: plotLegend.legendTextSize)
+        	if (w > maxWidth) {
+        		maxWidth = w
+        	}
+        }
+        plotLegend.legendWidth  = maxWidth + 3.5*plotLegend.legendTextSize
+        plotLegend.legendHeight = (Float(stackSeries.count + 1)*2.0 + 1.0)*plotLegend.legendTextSize
+
+        let p1: Point = Point(plotLegend.legendTopLeft.x, plotLegend.legendTopLeft.y)
+        let p2: Point = Point(plotLegend.legendTopLeft.x + plotLegend.legendWidth, plotLegend.legendTopLeft.y)
+        let p3: Point = Point(plotLegend.legendTopLeft.x + plotLegend.legendWidth, plotLegend.legendTopLeft.y - plotLegend.legendHeight)
+        let p4: Point = Point(plotLegend.legendTopLeft.x, plotLegend.legendTopLeft.y - plotLegend.legendHeight)
+
+        renderer.drawSolidRectWithBorder(topLeftPoint: p1, topRightPoint: p2, bottomRightPoint: p3, bottomLeftPoint: p4, strokeWidth: plotBorder.borderThickness, fillColor: Color.transluscentWhite, borderColor: Color.black, isOriginShifted: false)
+
+        for i in 0..<legendSeries.count {
+        	let tL: Point = Point(plotLegend.legendTopLeft.x + plotLegend.legendTextSize, plotLegend.legendTopLeft.y - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize)
+        	let bR: Point = Point(tL.x + plotLegend.legendTextSize, tL.y - plotLegend.legendTextSize)
+        	let tR: Point = Point(bR.x, tL.y)
+        	let bL: Point = Point(tL.x, bR.y)
+        	renderer.drawSolidRect(topLeftPoint: tL, topRightPoint: tR, bottomRightPoint: bR, bottomLeftPoint: bL, fillColor: legendSeries[i].color, hatchPattern: .none, isOriginShifted: false)
+        	let p: Point = Point(bR.x + plotLegend.legendTextSize, bR.y)
+        	renderer.drawText(text: legendSeries[i].label, location: p, textSize: plotLegend.legendTextSize, strokeWidth: 1.2, angle: 0, isOriginShifted: false)
+        }
 
     }
 
