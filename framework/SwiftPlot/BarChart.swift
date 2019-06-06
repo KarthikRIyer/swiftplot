@@ -21,8 +21,13 @@ public class BarGraph: Plot {
             plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + 20, plotBorder.topLeft.y - 20)
         }
     }
-
+    public enum GraphOrientation {
+      case vertical
+      case horizontal
+    }
+    public var graphOrientation: GraphOrientation = .vertical
     public var scaleY: Float = 1
+    public var scaleX: Float = 1
     public var plotMarkers: PlotMarkers = PlotMarkers()
     public var series: Series = Series()
 
@@ -41,21 +46,47 @@ public class BarGraph: Plot {
         let s = Series(points: p,label: label, color: color, hatchPattern: hatchPattern)
         addSeries(s)
     }
-    public func addSeries(_ x: [Float], _ y: [Float], label: String, color: Color = Color.lightBlue, hatchPattern: BarGraphSeriesOptions.Hatching = .none){
+    public func addSeries(_ x: [Float], _ y: [Float], label: String, color: Color = Color.lightBlue, hatchPattern: BarGraphSeriesOptions.Hatching = .none, graphOrientation: BarGraph.GraphOrientation = .vertical){
         var pts = [Point]()
         for i in 0..<x.count {
             pts.append(Point(x[i], y[i]))
         }
         let s = Series(points: pts, label: label, color: color, hatchPattern: hatchPattern)
         addSeries(s)
+        self.graphOrientation = graphOrientation
     }
-    public func addSeries(_ x: [String], _ y: [Float], label: String, color: Color = Color.lightBlue, hatchPattern: BarGraphSeriesOptions.Hatching = .none){
+    public func addSeries(_ x: [String], _ y: [Float], label: String, color: Color = Color.lightBlue, hatchPattern: BarGraphSeriesOptions.Hatching = .none, graphOrientation: BarGraph.GraphOrientation = .vertical){
         var pts = [Point]()
-        for i in 0..<x.count {
-            pts.append(Point(x[i], y[i]))
+        if (graphOrientation == .vertical) {
+          for i in 0..<x.count {
+              pts.append(Point(x[i], y[i]))
+          }
+        }
+        else {
+          for i in 0..<x.count {
+              pts.append(Point(y[i], x[i]))
+          }
         }
         let s = Series(points: pts, label: label, color: color, hatchPattern: hatchPattern)
         addSeries(s)
+        self.graphOrientation = graphOrientation
+    }
+
+    public func addSeries(_ x: [Float], _ y: [String], label: String, color: Color = Color.lightBlue, hatchPattern: BarGraphSeriesOptions.Hatching = .none, graphOrientation: BarGraph.GraphOrientation = .horizontal){
+        var pts = [Point]()
+        if (graphOrientation == .horizontal) {
+          for i in 0..<x.count {
+              pts.append(Point(x[i], y[i]))
+          }
+        }
+        else {
+          for i in 0..<x.count {
+              pts.append(Point(y[i], x[i]))
+          }
+        }
+        let s = Series(points: pts, label: label, color: color, hatchPattern: hatchPattern)
+        addSeries(s)
+        self.graphOrientation = graphOrientation
     }
 
 }
@@ -122,7 +153,21 @@ extension BarGraph {
 
     func calcMarkerLocAndScalePts(renderer: Renderer){
 
-        barWidth = Int(round(plotDimensions.graphWidth/Float(series.points.count)))
+        var maximumY: Float = 0
+        var minimumY: Float = 0
+        var maximumX: Float = 0
+        var minimumX: Float = 0
+
+        if (graphOrientation == .vertical) {
+            barWidth = Int(round(plotDimensions.graphWidth/Float(series.points.count)))
+            maximumY = getMaxY(points: series.points)
+            minimumY = getMinY(points: series.points)
+        }
+        else{
+            barWidth = Int(round(plotDimensions.graphHeight/Float(series.points.count)))
+            maximumX = getMaxX(points: series.points)
+            minimumX = getMinX(points: series.points)
+        }
 
         plotMarkers.xMarkers = [Point]()
         plotMarkers.yMarkers = [Point]()
@@ -131,87 +176,167 @@ extension BarGraph {
         plotMarkers.xMarkersText = [String]()
         plotMarkers.xMarkersText = [String]()
 
-        var maximumY: Float = getMaxY(points: series.points)
-        var minimumY: Float = getMinY(points: series.points)
-
         let pts = series.points
-        var y: Float = getMaxY(points: pts)
-        if (y > maximumY) {
-            maximumY = y
-        }
-        y = getMinY(points: pts)
-        if (y < minimumY) {
-            minimumY = y
+        if (graphOrientation == .vertical) {
+          var y: Float = getMaxY(points: pts)
+          if (y > maximumY) {
+              maximumY = y
+          }
+          y = getMinY(points: pts)
+          if (y < minimumY) {
+              minimumY = y
+          }
+
+          if minimumY>=0.0 {
+              origin = Point.zero
+              minimumY = 0.0
+          }
+          else{
+              origin = Point(0.0, (plotDimensions.graphHeight/(maximumY-minimumY))*(-minimumY))
+          }
+
+          let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)/2.0 - 10.0;
+          scaleY = (maximumY - minimumY) / (plotDimensions.graphHeight - topScaleMargin);
+
+          let nD1: Int = max(getNumberOfDigits(maximumY), getNumberOfDigits(minimumY))
+          var v1: Float
+          if (nD1 > 1 && maximumY <= pow(Float(10), Float(nD1 - 1))) {
+              v1 = Float(pow(Float(10), Float(nD1 - 2)))
+          } else if (nD1 > 1) {
+              v1 = Float(pow(Float(10), Float(nD1 - 1)))
+          } else {
+              v1 = Float(pow(Float(10), Float(0)))
+          }
+
+          let nY: Float = v1/scaleY
+          var inc1: Float = nY
+          if(plotDimensions.graphHeight/nY > MAX_DIV){
+              inc1 = (plotDimensions.graphHeight/nY)*inc1/MAX_DIV
+          }
+
+          var yM: Float = origin.y
+          while yM<=plotDimensions.graphHeight {
+              if(yM+inc1<0.0 || yM<0.0){
+                  yM = yM + inc1
+                  continue
+              }
+              let p: Point = Point(0, yM)
+              plotMarkers.yMarkers.append(p)
+              let text_p: Point = Point(-(renderer.getTextWidth(text: "\(ceil(scaleY*(yM-origin.y)))", textSize: plotMarkers.markerTextSize)+5), yM - 4)
+              plotMarkers.yMarkersTextLocation.append(text_p)
+              plotMarkers.yMarkersText.append("\(ceil(scaleY*(yM-origin.y)))")
+              yM = yM + inc1
+          }
+          yM = origin.y - inc1
+          while yM>0.0 {
+              let p: Point = Point(0, yM)
+              plotMarkers.yMarkers.append(p)
+              let text_p: Point = Point(-(renderer.getTextWidth(text: "\(floor(scaleY*(yM-origin.y)))", textSize: plotMarkers.markerTextSize)+5), yM - 4)
+              plotMarkers.yMarkersTextLocation.append(text_p)
+              plotMarkers.yMarkersText.append("\(floor(scaleY*(yM-origin.y)))")
+              yM = yM - inc1
+          }
+
+          for i in 0..<series.points.count {
+              let p: Point = Point(Float(i*barWidth) + Float(barWidth)/2.0, 0)
+              plotMarkers.xMarkers.append(p)
+              let bW: Int = barWidth*(i+1)
+              let textWidth: Float = renderer.getTextWidth(text: "\(series.points[i].xString)", textSize: plotMarkers.markerTextSize)
+              let text_p: Point = Point(Float(bW) - textWidth/2.0 - Float(barWidth)/2.0, -2.0*plotMarkers.markerTextSize)
+              plotMarkers.xMarkersTextLocation.append(text_p)
+              plotMarkers.xMarkersText.append("\(series.points[i].xString)")
+          }
+
+          // scale points to be plotted according to plot size
+          let scaleYInv: Float = 1.0/scaleY
+          series.scaledPoints.removeAll();
+          for j in 0..<pts.count {
+              let pt: Point = Point(pts[j].x, (pts[j].y)*scaleYInv + origin.y)
+              // if (pt.y >= 0.0 && pt.y <= plotDimensions.graphHeight) {
+              series.scaledPoints.append(pt)
+              // }
+          }
         }
 
-        if minimumY>=0.0 {
-            origin = Point.zero
-            minimumY = 0.0
-        }
         else{
-            origin = Point(0.0, (plotDimensions.graphHeight/(maximumY-minimumY))*(-minimumY))
-        }
+          var x: Float = getMaxX(points: pts)
+          if (x > maximumX) {
+              maximumX = x
+          }
+          x = getMinX(points: pts)
+          if (x < minimumX) {
+              minimumX = x
+          }
 
-        let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)/2.0 - 10.0;
-        scaleY = (maximumY - minimumY) / (plotDimensions.graphHeight - topScaleMargin);
+          if minimumX>=0.0 {
+              origin = Point.zero
+              minimumX = 0.0
+          }
+          else{
+              origin = Point((plotDimensions.graphWidth/(maximumX-minimumX))*(-minimumX), 0.0)
+          }
 
-        let nD1: Int = max(getNumberOfDigits(maximumY), getNumberOfDigits(minimumY))
-        var v1: Float
-        if (nD1 > 1 && maximumY <= pow(Float(10), Float(nD1 - 1))) {
-            v1 = Float(pow(Float(10), Float(nD1 - 2)))
-        } else if (nD1 > 1) {
-            v1 = Float(pow(Float(10), Float(nD1 - 1)))
-        } else {
-            v1 = Float(pow(Float(10), Float(0)))
-        }
+          let rightScaleMargin: Float = (plotDimensions.subWidth - plotDimensions.graphWidth)/2.0 - 10.0
+          scaleX = (maximumX - minimumX) / (plotDimensions.graphWidth - rightScaleMargin)
 
-        let nY: Float = v1/scaleY
-        var inc1: Float = nY
-        if(plotDimensions.graphHeight/nY > MAX_DIV){
-            inc1 = (plotDimensions.graphHeight/nY)*inc1/MAX_DIV
-        }
+          let nD1: Int = max(getNumberOfDigits(maximumX), getNumberOfDigits(minimumX))
+          var v1: Float
+          if (nD1 > 1 && maximumX <= pow(Float(10), Float(nD1 - 1))) {
+              v1 = Float(pow(Float(10), Float(nD1 - 2)))
+          } else if (nD1 > 1) {
+              v1 = Float(pow(Float(10), Float(nD1 - 1)))
+          } else {
+              v1 = Float(pow(Float(10), Float(0)))
+          }
 
-        var yM: Float = origin.y
-        while yM<=plotDimensions.graphHeight {
-            if(yM+inc1<0.0 || yM<0.0){
-                yM = yM + inc1
-                continue
-            }
-            let p: Point = Point(0, yM)
-            plotMarkers.yMarkers.append(p)
-            let text_p: Point = Point(-(renderer.getTextWidth(text: "\(ceil(scaleY*(yM-origin.y)))", textSize: plotMarkers.markerTextSize)+5), yM - 4)
-            plotMarkers.yMarkersTextLocation.append(text_p)
-            plotMarkers.yMarkersText.append("\(ceil(scaleY*(yM-origin.y)))")
-            yM = yM + inc1
-        }
-        yM = origin.y - inc1
-        while yM>0.0 {
-            let p: Point = Point(0, yM)
-            plotMarkers.yMarkers.append(p)
-            let text_p: Point = Point(-(renderer.getTextWidth(text: "\(floor(scaleY*(yM-origin.y)))", textSize: plotMarkers.markerTextSize)+5), yM - 4)
-            plotMarkers.yMarkersTextLocation.append(text_p)
-            plotMarkers.yMarkersText.append("\(floor(scaleY*(yM-origin.y)))")
-            yM = yM - inc1
-        }
+          let nX: Float = v1/scaleX
+          var inc1: Float = nX
+          if(plotDimensions.graphWidth/nX > MAX_DIV){
+              inc1 = (plotDimensions.graphWidth/nX)*inc1/MAX_DIV
+          }
 
-        for i in 0..<series.points.count {
-            let p: Point = Point(Float(i*barWidth) + Float(barWidth)/2.0, 0)
-            plotMarkers.xMarkers.append(p)
-            let bW: Int = barWidth*(i+1)
-            let textWidth: Float = renderer.getTextWidth(text: "\(series.points[i].xString)", textSize: plotMarkers.markerTextSize)
-            let text_p: Point = Point(Float(bW) - textWidth/2.0 - Float(barWidth)/2.0, -2.0*plotMarkers.markerTextSize)
-            plotMarkers.xMarkersTextLocation.append(text_p)
-            plotMarkers.xMarkersText.append("\(series.points[i].xString)")
-        }
+          var xM: Float = origin.x
+          while xM<=plotDimensions.graphWidth {
+              if(xM+inc1<0.0 || xM<0.0){
+                  xM = xM + inc1
+                  continue
+              }
+              let p: Point = Point(xM, 0)
+              plotMarkers.xMarkers.append(p)
+              let text_p: Point = Point(xM - (renderer.getTextWidth(text: "\(floor(scaleX*(xM-origin.x)))", textSize: plotMarkers.markerTextSize)/2.0) + 8, -15)
+              plotMarkers.xMarkersTextLocation.append(text_p)
+              plotMarkers.xMarkersText.append("\(ceil(scaleX*(xM-origin.x)))")
+              xM = xM + inc1
+          }
+          xM = origin.x - inc1
+          while xM>0.0 {
+              let p: Point = Point(xM, 0)
+              plotMarkers.xMarkers.append(p)
+              let text_p: Point = Point(xM - (renderer.getTextWidth(text: "\(floor(scaleX*(xM-origin.x)))", textSize: plotMarkers.markerTextSize)/2.0) + 8, -15)
+              plotMarkers.xMarkersTextLocation.append(text_p)
+              plotMarkers.xMarkersText.append("\(floor(scaleX*(xM-origin.x)))")
+              xM = xM - inc1
+          }
 
-        // scale points to be plotted according to plot size
-        let scaleYInv: Float = 1.0/scaleY
-        series.scaledPoints.removeAll();
-        for j in 0..<pts.count {
-            let pt: Point = Point(pts[j].x, (pts[j].y)*scaleYInv + origin.y)
-            // if (pt.y >= 0.0 && pt.y <= plotDimensions.graphHeight) {
-            series.scaledPoints.append(pt)
-            // }
+          for i in 0..<series.points.count {
+              let p: Point = Point(0, Float(i*barWidth) + Float(barWidth)/2.0)
+              plotMarkers.yMarkers.append(p)
+              let bW: Int = barWidth*(i+1)
+              let textWidth: Float = renderer.getTextWidth(text: "\(series.points[i].yString)", textSize: plotMarkers.markerTextSize)
+              let text_p: Point = Point(-1.2*textWidth, Float(bW) - plotMarkers.markerTextSize/2 - Float(barWidth)/2.0)
+              plotMarkers.yMarkersTextLocation.append(text_p)
+              plotMarkers.yMarkersText.append("\(series.points[i].yString)")
+          }
+
+          // scale points to be plotted according to plot size
+          let scaleXInv: Float = 1.0/scaleX
+          series.scaledPoints.removeAll();
+          for j in 0..<pts.count {
+              let pt: Point = Point(pts[j].x*scaleXInv + origin.x, pts[j].y)
+              // if (pt.y >= 0.0 && pt.y <= plotDimensions.graphHeight) {
+              series.scaledPoints.append(pt)
+              // }
+          }
         }
 
     }
@@ -239,6 +364,7 @@ extension BarGraph {
     }
 
     func drawPlots(renderer: Renderer) {
+      if (graphOrientation == .vertical) {
         for index in 0..<series.points.count {
             let tL: Point = Point(plotMarkers.xMarkers[index].x - Float(barWidth)/2.0 + Float(space)/2.0, series.scaledPoints[index].y)
             let tR: Point = Point(plotMarkers.xMarkers[index].x + Float(barWidth)/2.0 - Float(space)/2.0, series.scaledPoints[index].y)
@@ -247,6 +373,16 @@ extension BarGraph {
 
             renderer.drawSolidRect(topLeftPoint: tL, topRightPoint: tR, bottomRightPoint: bR, bottomLeftPoint: bL, fillColor: series.color, hatchPattern: series.barGraphSeriesOptions.hatchPattern, isOriginShifted: true)
         }
+      }
+      else {
+        for index in 0..<series.points.count {
+            let tL: Point = Point(origin.x, plotMarkers.yMarkers[index].y + Float(barWidth)/2.0 - Float(space)/2.0)
+            let tR: Point = Point(series.scaledPoints[index].x, plotMarkers.yMarkers[index].y + Float(barWidth)/2.0 - Float(space)/2.0)
+            let bL: Point = Point(origin.x, plotMarkers.yMarkers[index].y - Float(barWidth)/2.0 + Float(space)/2.0)
+            let bR: Point = Point(series.scaledPoints[index].x, plotMarkers.yMarkers[index].y - Float(barWidth)/2.0 + Float(space)/2.0)
+            renderer.drawSolidRect(topLeftPoint: tL, topRightPoint: tR, bottomRightPoint: bR, bottomLeftPoint: bL, fillColor: series.color, hatchPattern: series.barGraphSeriesOptions.hatchPattern, isOriginShifted: true)
+        }
+      }
 
     }
 

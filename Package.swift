@@ -110,6 +110,10 @@ let package = Package(
             name: "BarChartFilledCircleHatchedExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/BarChartFilledCircleHatched"),
+  .target(
+            name: "BarChartOrientationHorizontalExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/BarChartOrientationHorizontal"),
         //.testTarget(
         //  name: "swiftplotTests",
         //  dependencies: ["swiftplot"]),
