@@ -14,6 +14,14 @@ void draw_solid_rect(const float *x, const float *y, float r, float g, float b, 
   CPPAGGRenderer::draw_solid_rect(x, y, r, g, b, a, hatch_pattern, is_origin_shifted, object);
 }
 
+void draw_solid_circle(float cx, float cy, float radius, float r, float g, float b, float a, bool is_origin_shifted, const void *object){
+  CPPAGGRenderer::draw_solid_circle(cx, cy, radius, r, g, b, a, is_origin_shifted, object);
+}
+
+void draw_solid_triangle(float x1, float x2, float x3, float y1, float y2, float y3, float r, float g, float b, float a, bool is_origin_shifted, const void *object){
+  CPPAGGRenderer::draw_solid_triangle(x1, x2, x3, y1, y2, y3, r, g, b, a, is_origin_shifted, object);
+}
+
 void draw_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_dashed, bool is_origin_shifted, const void *object){
   CPPAGGRenderer::draw_line(x, y, thickness, r, g, b, a, is_dashed, is_origin_shifted, object);
 }

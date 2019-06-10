@@ -256,6 +256,38 @@ namespace CPPAGGRenderer{
 
     }
 
+    void draw_solid_circle(float cx, float cy, float radius, float r, float g, float b, float a, bool is_origin_shifted) {
+      agg::ellipse circle(cx, cy, radius, radius, 100);
+      Color c(r, g, b, a);
+      agg::trans_affine matrix;
+      matrix *= agg::trans_affine_translation(0, 0);
+      if (is_origin_shifted) {
+        matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
+      }
+      agg::conv_transform<agg::ellipse, agg::trans_affine> trans(circle, matrix);
+      m_ras.add_path(trans);
+      ren_aa.color(c);
+      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
+    }
+
+    void draw_solid_triangle(float x1, float x2, float x3, float y1, float y2, float y3, float r, float g, float b, float a, bool is_origin_shifted) {
+      agg::path_storage tri_path;
+      tri_path.move_to(x1, y1);
+      tri_path.line_to(x2, y2);
+      tri_path.line_to(x3, y3);
+      tri_path.close_polygon();
+      agg::trans_affine matrix;
+      matrix *= agg::trans_affine_translation(0, 0);
+      if (is_origin_shifted) {
+        matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
+      }
+      agg::conv_transform<agg::path_storage, agg::trans_affine> trans(tri_path, matrix);
+      m_ras.add_path(trans);
+      Color c(r, g, b, a);
+      ren_aa.color(c);
+      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
+    }
+
     void draw_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_dashed, bool is_origin_shifted){
       agg::path_storage rect_path;
       rect_path.move_to(*x, *y);
@@ -376,66 +408,58 @@ namespace CPPAGGRenderer{
   }
 
   void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_origin_shifted, const void *object){
-
     Plot *plot = (Plot *)object;
     plot -> draw_rect(x, y, thickness, r, g, b, a, is_origin_shifted);
-
   }
 
   void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern, bool is_origin_shifted, const void *object){
-
     Plot *plot = (Plot *)object;
     plot -> draw_solid_rect(x, y, r, g, b, a, hatch_pattern, is_origin_shifted);
+  }
 
+  void draw_solid_circle(float cx, float cy, float radius, float r, float g, float b, float a, bool is_origin_shifted, const void *object){
+    Plot *plot = (Plot *)object;
+    plot -> draw_solid_circle(cx, cy, radius, r, g, b, a, is_origin_shifted);
+  }
+
+  void draw_solid_triangle(float x1, float x2, float x3, float y1, float y2, float y3, float r, float g, float b, float a, bool is_origin_shifted, const void *object){
+    Plot *plot = (Plot *)object;
+    plot -> draw_solid_triangle(x1, x2, x3, y1, y2, y3, r, g, b, a, is_origin_shifted);
   }
 
   void draw_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_dashed, bool is_origin_shifted, const void *object){
-
     Plot *plot = (Plot *)object;
     plot -> draw_line(x, y, thickness, r, g, b, a, is_dashed, is_origin_shifted);
-
   }
 
   void draw_plot_lines(const float *x, const float *y, int size, float thickness, float r, float g, float b, float a, bool isDashed, const void *object){
-
     Plot *plot = (Plot *)object;
     plot -> draw_plot_lines(x, y, size, thickness, r, g, b, a, isDashed);
-
   }
 
   void draw_text(const char *s, float x, float y, float size, float thickness, float angle, bool is_origin_shifted, const void *object){
-
     Plot *plot = (Plot *)object;
     plot -> draw_text(s, x, y, size, thickness, angle, is_origin_shifted);
-
   }
 
   float get_text_width(const char *s, float size, const void *object){
-
     Plot *plot = (Plot *)object;
     return plot -> get_text_width(s, size);
-
   }
 
   void save_image(const char *s, const void *object){
-
     Plot *plot = (Plot *)object;
     plot -> save_image(s);
-
   }
 
   const unsigned char* get_png_buffer(const void *object){
-
     Plot *plot = (Plot *)object;
     return plot -> getPngBuffer();
-
   }
 
   int get_png_buffer_size(const void *object){
-
     Plot *plot = (Plot *)object;
     return plot -> getPngBufferSize();
-
   }
 
 }

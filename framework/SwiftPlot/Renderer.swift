@@ -47,16 +47,30 @@ public protocol Renderer: AnyObject{
     /*drawText()
     *params: text s: String, location p: Point, textSize size: Float, strokeWidth thickness: Float, angle: Float, isOriginShifted: Bool
     *description: Draws specified text with specified size, rotated at the specified angle. The color is always black.
-    *             This function can operate in both coordinate systems with and without shifted origin. This is decided by the boolean parameter isOriginShifted
+    *             This function can operate in both coordinate systems with and without shifted origin. This is decided by the boolean parameter isOriginShifted.
     */
     func drawText(text s: String, location p: Point, textSize size: Float, strokeWidth thickness: Float, angle: Float, isOriginShifted: Bool)
 
     /*drawSolidRectWithBorder()
     *params: topLeftPoint p1: Point,topRightPoint p2: Point,bottomRightPoint p3: Point,bottomLeftPoint p4: Point, strokeWidth thickness: Float, fillColor: Color, borderColor: Color, isOriginShifted: Bool
     *description: Draws a rectangle with specified fill color, border color and border thickness
-    *             This function can operate in both coordinate systems with and without shifted origin. This is decided by the boolean parameter isOriginShifted
+    *             This function can operate in both coordinate systems with and without shifted origin. This is decided by the boolean parameter isOriginShifted.
     */
     func drawSolidRectWithBorder(topLeftPoint p1: Point,topRightPoint p2: Point,bottomRightPoint p3: Point,bottomLeftPoint p4: Point, strokeWidth thickness: Float, fillColor: Color, borderColor: Color, isOriginShifted: Bool)
+
+    /*drawSolidCircle()
+    *params: center c: Point, radius r: Float, fillColor: Color, isOriginShifted: Bool
+    *description: Draws a circle with specified fill color, center and radius
+    *             This function can operate in both coordinate systems with and without shifted origin. This is decided by the boolean parameter isOriginShifted.
+    */
+    func drawSolidCircle(center c: Point, radius r: Float, fillColor: Color, isOriginShifted: Bool)
+
+    /*drawSolidTriangle()
+    *params: point1: Point, point2: Point, point3: Point, fillColor: Color, isOriginShifted: Bool
+    *description: Draws a triangle with specified fill color from three specified points
+    *             This function can operate in both coordinate systems with and without shifted origin. This is decided by the boolean parameter isOriginShifted.
+    */
+    func drawSolidTriangle(point1: Point, point2: Point, point3: Point, fillColor: Color, isOriginShifted: Bool)
 
     /*getTextWidth()
     *params: text: String, textSize size: Float

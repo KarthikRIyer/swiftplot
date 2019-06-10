@@ -65,6 +65,14 @@ public class AGGRenderer: Renderer{
         draw_rect(x, y, thickness, borderColor.r, borderColor.g, borderColor.b, borderColor.a, isOriginShifted, agg_object)
     }
 
+    public func drawSolidCircle(center c: Point, radius r: Float, fillColor: Color, isOriginShifted: Bool) {
+      draw_solid_circle(c.x, c.y, r, fillColor.r, fillColor.g, fillColor.b, fillColor.a, isOriginShifted, agg_object)
+    }
+
+    public func drawSolidTriangle(point1: Point, point2: Point, point3: Point, fillColor: Color, isOriginShifted: Bool) {
+      draw_solid_triangle(point1.x, point2.x, point3.x, point1.y, point2.y, point3.y, fillColor.r, fillColor.g, fillColor.b, fillColor.a, isOriginShifted, agg_object);
+    }
+
     public func drawLine(startPoint p1: Point, endPoint p2: Point, strokeWidth thickness: Float, strokeColor: Color = Color.black, isDashed: Bool, isOriginShifted: Bool) {
         var x = [Float]()
         var y = [Float]()
