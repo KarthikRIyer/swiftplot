@@ -37,7 +37,7 @@ public func getMinX(points p: [Point]) -> Float {
     var min = p[0].x
     for index in 1..<p.count {
         if (p[index].x < min) {
-            min = p[index].y
+            min = p[index].x
         }
     }
     return min

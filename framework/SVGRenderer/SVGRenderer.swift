@@ -67,7 +67,7 @@ public class SVGRenderer: Renderer{
             let h: Float = abs(p2.y - p3.y)
             var y = max(p1.y,p2.y,p3.y,p4.y) + (0.1*plotDimensions.subHeight) - yOffset
             y = plotDimensions.subHeight - y
-            let x = p1.x + xOffset + (0.1*plotDimensions.subWidth)
+            let x = min(p1.x, p2.x, p3.x, p4.x) + xOffset + (0.1*plotDimensions.subWidth)
             let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0);opacity:\(fillColor.a)\" />"
             image = image + "\n" + rect
             drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)

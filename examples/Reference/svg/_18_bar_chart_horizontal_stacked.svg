@@ -1,0 +1,50 @@
+<svg height="660.0" width="1000.0" version="4.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">
+<rect width="100%" height="100%" fill="white"/>
+<rect x="100.0" y="66.0" width="800.0" height="528.0" style="fill:rgb(255,255,255);stroke-width:2.0;stroke:rgb(0,0,0);opacity:1" />
+<line x1="269.31216" y1="597.0" x2="269.31216" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text x="260.89215" y="609.0" stroke="#000000" stroke-width="0.7" transform="rotate(-0.0,260.89215,609.0)">0.0</text>
+<line x1="344.44446" y1="597.0" x2="344.44446" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text x="333.46445" y="609.0" stroke="#000000" stroke-width="0.7" transform="rotate(-0.0,333.46445,609.0)">100.0</text>
+<line x1="419.57672" y1="597.0" x2="419.57672" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text x="408.27673" y="609.0" stroke="#000000" stroke-width="0.7" transform="rotate(-0.0,408.27673,609.0)">200.0</text>
+<line x1="494.70898" y1="597.0" x2="494.70898" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text x="483.409" y="609.0" stroke="#000000" stroke-width="0.7" transform="rotate(-0.0,483.409,609.0)">300.0</text>
+<line x1="569.84125" y1="597.0" x2="569.84125" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text x="558.54126" y="609.0" stroke="#000000" stroke-width="0.7" transform="rotate(-0.0,558.54126,609.0)">400.0</text>
+<line x1="644.9735" y1="597.0" x2="644.9735" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text x="633.6735" y="609.0" stroke="#000000" stroke-width="0.7" transform="rotate(-0.0,633.6735,609.0)">500.0</text>
+<line x1="720.1058" y1="597.0" x2="720.1058" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text x="708.8058" y="609.0" stroke="#000000" stroke-width="0.7" transform="rotate(-0.0,708.8058,609.0)">600.0</text>
+<line x1="795.23804" y1="597.0" x2="795.23804" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text x="783.93805" y="609.0" stroke="#000000" stroke-width="0.7" transform="rotate(-0.0,783.93805,609.0)">700.0</text>
+<line x1="870.3703" y1="597.0" x2="870.3703" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text x="859.0703" y="609.0" stroke="#000000" stroke-width="0.7" transform="rotate(-0.0,859.0703,609.0)">800.0</text>
+<line x1="194.17989" y1="597.0" x2="194.17989" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text x="181.83989" y="609.0" stroke="#000000" stroke-width="0.7" transform="rotate(-0.0,181.83989,609.0)">-100.0</text>
+<line x1="119.04761" y1="597.0" x2="119.04761" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text x="106.3876" y="609.0" stroke="#000000" stroke-width="0.7" transform="rotate(-0.0,106.3876,609.0)">-200.0</text>
+<line x1="97.0" y1="528.0" x2="100.0" y2="528.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text x="56.176" y="532.0" stroke="#000000" stroke-width="0.7" transform="rotate(-0.0,56.176,532.0)">2008</text>
+<line x1="97.0" y1="396.0" x2="100.0" y2="396.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text x="56.176" y="400.0" stroke="#000000" stroke-width="0.7" transform="rotate(-0.0,56.176,400.0)">2009</text>
+<line x1="97.0" y1="264.0" x2="100.0" y2="264.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text x="56.943996" y="268.0" stroke="#000000" stroke-width="0.7" transform="rotate(-0.0,56.943996,268.0)">2010</text>
+<line x1="97.0" y1="132.0" x2="100.0" y2="132.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text x="57.712" y="136.0" stroke="#000000" stroke-width="0.7" transform="rotate(-0.0,57.712,136.0)">2011</text>
+<rect x="269.31216" y="472.0" width="240.42328" height="112.0" style="fill:rgb(164.985,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<rect x="509.73544" y="472.0" width="75.13229" height="112.0" style="fill:rgb(0.0,0.0,255.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<rect x="194.17989" y="340.0" width="75.13228" height="112.0" style="fill:rgb(164.985,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<rect x="269.31216" y="340.0" width="75.13228" height="112.0" style="fill:rgb(0.0,0.0,255.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<rect x="269.31216" y="208.0" width="315.55554" height="112.0" style="fill:rgb(164.985,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<rect x="584.8677" y="208.0" width="165.29099" height="112.0" style="fill:rgb(0.0,0.0,255.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<rect x="269.31216" y="76.0" width="375.66135" height="112.0" style="fill:rgb(164.985,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<rect x="644.9735" y="76.0" width="184.0741" height="112.0" style="fill:rgb(0.0,0.0,255.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<text x="461.4" y="58.5" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,461.4,58.5)">BAR CHART</text>
+<text x="477.05" y="635.4" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,477.05,635.4)">X-Axis</text>
+<text x="45.0" y="376.1" stroke="#000000" stroke-width="1.2" transform="rotate(-90.0,45.0,376.1)">Y-Axis</text>
+<rect x="120.0" y="86.0" width="67.880005" height="40.0" style="fill:rgb(255.0,255.0,255.0);stroke-width:2.0;stroke:rgb(0.0,0.0,0.0);opacity:0.7" />
+<rect x="128.0" y="94.0" width="8.0" height="8.0" style="fill:rgb(164.985,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<text x="144.0" y="102.0" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,144.0,102.0)">Plot 1</text>
+<rect x="128.0" y="110.0" width="8.0" height="8.0" style="fill:rgb(0.0,0.0,255.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<text x="144.0" y="118.0" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,144.0,118.0)">Plot 2</text>
+</svg>
