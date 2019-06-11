@@ -48,11 +48,11 @@ public class ScatterPlot: Plot {
     public func addSeries(_ s: Series){
         series.append(s)
     }
-    public func addSeries(points p: [Point], label: String, color: Color = Color.lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
+    public func addSeries(points p: [Point], label: String, color: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
         let s = Series(points: p,label: label, color: color, scatterPattern: scatterPattern)
         addSeries(s)
     }
-    public func addSeries(_ x: [Float], _ y: [Float], label: String, color: Color = Color.lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
+    public func addSeries(_ x: [Float], _ y: [Float], label: String, color: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
         var pts = [Point]()
         for i in 0..<x.count {
             pts.append(Point(x[i], y[i]))
@@ -60,12 +60,28 @@ public class ScatterPlot: Plot {
         let s = Series(points: pts, label: label, color: color, scatterPattern: scatterPattern)
         addSeries(s)
     }
-    public func addSeries(_ y: [Float], label: String, color: Color = Color.lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
+    public func addSeries(_ x: [Float], _ y: [Float], label: String, startColor: Color = .lightBlue, endColor: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
+        var pts = [Point]()
+        for i in 0..<x.count {
+            pts.append(Point(x[i], y[i]))
+        }
+        let s = Series(points: pts, label: label, startColor: startColor, endColor: endColor, scatterPattern: scatterPattern)
+        addSeries(s)
+    }
+    public func addSeries(_ y: [Float], label: String, color: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
         var pts = [Point]()
         for i in 0..<y.count {
             pts.append(Point(Float(i+1), y[i]))
         }
         let s = Series(points: pts, label: label, color: color, scatterPattern: scatterPattern)
+        addSeries(s)
+    }
+    public func addSeries(_ y: [Float], label: String, startColor: Color = .lightBlue, endColor: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
+        var pts = [Point]()
+        for i in 0..<y.count {
+            pts.append(Point(Float(i+1), y[i]))
+        }
+        let s = Series(points: pts, label: label, startColor: startColor, endColor: endColor, scatterPattern: scatterPattern)
         addSeries(s)
     }
 }
@@ -298,19 +314,35 @@ extension ScatterPlot{
     }
 
     func drawPlots(renderer: Renderer) {
-        for s in series {
+        for seriesIndex in 0..<series.count {
+            var s = series[seriesIndex]
+            s.maxY = getMaxY(points: s.scaledPoints)
+            s.minY = getMinY(points: s.scaledPoints)
+            let seriesYRangeInverse: Float = 1.0/(s.maxY-s.minY)
             switch s.scatterPlotSeriesOptions.scatterPattern {
                 case .circle:
-                    for p in s.scaledPoints {
+                    for index in 0..<s.scaledPoints.count {
+                        let p = s.scaledPoints[index]
+                        if (s.startColor != nil && s.endColor != nil) {
+                            s.color = lerp(startColor: s.startColor!, endColor: s.endColor!, (s.scaledPoints[index].y-s.minY)*seriesYRangeInverse)
+                        }
                         renderer.drawSolidCircle(center: p, radius: scatterPatternSize/2, fillColor: s.color, isOriginShifted: true)
                     }
                 case .square:
-                    for p in s.scaledPoints {
+                    for index in 0..<s.scaledPoints.count {
+                        let p = s.scaledPoints[index]
+                        if (s.startColor != nil && s.endColor != nil) {
+                            s.color = lerp(startColor: s.startColor!, endColor: s.endColor!, (s.scaledPoints[index].y-s.minY)*seriesYRangeInverse)
+                        }
                         renderer.drawSolidRect(topLeftPoint: Point(p.x-scatterPatternSize/2, p.y+scatterPatternSize/2), topRightPoint: Point(p.x+scatterPatternSize/2, p.y+scatterPatternSize/2), bottomRightPoint: Point(p.x+scatterPatternSize/2, p.y-scatterPatternSize/2), bottomLeftPoint: Point(p.x-scatterPatternSize/2, p.y-scatterPatternSize/2), fillColor: s.color, hatchPattern: .none, isOriginShifted: true)
                     }
                 case .triangle:
                     let r = scatterPatternSize/sqrt3
-                    for p in s.scaledPoints {
+                    for index in 0..<s.scaledPoints.count {
+                        let p = s.scaledPoints[index]
+                        if (s.startColor != nil && s.endColor != nil) {
+                            s.color = lerp(startColor: s.startColor!, endColor: s.endColor!, (s.scaledPoints[index].y-s.minY)*seriesYRangeInverse)
+                        }
                         let p1: Point = Point(p.x + 0, p.y + r)
                         let p2: Point = Point(p.x + r*sqrt3/Float(2), p.y - r*Float(0.5))
                         let p3: Point = Point(p.x - r*sqrt3/Float(2), p.y - r*Float(0.5))
@@ -357,6 +389,9 @@ extension ScatterPlot{
             let bR: Point = Point(tL.x + plotLegend.legendTextSize, tL.y - plotLegend.legendTextSize)
             let tR: Point = Point(bR.x, tL.y)
             let bL: Point = Point(tL.x, bR.y)
+            if (series[i].startColor != nil && series[i].endColor != nil) {
+                series[i].color = series[i].startColor!
+            }
             switch series[i].scatterPlotSeriesOptions.scatterPattern {
                 case .circle:
                     let c: Point = Point((tL.x+bR.x)/2, (tL.y+bR.y)/2)

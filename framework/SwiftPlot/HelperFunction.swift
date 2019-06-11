@@ -52,3 +52,14 @@ public func getMinY(points p: [Point]) -> Float {
     }
     return min
 }
+public func lerp(_ minValue: Float, _ maxValue: Float, _ t: Float) -> Float {
+    return ((1.0-t)*minValue + t*maxValue)
+}
+public func lerp(startColor: Color, endColor: Color, _ t: Float) -> Color {
+    let tClamped = clamp(t, minValue: 0, maxValue: 1)
+    let r = lerp(startColor.r, endColor.r, tClamped)
+    let g = lerp(startColor.g, endColor.g, tClamped)
+    let b = lerp(startColor.b, endColor.b, tClamped)
+    let a = lerp(startColor.a, endColor.a, tClamped)
+    return Color(r, g, b, a)
+}

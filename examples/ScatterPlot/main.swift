@@ -25,8 +25,8 @@ var agg_renderer = AGGRenderer()
 var svg_renderer = SVGRenderer()
 
 var scatterPlot: ScatterPlot = ScatterPlot()
-scatterPlot.addSeries(x, y, label: "Plot 1", color: .orange, scatterPattern: .circle)
-scatterPlot.addSeries(x1, y1, label: "Plot 2", color: .blue, scatterPattern: .triangle)
+scatterPlot.addSeries(x, y, label: "Plot 1", startColor: .gold, endColor: .blue, scatterPattern: .circle)
+scatterPlot.addSeries(x1, y1, label: "Plot 2", color: .green, scatterPattern: .triangle)
 scatterPlot.plotTitle = PlotTitle("SCATTER PLOT")
 scatterPlot.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
 
