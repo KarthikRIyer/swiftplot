@@ -10,16 +10,14 @@ let y:[Float] = [0,320,310,170]
 let x1:[Float] = [0,200,361,672]
 let y1:[Float] = [0,250,628,241]
 
-var agg_renderer: AGGRenderer = AGGRenderer()
-var svg_renderer: SVGRenderer = SVGRenderer()
+var agg_renderer = AGGRenderer()
+var svg_renderer = SVGRenderer()
 
-var plotTitle: PlotTitle = PlotTitle()
-
-var lineGraph: LineGraph = LineGraph()
+var lineGraph = LineGraph()
 lineGraph.addSeries(x1, y1, label: "Plot 1", color: .lightBlue, axisType: .primaryAxis)
 lineGraph.addSeries(x, y, label: "Plot 2", color: .orange, axisType: .secondaryAxis)
-plotTitle.title = "SECONDARY AXIS"
-lineGraph.plotTitle = plotTitle
+lineGraph.plotTitle = PlotTitle("SECONDARY AXIS")
+lineGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
 
 lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
 lineGraph.drawGraphAndOutput(fileName: filePath+"svg/"+fileName, renderer: svg_renderer)

@@ -8,8 +8,8 @@ public class LineGraph: Plot {
     public var xOffset: Float = 0
     public var yOffset: Float = 0
 
-    public var plotTitle: PlotTitle = PlotTitle()
-    public var plotLabel: PlotLabel = PlotLabel()
+    public var plotTitle: PlotTitle? = nil
+    public var plotLabel: PlotLabel? = nil
     public var plotLegend: PlotLegend = PlotLegend()
     public var plotBorder: PlotBorder = PlotBorder()
     public var plotDimensions: PlotDimensions {
@@ -143,15 +143,16 @@ extension LineGraph{
 
     // functions implementing plotting logic
     func calcLabelLocations(renderer: Renderer){
-
-        let xWidth   : Float = renderer.getTextWidth(text: plotLabel.xLabel, textSize: plotLabel.labelSize)
-        let yWidth    : Float = renderer.getTextWidth(text: plotLabel.yLabel, textSize: plotLabel.labelSize)
-        let titleWidth: Float = renderer.getTextWidth(text: plotTitle.title, textSize: plotTitle.titleSize)
-
-        plotLabel.xLabelLocation = Point(((plotBorder.bottomRight.x + plotBorder.bottomLeft.x)/2.0) - xWidth/2.0, plotBorder.bottomLeft.y - plotTitle.titleSize - 0.05*plotDimensions.graphHeight)
-        plotLabel.yLabelLocation = Point((plotBorder.bottomLeft.x - plotTitle.titleSize - 0.05*plotDimensions.graphWidth), ((plotBorder.bottomLeft.y + plotBorder.topLeft.y)/2.0 - yWidth))
-        plotTitle.titleLocation = Point(((plotBorder.topRight.x + plotBorder.topLeft.x)/2.0) - titleWidth/2.0, plotBorder.topLeft.y + plotTitle.titleSize/2.0)
-
+        if (plotLabel != nil) {
+            let xWidth   : Float = renderer.getTextWidth(text: plotLabel!.xLabel, textSize: plotLabel!.labelSize)
+            let yWidth    : Float = renderer.getTextWidth(text: plotLabel!.yLabel, textSize: plotLabel!.labelSize)
+            plotLabel!.xLabelLocation = Point(((plotBorder.bottomRight.x + plotBorder.bottomLeft.x)/2.0) - xWidth/2.0, plotBorder.bottomLeft.y - plotTitle!.titleSize - 0.05*plotDimensions.graphHeight)
+            plotLabel!.yLabelLocation = Point((plotBorder.bottomLeft.x - plotTitle!.titleSize - 0.05*plotDimensions.graphWidth), ((plotBorder.bottomLeft.y + plotBorder.topLeft.y)/2.0 - yWidth))
+        }
+        if (plotTitle != nil) {
+          let titleWidth: Float = renderer.getTextWidth(text: plotTitle!.title, textSize: plotTitle!.titleSize)
+          plotTitle!.titleLocation = Point(((plotBorder.topRight.x + plotBorder.topLeft.x)/2.0) - titleWidth/2.0, plotBorder.topLeft.y + plotTitle!.titleSize/2.0)
+        }
     }
 
     func calcMarkerLocAndScalePts(renderer: Renderer){
@@ -447,12 +448,16 @@ extension LineGraph{
     }
 
     func drawTitle(renderer: Renderer) {
-        renderer.drawText(text: plotTitle.title, location: plotTitle.titleLocation, textSize: plotTitle.titleSize, strokeWidth: 1.2, angle: 0, isOriginShifted: false)
+        if (plotTitle != nil) {
+            renderer.drawText(text: plotTitle!.title, location: plotTitle!.titleLocation, textSize: plotTitle!.titleSize, strokeWidth: 1.2, angle: 0, isOriginShifted: false)
+        }
     }
 
     func drawLabels(renderer: Renderer) {
-        renderer.drawText(text: plotLabel.xLabel, location: plotLabel.xLabelLocation, textSize: plotLabel.labelSize, strokeWidth: 1.2, angle: 0, isOriginShifted: false)
-        renderer.drawText(text: plotLabel.yLabel, location: plotLabel.yLabelLocation, textSize: plotLabel.labelSize, strokeWidth: 1.2, angle: 90, isOriginShifted: false)
+        if (plotLabel != nil) {
+          renderer.drawText(text: plotLabel!.xLabel, location: plotLabel!.xLabelLocation, textSize: plotLabel!.labelSize, strokeWidth: 1.2, angle: 0, isOriginShifted: false)
+          renderer.drawText(text: plotLabel!.yLabel, location: plotLabel!.yLabelLocation, textSize: plotLabel!.labelSize, strokeWidth: 1.2, angle: 90, isOriginShifted: false)    
+        }
     }
 
     func drawLegends(renderer: Renderer) {

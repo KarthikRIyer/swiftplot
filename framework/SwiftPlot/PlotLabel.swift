@@ -4,5 +4,8 @@ public struct PlotLabel{
     public var labelSize : Float       = 10
     public var xLabelLocation : Point = Point.zero
     public var yLabelLocation : Point = Point.zero
-    public init() {}
+    public init(xLabel: String, yLabel: String) {
+      self.xLabel = xLabel
+      self.yLabel = yLabel
+    }
 }

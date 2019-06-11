@@ -17,3 +17,4 @@ swift run BarChartHollowCircleHatchedExample
 swift run BarChartFilledCircleHatchedExample
 swift run BarChartVerticalStackedExample
 swift run BarChartHorizontalStackedExample
+swift run ScatterPlotExample

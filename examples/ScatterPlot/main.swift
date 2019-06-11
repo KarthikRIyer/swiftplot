@@ -21,16 +21,14 @@ for index in 1...100 {
     y1.append(Float(index) + Float.random(in: -10...10))
 }
 
-var agg_renderer: AGGRenderer = AGGRenderer()
-var svg_renderer: SVGRenderer = SVGRenderer()
-
-var plotTitle: PlotTitle = PlotTitle()
+var agg_renderer = AGGRenderer()
+var svg_renderer = SVGRenderer()
 
 var scatterPlot: ScatterPlot = ScatterPlot()
 scatterPlot.addSeries(x, y, label: "Plot 1", color: .orange, scatterPattern: .circle)
 scatterPlot.addSeries(x1, y1, label: "Plot 2", color: .blue, scatterPattern: .triangle)
-plotTitle.title = "SCATTER PLOT"
-scatterPlot.plotTitle = plotTitle
+scatterPlot.plotTitle = PlotTitle("SCATTER PLOT")
+scatterPlot.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
 
 scatterPlot.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
 scatterPlot.drawGraphAndOutput(fileName: filePath+"svg/"+fileName, renderer: svg_renderer)
