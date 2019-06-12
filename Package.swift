@@ -129,5 +129,6 @@ let package = Package(
         //.testTarget(
         //  name: "swiftplotTests",
         //  dependencies: ["swiftplot"]),
-    ]
+    ],
+    cxxLanguageStandard: .cxx11
 )
