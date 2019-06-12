@@ -25,8 +25,8 @@
 <line x1="123.61964" y1="56.0" x2="243.61964" y2="63.53125" style="stroke:rgb(206.04001,206.04001,235.11);stroke-width:3.0;opacity:1.0;stroke-linecap:round" />
 <line x1="243.61964" y1="63.53125" x2="410.0" y2="168.96877" style="stroke:rgb(206.04001,206.04001,235.11);stroke-width:3.0;opacity:1.0;stroke-linecap:round" />
 <text x="223.4" y="25.5" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,223.4,25.5)">PLOT 1</text>
-<text x="226.8" y="325.2" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,226.8,325.2)">X-AXIS</text>
-<text x="15.0" y="211.6" stroke="#000000" stroke-width="1.2" transform="rotate(-90.0,15.0,211.6)">Y-AXIS</text>
+<text x="226.8" y="320.2" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,226.8,320.2)">X-AXIS</text>
+<text x="20.0" y="211.6" stroke="#000000" stroke-width="1.2" transform="rotate(-90.0,20.0,211.6)">Y-AXIS</text>
 <rect x="70.0" y="53.0" width="67.23999" height="24.0" style="fill:rgb(255.0,255.0,255.0);stroke-width:2.0;stroke:rgb(0.0,0.0,0.0);opacity:0.7" />
 <rect x="78.0" y="61.0" width="8.0" height="8.0" style="fill:rgb(206.04001,206.04001,235.11);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
 <text x="94.0" y="69.0" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,94.0,69.0)">Plot 1</text>
@@ -55,8 +55,8 @@
 <line x1="623.6196" y1="56.0" x2="743.6196" y2="63.53125" style="stroke:rgb(164.985,164.985,0.0);stroke-width:3.0;opacity:1.0;stroke-linecap:round" />
 <line x1="743.6196" y1="63.53125" x2="910.0" y2="168.96877" style="stroke:rgb(164.985,164.985,0.0);stroke-width:3.0;opacity:1.0;stroke-linecap:round" />
 <text x="722.8" y="25.5" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,722.8,25.5)">PLOT 2</text>
-<text x="726.8" y="325.2" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,726.8,325.2)">X-AXIS</text>
-<text x="515.0" y="211.6" stroke="#000000" stroke-width="1.2" transform="rotate(-90.0,515.0,211.6)">Y-AXIS</text>
+<text x="726.8" y="320.2" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,726.8,320.2)">X-AXIS</text>
+<text x="520.0" y="211.6" stroke="#000000" stroke-width="1.2" transform="rotate(-90.0,520.0,211.6)">Y-AXIS</text>
 <rect x="570.0" y="53.0" width="67.880005" height="24.0" style="fill:rgb(255.0,255.0,255.0);stroke-width:2.0;stroke:rgb(0.0,0.0,0.0);opacity:0.7" />
 <rect x="578.0" y="61.0" width="8.0" height="8.0" style="fill:rgb(164.985,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
 <text x="594.0" y="69.0" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,594.0,69.0)">Plot 2</text>
@@ -85,8 +85,8 @@
 <line x1="123.61964" y1="386.0" x2="243.61964" y2="393.53125" style="stroke:rgb(68.850006,68.850006,25.5);stroke-width:3.0;opacity:1.0;stroke-linecap:round" />
 <line x1="243.61964" y1="393.53125" x2="410.0" y2="498.96875" style="stroke:rgb(68.850006,68.850006,25.5);stroke-width:3.0;opacity:1.0;stroke-linecap:round" />
 <text x="222.8" y="355.5" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,222.8,355.5)">PLOT 3</text>
-<text x="226.8" y="655.2" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,226.8,655.2)">X-AXIS</text>
-<text x="15.0" y="541.6" stroke="#000000" stroke-width="1.2" transform="rotate(-90.0,15.0,541.6)">Y-AXIS</text>
+<text x="226.8" y="650.2" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,226.8,650.2)">X-AXIS</text>
+<text x="20.0" y="541.6" stroke="#000000" stroke-width="1.2" transform="rotate(-90.0,20.0,541.6)">Y-AXIS</text>
 <rect x="70.0" y="383.0" width="67.880005" height="24.0" style="fill:rgb(255.0,255.0,255.0);stroke-width:2.0;stroke:rgb(0.0,0.0,0.0);opacity:0.7" />
 <rect x="78.0" y="391.0" width="8.0" height="8.0" style="fill:rgb(68.850006,68.850006,25.5);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
 <text x="94.0" y="399.0" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,94.0,399.0)">Plot 3</text>
@@ -115,8 +115,8 @@
 <line x1="623.6196" y1="386.0" x2="743.6196" y2="393.53125" style="stroke:rgb(127.5,127.5,0.0);stroke-width:3.0;opacity:1.0;stroke-linecap:round" />
 <line x1="743.6196" y1="393.53125" x2="910.0" y2="498.96875" style="stroke:rgb(127.5,127.5,0.0);stroke-width:3.0;opacity:1.0;stroke-linecap:round" />
 <text x="722.8" y="355.5" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,722.8,355.5)">PLOT 4</text>
-<text x="726.8" y="655.2" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,726.8,655.2)">X-AXIS</text>
-<text x="515.0" y="541.6" stroke="#000000" stroke-width="1.2" transform="rotate(-90.0,515.0,541.6)">Y-AXIS</text>
+<text x="726.8" y="650.2" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,726.8,650.2)">X-AXIS</text>
+<text x="520.0" y="541.6" stroke="#000000" stroke-width="1.2" transform="rotate(-90.0,520.0,541.6)">Y-AXIS</text>
 <rect x="570.0" y="383.0" width="67.880005" height="24.0" style="fill:rgb(255.0,255.0,255.0);stroke-width:2.0;stroke:rgb(0.0,0.0,0.0);opacity:0.7" />
 <rect x="578.0" y="391.0" width="8.0" height="8.0" style="fill:rgb(127.5,127.5,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
 <text x="594.0" y="399.0" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,594.0,399.0)">Plot 4</text>

@@ -138,12 +138,12 @@ extension ScatterPlot{
         if (plotLabel != nil) {
             let xWidth   : Float = renderer.getTextWidth(text: plotLabel!.xLabel, textSize: plotLabel!.labelSize)
             let yWidth    : Float = renderer.getTextWidth(text: plotLabel!.yLabel, textSize: plotLabel!.labelSize)
-            plotLabel!.xLabelLocation = Point(((plotBorder.bottomRight.x + plotBorder.bottomLeft.x)/2.0) - xWidth/2.0, plotBorder.bottomLeft.y - plotTitle!.titleSize - 0.05*plotDimensions.graphHeight)
-            plotLabel!.yLabelLocation = Point((plotBorder.bottomLeft.x - plotTitle!.titleSize - 0.05*plotDimensions.graphWidth), ((plotBorder.bottomLeft.y + plotBorder.topLeft.y)/2.0 - yWidth))
+            plotLabel!.xLabelLocation = Point(((plotBorder.bottomRight.x + plotBorder.bottomLeft.x)*Float(0.5)) - xWidth*Float(0.5), plotBorder.bottomLeft.y - plotLabel!.labelSize - 0.05*plotDimensions.graphHeight)
+            plotLabel!.yLabelLocation = Point((plotBorder.bottomLeft.x - plotLabel!.labelSize - 0.05*plotDimensions.graphWidth), ((plotBorder.bottomLeft.y + plotBorder.topLeft.y)*Float(0.5) - yWidth))
         }
         if (plotTitle != nil) {
           let titleWidth: Float = renderer.getTextWidth(text: plotTitle!.title, textSize: plotTitle!.titleSize)
-          plotTitle!.titleLocation = Point(((plotBorder.topRight.x + plotBorder.topLeft.x)/2.0) - titleWidth/2.0, plotBorder.topLeft.y + plotTitle!.titleSize/2.0)
+          plotTitle!.titleLocation = Point(((plotBorder.topRight.x + plotBorder.topLeft.x)*Float(0.5)) - titleWidth*Float(0.5), plotBorder.topLeft.y + plotTitle!.titleSize*Float(0.5))
         }
     }
 
@@ -185,8 +185,8 @@ extension ScatterPlot{
 
         let origin: Point = Point((plotDimensions.graphWidth/(maximumX-minimumX))*(-minimumX), (plotDimensions.graphHeight/(maximumY-minimumY))*(-minimumY))
 
-        let rightScaleMargin: Float = (plotDimensions.subWidth - plotDimensions.graphWidth)/2.0 - 10.0;
-        let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)/2.0 - 10.0;
+        let rightScaleMargin: Float = (plotDimensions.subWidth - plotDimensions.graphWidth)*Float(0.5) - 10.0;
+        let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)*Float(0.5) - 10.0;
         scaleX = (maximumX - minimumX) / (plotDimensions.graphWidth - rightScaleMargin);
         scaleY = (maximumY - minimumY) / (plotDimensions.graphHeight - topScaleMargin);
 
@@ -326,7 +326,7 @@ extension ScatterPlot{
                         if (s.startColor != nil && s.endColor != nil) {
                             s.color = lerp(startColor: s.startColor!, endColor: s.endColor!, (s.scaledPoints[index].y-s.minY)*seriesYRangeInverse)
                         }
-                        renderer.drawSolidCircle(center: p, radius: scatterPatternSize/2, fillColor: s.color, isOriginShifted: true)
+                        renderer.drawSolidCircle(center: p, radius: scatterPatternSize*Float(0.5), fillColor: s.color, isOriginShifted: true)
                     }
                 case .square:
                     for index in 0..<s.scaledPoints.count {
@@ -353,16 +353,14 @@ extension ScatterPlot{
     }
 
     func drawTitle(renderer: Renderer) {
-        if (plotTitle != nil) {
-            renderer.drawText(text: plotTitle!.title, location: plotTitle!.titleLocation, textSize: plotTitle!.titleSize, strokeWidth: 1.2, angle: 0, isOriginShifted: false)
-        }
+        guard let plotTitle = self.plotTitle else { return }
+        renderer.drawText(text: plotTitle.title, location: plotTitle.titleLocation, textSize: plotTitle.titleSize, strokeWidth: 1.2, angle: 0, isOriginShifted: false)
     }
 
     func drawLabels(renderer: Renderer) {
-        if (plotLabel != nil) {
-          renderer.drawText(text: plotLabel!.xLabel, location: plotLabel!.xLabelLocation, textSize: plotLabel!.labelSize, strokeWidth: 1.2, angle: 0, isOriginShifted: false)
-          renderer.drawText(text: plotLabel!.yLabel, location: plotLabel!.yLabelLocation, textSize: plotLabel!.labelSize, strokeWidth: 1.2, angle: 90, isOriginShifted: false)
-        }
+        guard let plotLabel = self.plotLabel else { return }
+        renderer.drawText(text: plotLabel.xLabel, location: plotLabel.xLabelLocation, textSize: plotLabel.labelSize, strokeWidth: 1.2, angle: 0, isOriginShifted: false)
+        renderer.drawText(text: plotLabel.yLabel, location: plotLabel.yLabelLocation, textSize: plotLabel.labelSize, strokeWidth: 1.2, angle: 90, isOriginShifted: false)
     }
 
     func drawLegends(renderer: Renderer) {
@@ -394,16 +392,16 @@ extension ScatterPlot{
             }
             switch series[i].scatterPlotSeriesOptions.scatterPattern {
                 case .circle:
-                    let c: Point = Point((tL.x+bR.x)/2, (tL.y+bR.y)/2)
-                    renderer.drawSolidCircle(center: c, radius: (tR.x-tL.x)/2, fillColor: series[i].color, isOriginShifted: false)
+                    let c: Point = Point((tL.x+bR.x)*Float(0.5), (tL.y+bR.y)*Float(0.5))
+                    renderer.drawSolidCircle(center: c, radius: (tR.x-tL.x)*Float(0.5), fillColor: series[i].color, isOriginShifted: false)
                 case .square:
                     renderer.drawSolidRect(topLeftPoint: tL, topRightPoint: tR, bottomRightPoint: bR, bottomLeftPoint: bL, fillColor: series[i].color, hatchPattern: .none, isOriginShifted: false)
                 case .triangle:
-                    let c: Point = Point((tL.x+bR.x)/2, (tL.y+bR.y)/2)
-                    let r: Float = (tR.x-tL.x)/2
+                    let c: Point = Point((tL.x+bR.x)*Float(0.5), (tL.y+bR.y)*Float(0.5))
+                    let r: Float = (tR.x-tL.x)*Float(0.5)
                     let p1: Point = Point(c.x + 0, c.y + r)
-                    let p2: Point = Point(c.x + r*sqrt3/Float(2), c.y - r*Float(0.5))
-                    let p3: Point = Point(c.x - r*sqrt3/Float(2), c.y - r*Float(0.5))
+                    let p2: Point = Point(c.x + r*sqrt3*Float(0.5), c.y - r*Float(0.5))
+                    let p3: Point = Point(c.x - r*sqrt3*Float(0.5), c.y - r*Float(0.5))
                     renderer.drawSolidTriangle(point1: p1, point2: p2, point3: p3, fillColor: series[i].color, isOriginShifted: false)
             }
             let p: Point = Point(bR.x + plotLegend.legendTextSize, bR.y)

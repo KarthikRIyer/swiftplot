@@ -28,8 +28,8 @@
 <rect x="510.0" y="175.6" width="180.0" height="330.4" style="fill:rgb(164.985,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
 <rect x="710.0" y="112.66669" width="180.0" height="393.3333" style="fill:rgb(164.985,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
 <text x="461.4" y="58.5" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,461.4,58.5)">BAR CHART</text>
-<text x="476.8" y="635.4" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,476.8,635.4)">X-AXIS</text>
-<text x="45.0" y="376.6" stroke="#000000" stroke-width="1.2" transform="rotate(-90.0,45.0,376.6)">Y-AXIS</text>
+<text x="476.8" y="630.4" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,476.8,630.4)">X-AXIS</text>
+<text x="50.0" y="376.6" stroke="#000000" stroke-width="1.2" transform="rotate(-90.0,50.0,376.6)">Y-AXIS</text>
 <rect x="120.0" y="86.0" width="67.23999" height="24.0" style="fill:rgb(255.0,255.0,255.0);stroke-width:2.0;stroke:rgb(0.0,0.0,0.0);opacity:0.7" />
 <rect x="128.0" y="94.0" width="8.0" height="8.0" style="fill:rgb(164.985,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
 <text x="144.0" y="102.0" stroke="#000000" stroke-width="1.2" transform="rotate(-0.0,144.0,102.0)">Plot 1</text>
