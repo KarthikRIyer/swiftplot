@@ -72,6 +72,13 @@ public protocol Renderer: AnyObject{
     */
     func drawSolidTriangle(point1: Point, point2: Point, point3: Point, fillColor: Color, isOriginShifted: Bool)
 
+    /*drawSolidPolygon()
+    *params: points: [Point], fillColor: Color, isOriginShifted: Bool
+    *description: Draws a polygon with specified fill color from an array of Points
+    *             This function can operate in both coordinate systems with and without shifted origin. This is decided by the boolean parameter isOriginShifted.
+    */
+    func drawSolidPolygon(points: [Point], fillColor: Color, isOriginShifted: Bool)
+
     /*getTextWidth()
     *params: text: String, textSize size: Float
     *description: Returns the width of text that will be drawn in the final image by the respective renderer

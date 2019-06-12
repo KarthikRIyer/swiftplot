@@ -288,6 +288,25 @@ namespace CPPAGGRenderer{
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
     }
 
+    void draw_solid_polygon(const float* x, const float* y, int count, float r, float g, float b, float a, bool is_origin_shifted) {
+      agg::path_storage poly_path;
+      poly_path.move_to(*x, *y);
+      for (int i = 1; i < count; i++) {
+        poly_path.line_to(*(x+i),*(y+i));
+      }
+      poly_path.close_polygon();
+      agg::trans_affine matrix;
+      matrix *= agg::trans_affine_translation(0, 0);
+      if (is_origin_shifted) {
+        matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
+      }
+      agg::conv_transform<agg::path_storage, agg::trans_affine> trans(poly_path, matrix);
+      m_ras.add_path(trans);
+      Color c(r, g, b, a);
+      ren_aa.color(c);
+      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
+    }
+
     void draw_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_dashed, bool is_origin_shifted){
       agg::path_storage rect_path;
       rect_path.move_to(*x, *y);
@@ -425,6 +444,11 @@ namespace CPPAGGRenderer{
   void draw_solid_triangle(float x1, float x2, float x3, float y1, float y2, float y3, float r, float g, float b, float a, bool is_origin_shifted, const void *object){
     Plot *plot = (Plot *)object;
     plot -> draw_solid_triangle(x1, x2, x3, y1, y2, y3, r, g, b, a, is_origin_shifted);
+  }
+
+  void draw_solid_polygon(const float* x, const float* y, int count, float r, float g, float b, float a, bool is_origin_shifted, const void *object){
+    Plot *plot = (Plot *)object;
+    plot -> draw_solid_polygon(x, y, count, r, g, b, a, is_origin_shifted);
   }
 
   void draw_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_dashed, bool is_origin_shifted, const void *object){

@@ -24,3 +24,24 @@ public struct Point {
     }
     public static let zero = Point(0.0, 0.0)
 }
+
+extension Point {
+    static func + (left: Point, right: Point) -> Point {
+        return Point(left.x + right.x, left.y + right.y)
+    }
+    static func - (left: Point, right: Point) -> Point {
+        return Point(left.x - right.x, left.y - right.y)
+    }
+    static func * (left: Point, right: Point) -> Point {
+        return Point(left.x * right.x, left.y * right.y)
+    }
+    static func * (left: Point, right: Float) -> Point {
+        return Point(left.x * right, left.y * right)
+    }
+    static func / (left: Point, right: Point) -> Point {
+        return Point(left.x / right.x, left.y / right.y)
+    }
+    static func / (left: Point, right: Float) -> Point {
+        return Point(left.x / right, left.y / right)
+    }
+}

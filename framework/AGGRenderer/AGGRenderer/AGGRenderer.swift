@@ -73,6 +73,16 @@ public class AGGRenderer: Renderer{
       draw_solid_triangle(point1.x, point2.x, point3.x, point1.y, point2.y, point3.y, fillColor.r, fillColor.g, fillColor.b, fillColor.a, isOriginShifted, agg_object);
     }
 
+    public func drawSolidPolygon(points: [Point], fillColor: Color, isOriginShifted: Bool) {
+        var x = [Float]()
+        var y = [Float]()
+        for index in 0..<points.count {
+            x.append(points[index].x)
+            y.append(points[index].y)
+        }
+        draw_solid_polygon(x, y, Int32(points.count), fillColor.r, fillColor.g, fillColor.b, fillColor.a, isOriginShifted, agg_object)
+    }
+
     public func drawLine(startPoint p1: Point, endPoint p2: Point, strokeWidth thickness: Float, strokeColor: Color = Color.black, isDashed: Bool, isOriginShifted: Bool) {
         var x = [Float]()
         var y = [Float]()
