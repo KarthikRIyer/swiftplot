@@ -24,7 +24,7 @@ for index in 1...100 {
 var agg_renderer = AGGRenderer()
 var svg_renderer = SVGRenderer()
 
-var scatterPlot: ScatterPlot = ScatterPlot()
+var scatterPlot: ScatterPlot = ScatterPlot(width: 1000, height: 1000)
 scatterPlot.addSeries(x, y, label: "Plot 1", startColor: .gold, endColor: .blue, scatterPattern: .circle)
 scatterPlot.addSeries(x1, y1, label: "Plot 2", color: .green, scatterPattern: .star)
 scatterPlot.plotTitle = PlotTitle("SCATTER PLOT")

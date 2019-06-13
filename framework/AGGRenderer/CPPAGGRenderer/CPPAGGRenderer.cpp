@@ -48,13 +48,6 @@ int sub_width = 1000;
 int sub_height = 660;
 
 namespace CPPAGGRenderer{
-  unsigned char* buffer = new unsigned char[frame_width*frame_height*3];
-  agg::rendering_buffer rbuf (buffer,
-                              frame_width,
-                              frame_height,
-                              -frame_width*3);
-  pixfmt pixf(rbuf);
-  pixfmt_pre pixf_pre(rbuf);
 
   void write_bmp(const unsigned char* buf, unsigned width, unsigned height, const char* file_name){
     saveBMP(buf, width, height, file_name);
@@ -86,21 +79,28 @@ namespace CPPAGGRenderer{
     agg::rasterizer_scanline_aa<> m_ras;
     agg::scanline_p8              m_sl_p8;
     agg::line_cap_e roundCap = agg::round_cap;
-    renderer_base rb;
     renderer_aa ren_aa;
     int pngBufferSize = 0;
+
+    unsigned char* buffer;
 
     agg::int8u*           m_pattern;
     agg::rendering_buffer m_pattern_rbuf;
     renderer_base_pre rb_pre;
 
-    Plot(){
-      rb = renderer_base(pixf);
-      ren_aa = renderer_aa(rb);
-      rb_pre = renderer_base_pre(pixf_pre);
+    Plot(float width, float height, float subW, float subH){
+      frame_width = width;
+      frame_height = height;
+      sub_width = subW;
+      sub_height = subH;
+      delete[] buffer;
+      buffer = new unsigned char[frame_width*frame_height*3];
     }
 
     void generate_pattern(float r, float g, float b, float a, int hatch_pattern){
+      agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
+      pixfmt_pre pixf_pre(rbuf);
+      rb_pre = renderer_base_pre(pixf_pre);
       agg::path_storage m_ps;
       int size = 10;
       m_pattern = new agg::int8u[size * size * 3];
@@ -194,7 +194,10 @@ namespace CPPAGGRenderer{
     }
 
     void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern, bool is_origin_shifted){
-
+      agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
+      pixfmt pixf = pixfmt(rbuf);
+      renderer_base rb = renderer_base(pixf);
+      ren_aa = renderer_aa(rb);
       agg::path_storage rect_path;
       rect_path.move_to(*x, *y);
       for (int i = 1; i < 4; i++) {
@@ -228,11 +231,13 @@ namespace CPPAGGRenderer{
         m_ras.add_path(trans);
         agg::render_scanlines_aa(m_ras, m_sl_p8, rb_pre, sa, sg);
       }
-
     }
 
     void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_origin_shifted){
-
+      agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
+      pixfmt pixf = pixfmt(rbuf);
+      renderer_base rb = renderer_base(pixf);
+      ren_aa = renderer_aa(rb);
       agg::path_storage rect_path;
       rect_path.move_to(*x, *y);
       for (int i = 1; i < 4; i++) {
@@ -253,10 +258,13 @@ namespace CPPAGGRenderer{
       Color c(r, g, b, a);
       ren_aa.color(c);
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
-
     }
 
     void draw_solid_circle(float cx, float cy, float radius, float r, float g, float b, float a, bool is_origin_shifted) {
+      agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
+      pixfmt pixf = pixfmt(rbuf);
+      renderer_base rb = renderer_base(pixf);
+      ren_aa = renderer_aa(rb);
       agg::ellipse circle(cx, cy, radius, radius, 100);
       Color c(r, g, b, a);
       agg::trans_affine matrix;
@@ -271,6 +279,10 @@ namespace CPPAGGRenderer{
     }
 
     void draw_solid_triangle(float x1, float x2, float x3, float y1, float y2, float y3, float r, float g, float b, float a, bool is_origin_shifted) {
+      agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
+      pixfmt pixf = pixfmt(rbuf);
+      renderer_base rb = renderer_base(pixf);
+      ren_aa = renderer_aa(rb);
       agg::path_storage tri_path;
       tri_path.move_to(x1, y1);
       tri_path.line_to(x2, y2);
@@ -289,6 +301,10 @@ namespace CPPAGGRenderer{
     }
 
     void draw_solid_polygon(const float* x, const float* y, int count, float r, float g, float b, float a, bool is_origin_shifted) {
+      agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
+      pixfmt pixf = pixfmt(rbuf);
+      renderer_base rb = renderer_base(pixf);
+      ren_aa = renderer_aa(rb);
       agg::path_storage poly_path;
       poly_path.move_to(*x, *y);
       for (int i = 1; i < count; i++) {
@@ -308,6 +324,10 @@ namespace CPPAGGRenderer{
     }
 
     void draw_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_dashed, bool is_origin_shifted){
+      agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
+      pixfmt pixf = pixfmt(rbuf);
+      renderer_base rb = renderer_base(pixf);
+      ren_aa = renderer_aa(rb);
       agg::path_storage rect_path;
       rect_path.move_to(*x, *y);
       rect_path.line_to(*(x+1),*(y+1));
@@ -337,6 +357,10 @@ namespace CPPAGGRenderer{
     }
 
     void draw_plot_lines(const float *x, const float *y, int size, float thickness, float r, float g, float b, float a, bool isDashed){
+      agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
+      pixfmt pixf = pixfmt(rbuf);
+      renderer_base rb = renderer_base(pixf);
+      ren_aa = renderer_aa(rb);
       agg::path_storage rect_path;
       rect_path.move_to(*x, *y);
       for (int i = 1; i < size; i++) {
@@ -366,6 +390,10 @@ namespace CPPAGGRenderer{
     }
 
     void draw_text(const char *s, float x, float y, float size, float thickness, float angle, bool is_origin_shifted){
+      agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
+      pixfmt pixf = pixfmt(rbuf);
+      renderer_base rb = renderer_base(pixf);
+      ren_aa = renderer_aa(rb);
       agg::gsv_text t;
       t.size(size);
       t.text(s);
@@ -386,12 +414,10 @@ namespace CPPAGGRenderer{
     }
 
     float get_text_width(const char *s, float size){
-
       agg::gsv_text t;
       t.text(s);
       t.size(size);
       return t.text_width();
-
     }
 
     void save_image(const char *s){
@@ -401,7 +427,7 @@ namespace CPPAGGRenderer{
       std::vector<unsigned char> image(buffer, buffer + (frame_width*frame_height*3));
       write_png(image, frame_width, frame_height, file_png);
 
-      // delete[] buffer;
+      delete[] buffer;
     }
 
     const unsigned char* getPngBuffer(){
@@ -417,12 +443,8 @@ namespace CPPAGGRenderer{
   };
 
   const void * initializePlot(float w, float h, float subW, float subH){
-    frame_width = w;
-    frame_height = h;
-    sub_width = subW;
-    sub_height = subH;
-    memset(buffer, 255, frame_width*frame_height*3);
-    Plot *plot = new Plot();
+    Plot *plot = new Plot(w, h, subW, subH);
+    memset(plot->buffer, 255, frame_width*frame_height*3);
     return (void *)plot;
   }
 
