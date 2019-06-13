@@ -434,6 +434,7 @@ namespace CPPAGGRenderer{
       std::vector<unsigned char> outputImage = write_png_memory(buffer, frame_width, frame_height);
       pngBufferSize = outputImage.size();
     	return outputImage.data();
+      delete[] buffer;
     }
 
     int getPngBufferSize(){
