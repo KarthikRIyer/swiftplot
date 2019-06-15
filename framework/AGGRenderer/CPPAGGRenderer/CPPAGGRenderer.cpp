@@ -426,19 +426,20 @@ namespace CPPAGGRenderer{
       strcat(file_png, ".png");
       std::vector<unsigned char> image(buffer, buffer + (frame_width*frame_height*3));
       write_png(image, frame_width, frame_height, file_png);
-
-      delete[] buffer;
     }
 
     const unsigned char* getPngBuffer(){
       std::vector<unsigned char> outputImage = write_png_memory(buffer, frame_width, frame_height);
       pngBufferSize = outputImage.size();
     	return outputImage.data();
-      delete[] buffer;
     }
 
     int getPngBufferSize(){
       return pngBufferSize;
+    }
+
+    void delete_buffer(){
+      delete[] buffer;
     }
 
   };
@@ -507,6 +508,11 @@ namespace CPPAGGRenderer{
   int get_png_buffer_size(const void *object){
     Plot *plot = (Plot *)object;
     return plot -> getPngBufferSize();
+  }
+
+  void delete_buffer(const void *object){
+    Plot *plot = (Plot *)object;
+    plot -> delete_buffer();
   }
 
 }

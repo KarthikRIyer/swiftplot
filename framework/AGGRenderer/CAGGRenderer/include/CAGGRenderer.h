@@ -29,6 +29,8 @@ const unsigned char* get_png_buffer(const void *object);
 
 int get_png_buffer_size(const void *object);
 
+void delete_buffer(const void *object);
+
 #ifdef __cplusplus
 }
 #endif

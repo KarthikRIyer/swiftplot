@@ -4,20 +4,25 @@ import SwiftPlot
 
 public class AGGRenderer: Renderer{
 
+    var initialized = false
     public var xOffset: Float = 0
     public var yOffset: Float = 0
 
     public var plotDimensions: PlotDimensions {
         willSet {
-            agg_object = initializePlot(newValue.frameWidth, newValue.frameHeight, newValue.subWidth, newValue.subHeight)
+            if (initialized) {
+                agg_object = initializePlot(newValue.frameWidth, newValue.frameHeight, newValue.subWidth, newValue.subHeight)
+            }
         }
     }
 
     var agg_object: UnsafeRawPointer
 
     public init(width w: Float = 1000, height h: Float = 660) {
+        initialized = false
         plotDimensions = PlotDimensions(frameWidth: w, frameHeight: h)
         agg_object = initializePlot(plotDimensions.frameWidth, plotDimensions.frameHeight, plotDimensions.subWidth, plotDimensions.subHeight)
+        initialized = true
     }
 
     public func drawRect(topLeftPoint p1: Point, topRightPoint p2: Point, bottomRightPoint p3: Point, bottomLeftPoint p4: Point, strokeWidth thickness: Float, strokeColor: Color = Color.black, isOriginShifted: Bool) {
@@ -123,6 +128,10 @@ public class AGGRenderer: Renderer{
         let pngBufferPointer: UnsafePointer<UInt8> = get_png_buffer(agg_object)
         let bufferSize: Int = Int(get_png_buffer_size(agg_object))
         return encodeBase64PNG(pngBufferPointer: pngBufferPointer, bufferSize: bufferSize)
+    }
+
+    deinit {
+        delete_buffer(agg_object)
     }
 
 }

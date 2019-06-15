@@ -53,3 +53,7 @@ const unsigned char* get_png_buffer(const void *object){
 int get_png_buffer_size(const void *object){
   return CPPAGGRenderer::get_png_buffer_size(object);
 }
+
+void delete_buffer(const void *object){
+  CPPAGGRenderer::delete_buffer(object);
+}

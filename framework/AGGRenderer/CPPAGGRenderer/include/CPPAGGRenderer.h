@@ -26,4 +26,6 @@ namespace CPPAGGRenderer{
 
   int get_png_buffer_size(const void *object);
 
+  void delete_buffer(const void *object);
+
 }
