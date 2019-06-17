@@ -122,8 +122,13 @@ let package = Package(
             name: "BarChartHorizontalStackedExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/BarChartHorizontalStacked"),
+  .target(
+            name: "ScatterPlotExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/ScatterPlot"),
         //.testTarget(
         //  name: "swiftplotTests",
         //  dependencies: ["swiftplot"]),
-    ]
+    ],
+    cxxLanguageStandard: .cxx11
 )

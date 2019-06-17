@@ -167,6 +167,66 @@ public class SVGRenderer: Renderer{
         image = image + "\n" + rect
     }
 
+    public func drawSolidCircle(center c: Point, radius r: Float, fillColor: Color, isOriginShifted: Bool) {
+        var x = c.x;
+        var y = c.y;
+        if (isOriginShifted) {
+            x = x + 0.1*plotDimensions.subWidth
+            y = y + 0.1*plotDimensions.subHeight
+        }
+        y = plotDimensions.subHeight - y
+        let circle: String = "<circle cx=\"\(x)\" cy=\"\(y)\" r=\"\(r)\"  style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));opacity:\(fillColor.a)\" />"
+        image = image + "\n" + circle
+    }
+
+    public func drawSolidTriangle(point1: Point, point2: Point, point3: Point, fillColor: Color, isOriginShifted: Bool) {
+        var x1 = point1.x
+        var x2 = point2.x
+        var x3 = point3.x
+        var y1 = point1.y
+        var y2 = point2.y
+        var y3 = point3.y
+        if (isOriginShifted) {
+            x1 = x1 + 0.1*plotDimensions.subWidth
+            x2 = x2 + 0.1*plotDimensions.subWidth
+            x3 = x3 + 0.1*plotDimensions.subWidth
+            y1 = y1 + 0.1*plotDimensions.subHeight
+            y2 = y2 + 0.1*plotDimensions.subHeight
+            y3 = y3 + 0.1*plotDimensions.subHeight
+        }
+        y1 = plotDimensions.subHeight - y1
+        y2 = plotDimensions.subHeight - y2
+        y3 = plotDimensions.subHeight - y3
+        let triangle = "<polygon points=\"\(x1),\(y1) \(x2),\(y2) \(x3),\(y3)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));opacity:\(fillColor.a)\" />"
+        image = image + "\n" + triangle
+    }
+
+    public func drawSolidPolygon(points: [Point], fillColor: Color, isOriginShifted: Bool) {
+        var pts = [Point]()
+        if (isOriginShifted) {
+            for index in 0..<points.count {
+                let x = points[index].x + 0.1*plotDimensions.subWidth
+                var y = points[index].y + 0.1*plotDimensions.subHeight
+                y = plotDimensions.subHeight - y
+                pts.append(Point(x, y))
+            }
+        }
+        else {
+          for index in 0..<points.count {
+              let x = points[index].x
+              var y = points[index].y
+              y = plotDimensions.subHeight - y
+              pts.append(Point(x, y))
+          }
+        }
+        var pointsString = ""
+        for index in 0..<pts.count {
+            pointsString = pointsString + "\(pts[index].x),\(pts[index].y) "
+        }
+        let polygon = "<polygon points=\"" + pointsString + "\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));opacity:\(fillColor.a)\" />"
+        image = image + "\n" + polygon
+    }
+
     public func drawLine(startPoint p1: Point, endPoint p2: Point, strokeWidth thickness: Float, strokeColor: Color = Color.black, isDashed: Bool, isOriginShifted: Bool) {
         var x0 = p1.x
         var y0 = p1.y
