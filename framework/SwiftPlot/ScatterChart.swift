@@ -90,7 +90,7 @@ public class ScatterPlot: Plot {
 extension ScatterPlot{
 
     // call functions to draw the graph
-    public func drawGraphAndOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer){
+    public func drawGraphAndOutput(fileName name: String = "swift_plot_scatter_plot", renderer: Renderer){
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
         renderer.plotDimensions = plotDimensions
@@ -128,7 +128,7 @@ extension ScatterPlot{
         drawLegends(renderer: renderer)
     }
 
-    public func drawGraphOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer){
+    public func drawGraphOutput(fileName name: String = "swift_plot_scatter_plot", renderer: Renderer){
         renderer.plotDimensions = plotDimensions
         renderer.drawOutput(fileName: name)
     }

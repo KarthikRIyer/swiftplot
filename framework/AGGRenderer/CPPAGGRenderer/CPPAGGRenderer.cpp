@@ -82,7 +82,7 @@ namespace CPPAGGRenderer{
     renderer_aa ren_aa;
     int pngBufferSize = 0;
 
-    unsigned char* buffer;
+    unsigned char* buffer = NULL;
 
     agg::int8u*           m_pattern;
     agg::rendering_buffer m_pattern_rbuf;
@@ -93,7 +93,9 @@ namespace CPPAGGRenderer{
       frame_height = height;
       sub_width = subW;
       sub_height = subH;
-      delete[] buffer;
+      if (buffer != NULL) {
+        delete[] buffer;
+      }
       buffer = new unsigned char[frame_width*frame_height*3];
     }
 

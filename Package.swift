@@ -126,6 +126,10 @@ let package = Package(
             name: "ScatterPlotExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/ScatterPlot"),
+  .target(
+            name: "HistogramExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/Histogram"),
         //.testTarget(
         //  name: "swiftplotTests",
         //  dependencies: ["swiftplot"]),
