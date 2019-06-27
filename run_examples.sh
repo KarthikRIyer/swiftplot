@@ -18,3 +18,4 @@ swift run BarChartFilledCircleHatchedExample
 swift run BarChartVerticalStackedExample
 swift run BarChartHorizontalStackedExample
 swift run ScatterPlotExample
+swift run HistogramExample

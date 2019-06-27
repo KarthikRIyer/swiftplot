@@ -289,9 +289,9 @@ extension LineGraph{
             }
             let p: Point = Point(xM, 0)
             primaryAxis.plotMarkers.xMarkers.append(p)
-            let text_p: Point = Point(xM - (renderer.getTextWidth(text: "\(floor(primaryAxis.scaleX*(xM-originPrimary.x)))", textSize: primaryAxis.plotMarkers.markerTextSize)/2.0) + 8, -15)
+            let text_p: Point = Point(xM - (renderer.getTextWidth(text: "\(round(primaryAxis.scaleX*(xM-originPrimary.x)))", textSize: primaryAxis.plotMarkers.markerTextSize)/2.0) + 8, -15)
             primaryAxis.plotMarkers.xMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.xMarkersText.append("\(floor(primaryAxis.scaleX*(xM-originPrimary.x)))")
+            primaryAxis.plotMarkers.xMarkersText.append("\(round(primaryAxis.scaleX*(xM-originPrimary.x)))")
             xM = xM + inc2Primary
         }
 
@@ -303,9 +303,9 @@ extension LineGraph{
             }
             let p: Point = Point(xM, 0)
             primaryAxis.plotMarkers.xMarkers.append(p)
-            let text_p: Point = Point(xM - (renderer.getTextWidth(text: "\(ceil(primaryAxis.scaleX*(xM-originPrimary.x)))", textSize: primaryAxis.plotMarkers.markerTextSize)/2.0) + 8, -15)
+            let text_p: Point = Point(xM - (renderer.getTextWidth(text: "\(round(primaryAxis.scaleX*(xM-originPrimary.x)))", textSize: primaryAxis.plotMarkers.markerTextSize)/2.0) + 8, -15)
             primaryAxis.plotMarkers.xMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.xMarkersText.append("\(ceil(primaryAxis.scaleX*(xM-originPrimary.x)))")
+            primaryAxis.plotMarkers.xMarkersText.append("\(round(primaryAxis.scaleX*(xM-originPrimary.x)))")
             xM = xM - inc2Primary
         }
 
@@ -317,18 +317,18 @@ extension LineGraph{
             }
             let p: Point = Point(0, yM)
             primaryAxis.plotMarkers.yMarkers.append(p)
-            let text_p: Point = Point(-(renderer.getTextWidth(text: "\(ceil(primaryAxis.scaleY*(yM-originPrimary.y)))", textSize: primaryAxis.plotMarkers.markerTextSize)+5), yM - 4)
+            let text_p: Point = Point(-(renderer.getTextWidth(text: "\(round(primaryAxis.scaleY*(yM-originPrimary.y)))", textSize: primaryAxis.plotMarkers.markerTextSize)+5), yM - 4)
             primaryAxis.plotMarkers.yMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.yMarkersText.append("\(ceil(primaryAxis.scaleY*(yM-originPrimary.y)))")
+            primaryAxis.plotMarkers.yMarkersText.append("\(round(primaryAxis.scaleY*(yM-originPrimary.y)))")
             yM = yM + inc1Primary
         }
         yM = originPrimary.y - inc1Primary
         while yM>0.0 {
             let p: Point = Point(0, yM)
             primaryAxis.plotMarkers.yMarkers.append(p)
-            let text_p: Point = Point(-(renderer.getTextWidth(text: "\(floor(primaryAxis.scaleY*(yM-originPrimary.y)))", textSize: primaryAxis.plotMarkers.markerTextSize)+5), yM - 4)
+            let text_p: Point = Point(-(renderer.getTextWidth(text: "\(round(primaryAxis.scaleY*(yM-originPrimary.y)))", textSize: primaryAxis.plotMarkers.markerTextSize)+5), yM - 4)
             primaryAxis.plotMarkers.yMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.yMarkersText.append("\(floor(primaryAxis.scaleY*(yM-originPrimary.y)))")
+            primaryAxis.plotMarkers.yMarkersText.append("\(round(primaryAxis.scaleY*(yM-originPrimary.y)))")
             yM = yM - inc1Primary
         }
 
@@ -373,18 +373,18 @@ extension LineGraph{
                 }
                 let p: Point = Point(0, yM)
                 secondaryAxis!.plotMarkers.yMarkers.append(p)
-                let text_p: Point = Point(plotDimensions.graphWidth + (renderer.getTextWidth(text: "\(ceil(secondaryAxis!.scaleY*(yM-originSecondary!.y)))", textSize: secondaryAxis!.plotMarkers.markerTextSize)*Float(0.5) - 5), yM - 4)
+                let text_p: Point = Point(plotDimensions.graphWidth + (renderer.getTextWidth(text: "\(round(secondaryAxis!.scaleY*(yM-originSecondary!.y)))", textSize: secondaryAxis!.plotMarkers.markerTextSize)*Float(0.5) - 5), yM - 4)
                 secondaryAxis!.plotMarkers.yMarkersTextLocation.append(text_p)
-                secondaryAxis!.plotMarkers.yMarkersText.append("\(ceil(secondaryAxis!.scaleY*(yM-originSecondary!.y)))")
+                secondaryAxis!.plotMarkers.yMarkersText.append("\(round(secondaryAxis!.scaleY*(yM-originSecondary!.y)))")
                 yM = yM + inc1Secondary
             }
             yM = originSecondary!.y - inc1Secondary
             while yM>0.0 {
                 let p: Point = Point(0, yM)
                 secondaryAxis!.plotMarkers.yMarkers.append(p)
-                let text_p: Point = Point(plotDimensions.graphWidth + (renderer.getTextWidth(text: "\(floor(secondaryAxis!.scaleY*(yM-originSecondary!.y)))", textSize: secondaryAxis!.plotMarkers.markerTextSize)*Float(0.5) - 5), yM - 4)
+                let text_p: Point = Point(plotDimensions.graphWidth + (renderer.getTextWidth(text: "\(round(secondaryAxis!.scaleY*(yM-originSecondary!.y)))", textSize: secondaryAxis!.plotMarkers.markerTextSize)*Float(0.5) - 5), yM - 4)
                 secondaryAxis!.plotMarkers.yMarkersTextLocation.append(text_p)
-                secondaryAxis!.plotMarkers.yMarkersText.append("\(floor(secondaryAxis!.scaleY*(yM-originSecondary!.y)))")
+                secondaryAxis!.plotMarkers.yMarkersText.append("\(round(secondaryAxis!.scaleY*(yM-originSecondary!.y)))")
                 yM = yM - inc1Secondary
             }
 

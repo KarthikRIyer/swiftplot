@@ -125,7 +125,6 @@ extension Histogram {
     let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)*Float(0.5) - 10.0;
     scaleY = (maximumY - minimumY) / (plotDimensions.graphHeight - topScaleMargin);
     scaleX = (maximumX - minimumX) / (plotDimensions.graphWidth-Float(2.0*xMargin));
-    // print("\(scaleY)")
     let nD1: Int = max(getNumberOfDigits(maximumY), getNumberOfDigits(minimumY))
     var v1: Float
     if (nD1 > 1 && maximumY <= pow(Float(10), Float(nD1 - 1))) {
@@ -150,16 +149,16 @@ extension Histogram {
       }
       let p: Point = Point(0, yM)
       plotMarkers.yMarkers.append(p)
-      let text_p: Point = Point(-(renderer.getTextWidth(text: "\(ceil(scaleY*(yM-origin.y)))", textSize: plotMarkers.markerTextSize)+5), yM - 4)
+      let text_p: Point = Point(-(renderer.getTextWidth(text: "\(round(scaleY*(yM-origin.y)))", textSize: plotMarkers.markerTextSize)+5), yM - 4)
       plotMarkers.yMarkersTextLocation.append(text_p)
-      plotMarkers.yMarkersText.append("\(ceil(scaleY*(yM-origin.y)))")
+      plotMarkers.yMarkersText.append("\(round(scaleY*(yM-origin.y)))")
       yM = yM + inc1
     }
 
-    let xRange = maximumX - minimumX
+    let xRange = niceRoundFloor(maximumX - minimumX)
     let nD2: Int = getNumberOfDigits(xRange)
     var v2: Float
-    if (nD2 > 1 && maximumX <= pow(Float(10), Float(nD2 - 1))) {
+    if (nD2 > 1 && xRange <= pow(Float(10), Float(nD2 - 1))) {
       v2 = Float(pow(Float(10), Float(nD2 - 2)))
     } else if (nD2 > 1) {
       v2 = Float(pow(Float(10), Float(nD2 - 1)))
@@ -175,21 +174,17 @@ extension Histogram {
     let xM: Float = xMargin
     let scaleXInv = 1.0/scaleX
     let xIncrement = inc2*scaleX
-    print("minimumX \(minimumX)")
-    print("maximumX \(maximumX)")
-    print("xIncrement \(xIncrement)")
     for i in stride(from: minimumX, through: maximumX, by: xIncrement)  {
       let p: Point = Point((i-minimumX)*scaleXInv + xM , 0)
       plotMarkers.xMarkers.append(p)
       let textWidth: Float = renderer.getTextWidth(text: "\(i)", textSize: plotMarkers.markerTextSize)
-      let text_p: Point = Point((i - minimumX - textWidth*Float(0.5))*scaleXInv, -2.0*plotMarkers.markerTextSize)
+      let text_p: Point = Point((i - minimumX)*scaleXInv - textWidth/Float(2), -2.0*plotMarkers.markerTextSize)
       plotMarkers.xMarkersTextLocation.append(text_p)
       plotMarkers.xMarkersText.append("\(i)")
     }
 
     // scale points to be plotted according to plot size
     let scaleYInv: Float = 1.0/scaleY
-    // print("\(scaleYInv)")
     histogramSeries.scaledBinFrequency.removeAll();
     for j in 0..<histogramSeries.binFrequency.count {
       let frequency = Float(histogramSeries.binFrequency[j])

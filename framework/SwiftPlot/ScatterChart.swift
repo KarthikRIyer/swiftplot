@@ -232,9 +232,9 @@ extension ScatterPlot{
             }
             let p: Point = Point(xM, 0)
             plotMarkers.xMarkers.append(p)
-            let text_p: Point = Point(xM - (renderer.getTextWidth(text: "\(floor(scaleX*(xM-origin.x)))", textSize: plotMarkers.markerTextSize)/2.0) + 8, -15)
+            let text_p: Point = Point(xM - (renderer.getTextWidth(text: "\(round(scaleX*(xM-origin.x)))", textSize: plotMarkers.markerTextSize)/2.0) + 8, -15)
             plotMarkers.xMarkersTextLocation.append(text_p)
-            plotMarkers.xMarkersText.append("\(floor(scaleX*(xM-origin.x)))")
+            plotMarkers.xMarkersText.append("\(round(scaleX*(xM-origin.x)))")
             xM = xM + inc2
         }
 
@@ -246,9 +246,9 @@ extension ScatterPlot{
             }
             let p: Point = Point(xM, 0)
             plotMarkers.xMarkers.append(p)
-            let text_p: Point = Point(xM - (renderer.getTextWidth(text: "\(ceil(scaleX*(xM-origin.x)))", textSize: plotMarkers.markerTextSize)/2.0) + 8, -15)
+            let text_p: Point = Point(xM - (renderer.getTextWidth(text: "\(round(scaleX*(xM-origin.x)))", textSize: plotMarkers.markerTextSize)/2.0) + 8, -15)
             plotMarkers.xMarkersTextLocation.append(text_p)
-            plotMarkers.xMarkersText.append("\(ceil(scaleX*(xM-origin.x)))")
+            plotMarkers.xMarkersText.append("\(round(scaleX*(xM-origin.x)))")
             xM = xM - inc2
         }
 

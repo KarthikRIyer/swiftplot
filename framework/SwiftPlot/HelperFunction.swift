@@ -21,6 +21,14 @@ public func niceRound(_ value: Float) -> Float {
     }
 }
 
+public func roundCeil10(_ value: Float) -> Float {
+    return ceil(value/10)*10
+}
+
+public func roundFloor10(_ value: Float) -> Float {
+    return floor(value/10)*10
+}
+
 public func getNumberOfDigits(_ n: Float) -> Int{
     var x: Int = Int(n)
     var count: Int = 0

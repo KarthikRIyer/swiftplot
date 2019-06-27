@@ -16,8 +16,8 @@ public class HistogramSeries {
     self.label = label
     self.color = color
     self.data.sort()
-    minimumX = niceRoundFloor(self.data[0])
-    maximumX = niceRoundCeil(self.data[data.count-1])
+    minimumX = roundFloor10(self.data[0])
+    maximumX = roundCeil10(self.data[data.count-1])
     binInterval = (maximumX-minimumX)/Float(bins)
     var dataIndex: Int = 0
     var binStart: Float = minimumX
