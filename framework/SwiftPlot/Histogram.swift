@@ -23,23 +23,31 @@ public class Histogram: Plot {
   }
   public var scaleY: Float = 1
   public var scaleX: Float = 1
+  public var strokeWidth: Float = 2
   public var plotMarkers: PlotMarkers = PlotMarkers()
-  public var histogramSeries: HistogramSeries = HistogramSeries()
 
+  var histogramSeries: HistogramSeries = HistogramSeries()
+  var histogramStackSeries = [HistogramSeries]()
   var barWidth: Float = 0
   var xMargin: Float = 5
+  var isNormalized = false
 
   var origin: Point = Point.zero
 
-  public init(width: Float = 1000, height: Float = 660){
+  public init(width: Float = 1000, height: Float = 660, isNormalized: Bool = false){
     plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
+    self.isNormalized = isNormalized
   }
   public func addSeries(_ s: HistogramSeries){
     histogramSeries = s
   }
-  public func addSeries(data: [Float], bins: Int, label: String, color: Color = Color.lightBlue){
-    let s = HistogramSeries(data: data, bins: bins, label: label, color: color)
+  public func addSeries(data: [Float], bins: Int, label: String, color: Color = Color.lightBlue, histogramType: HistogramSeriesOptions.HistogramType = .bar){
+    let s = HistogramSeries(data: data, bins: bins, isNormalized: isNormalized, label: label, color: color, histogramType: histogramType)
     addSeries(s)
+  }
+  public func addStackSeries(data: [Float], label: String, color: Color = Color.lightBlue){
+    let s = HistogramSeries(data: data, bins: histogramSeries.bins, isNormalized: isNormalized, label: label, color: color, histogramType: histogramSeries.histogramSeriesOptions.histogramType)
+    histogramStackSeries.append(s)
   }
 }
 
@@ -106,10 +114,33 @@ extension Histogram {
 
   func calcMarkerLocAndScalePts(renderer: Renderer){
 
-    let maximumY: Float = Float(histogramSeries.maximumFrequency)
+    var maximumY: Float = Float(histogramSeries.maximumFrequency)
     let minimumY: Float = 0
-    let maximumX: Float = histogramSeries.maximumX
-    let minimumX: Float = histogramSeries.minimumX
+    var maximumX: Float = histogramSeries.maximumX
+    var minimumX: Float = histogramSeries.minimumX
+
+    for series in histogramStackSeries {
+      if (series.maximumX > maximumX) {
+        maximumX = series.maximumX
+      }
+      if (series.minimumX < minimumX) {
+        minimumX = series.minimumX
+      }
+    }
+    let binInterval = (maximumX-minimumX)/Float(histogramSeries.bins)
+    histogramSeries.recalculateBins(binStart: minimumX, binEnd: maximumX, binInterval: binInterval)
+    for index in 0..<histogramStackSeries.count {
+      histogramStackSeries[index].recalculateBins(binStart: minimumX, binEnd: maximumX, binInterval: binInterval)
+    }
+    for index in 0..<histogramSeries.bins {
+      var tempFrequency = histogramSeries.binFrequency[index]
+      for series in histogramStackSeries {
+        tempFrequency += series.binFrequency[index]
+      }
+      if (tempFrequency>maximumY) {
+        maximumY = tempFrequency
+      }
+    }
 
     barWidth = round((plotDimensions.graphWidth - Float(2.0*xMargin))/Float(histogramSeries.bins))
 
@@ -190,6 +221,12 @@ extension Histogram {
       let frequency = Float(histogramSeries.binFrequency[j])
       histogramSeries.scaledBinFrequency.append(frequency*scaleYInv + origin.y)
     }
+    for index in 0..<histogramStackSeries.count {
+      for j in 0..<histogramStackSeries[index].binFrequency.count {
+        let frequency = Float(histogramStackSeries[index].binFrequency[j])
+        histogramStackSeries[index].scaledBinFrequency.append(frequency*scaleYInv + origin.y)
+      }
+    }
   }
 
   //functions to draw the plot
@@ -216,14 +253,72 @@ extension Histogram {
 
   func drawPlots(renderer: Renderer) {
     var xM = Float(xMargin)
-    for i in 0..<histogramSeries.bins {
-      let height = histogramSeries.scaledBinFrequency[i]
-      let bL = Point(xM,0.0)
-      let bR = Point(xM+barWidth,0.0)
-      let tL = Point(xM,height)
-      let tR = Point(xM+barWidth,height)
-      renderer.drawSolidRect(topLeftPoint: tL, topRightPoint: tR, bottomRightPoint: bR, bottomLeftPoint: bL, fillColor: histogramSeries.color, hatchPattern: .none, isOriginShifted: true)
-      xM+=barWidth
+    switch histogramSeries.histogramSeriesOptions.histogramType {
+    case .bar:
+      for i in 0..<histogramSeries.bins {
+        var currentHeight: Float = histogramSeries.scaledBinFrequency[i]
+        var bL = Point(xM,0.0)
+        var bR = Point(xM+barWidth,0.0)
+        var tL = Point(xM,currentHeight)
+        var tR = Point(xM+barWidth,currentHeight)
+        renderer.drawSolidRect(topLeftPoint: tL, topRightPoint: tR, bottomRightPoint: bR, bottomLeftPoint: bL, fillColor: histogramSeries.color, hatchPattern: .none, isOriginShifted: true)
+
+        for series in histogramStackSeries {
+          bL = Point(bL.x, currentHeight)
+          bR = Point(bR.x, currentHeight)
+          tL = Point(tL.x, bL.y + series.scaledBinFrequency[i])
+          tR = Point(tR.x, bR.y + series.scaledBinFrequency[i])
+          renderer.drawSolidRect(topLeftPoint: tL, topRightPoint: tR, bottomRightPoint: bR, bottomLeftPoint: bL, fillColor: series.color, hatchPattern: .none, isOriginShifted: true)
+          currentHeight += series.scaledBinFrequency[i]
+        }
+        xM+=barWidth
+      }
+    case .step:
+      var firstHeight: Float = histogramSeries.scaledBinFrequency[0]
+      var firstBottomLeft = Point(xM, 0.0)
+      var firstTopLeft    = Point(xM, firstHeight)
+      renderer.drawLine(startPoint: firstBottomLeft, endPoint: firstTopLeft, strokeWidth: strokeWidth, strokeColor: histogramSeries.color, isDashed: false, isOriginShifted: true)
+      for series in histogramStackSeries {
+        firstBottomLeft = Point(firstBottomLeft.x, firstHeight)
+        firstTopLeft = Point(firstTopLeft.x, firstHeight + series.scaledBinFrequency[0])
+        renderer.drawLine(startPoint: firstBottomLeft, endPoint: firstTopLeft, strokeWidth: strokeWidth, strokeColor: series.color, isDashed: false, isOriginShifted: true)
+        firstHeight += series.scaledBinFrequency[0]
+      }
+      for i in 0..<histogramSeries.bins {
+        var currentHeight: Float = histogramSeries.scaledBinFrequency[i]
+        var topLeft = Point(xM,currentHeight)
+        var topRight = Point(xM+barWidth,currentHeight)
+        if (i != histogramSeries.bins-1) {
+          let nextTopLeft = Point(topRight.x, histogramSeries.scaledBinFrequency[i+1])
+          renderer.drawLine(startPoint: topRight, endPoint: nextTopLeft, strokeWidth: strokeWidth, strokeColor: histogramSeries.color, isDashed: false, isOriginShifted: true)
+        }
+        renderer.drawLine(startPoint: topLeft, endPoint: topRight, strokeWidth: strokeWidth, strokeColor: histogramSeries.color, isDashed: false, isOriginShifted: true)
+        for series in histogramStackSeries {
+          topLeft = Point(topLeft.x, currentHeight + series.scaledBinFrequency[i])
+          topRight = Point(topRight.x, currentHeight + series.scaledBinFrequency[i])
+          if (i != histogramSeries.bins-1) {
+            var nextHeight = histogramSeries.scaledBinFrequency[i+1]
+            for k in histogramStackSeries {
+                nextHeight += k.scaledBinFrequency[i+1]
+            }
+            let nextTopLeft = Point(topRight.x, nextHeight + series.scaledBinFrequency[i+1])
+            renderer.drawLine(startPoint: topRight, endPoint: nextTopLeft, strokeWidth: strokeWidth, strokeColor: series.color, isDashed: false, isOriginShifted: true)
+          }
+          renderer.drawLine(startPoint: topLeft, endPoint: topRight, strokeWidth: strokeWidth, strokeColor: series.color, isDashed: false, isOriginShifted: true)
+          currentHeight += series.scaledBinFrequency[i]
+        }
+        xM+=barWidth
+      }
+      var lastHeight: Float = histogramSeries.scaledBinFrequency[histogramSeries.scaledBinFrequency.count-1]
+      var lastBottomRight = Point(xM, 0.0)
+      var lastTopRight    = Point(xM, lastHeight)
+      renderer.drawLine(startPoint: lastBottomRight, endPoint: lastTopRight, strokeWidth: strokeWidth, strokeColor: histogramSeries.color, isDashed: false, isOriginShifted: true)
+      for series in histogramStackSeries {
+        lastBottomRight = Point(lastBottomRight.x, lastHeight)
+        lastTopRight = Point(lastTopRight.x, lastHeight + series.scaledBinFrequency[series.scaledBinFrequency.count-1])
+        renderer.drawLine(startPoint: lastBottomRight, endPoint: lastTopRight, strokeWidth: strokeWidth, strokeColor: series.color, isDashed: false, isOriginShifted: true)
+        lastHeight += series.scaledBinFrequency[series.scaledBinFrequency.count-1]
+      }
     }
   }
 
@@ -239,34 +334,34 @@ extension Histogram {
   }
 
   func drawLegends(renderer: Renderer) {
-    // var maxWidth: Float = 0
-    // var legendSeries = stackSeries
-    // legendSeries.insert(series, at: 0)
-    // for s in legendSeries {
-    //   let w = renderer.getTextWidth(text: s.label, textSize: plotLegend.legendTextSize)
-    //   if (w > maxWidth) {
-    //     maxWidth = w
-    //   }
-    // }
-    // plotLegend.legendWidth  = maxWidth + 3.5*plotLegend.legendTextSize
-    // plotLegend.legendHeight = (Float(stackSeries.count + 1)*2.0 + 1.0)*plotLegend.legendTextSize
-    //
-    // let p1: Point = Point(plotLegend.legendTopLeft.x, plotLegend.legendTopLeft.y)
-    // let p2: Point = Point(plotLegend.legendTopLeft.x + plotLegend.legendWidth, plotLegend.legendTopLeft.y)
-    // let p3: Point = Point(plotLegend.legendTopLeft.x + plotLegend.legendWidth, plotLegend.legendTopLeft.y - plotLegend.legendHeight)
-    // let p4: Point = Point(plotLegend.legendTopLeft.x, plotLegend.legendTopLeft.y - plotLegend.legendHeight)
-    //
-    // renderer.drawSolidRectWithBorder(topLeftPoint: p1, topRightPoint: p2, bottomRightPoint: p3, bottomLeftPoint: p4, strokeWidth: plotBorder.borderThickness, fillColor: Color.transluscentWhite, borderColor: Color.black, isOriginShifted: false)
-    //
-    // for i in 0..<legendSeries.count {
-    //   let tL: Point = Point(plotLegend.legendTopLeft.x + plotLegend.legendTextSize, plotLegend.legendTopLeft.y - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize)
-    //   let bR: Point = Point(tL.x + plotLegend.legendTextSize, tL.y - plotLegend.legendTextSize)
-    //   let tR: Point = Point(bR.x, tL.y)
-    //   let bL: Point = Point(tL.x, bR.y)
-    //   renderer.drawSolidRect(topLeftPoint: tL, topRightPoint: tR, bottomRightPoint: bR, bottomLeftPoint: bL, fillColor: legendSeries[i].color, hatchPattern: .none, isOriginShifted: false)
-    //   let p: Point = Point(bR.x + plotLegend.legendTextSize, bR.y)
-    //   renderer.drawText(text: legendSeries[i].label, location: p, textSize: plotLegend.legendTextSize, strokeWidth: 1.2, angle: 0, isOriginShifted: false)
-    // }
+    var maxWidth: Float = 0
+    var legendSeries = histogramStackSeries
+    legendSeries.insert(histogramSeries, at: 0)
+    for s in legendSeries {
+      let w = renderer.getTextWidth(text: s.label, textSize: plotLegend.legendTextSize)
+      if (w > maxWidth) {
+        maxWidth = w
+      }
+    }
+    plotLegend.legendWidth  = maxWidth + 3.5*plotLegend.legendTextSize
+    plotLegend.legendHeight = (Float(histogramStackSeries.count + 1)*2.0 + 1.0)*plotLegend.legendTextSize
+
+    let p1: Point = Point(plotLegend.legendTopLeft.x, plotLegend.legendTopLeft.y)
+    let p2: Point = Point(plotLegend.legendTopLeft.x + plotLegend.legendWidth, plotLegend.legendTopLeft.y)
+    let p3: Point = Point(plotLegend.legendTopLeft.x + plotLegend.legendWidth, plotLegend.legendTopLeft.y - plotLegend.legendHeight)
+    let p4: Point = Point(plotLegend.legendTopLeft.x, plotLegend.legendTopLeft.y - plotLegend.legendHeight)
+
+    renderer.drawSolidRectWithBorder(topLeftPoint: p1, topRightPoint: p2, bottomRightPoint: p3, bottomLeftPoint: p4, strokeWidth: plotBorder.borderThickness, fillColor: Color.transluscentWhite, borderColor: Color.black, isOriginShifted: false)
+
+    for i in 0..<legendSeries.count {
+      let tL: Point = Point(plotLegend.legendTopLeft.x + plotLegend.legendTextSize, plotLegend.legendTopLeft.y - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize)
+      let bR: Point = Point(tL.x + plotLegend.legendTextSize, tL.y - plotLegend.legendTextSize)
+      let tR: Point = Point(bR.x, tL.y)
+      let bL: Point = Point(tL.x, bR.y)
+      renderer.drawSolidRect(topLeftPoint: tL, topRightPoint: tR, bottomRightPoint: bR, bottomLeftPoint: bL, fillColor: legendSeries[i].color, hatchPattern: .none, isOriginShifted: false)
+      let p: Point = Point(bR.x + plotLegend.legendTextSize, bR.y)
+      renderer.drawText(text: legendSeries[i].label, location: p, textSize: plotLegend.legendTextSize, strokeWidth: 1.2, angle: 0, isOriginShifted: false)
+    }
 
   }
 
