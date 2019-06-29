@@ -67,7 +67,7 @@ Add this line to the first cell:
 ```
 In order to display the generated plot in the notebook, add this line:
 ```swift
-%include "EnableIPythonDisplay.swift"
+%include "EnableJupyterDisplay.swift"
 ```
 
 ## Examples
