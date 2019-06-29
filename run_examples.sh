@@ -19,3 +19,6 @@ swift run BarChartVerticalStackedExample
 swift run BarChartHorizontalStackedExample
 swift run ScatterPlotExample
 swift run HistogramExample
+swift run HistogramStackedExample
+swift run HistogramStepExample
+swift run HistogramStackedStepExample

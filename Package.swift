@@ -130,6 +130,18 @@ let package = Package(
             name: "HistogramExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/Histogram"),
+  .target(
+            name: "HistogramStepExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/HistogramStep"),
+  .target(
+            name: "HistogramStackedExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/HistogramStacked"),
+  .target(
+            name: "HistogramStackedStepExample",
+            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            path: "examples/HistogramStackedStep"),
         //.testTarget(
         //  name: "swiftplotTests",
         //  dependencies: ["swiftplot"]),

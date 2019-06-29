@@ -4,7 +4,7 @@ import SVGRenderer
 import Foundation
 
 var filePath = "examples/Reference/"
-let fileName = "_20_histogram"
+let fileName = "_21_histogram_step"
 
 var x = [Float]()
 var y = [Float]()
@@ -23,8 +23,8 @@ var agg_renderer = AGGRenderer()
 var svg_renderer = SVGRenderer()
 
 var histogram: Histogram = Histogram(isNormalized: false)
-histogram.addSeries(data: x, bins: 50, label: "Plot 1", color: .blue)
-histogram.plotTitle = PlotTitle("HISTOGRAM")
+histogram.addSeries(data: x, bins: 50, label: "Plot 1", color: .blue, histogramType: .step)
+histogram.plotTitle = PlotTitle("HISTOGRAM STEP")
 histogram.plotLabel = PlotLabel(xLabel: "X", yLabel: "Frequency")
 
 histogram.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
