@@ -19,7 +19,12 @@ public class SubPlot{
 
     var plotDimensions: PlotDimensions = PlotDimensions()
 
-    public init(width: Float = 1000, height: Float = 660, numberOfPlots n: Int = 1, numberOfRows nR: Int = 1, numberOfColumns nC: Int = 1, stackPattern: StackPattern = .verticallyStacked) {
+    public init(width: Float = 1000,
+                height: Float = 660,
+                numberOfPlots n: Int = 1,
+                numberOfRows nR: Int = 1,
+                numberOfColumns nC: Int = 1,
+                stackPattern: StackPattern = .verticallyStacked) {
         frameWidth = width
         frameHeight = height
         subWidth = width
@@ -55,7 +60,10 @@ public class SubPlot{
             xOffset = subWidth
             yOffset = subHeight
         }
-        plotDimensions = PlotDimensions(frameWidth: frameWidth, frameHeight: frameHeight, subWidth: subWidth, subHeight: subHeight)
+        plotDimensions = PlotDimensions(frameWidth: frameWidth,
+                                        frameHeight: frameHeight,
+                                        subWidth: subWidth,
+                                        subHeight: subHeight)
     }
 
     // public init(frameWidth width: Float = 1000, frameHeight height: Float = 660, numberOfRows nR: Int = 1, numberOfColumns nC: Int = 1) {

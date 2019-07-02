@@ -14,41 +14,41 @@ public func getNumberOfDigits(_ n: Float) -> Int{
     return count
 }
 
-public func getMaxX(points p: [Point]) -> Float {
-    var max = p[0].x
-    for index in 1..<p.count {
-        if (p[index].x > max) {
-            max = p[index].x
+public func getMaxX<T>(pairs : [Pair<FloatConvertible,T>]) -> Float {
+    var max = Float(pairs[0].x)
+    for index in 1..<pairs.count {
+        if (Float(pairs[index].x) > max) {
+            max = Float(pairs[index].x)
         }
     }
     return max
 }
 
-public func getMaxY(points p: [Point]) -> Float {
-    var max = p[0].y
-    for index in 1..<p.count {
-        if (p[index].y > max) {
-            max = p[index].y
+public func getMaxY<T>(pairs: [Pair<T,FloatConvertible>]) -> Float {
+    var max = Float(pairs[0].y)
+    for index in 1..<pairs.count {
+        if (Float(pairs[index].y) > max) {
+            max = Float(pairs[index].y)
         }
     }
     return max
 }
 
-public func getMinX(points p: [Point]) -> Float {
-    var min = p[0].x
-    for index in 1..<p.count {
-        if (p[index].x < min) {
-            min = p[index].x
+public func getMinX<T>(pairs: [Pair<FloatConvertible,T>]) -> Float {
+    var min = Float(pairs[0].x)
+    for index in 1..<pairs.count {
+        if (Float(pairs[index].x) < min) {
+            min = Float(pairs[index].x)
         }
     }
     return min
 }
 
-public func getMinY(points p: [Point]) -> Float {
-    var min = p[0].y
-    for index in 1..<p.count {
-        if (p[index].y < min) {
-            min = p[index].y
+public func getMinY<T>(pairs: [Pair<T,FloatConvertible>]) -> Float {
+    var min = Float(pairs[0].y)
+    for index in 1..<pairs.count {
+        if (Float(pairs[index].y) < min) {
+            min = Float(pairs[index].y)
         }
     }
     return min
@@ -67,25 +67,33 @@ public func lerp(startColor: Color, endColor: Color, _ t: Float) -> Color {
     return Color(r, g, b, a)
 }
 
-public func rotatePoint(point: Point, center: Point, angleDegrees: Float) -> Point{
+public func rotatePoint(point: Pair<FloatConvertible,FloatConvertible>,
+                        center: Pair<FloatConvertible,FloatConvertible>,
+                        angleDegrees: Float) -> Pair<FloatConvertible,FloatConvertible>{
     let angle = angleDegrees * .pi/180.0
     let s = sin(angle)
     let c = cos(angle)
-    var rotatedPoint = Point(point.x, point.y)
-    rotatedPoint = rotatedPoint - center
-    let xNew = rotatedPoint.x * c - rotatedPoint.y * s
-    let yNew = rotatedPoint.x * s + rotatedPoint.y * c
-    rotatedPoint = Point(xNew + center.x, yNew + center.y)
+    var rotatedPoint = Pair<FloatConvertible,FloatConvertible>(Float(point.x), Float(point.y))
+    rotatedPoint = Pair<FloatConvertible,FloatConvertible>(Float(rotatedPoint.x) - Float(center.x),
+                                                           Float(rotatedPoint.y) - Float(center.y))
+    let xNew = Float(rotatedPoint.x) * c - Float(rotatedPoint.y) * s
+    let yNew = Float(rotatedPoint.x) * s + Float(rotatedPoint.y) * c
+    rotatedPoint = Pair<FloatConvertible,FloatConvertible>(xNew + Float(center.x),
+                                                           yNew + Float(center.y))
     return rotatedPoint
 }
 
-public func rotatePoint(point: Point, center: Point, angleRadians: Float) -> Point{
+public func rotatePoint(point: Pair<FloatConvertible,FloatConvertible>,
+                        center: Pair<FloatConvertible,FloatConvertible>,
+                        angleRadians: Float) -> Pair<FloatConvertible,FloatConvertible>{
     let s = sin(angleRadians)
     let c = cos(angleRadians)
-    var rotatedPoint = Point(point.x, point.y)
-    rotatedPoint = rotatedPoint - center
-    let xNew = rotatedPoint.x * c - rotatedPoint.y * s
-    let yNew = rotatedPoint.x * s + rotatedPoint.y * c
-    rotatedPoint = Point(xNew + center.x, yNew + center.y)
+    var rotatedPoint = Pair<FloatConvertible,FloatConvertible>(Float(point.x), Float(point.y))
+    rotatedPoint = Pair<FloatConvertible,FloatConvertible>(Float(rotatedPoint.x) - Float(center.x),
+                                                           Float(rotatedPoint.y) - Float(center.y))
+    let xNew = Float(rotatedPoint.x) * c - Float(rotatedPoint.y) * s
+    let yNew = Float(rotatedPoint.x) * s + Float(rotatedPoint.y) * c
+    rotatedPoint = Pair<FloatConvertible,FloatConvertible>(xNew + Float(center.x),
+                                                           yNew + Float(center.y))
     return rotatedPoint
 }

@@ -6,7 +6,10 @@ public struct PlotDimensions{
     public var graphWidth  : Float = 0
     public var graphHeight : Float = 0
 
-    public init(frameWidth : Float = 1000, frameHeight : Float = 660, subWidth sW : Float = 1000, subHeight sH : Float = 660) {
+    public init(frameWidth : Float = 1000,
+                frameHeight : Float = 660,
+                subWidth sW : Float = 1000,
+                subHeight sH : Float = 660) {
         self.frameWidth = frameWidth
         self.frameHeight = frameHeight
         subWidth = sW
@@ -15,7 +18,8 @@ public struct PlotDimensions{
         graphHeight = subHeight*0.8
     }
 
-    public init(frameWidth : Float = 1000, frameHeight : Float = 660) {
+    public init(frameWidth : Float = 1000,
+                frameHeight : Float = 660) {
         self.frameWidth = frameWidth
         self.frameHeight = frameHeight
         subWidth = frameWidth
