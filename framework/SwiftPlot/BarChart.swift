@@ -119,7 +119,7 @@ public class BarGraph: Plot {
 extension BarGraph {
 
     // call functions to draw the graph
-    public func drawGraphAndOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer){
+    public func drawGraphAndOutput(fileName name: String = "swift_plot_bar_graph", renderer: Renderer){
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
         renderer.plotDimensions = plotDimensions
@@ -157,7 +157,7 @@ extension BarGraph {
         drawLegends(renderer: renderer)
     }
 
-    public func drawGraphOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer){
+    public func drawGraphOutput(fileName name: String = "swift_plot_bar_graph", renderer: Renderer){
         renderer.plotDimensions = plotDimensions
         renderer.drawOutput(fileName: name)
     }
@@ -252,18 +252,18 @@ extension BarGraph {
                 }
                 let p: Point = Point(0, yM)
                 plotMarkers.yMarkers.append(p)
-                let text_p: Point = Point(-(renderer.getTextWidth(text: "\(ceil(scaleY*(yM-origin.y)))", textSize: plotMarkers.markerTextSize)+5), yM - 4)
+                let text_p: Point = Point(-(renderer.getTextWidth(text: "\(round(scaleY*(yM-origin.y)))", textSize: plotMarkers.markerTextSize)+5), yM - 4)
                 plotMarkers.yMarkersTextLocation.append(text_p)
-                plotMarkers.yMarkersText.append("\(ceil(scaleY*(yM-origin.y)))")
+                plotMarkers.yMarkersText.append("\(round(scaleY*(yM-origin.y)))")
                 yM = yM + inc1
             }
             yM = origin.y - inc1
             while yM>0.0 {
                 let p: Point = Point(0, yM)
                 plotMarkers.yMarkers.append(p)
-                let text_p: Point = Point(-(renderer.getTextWidth(text: "\(floor(scaleY*(yM-origin.y)))", textSize: plotMarkers.markerTextSize)+5), yM - 4)
+                let text_p: Point = Point(-(renderer.getTextWidth(text: "\(round(scaleY*(yM-origin.y)))", textSize: plotMarkers.markerTextSize)+5), yM - 4)
                 plotMarkers.yMarkersTextLocation.append(text_p)
-                plotMarkers.yMarkersText.append("\(floor(scaleY*(yM-origin.y)))")
+                plotMarkers.yMarkersText.append("\(round(scaleY*(yM-origin.y)))")
                 yM = yM - inc1
             }
 

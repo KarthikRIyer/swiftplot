@@ -90,7 +90,7 @@ public class ScatterPlot: Plot {
 extension ScatterPlot{
 
     // call functions to draw the graph
-    public func drawGraphAndOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer){
+    public func drawGraphAndOutput(fileName name: String = "swift_plot_scatter_plot", renderer: Renderer){
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
         renderer.plotDimensions = plotDimensions
@@ -128,7 +128,7 @@ extension ScatterPlot{
         drawLegends(renderer: renderer)
     }
 
-    public func drawGraphOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer){
+    public func drawGraphOutput(fileName name: String = "swift_plot_scatter_plot", renderer: Renderer){
         renderer.plotDimensions = plotDimensions
         renderer.drawOutput(fileName: name)
     }
@@ -232,9 +232,9 @@ extension ScatterPlot{
             }
             let p: Point = Point(xM, 0)
             plotMarkers.xMarkers.append(p)
-            let text_p: Point = Point(xM - (renderer.getTextWidth(text: "\(floor(scaleX*(xM-origin.x)))", textSize: plotMarkers.markerTextSize)/2.0) + 8, -15)
+            let text_p: Point = Point(xM - (renderer.getTextWidth(text: "\(round(scaleX*(xM-origin.x)))", textSize: plotMarkers.markerTextSize)/2.0) + 8, -15)
             plotMarkers.xMarkersTextLocation.append(text_p)
-            plotMarkers.xMarkersText.append("\(floor(scaleX*(xM-origin.x)))")
+            plotMarkers.xMarkersText.append("\(round(scaleX*(xM-origin.x)))")
             xM = xM + inc2
         }
 
@@ -246,9 +246,9 @@ extension ScatterPlot{
             }
             let p: Point = Point(xM, 0)
             plotMarkers.xMarkers.append(p)
-            let text_p: Point = Point(xM - (renderer.getTextWidth(text: "\(ceil(scaleX*(xM-origin.x)))", textSize: plotMarkers.markerTextSize)/2.0) + 8, -15)
+            let text_p: Point = Point(xM - (renderer.getTextWidth(text: "\(round(scaleX*(xM-origin.x)))", textSize: plotMarkers.markerTextSize)/2.0) + 8, -15)
             plotMarkers.xMarkersTextLocation.append(text_p)
-            plotMarkers.xMarkersText.append("\(ceil(scaleX*(xM-origin.x)))")
+            plotMarkers.xMarkersText.append("\(round(scaleX*(xM-origin.x)))")
             xM = xM - inc2
         }
 

@@ -4,6 +4,31 @@ public func clamp<T>(_ value: T, minValue: T, maxValue: T) -> T where T: Compara
     return min(max(value, minValue), maxValue)
 }
 
+public func niceRoundFloor(_ value: Float) -> Float {
+    return floor(value*pow(10, -floor(log10(value)))) / pow(10, -floor(log10(value)))
+}
+
+public func niceRoundCeil(_ value: Float) -> Float {
+    return ceil(value*pow(10, -floor(log10(value)))) / pow(10, -floor(log10(value)))
+}
+
+public func niceRound(_ value: Float) -> Float {
+    if (value>0) {
+        return niceRoundCeil(value)
+    }
+    else {
+        return -niceRoundFloor(-value)
+    }
+}
+
+public func roundCeil10(_ value: Float) -> Float {
+    return ceil(value/10)*10
+}
+
+public func roundFloor10(_ value: Float) -> Float {
+    return floor(value/10)*10
+}
+
 public func getNumberOfDigits(_ n: Float) -> Int{
     var x: Int = Int(n)
     var count: Int = 0

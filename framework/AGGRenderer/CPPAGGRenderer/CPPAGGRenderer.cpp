@@ -82,7 +82,7 @@ namespace CPPAGGRenderer{
     renderer_aa ren_aa;
     int pngBufferSize = 0;
 
-    unsigned char* buffer;
+    unsigned char* buffer = NULL;
 
     agg::int8u*           m_pattern;
     agg::rendering_buffer m_pattern_rbuf;
@@ -93,23 +93,21 @@ namespace CPPAGGRenderer{
       frame_height = height;
       sub_width = subW;
       sub_height = subH;
-      delete[] buffer;
+      if (buffer != NULL) {
+        delete[] buffer;
+      }
       buffer = new unsigned char[frame_width*frame_height*3];
     }
 
     void generate_pattern(float r, float g, float b, float a, int hatch_pattern){
-      agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
-      pixfmt_pre pixf_pre(rbuf);
-      rb_pre = renderer_base_pre(pixf_pre);
       agg::path_storage m_ps;
       int size = 10;
       m_pattern = new agg::int8u[size * size * 3];
       m_pattern_rbuf.attach(m_pattern, size, size, size*3);
       pixfmt pixf_pattern(m_pattern_rbuf);
       agg::renderer_base<pixfmt> rb_pattern(pixf_pattern);
-      agg::renderer_scanline_aa_solid<agg::renderer_base<pixfmt> > rs_pattern(rb_pattern);
+      agg::renderer_scanline_aa_solid<agg::renderer_base<pixfmt>> rs_pattern(rb_pattern);
       rb_pattern.clear(agg::rgba_pre(r, g, b, a));
-
       switch (hatch_pattern) {
         case 0:
           break;
@@ -198,6 +196,8 @@ namespace CPPAGGRenderer{
       pixfmt pixf = pixfmt(rbuf);
       renderer_base rb = renderer_base(pixf);
       ren_aa = renderer_aa(rb);
+      pixfmt_pre pixf_pre(rbuf);
+      renderer_base_pre rb_pre(pixf_pre);
       agg::path_storage rect_path;
       rect_path.move_to(*x, *y);
       for (int i = 1; i < 4; i++) {
