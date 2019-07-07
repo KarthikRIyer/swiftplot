@@ -16,16 +16,16 @@ public class ScatterPlot: Plot {
     public var plotBorder: PlotBorder = PlotBorder()
     public var plotDimensions: PlotDimensions {
         willSet{
-            plotBorder.topLeft       = Pair<FloatConvertible,FloatConvertible>(newValue.subWidth*0.1,
-                                                                               newValue.subHeight*0.9)
-            plotBorder.topRight      = Pair<FloatConvertible,FloatConvertible>(newValue.subWidth*0.9,
-                                                                               newValue.subHeight*0.9)
-            plotBorder.bottomLeft    = Pair<FloatConvertible,FloatConvertible>(newValue.subWidth*0.1,
-                                                                               newValue.subHeight*0.1)
-            plotBorder.bottomRight   = Pair<FloatConvertible,FloatConvertible>(newValue.subWidth*0.9,
-                                                                               newValue.subHeight*0.1)
-            plotLegend.legendTopLeft = Pair<FloatConvertible,FloatConvertible>(Float(plotBorder.topLeft.x) + Float(20),
-                                                                               Float(plotBorder.topLeft.y) - Float(20))
+            plotBorder.topLeft       = Point(newValue.subWidth*0.1,
+                                             newValue.subHeight*0.9)
+            plotBorder.topRight      = Point(newValue.subWidth*0.9,
+                                             newValue.subHeight*0.9)
+            plotBorder.bottomLeft    = Point(newValue.subWidth*0.1,
+                                             newValue.subHeight*0.1)
+            plotBorder.bottomRight   = Point(newValue.subWidth*0.9,
+                                             newValue.subHeight*0.1)
+            plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + Float(20),
+                                             plotBorder.topLeft.y - Float(20))
         }
     }
 
@@ -37,11 +37,11 @@ public class ScatterPlot: Plot {
     public var plotLineThickness: Float = 3
     public var scatterPatternSize: Float = 10
 
-    public init(pairs p: [Pair<FloatConvertible,FloatConvertible>], width: Float = 1000, height: Float = 660){
+    public init(points p: [Pair<FloatConvertible,FloatConvertible>], width: Float = 1000, height: Float = 660){
         plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
         plotDimensions.calculateGraphDimensions()
 
-        let s = Series(pairs: p,label: "Plot")
+        let s = Series<FloatConvertible,FloatConvertible>(values: p,label: "Plot")
         series.append(s)
     }
 
@@ -53,11 +53,11 @@ public class ScatterPlot: Plot {
     public func addSeries(_ s: Series<FloatConvertible,FloatConvertible>){
         series.append(s)
     }
-    public func addSeries(pairs : [Pair<FloatConvertible,FloatConvertible>],
+    public func addSeries(points: [Pair<FloatConvertible,FloatConvertible>],
                           label: String,
                           color: Color = .lightBlue,
                           scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
-        let s = Series(pairs: pairs,label: label, color: color, scatterPattern: scatterPattern)
+        let s = Series(values: points,label: label, color: color, scatterPattern: scatterPattern)
         addSeries(s)
     }
     public func addSeries<T: FloatConvertible>(_ x: [T],
@@ -65,11 +65,11 @@ public class ScatterPlot: Plot {
                                                label: String,
                                                color: Color = .lightBlue,
                                                scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
-        var pairs = [Pair<FloatConvertible,FloatConvertible>]()
+        var points = [Pair<FloatConvertible,FloatConvertible>]()
         for i in 0..<x.count {
-            pairs.append(Pair<FloatConvertible,FloatConvertible>(x[i], y[i]))
+            points.append(Pair<FloatConvertible,FloatConvertible>(x[i], y[i]))
         }
-        let s = Series(pairs: pairs,
+        let s = Series(values: points,
                        label: label,
                        color: color,
                        scatterPattern: scatterPattern)
@@ -81,11 +81,11 @@ public class ScatterPlot: Plot {
                                                startColor: Color = .lightBlue,
                                                endColor: Color = .lightBlue,
                                                scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
-        var pairs = [Pair<FloatConvertible,FloatConvertible>]()
+        var points = [Pair<FloatConvertible,FloatConvertible>]()
         for i in 0..<x.count {
-            pairs.append(Pair<FloatConvertible,FloatConvertible>(x[i], y[i]))
+            points.append(Pair<FloatConvertible,FloatConvertible>(x[i], y[i]))
         }
-        let s = Series(pairs: pairs,
+        let s = Series(values: points,
                        label: label,
                        startColor: startColor,
                        endColor: endColor,
@@ -96,11 +96,11 @@ public class ScatterPlot: Plot {
                                                label: String,
                                                color: Color = .lightBlue,
                                                scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
-        var pairs = [Pair<FloatConvertible,FloatConvertible>]()
+        var points = [Pair<FloatConvertible,FloatConvertible>]()
         for i in 0..<y.count {
-            pairs.append(Pair<FloatConvertible,FloatConvertible>(Float(i+1), y[i]))
+            points.append(Pair<FloatConvertible,FloatConvertible>(Float(i+1), y[i]))
         }
-        let s = Series(pairs: pairs,
+        let s = Series(values: points,
                        label: label,
                        color: color,
                        scatterPattern: scatterPattern)
@@ -111,11 +111,11 @@ public class ScatterPlot: Plot {
                                                startColor: Color = .lightBlue,
                                                endColor: Color = .lightBlue,
                                                scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
-        var pairs = [Pair<FloatConvertible,FloatConvertible>]()
+        var points = [Pair<FloatConvertible,FloatConvertible>]()
         for i in 0..<y.count {
-            pairs.append(Pair<FloatConvertible,FloatConvertible>(Float(i+1), y[i]))
+            points.append(Pair<FloatConvertible,FloatConvertible>(Float(i+1), y[i]))
         }
-        let s = Series(pairs: pairs,
+        let s = Series(values: points,
                        label: label,
                        startColor: startColor,
                        endColor: endColor,
@@ -132,16 +132,16 @@ extension ScatterPlot{
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
         renderer.plotDimensions = plotDimensions
-        plotBorder.topLeft       = Pair<FloatConvertible,FloatConvertible>(plotDimensions.subWidth*0.1,
-                                                                           plotDimensions.subHeight*0.9)
-        plotBorder.topRight      = Pair<FloatConvertible,FloatConvertible>(plotDimensions.subWidth*0.9,
-                                                                           plotDimensions.subHeight*0.9)
-        plotBorder.bottomLeft    = Pair<FloatConvertible,FloatConvertible>(plotDimensions.subWidth*0.1,
-                                                                           plotDimensions.subHeight*0.1)
-        plotBorder.bottomRight   = Pair<FloatConvertible,FloatConvertible>(plotDimensions.subWidth*0.9,
-                                                                           plotDimensions.subHeight*0.1)
-        plotLegend.legendTopLeft = Pair<FloatConvertible,FloatConvertible>(Float(plotBorder.topLeft.x) + Float(20),
-                                                                           Float(plotBorder.topLeft.y) - Float(20))
+        plotBorder.topLeft       = Point(plotDimensions.subWidth*0.1,
+                                         plotDimensions.subHeight*0.9)
+        plotBorder.topRight      = Point(plotDimensions.subWidth*0.9,
+                                         plotDimensions.subHeight*0.9)
+        plotBorder.bottomLeft    = Point(plotDimensions.subWidth*0.1,
+                                         plotDimensions.subHeight*0.1)
+        plotBorder.bottomRight   = Point(plotDimensions.subWidth*0.9,
+                                         plotDimensions.subHeight*0.1)
+        plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + Float(20),
+                                         plotBorder.topLeft.y - Float(20))
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
         drawBorder(renderer: renderer)
@@ -156,16 +156,16 @@ extension ScatterPlot{
     public func drawGraph(renderer: Renderer){
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
-        plotBorder.topLeft       = Pair<FloatConvertible,FloatConvertible>(plotDimensions.subWidth*0.1,
-                                                                           plotDimensions.subHeight*0.9)
-        plotBorder.topRight      = Pair<FloatConvertible,FloatConvertible>(plotDimensions.subWidth*0.9,
-                                                                           plotDimensions.subHeight*0.9)
-        plotBorder.bottomLeft    = Pair<FloatConvertible,FloatConvertible>(plotDimensions.subWidth*0.1,
-                                                                           plotDimensions.subHeight*0.1)
-        plotBorder.bottomRight   = Pair<FloatConvertible,FloatConvertible>(plotDimensions.subWidth*0.9,
-                                                                           plotDimensions.subHeight*0.1)
-        plotLegend.legendTopLeft = Pair<FloatConvertible,FloatConvertible>(Float(plotBorder.topLeft.x) + Float(20),
-                                                                           Float(plotBorder.topLeft.y) - Float(20))
+        plotBorder.topLeft       = Point(plotDimensions.subWidth*0.1,
+                                         plotDimensions.subHeight*0.9)
+        plotBorder.topRight      = Point(plotDimensions.subWidth*0.9,
+                                         plotDimensions.subHeight*0.9)
+        plotBorder.bottomLeft    = Point(plotDimensions.subWidth*0.1,
+                                         plotDimensions.subHeight*0.1)
+        plotBorder.bottomRight   = Point(plotDimensions.subWidth*0.9,
+                                         plotDimensions.subHeight*0.1)
+        plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + Float(20),
+                                         plotBorder.topLeft.y - Float(20))
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
         drawBorder(renderer: renderer)
@@ -184,50 +184,50 @@ extension ScatterPlot{
     // functions implementing plotting logic
     func calcLabelLocations(renderer: Renderer){
         if (plotLabel != nil) {
-            let xWidth   : Float = renderer.getTextWidth(text: plotLabel!.xLabel,
-                                                         textSize: plotLabel!.labelSize)
-            let yWidth    : Float = renderer.getTextWidth(text: plotLabel!.yLabel,
-                                                         textSize: plotLabel!.labelSize)
-            plotLabel!.xLabelLocation = Pair<FloatConvertible,FloatConvertible>(((Float(plotBorder.bottomRight.x) + Float(plotBorder.bottomLeft.x))*Float(0.5)) - xWidth*Float(0.5),
-                                                                                Float(plotBorder.bottomLeft.y) - plotLabel!.labelSize - 0.05*plotDimensions.graphHeight)
-            plotLabel!.yLabelLocation = Pair<FloatConvertible,FloatConvertible>((Float(plotBorder.bottomLeft.x) - plotLabel!.labelSize - 0.05*plotDimensions.graphWidth),
-                                                                                ((Float(plotBorder.bottomLeft.y) + Float(plotBorder.topLeft.y))*Float(0.5) - yWidth))
+            let xWidth: Float = renderer.getTextWidth(text: plotLabel!.xLabel,
+                                                      textSize: plotLabel!.labelSize)
+            let yWidth: Float = renderer.getTextWidth(text: plotLabel!.yLabel,
+                                                      textSize: plotLabel!.labelSize)
+            plotLabel!.xLabelLocation = Point(((plotBorder.bottomRight.x + plotBorder.bottomLeft.x)*Float(0.5)) - xWidth*Float(0.5),
+                                              plotBorder.bottomLeft.y - plotLabel!.labelSize - 0.05*plotDimensions.graphHeight)
+            plotLabel!.yLabelLocation = Point((plotBorder.bottomLeft.x - plotLabel!.labelSize - 0.05*plotDimensions.graphWidth),
+                                              ((plotBorder.bottomLeft.y + plotBorder.topLeft.y)*Float(0.5) - yWidth))
         }
         if (plotTitle != nil) {
           let titleWidth: Float = renderer.getTextWidth(text: plotTitle!.title, textSize: plotTitle!.titleSize)
-          plotTitle!.titleLocation = Pair<FloatConvertible,FloatConvertible>(((Float(plotBorder.topRight.x) + Float(plotBorder.topLeft.x))*Float(0.5)) - titleWidth*Float(0.5),
-                                                                             Float(plotBorder.topLeft.y) + plotTitle!.titleSize*Float(0.5))
+          plotTitle!.titleLocation = Point(((plotBorder.topRight.x + plotBorder.topLeft.x)*Float(0.5)) - titleWidth*Float(0.5),
+                                           plotBorder.topLeft.y + plotTitle!.titleSize*Float(0.5))
         }
     }
 
     func calcMarkerLocAndScalePts(renderer: Renderer){
 
-        plotMarkers.xMarkers = [Pair<FloatConvertible,FloatConvertible>]()
-        plotMarkers.yMarkers = [Pair<FloatConvertible,FloatConvertible>]()
-        plotMarkers.xMarkersTextLocation = [Pair<FloatConvertible,FloatConvertible>]()
-        plotMarkers.yMarkersTextLocation = [Pair<FloatConvertible,FloatConvertible>]()
+        plotMarkers.xMarkers = [Point]()
+        plotMarkers.yMarkers = [Point]()
+        plotMarkers.xMarkersTextLocation = [Point]()
+        plotMarkers.yMarkersTextLocation = [Point]()
         plotMarkers.xMarkersText = [String]()
         plotMarkers.xMarkersText = [String]()
 
-        var maximumX: Float = getMaxX(pairs: series[0].pairs)
-        var maximumY: Float = getMaxY(pairs: series[0].pairs)
-        var minimumX: Float = getMinX(pairs: series[0].pairs)
-        var minimumY: Float = getMinY(pairs: series[0].pairs)
+        var maximumX: Float = maxX(points: series[0].values)
+        var maximumY: Float = maxY(points: series[0].values)
+        var minimumX: Float = minX(points: series[0].values)
+        var minimumY: Float = minY(points: series[0].values)
 
         for index in 1..<series.count {
 
             let s: Series<FloatConvertible,FloatConvertible> = series[index]
-            let pairs = s.pairs
-            var x: Float = getMaxX(pairs: pairs)
-            var y: Float = getMaxY(pairs: pairs)
+            // let pairs = s.pairs
+            var x: Float = maxX(points: s.values)
+            var y: Float = maxY(points: s.values)
             if (x > maximumX) {
                 maximumX = x
             }
             if (y > maximumY) {
                 maximumY = y
             }
-            x = getMinX(pairs: pairs)
-            y = getMinY(pairs: pairs)
+            x = minX(points: s.values)
+            y = minY(points: s.values)
             if (x < minimumX) {
                 minimumX = x
             }
@@ -236,8 +236,8 @@ extension ScatterPlot{
             }
         }
 
-        let origin: Pair<FloatConvertible,FloatConvertible> = Pair<FloatConvertible,FloatConvertible>((plotDimensions.graphWidth/(maximumX-minimumX))*(-minimumX),
-                                                                                                      (plotDimensions.graphHeight/(maximumY-minimumY))*(-minimumY))
+        let origin = Point((plotDimensions.graphWidth/(maximumX-minimumX))*(-minimumX),
+                           (plotDimensions.graphHeight/(maximumY-minimumY))*(-minimumY))
 
         let rightScaleMargin: Float = (plotDimensions.subWidth - plotDimensions.graphWidth)*Float(0.5) - 10.0;
         let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)*Float(0.5) - 10.0;
@@ -284,56 +284,56 @@ extension ScatterPlot{
                 xM = xM+inc2
                 continue
             }
-            let p = Pair<FloatConvertible,FloatConvertible>(xM, 0)
+            let p = Point(xM, 0)
             plotMarkers.xMarkers.append(p)
-            let text_p = Pair<FloatConvertible,FloatConvertible>(xM - (renderer.getTextWidth(text: "\(floor(scaleX*(xM-Float(origin.x))))",
-                                                                                             textSize: plotMarkers.markerTextSize)/2.0) + 8,
-                                                                 -15)
+            let text_p = Point(xM - (renderer.getTextWidth(text: "\(floor(scaleX*(xM-origin.x)))",
+                                                           textSize: plotMarkers.markerTextSize)/2.0) + 8,
+                               -15)
             plotMarkers.xMarkersTextLocation.append(text_p)
-            plotMarkers.xMarkersText.append("\(floor(scaleX*(xM-Float(origin.x))))")
+            plotMarkers.xMarkersText.append("\(floor(scaleX*(xM-origin.x)))")
             xM = xM + inc2
         }
 
-        xM = Float(origin.x) - inc2
+        xM = origin.x - inc2
         while xM>0.0 {
             if (xM > plotDimensions.graphWidth) {
                 xM = xM - inc2
                 continue
             }
-            let p = Pair<FloatConvertible,FloatConvertible>(xM, 0)
+            let p = Point(xM, 0)
             plotMarkers.xMarkers.append(p)
-            let text_p = Pair<FloatConvertible,FloatConvertible>(xM - (renderer.getTextWidth(text: "\(ceil(scaleX*(xM-Float(origin.x))))",
-                                                                                             textSize: plotMarkers.markerTextSize)/2.0) + 8,
-                                                                 -15)
+            let text_p = Point(xM - (renderer.getTextWidth(text: "\(ceil(scaleX*(xM-origin.x)))",
+                                                           textSize: plotMarkers.markerTextSize)/2.0) + 8,
+                               -15)
             plotMarkers.xMarkersTextLocation.append(text_p)
-            plotMarkers.xMarkersText.append("\(ceil(scaleX*(xM-Float(origin.x))))")
+            plotMarkers.xMarkersText.append("\(ceil(scaleX*(xM-origin.x)))")
             xM = xM - inc2
         }
 
-        var yM = Float(origin.y)
+        var yM = origin.y
         while yM<=plotDimensions.graphHeight {
             if(yM+inc1<0.0 || yM<0.0){
                 yM = yM + inc1
                 continue
             }
-            let p = Pair<FloatConvertible,FloatConvertible>(0, yM)
+            let p = Point(0, yM)
             plotMarkers.yMarkers.append(p)
-            let text_p = Pair<FloatConvertible,FloatConvertible>(-(renderer.getTextWidth(text: "\(ceil(scaleY*(yM-Float(origin.y))))",
-                                                                                         textSize: plotMarkers.markerTextSize)+5),
-                                                                 yM - 4)
+            let text_p = Point(-(renderer.getTextWidth(text: "\(ceil(scaleY*(yM-origin.y)))",
+                                                       textSize: plotMarkers.markerTextSize)+5),
+                               yM - 4)
             plotMarkers.yMarkersTextLocation.append(text_p)
-            plotMarkers.yMarkersText.append("\(ceil(scaleY*(yM-Float(origin.y))))")
+            plotMarkers.yMarkersText.append("\(ceil(scaleY*(yM-origin.y)))")
             yM = yM + inc1
         }
-        yM = Float(origin.y) - inc1
+        yM = origin.y - inc1
         while yM>0.0 {
-            let p = Pair<FloatConvertible,FloatConvertible>(0, yM)
+            let p = Point(0, yM)
             plotMarkers.yMarkers.append(p)
-            let text_p = Pair<FloatConvertible,FloatConvertible>(-(renderer.getTextWidth(text: "\(floor(scaleY*(yM-Float(origin.y))))",
-                                                                                         textSize: plotMarkers.markerTextSize)+5),
-                                                                 yM - 4)
+            let text_p = Point(-(renderer.getTextWidth(text: "\(floor(scaleY*(yM-origin.y)))",
+                                                       textSize: plotMarkers.markerTextSize)+5),
+                               yM - 4)
             plotMarkers.yMarkersTextLocation.append(text_p)
-            plotMarkers.yMarkersText.append("\(floor(scaleY*(yM-Float(origin.y))))")
+            plotMarkers.yMarkersText.append("\(floor(scaleY*(yM-origin.y)))")
             yM = yM - inc1
         }
 
@@ -343,13 +343,13 @@ extension ScatterPlot{
         let scaleXInv: Float = 1.0/scaleX;
         let scaleYInv: Float = 1.0/scaleY
         for i in 0..<series.count {
-            let pairs = series[i].pairs
-            series[i].scaledPairs.removeAll();
-            for j in 0..<pairs.count {
-                let scaledPair = Pair<FloatConvertible,FloatConvertible>(Float(pairs[j].x)*scaleXInv + Float(origin.x),
-                                                                         Float(pairs[j].y)*scaleYInv + Float(origin.y))
+            // let pairs = series[i].pairs
+            series[i].scaledValues.removeAll();
+            for j in 0..<series[i].count {
+                let scaledPair = Pair<FloatConvertible,FloatConvertible>(Float((series[i])[j].x)*scaleXInv + origin.x,
+                                                                         Float((series[i])[j].y)*scaleYInv + origin.y)
                 if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= plotDimensions.graphWidth && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= plotDimensions.graphHeight) {
-                    series[i].scaledPairs.append(scaledPair)
+                    series[i].scaledValues.append(scaledPair)
                 }
             }
         }
@@ -368,8 +368,8 @@ extension ScatterPlot{
 
     func drawMarkers(renderer: Renderer) {
         for index in 0..<plotMarkers.xMarkers.count {
-            let p1 = Pair<FloatConvertible,FloatConvertible>(Float(plotMarkers.xMarkers[index].x), -3)
-            let p2 = Pair<FloatConvertible,FloatConvertible>(Float(plotMarkers.xMarkers[index].x), 0)
+            let p1 = Point(plotMarkers.xMarkers[index].x, -3)
+            let p2 = Point(plotMarkers.xMarkers[index].x, 0)
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
                               strokeWidth: plotBorder.borderThickness,
@@ -385,8 +385,8 @@ extension ScatterPlot{
         }
 
         for index in 0..<plotMarkers.yMarkers.count {
-            let p1 = Pair<FloatConvertible,FloatConvertible>(-3, Float(plotMarkers.yMarkers[index].y))
-            let p2 = Pair<FloatConvertible,FloatConvertible>(0, Float(plotMarkers.yMarkers[index].y))
+            let p1 = Point(-3, plotMarkers.yMarkers[index].y)
+            let p2 = Point(0, plotMarkers.yMarkers[index].y)
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
                               strokeWidth: plotBorder.borderThickness,
@@ -405,17 +405,17 @@ extension ScatterPlot{
     func drawPlots(renderer: Renderer) {
         for seriesIndex in 0..<series.count {
             var s = series[seriesIndex]
-            s.maxY = getMaxY(pairs: s.scaledPairs)
-            s.minY = getMinY(pairs: s.scaledPairs)
+            s.maxY = maxY(points: s.scaledValues)
+            s.minY = minY(points: s.scaledValues)
             let seriesYRangeInverse: Float = 1.0/(s.maxY-s.minY)
             switch s.scatterPlotSeriesOptions.scatterPattern {
                 case .circle:
-                    for index in 0..<s.scaledPairs.count {
-                        let p = s.scaledPairs[index]
+                    for index in 0..<s.scaledValues.count {
+                        let p = Point(Float(s.scaledValues[index].x),Float(s.scaledValues[index].y))
                         if (s.startColor != nil && s.endColor != nil) {
                             s.color = lerp(startColor: s.startColor!,
                                            endColor: s.endColor!,
-                                           (Float(s.scaledPairs[index].y)-s.minY)*seriesYRangeInverse)
+                                           (Float(s.scaledValues[index].y)-s.minY)*seriesYRangeInverse)
                         }
                         renderer.drawSolidCircle(center: p,
                                                  radius: scatterPatternSize*Float(0.5),
@@ -423,21 +423,21 @@ extension ScatterPlot{
                                                  isOriginShifted: true)
                     }
                 case .square:
-                  for index in 0..<s.scaledPairs.count {
-                      let p = s.scaledPairs[index]
+                  for index in 0..<s.scaledValues.count {
+                      let p = Point(Float(s.scaledValues[index].x),Float(s.scaledValues[index].y))
                       if (s.startColor != nil && s.endColor != nil) {
                           s.color = lerp(startColor: s.startColor!,
                                          endColor: s.endColor!,
-                                         (Float(s.scaledPairs[index].y)-s.minY)*seriesYRangeInverse)
+                                         (Float(s.scaledValues[index].y)-s.minY)*seriesYRangeInverse)
                       }
-                      let tL = Pair<FloatConvertible,FloatConvertible>(Float(p.x)-scatterPatternSize*Float(0.5),
-                                                                       Float(p.y)+scatterPatternSize*Float(0.5))
-                      let tR = Pair<FloatConvertible,FloatConvertible>(Float(p.x)+scatterPatternSize*Float(0.5),
-                                                                       Float(p.y)+scatterPatternSize*Float(0.5))
-                      let bR = Pair<FloatConvertible,FloatConvertible>(Float(p.x)+scatterPatternSize*Float(0.5),
-                                                                       Float(p.y)-scatterPatternSize*Float(0.5))
-                      let bL = Pair<FloatConvertible,FloatConvertible>(Float(p.x)-scatterPatternSize*Float(0.5),
-                                                                       Float(p.y)-scatterPatternSize*Float(0.5))
+                      let tL = Point(p.x-scatterPatternSize*Float(0.5),
+                                     p.y+scatterPatternSize*Float(0.5))
+                      let tR = Point(p.x+scatterPatternSize*Float(0.5),
+                                     p.y+scatterPatternSize*Float(0.5))
+                      let bR = Point(p.x+scatterPatternSize*Float(0.5),
+                                     p.y-scatterPatternSize*Float(0.5))
+                      let bL = Point(p.x-scatterPatternSize*Float(0.5),
+                                     p.y-scatterPatternSize*Float(0.5))
                       renderer.drawSolidRect(topLeftPoint: tL,
                                              topRightPoint: tR,
                                              bottomRightPoint: bR,
@@ -448,19 +448,19 @@ extension ScatterPlot{
                   }
                 case .triangle:
                     let r = scatterPatternSize/sqrt3
-                    for index in 0..<s.scaledPairs.count {
-                        let p = s.scaledPairs[index]
+                    for index in 0..<s.scaledValues.count {
+                        let p = Point(Float(s.scaledValues[index].x),Float(s.scaledValues[index].y))
                         if (s.startColor != nil && s.endColor != nil) {
                             s.color = lerp(startColor: s.startColor!,
                                            endColor: s.endColor!,
-                                           (Float(s.scaledPairs[index].y)-s.minY)*seriesYRangeInverse)
+                                           (Float(s.scaledValues[index].y)-s.minY)*seriesYRangeInverse)
                         }
-                        let p1 = Pair<FloatConvertible,FloatConvertible>(Float(p.x) + 0,
-                                                                         Float(p.y) + r)
-                        let p2 = Pair<FloatConvertible,FloatConvertible>(Float(p.x) + r*sqrt3/Float(2),
-                                                                         Float(p.y) - r*Float(0.5))
-                        let p3 = Pair<FloatConvertible,FloatConvertible>(Float(p.x) - r*sqrt3/Float(2),
-                                                                         Float(p.y) - r*Float(0.5))
+                        let p1 = Point(p.x + 0,
+                                       p.y + r)
+                        let p2 = Point(p.x + r*sqrt3/Float(2),
+                                       p.y - r*Float(0.5))
+                        let p3 = Point(p.x - r*sqrt3/Float(2),
+                                       p.y - r*Float(0.5))
                         renderer.drawSolidTriangle(point1: p1,
                                                    point2: p2,
                                                    point3: p3,
@@ -468,41 +468,41 @@ extension ScatterPlot{
                                                    isOriginShifted: true)
                     }
                 case .diamond:
-                    for index in 0..<s.scaledPairs.count {
-                        let p = s.scaledPairs[index]
+                    for index in 0..<s.scaledValues.count {
+                        let p = Point(Float(s.scaledValues[index].x),Float(s.scaledValues[index].y))
                         if (s.startColor != nil && s.endColor != nil) {
                             s.color = lerp(startColor: s.startColor!,
                                            endColor: s.endColor!,
-                                           (Float(s.scaledPairs[index].y)-s.minY)*seriesYRangeInverse)
+                                           (Float(s.scaledValues[index].y)-s.minY)*seriesYRangeInverse)
                         }
-                        var tL = Pair<FloatConvertible,FloatConvertible>(Float(p.x)-scatterPatternSize*Float(0.5),
-                                                                         Float(p.y)+scatterPatternSize*Float(0.5))
-                        var tR = Pair<FloatConvertible,FloatConvertible>(Float(p.x)+scatterPatternSize*Float(0.5),
-                                                                         Float(p.y)+scatterPatternSize*Float(0.5))
-                        var bR = Pair<FloatConvertible,FloatConvertible>(Float(p.x)+scatterPatternSize*Float(0.5),
-                                                                         Float(p.y)-scatterPatternSize*Float(0.5))
-                        var bL = Pair<FloatConvertible,FloatConvertible>(Float(p.x)-scatterPatternSize*Float(0.5),
-                                                                         Float(p.y)-scatterPatternSize*Float(0.5))
+                        var tL = Point(p.x-scatterPatternSize*Float(0.5),
+                                       p.y+scatterPatternSize*Float(0.5))
+                        var tR = Point(p.x+scatterPatternSize*Float(0.5),
+                                       p.y+scatterPatternSize*Float(0.5))
+                        var bR = Point(p.x+scatterPatternSize*Float(0.5),
+                                       p.y-scatterPatternSize*Float(0.5))
+                        var bL = Point(p.x-scatterPatternSize*Float(0.5),
+                                       p.y-scatterPatternSize*Float(0.5))
                         tL = rotatePoint(point: tL, center: p, angleDegrees: 45.0)
                         tR = rotatePoint(point: tR, center: p, angleDegrees: 45.0)
                         bL = rotatePoint(point: bL, center: p, angleDegrees: 45.0)
                         bR = rotatePoint(point: bR, center: p, angleDegrees: 45.0)
-                        let diamondPoints: [Pair<FloatConvertible,FloatConvertible>] = [tL, tR, bR, bL]
+                        let diamondPoints: [Point] = [tL, tR, bR, bL]
                         renderer.drawSolidPolygon(points: diamondPoints,
                                                   fillColor: s.color,
                                                   isOriginShifted: true)
                     }
                   case .hexagon:
-                      for index in 0..<s.scaledPairs.count {
-                          let p = s.scaledPairs[index]
+                      for index in 0..<s.scaledValues.count {
+                          let p = Point(Float(s.scaledValues[index].x),Float(s.scaledValues[index].y))
                           if (s.startColor != nil && s.endColor != nil) {
                               s.color = lerp(startColor: s.startColor!,
                                              endColor: s.endColor!,
-                                             (Float(s.scaledPairs[index].y)-s.minY)*seriesYRangeInverse)
+                                             (Float(s.scaledValues[index].y)-s.minY)*seriesYRangeInverse)
                           }
-                          var hexagonPoint = Pair<FloatConvertible,FloatConvertible>(Float(p.x) + 0.0,
-                                                                                     Float(p.y) + scatterPatternSize*Float(0.5))
-                          var hexagonPoints: [Pair<FloatConvertible,FloatConvertible>] = [hexagonPoint]
+                          var hexagonPoint = Point(p.x + 0.0,
+                                                   p.y + scatterPatternSize*Float(0.5))
+                          var hexagonPoints: [Point] = [hexagonPoint]
                           for _ in 2...6 {
                               hexagonPoint = rotatePoint(point: hexagonPoint,
                                                          center: p,
@@ -514,16 +514,16 @@ extension ScatterPlot{
                                                     isOriginShifted: true)
                       }
                   case .pentagon:
-                      for index in 0..<s.scaledPairs.count {
-                          let p = s.scaledPairs[index]
+                      for index in 0..<s.scaledValues.count {
+                          let p = Point(Float(s.scaledValues[index].x),Float(s.scaledValues[index].y))
                           if (s.startColor != nil && s.endColor != nil) {
                               s.color = lerp(startColor: s.startColor!,
                                              endColor: s.endColor!,
-                                             (Float(s.scaledPairs[index].y)-s.minY)*seriesYRangeInverse)
+                                             (Float(s.scaledValues[index].y)-s.minY)*seriesYRangeInverse)
                           }
-                          var pentagonPoint = Pair<FloatConvertible,FloatConvertible>(Float(p.x) + 0.0,
-                                                                                      Float(p.y) + scatterPatternSize*Float(0.5))
-                          var pentagonPoints: [Pair<FloatConvertible,FloatConvertible>] = [pentagonPoint]
+                          var pentagonPoint = Point(p.x + 0.0,
+                                                    p.y + scatterPatternSize*Float(0.5))
+                          var pentagonPoints: [Point] = [pentagonPoint]
                           for _ in 2...6 {
                               pentagonPoint = rotatePoint(point: pentagonPoint,
                                                           center: p,
@@ -535,20 +535,20 @@ extension ScatterPlot{
                                                     isOriginShifted: true)
                       }
                   case .star:
-                      for index in 0..<s.scaledPairs.count {
-                          let p = s.scaledPairs[index]
+                      for index in 0..<s.scaledValues.count {
+                          let p = Point(Float(s.scaledValues[index].x),Float(s.scaledValues[index].y))
                           if (s.startColor != nil && s.endColor != nil) {
                               s.color = lerp(startColor: s.startColor!,
                                              endColor: s.endColor!,
-                                             (Float(s.scaledPairs[index].y)-s.minY)*seriesYRangeInverse)
+                                             (Float(s.scaledValues[index].y)-s.minY)*seriesYRangeInverse)
                           }
-                          var starOuterPoint = Pair<FloatConvertible,FloatConvertible>(Float(p.x) + 0.0,
-                                                                                       Float(p.y) + scatterPatternSize*Float(0.5))
-                          var starInnerPoint = rotatePoint(point: Pair<FloatConvertible,FloatConvertible>(Float(p.x) + 0.0,
-                                                                                                          Float(p.y) + scatterPatternSize*Float(0.25)),
+                          var starOuterPoint = Point(p.x + 0.0,
+                                                     p.y + scatterPatternSize*Float(0.5))
+                          var starInnerPoint = rotatePoint(point: Point(p.x + 0.0,
+                                                                        p.y + scatterPatternSize*Float(0.25)),
                                                            center: p,
                                                            angleDegrees: 36.0)
-                          var starPoints: [Pair<FloatConvertible,FloatConvertible>] = [starOuterPoint, starInnerPoint]
+                          var starPoints: [Point] = [starOuterPoint, starInnerPoint]
                           for _ in 2...6 {
                               starInnerPoint = rotatePoint(point: starInnerPoint,
                                                            center: p,
@@ -606,14 +606,14 @@ extension ScatterPlot{
         plotLegend.legendWidth  = maxWidth + 3.5*plotLegend.legendTextSize
         plotLegend.legendHeight = (Float(series.count)*2.0 + 1.0)*plotLegend.legendTextSize
 
-        let p1 = Pair<FloatConvertible,FloatConvertible>(Float(plotLegend.legendTopLeft.x),
-                                                         Float(plotLegend.legendTopLeft.y))
-        let p2 = Pair<FloatConvertible,FloatConvertible>(Float(plotLegend.legendTopLeft.x) + plotLegend.legendWidth,
-                                                         Float(plotLegend.legendTopLeft.y))
-        let p3 = Pair<FloatConvertible,FloatConvertible>(Float(plotLegend.legendTopLeft.x) + plotLegend.legendWidth,
-                                                         Float(plotLegend.legendTopLeft.y) - plotLegend.legendHeight)
-        let p4 = Pair<FloatConvertible,FloatConvertible>(Float(plotLegend.legendTopLeft.x),
-                                                         Float(plotLegend.legendTopLeft.y) - plotLegend.legendHeight)
+        let p1 = Point(plotLegend.legendTopLeft.x,
+                       plotLegend.legendTopLeft.y)
+        let p2 = Point(plotLegend.legendTopLeft.x + plotLegend.legendWidth,
+                       plotLegend.legendTopLeft.y)
+        let p3 = Point(plotLegend.legendTopLeft.x + plotLegend.legendWidth,
+                       plotLegend.legendTopLeft.y - plotLegend.legendHeight)
+        let p4 = Point(plotLegend.legendTopLeft.x,
+                       plotLegend.legendTopLeft.y - plotLegend.legendHeight)
 
         renderer.drawSolidRectWithBorder(topLeftPoint: p1,
                                          topRightPoint: p2,
@@ -625,21 +625,21 @@ extension ScatterPlot{
                                          isOriginShifted: false)
 
         for i in 0..<series.count {
-            let tL = Pair<FloatConvertible,FloatConvertible>(Float(plotLegend.legendTopLeft.x) + plotLegend.legendTextSize,
-                                                             Float(plotLegend.legendTopLeft.y) - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize)
-            let bR = Pair<FloatConvertible,FloatConvertible>(Float(tL.x) + plotLegend.legendTextSize,
-                                                             Float(tL.y) - plotLegend.legendTextSize)
-            let tR = Pair<FloatConvertible,FloatConvertible>(Float(bR.x), Float(tL.y))
-            let bL = Pair<FloatConvertible,FloatConvertible>(Float(tL.x), Float(bR.y))
+            let tL = Point(plotLegend.legendTopLeft.x + plotLegend.legendTextSize,
+                           plotLegend.legendTopLeft.y - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize)
+            let bR = Point(tL.x + plotLegend.legendTextSize,
+                           tL.y - plotLegend.legendTextSize)
+            let tR = Point(bR.x, tL.y)
+            let bL = Point(tL.x, bR.y)
             if (series[i].startColor != nil && series[i].endColor != nil) {
                 series[i].color = series[i].startColor!
             }
             switch series[i].scatterPlotSeriesOptions.scatterPattern {
                 case .circle:
-                    let c = Pair<FloatConvertible,FloatConvertible>((Float(tL.x)+Float(bR.x))*Float(0.5),
-                                                                    (Float(tL.y)+Float(bR.y))*Float(0.5))
+                    let c = Point((tL.x+bR.x)*Float(0.5),
+                                  (tL.y+bR.y)*Float(0.5))
                     renderer.drawSolidCircle(center: c,
-                                             radius: (Float(tR.x)-Float(tL.x))*Float(0.5),
+                                             radius: (tR.x-tL.x)*Float(0.5),
                                              fillColor: series[i].color,
                                              isOriginShifted: false)
                 case .square:
@@ -651,37 +651,37 @@ extension ScatterPlot{
                                            hatchPattern: .none,
                                            isOriginShifted: false)
                 case .triangle:
-                    let c = Pair<FloatConvertible,FloatConvertible>((Float(tL.x)+Float(bR.x))*Float(0.5),
-                                                                    (Float(tL.y)+Float(bR.y))*Float(0.5))
-                    let r: Float = (Float(tR.x)-Float(tL.x))*Float(0.5)
-                    let p1 = Pair<FloatConvertible,FloatConvertible>(Float(c.x) + 0,
-                                                                     Float(c.y) + r)
-                    let p2 = Pair<FloatConvertible,FloatConvertible>(Float(c.x) + r*sqrt3*Float(0.5),
-                                                                     Float(c.y) - r*Float(0.5))
-                    let p3 = Pair<FloatConvertible,FloatConvertible>(Float(c.x) - r*sqrt3*Float(0.5),
-                                                                     Float(c.y) - r*Float(0.5))
+                    let c = Point((tL.x+bR.x)*Float(0.5),
+                                  (tL.y+bR.y)*Float(0.5))
+                    let r: Float = (tR.x-tL.x)*Float(0.5)
+                    let p1 = Point(c.x + 0,
+                                   c.y + r)
+                    let p2 = Point(c.x + r*sqrt3*Float(0.5),
+                                   c.y - r*Float(0.5))
+                    let p3 = Point(c.x - r*sqrt3*Float(0.5),
+                                   c.y - r*Float(0.5))
                     renderer.drawSolidTriangle(point1: p1,
                                                point2: p2,
                                                point3: p3,
                                                fillColor: series[i].color,
                                                isOriginShifted: false)
                 case .diamond:
-                    let c = Pair<FloatConvertible,FloatConvertible>((Float(tL.x)+Float(bR.x))*Float(0.5),
-                                                                    (Float(tL.y)+Float(bR.y))*Float(0.5))
+                    let c = Point((tL.x+bR.x)*Float(0.5),
+                                  (tL.y+bR.y)*Float(0.5))
                     let p1 = rotatePoint(point: tL, center: c, angleDegrees: 45.0)
                     let p2 = rotatePoint(point: tR, center: c, angleDegrees: 45.0)
                     let p3 = rotatePoint(point: bR, center: c, angleDegrees: 45.0)
                     let p4 = rotatePoint(point: bL, center: c, angleDegrees: 45.0)
-                    let diamondPoints: [Pair<FloatConvertible,FloatConvertible>] = [p1, p2, p3, p4]
+                    let diamondPoints: [Point] = [p1, p2, p3, p4]
                     renderer.drawSolidPolygon(points: diamondPoints,
                                               fillColor: series[i].color,
                                               isOriginShifted: false)
                 case .hexagon:
-                  let c = Pair<FloatConvertible,FloatConvertible>((Float(tL.x)+Float(bR.x))*Float(0.5),
-                                                                  (Float(tL.y)+Float(bR.y))*Float(0.5))
-                  var hexagonPoint = Pair<FloatConvertible,FloatConvertible>(Float(c.x) + 0.0,
-                                                                             Float(c.y) + (Float(tL.y)-Float(bL.y))*Float(0.5))
-                  var hexagonPoints: [Pair<FloatConvertible,FloatConvertible>] = [hexagonPoint]
+                  let c = Point((tL.x+bR.x)*Float(0.5),
+                                (tL.y+bR.y)*Float(0.5))
+                  var hexagonPoint = Point(c.x + 0.0,
+                                           c.y + (tL.y-bL.y)*Float(0.5))
+                  var hexagonPoints: [Point] = [hexagonPoint]
                   for _ in 2...6 {
                       hexagonPoint = rotatePoint(point: hexagonPoint,
                                                  center: c,
@@ -692,11 +692,11 @@ extension ScatterPlot{
                                             fillColor: series[i].color,
                                             isOriginShifted: false)
                 case .pentagon:
-                  let c = Pair<FloatConvertible,FloatConvertible>((Float(tL.x)+Float(bR.x))*Float(0.5),
-                                                                  (Float(tL.y)+Float(bR.y))*Float(0.5))
-                  var pentagonPoint = Pair<FloatConvertible,FloatConvertible>(Float(c.x) + 0.0,
-                                                                              Float(c.y) + (Float(tL.y)-Float(bL.y))*Float(0.5))
-                  var pentagonPoints: [Pair<FloatConvertible,FloatConvertible>] = [pentagonPoint]
+                  let c = Point((tL.x+bR.x)*Float(0.5),
+                                (tL.y+bR.y)*Float(0.5))
+                  var pentagonPoint = Point(c.x + 0.0,
+                                            c.y + (tL.y-bL.y)*Float(0.5))
+                  var pentagonPoints: [Point] = [pentagonPoint]
                   for _ in 2...6 {
                       pentagonPoint = rotatePoint(point: pentagonPoint,
                                                   center: c,
@@ -707,15 +707,15 @@ extension ScatterPlot{
                                             fillColor: series[i].color,
                                             isOriginShifted: false)
                 case .star:
-                  let c = Pair<FloatConvertible,FloatConvertible>((Float(tL.x)+Float(bR.x))*Float(0.5),
-                                                                  (Float(tL.y)+Float(bR.y))*Float(0.5))
-                  var starOuterPoint = Pair<FloatConvertible,FloatConvertible>(Float(c.x) + 0.0,
-                                                                               Float(c.y) + (Float(tL.y)-Float(bL.y))*Float(0.5))
-                  var starInnerPoint = rotatePoint(point: Pair<FloatConvertible,FloatConvertible>(Float(c.x) + 0.0,
-                                                                                                  Float(c.y) + (Float(tL.y)-Float(bL.y))*Float(0.25)),
+                  let c = Point((tL.x+bR.x)*Float(0.5),
+                                (tL.y+bR.y)*Float(0.5))
+                  var starOuterPoint = Point(c.x + 0.0,
+                                             c.y + (tL.y-bL.y)*Float(0.5))
+                  var starInnerPoint = rotatePoint(point: Point(c.x + 0.0,
+                                                                c.y + (tL.y-bL.y)*Float(0.25)),
                                                    center: c,
                                                    angleDegrees: 36.0)
-                  var starPoints: [Pair<FloatConvertible,FloatConvertible>] = [starOuterPoint, starInnerPoint]
+                  var starPoints: [Point] = [starOuterPoint, starInnerPoint]
                   for _ in 2...6 {
                       starOuterPoint = rotatePoint(point: starOuterPoint,
                                                    center: c,
@@ -730,8 +730,8 @@ extension ScatterPlot{
                                             fillColor: series[i].color,
                                             isOriginShifted: false)
             }
-            let p = Pair<FloatConvertible,FloatConvertible>(Float(bR.x) + plotLegend.legendTextSize,
-                                                            Float(bR.y))
+            let p = Point(bR.x + plotLegend.legendTextSize,
+                          bR.y)
             renderer.drawText(text: series[i].label,
                               location: p,
                               textSize: plotLegend.legendTextSize,

@@ -2,38 +2,45 @@
 public struct Series<T,U> {
     public var barGraphSeriesOptions = BarGraphSeriesOptions()
     public var scatterPlotSeriesOptions = ScatterPlotSeriesOptions()
-    public var pairs = [Pair<T,U>]()
-    public var scaledPairs = [Pair<T,U>]()
+    public var values = [Pair<T,U>]()
+    public var scaledValues = [Pair<T,U>]()
     public var maxY: Float = 0
     public var minY: Float = 0
     public var label = "Plot"
     public var color : Color = .blue
     public var startColor: Color? = nil
     public var endColor: Color? = nil
+    public var count: Int {
+        get {
+          return values.count
+        }
+    }
     public init() {}
-
-    public init(pairs : [Pair<T,U>],
-                label l: String,
-                startColor : Color = .lightBlue,
-                endColor : Color = Color.lightBlue,
+    public init(values: [Pair<T,U>],
+                label: String,
+                startColor: Color = .lightBlue,
+                endColor: Color = Color.lightBlue,
                 hatchPattern: BarGraphSeriesOptions.Hatching = .none,
                 scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
-        self.pairs = pairs
-        label = l
+        self.values = values
+        self.label = label
         self.startColor = startColor
         self.endColor = endColor
         barGraphSeriesOptions.hatchPattern = hatchPattern
         scatterPlotSeriesOptions.scatterPattern = scatterPattern
     }
-    public init(pairs : [Pair<T,U>],
-                label l: String,
-                color c: Color = Color.lightBlue,
+    public init(values: [Pair<T,U>],
+                label: String,
+                color: Color = Color.lightBlue,
                 hatchPattern: BarGraphSeriesOptions.Hatching = .none,
                 scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
-        self.pairs = pairs
-        label = l
-        color = c
+        self.values = values
+        self.label = label
+        self.color = color
         barGraphSeriesOptions.hatchPattern = hatchPattern
         scatterPlotSeriesOptions.scatterPattern = scatterPattern
+    }
+    subscript(index: Int) -> Pair<T,U> {
+        return values[index]
     }
 }

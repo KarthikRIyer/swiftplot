@@ -9,4 +9,5 @@ public struct Pair<T,U> {
     }
 }
 
-let zeroPair = Pair<FloatConvertible,FloatConvertible>(0.0, 0.0)
+public typealias Point = Pair<Float,Float>
+public let zeroPoint = Point(0.0, 0.0)

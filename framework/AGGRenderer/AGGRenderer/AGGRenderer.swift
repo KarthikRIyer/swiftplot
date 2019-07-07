@@ -31,23 +31,23 @@ public class AGGRenderer: Renderer{
         initialized = true
     }
 
-    public func drawRect(topLeftPoint p1: Pair<FloatConvertible,FloatConvertible>,
-                         topRightPoint p2: Pair<FloatConvertible,FloatConvertible>,
-                         bottomRightPoint p3: Pair<FloatConvertible,FloatConvertible>,
-                         bottomLeftPoint p4: Pair<FloatConvertible,FloatConvertible>,
+    public func drawRect(topLeftPoint p1: Point,
+                         topRightPoint p2: Point,
+                         bottomRightPoint p3: Point,
+                         bottomLeftPoint p4: Point,
                          strokeWidth thickness: Float,
                          strokeColor: Color = Color.black,
                          isOriginShifted: Bool) {
         var x = [Float]()
         var y = [Float]()
-        x.append(Float(p1.x) + xOffset)
-        x.append(Float(p2.x) + xOffset)
-        x.append(Float(p3.x) + xOffset)
-        x.append(Float(p4.x) + xOffset)
-        y.append(Float(p1.y) + yOffset)
-        y.append(Float(p2.y) + yOffset)
-        y.append(Float(p3.y) + yOffset)
-        y.append(Float(p4.y) + yOffset)
+        x.append(p1.x + xOffset)
+        x.append(p2.x + xOffset)
+        x.append(p3.x + xOffset)
+        x.append(p4.x + xOffset)
+        y.append(p1.y + yOffset)
+        y.append(p2.y + yOffset)
+        y.append(p3.y + yOffset)
+        y.append(p4.y + yOffset)
         draw_rect(x,
                   y,
                   thickness,
@@ -59,23 +59,23 @@ public class AGGRenderer: Renderer{
                   agg_object)
     }
 
-    public func drawSolidRect(topLeftPoint p1: Pair<FloatConvertible,FloatConvertible>,
-                              topRightPoint p2: Pair<FloatConvertible,FloatConvertible>,
-                              bottomRightPoint p3: Pair<FloatConvertible,FloatConvertible>,
-                              bottomLeftPoint p4: Pair<FloatConvertible,FloatConvertible>,
+    public func drawSolidRect(topLeftPoint p1: Point,
+                              topRightPoint p2: Point,
+                              bottomRightPoint p3: Point,
+                              bottomLeftPoint p4: Point,
                               fillColor: Color = Color.white,
                               hatchPattern: BarGraphSeriesOptions.Hatching,
                               isOriginShifted: Bool) {
         var x = [Float]()
         var y = [Float]()
-        x.append(Float(p1.x) + xOffset)
-        x.append(Float(p2.x) + xOffset)
-        x.append(Float(p3.x) + xOffset)
-        x.append(Float(p4.x) + xOffset)
-        y.append(Float(p1.y) + yOffset)
-        y.append(Float(p2.y) + yOffset)
-        y.append(Float(p3.y) + yOffset)
-        y.append(Float(p4.y) + yOffset)
+        x.append(p1.x + xOffset)
+        x.append(p2.x + xOffset)
+        x.append(p3.x + xOffset)
+        x.append(p4.x + xOffset)
+        y.append(p1.y + yOffset)
+        y.append(p2.y + yOffset)
+        y.append(p3.y + yOffset)
+        y.append(p4.y + yOffset)
         draw_solid_rect(x,
                         y,
                         fillColor.r,
@@ -87,10 +87,10 @@ public class AGGRenderer: Renderer{
                         agg_object)
     }
 
-    public func drawSolidRectWithBorder(topLeftPoint p1: Pair<FloatConvertible,FloatConvertible>,
-                                        topRightPoint p2: Pair<FloatConvertible,FloatConvertible>,
-                                        bottomRightPoint p3: Pair<FloatConvertible,FloatConvertible>,
-                                        bottomLeftPoint p4: Pair<FloatConvertible,FloatConvertible>,
+    public func drawSolidRectWithBorder(topLeftPoint p1: Point,
+                                        topRightPoint p2: Point,
+                                        bottomRightPoint p3: Point,
+                                        bottomLeftPoint p4: Point,
                                         strokeWidth thickness: Float,
                                         fillColor: Color = Color.white,
                                         borderColor: Color = Color.black,
@@ -98,14 +98,14 @@ public class AGGRenderer: Renderer{
         var x = [Float]()
         var y = [Float]()
 
-        x.append(Float(p1.x) + xOffset)
-        x.append(Float(p2.x) + xOffset)
-        x.append(Float(p3.x) + xOffset)
-        x.append(Float(p4.x) + xOffset)
-        y.append(Float(p1.y) + yOffset)
-        y.append(Float(p2.y) + yOffset)
-        y.append(Float(p3.y) + yOffset)
-        y.append(Float(p4.y) + yOffset)
+        x.append(p1.x + xOffset)
+        x.append(p2.x + xOffset)
+        x.append(p3.x + xOffset)
+        x.append(p4.x + xOffset)
+        y.append(p1.y + yOffset)
+        y.append(p2.y + yOffset)
+        y.append(p3.y + yOffset)
+        y.append(p4.y + yOffset)
 
         draw_solid_rect(x,
                         y,
@@ -127,12 +127,12 @@ public class AGGRenderer: Renderer{
                   agg_object)
     }
 
-    public func drawSolidCircle(center c: Pair<FloatConvertible,FloatConvertible>,
+    public func drawSolidCircle(center c: Point,
                                 radius r: Float,
                                 fillColor: Color,
                                 isOriginShifted: Bool) {
-      draw_solid_circle(Float(c.x),
-                        Float(c.y),
+      draw_solid_circle(c.x,
+                        c.y,
                         r,
                         fillColor.r,
                         fillColor.g,
@@ -142,17 +142,17 @@ public class AGGRenderer: Renderer{
                         agg_object)
     }
 
-    public func drawSolidTriangle(point1: Pair<FloatConvertible,FloatConvertible>,
-                                  point2: Pair<FloatConvertible,FloatConvertible>,
-                                  point3: Pair<FloatConvertible,FloatConvertible>,
+    public func drawSolidTriangle(point1: Point,
+                                  point2: Point,
+                                  point3: Point,
                                   fillColor: Color,
                                   isOriginShifted: Bool) {
-      draw_solid_triangle(Float(point1.x),
-                          Float(point2.x),
-                          Float(point3.x),
-                          Float(point1.y),
-                          Float(point2.y),
-                          Float(point3.y),
+      draw_solid_triangle(point1.x,
+                          point2.x,
+                          point3.x,
+                          point1.y,
+                          point2.y,
+                          point3.y,
                           fillColor.r,
                           fillColor.g,
                           fillColor.b,
@@ -161,14 +161,14 @@ public class AGGRenderer: Renderer{
                           agg_object);
     }
 
-    public func drawSolidPolygon(points: [Pair<FloatConvertible,FloatConvertible>],
+    public func drawSolidPolygon(points: [Point],
                                  fillColor: Color,
                                  isOriginShifted: Bool) {
         var x = [Float]()
         var y = [Float]()
         for index in 0..<points.count {
-            x.append(Float(points[index].x))
-            y.append(Float(points[index].y))
+            x.append(points[index].x)
+            y.append(points[index].y)
         }
         draw_solid_polygon(x,
                            y,
@@ -181,8 +181,8 @@ public class AGGRenderer: Renderer{
                            agg_object)
     }
 
-    public func drawLine(startPoint p1: Pair<FloatConvertible,FloatConvertible>,
-                         endPoint p2: Pair<FloatConvertible,FloatConvertible>,
+    public func drawLine(startPoint p1: Point,
+                         endPoint p2: Point,
                          strokeWidth thickness: Float,
                          strokeColor: Color = Color.black,
                          isDashed: Bool,
@@ -190,10 +190,10 @@ public class AGGRenderer: Renderer{
         var x = [Float]()
         var y = [Float]()
 
-        x.append(Float(p1.x) + xOffset)
-        x.append(Float(p2.x) + xOffset)
-        y.append(Float(p1.y) + yOffset)
-        y.append(Float(p2.y) + yOffset)
+        x.append(p1.x + xOffset)
+        x.append(p2.x + xOffset)
+        y.append(p1.y + yOffset)
+        y.append(p2.y + yOffset)
 
         draw_line(x,
                   y,
@@ -207,7 +207,7 @@ public class AGGRenderer: Renderer{
                   agg_object)
     }
 
-    public func drawPlotLines(points p: [Pair<FloatConvertible,FloatConvertible>],
+    public func drawPlotLines(points p: [Point],
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
@@ -215,8 +215,8 @@ public class AGGRenderer: Renderer{
         var y = [Float]()
 
         for index in 0..<p.count {
-            x.append(Float(p[index].x) + xOffset)
-            y.append(Float(p[index].y) + yOffset)
+            x.append(p[index].x + xOffset)
+            y.append(p[index].y + yOffset)
         }
 
         draw_plot_lines(x,
@@ -232,14 +232,14 @@ public class AGGRenderer: Renderer{
     }
 
     public func drawText(text s: String,
-                         location p: Pair<FloatConvertible,FloatConvertible>,
+                         location p: Point,
                          textSize size: Float,
                          strokeWidth thickness: Float,
                          angle: Float,
                          isOriginShifted: Bool){
         draw_text(s,
-                  Float(p.x) + xOffset,
-                  Float(p.y) + yOffset,
+                  p.x + xOffset,
+                  p.y + yOffset,
                   size,
                   thickness,
                   angle,

@@ -45,17 +45,17 @@ public class SVGRenderer: Renderer{
         LCARS_CHAR_SIZE_ARRAY = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 26, 46, 63, 42, 105, 45, 20, 25, 25, 47, 39, 21, 34, 26, 36, 36, 28, 36, 36, 36, 36, 36, 36, 36, 36, 27, 27, 36, 35, 36, 35, 65, 42, 43, 42, 44, 35, 34, 43, 46, 25, 39, 40, 31, 59, 47, 43, 41, 43, 44, 39, 28, 44, 43, 65, 37, 39, 34, 37, 42, 37, 50, 37, 32, 43, 43, 39, 43, 40, 30, 42, 45, 23, 25, 39, 23, 67, 45, 41, 43, 42, 30, 40, 28, 45, 33, 52, 33, 36, 31, 39, 26, 39, 55]
     }
 
-    public func drawRect(topLeftPoint p1: Pair<FloatConvertible,FloatConvertible>,
-                         topRightPoint p2: Pair<FloatConvertible,FloatConvertible>,
-                         bottomRightPoint p3: Pair<FloatConvertible,FloatConvertible>,
-                         bottomLeftPoint p4: Pair<FloatConvertible,FloatConvertible>,
+    public func drawRect(topLeftPoint p1: Point,
+                         topRightPoint p2: Point,
+                         bottomRightPoint p3: Point,
+                         bottomLeftPoint p4: Point,
                          strokeWidth thickness: Float,
                          strokeColor: Color = Color.black,
                          isOriginShifted: Bool) {
-        let w: Float = abs(Float(p2.x) - Float(p1.x))
-        let h: Float = abs(Float(p2.y) - Float(p3.y))
-        var y = max(Float(p1.y),Float(p2.y),Float(p3.y),Float(p4.y)) - yOffset
-        var x = Float(p1.x) + xOffset
+        let w = abs(p2.x - p1.x)
+        let h = abs(p2.y - p3.y)
+        var y = max(p1.y,p2.y,p3.y,p4.y) - yOffset
+        var x = p1.x + xOffset
         if (isOriginShifted) {
             y = y + (0.1*plotDimensions.subHeight)
             y = plotDimensions.subHeight - y
@@ -68,29 +68,29 @@ public class SVGRenderer: Renderer{
         image = image + "\n" + rect
     }
 
-    public func drawSolidRect(topLeftPoint p1: Pair<FloatConvertible,FloatConvertible>,
-                              topRightPoint p2: Pair<FloatConvertible,FloatConvertible>,
-                              bottomRightPoint p3: Pair<FloatConvertible,FloatConvertible>,
-                              bottomLeftPoint p4: Pair<FloatConvertible,FloatConvertible>,
+    public func drawSolidRect(topLeftPoint p1: Point,
+                              topRightPoint p2: Point,
+                              bottomRightPoint p3: Point,
+                              bottomLeftPoint p4: Point,
                               fillColor: Color = Color.white,
                               hatchPattern: BarGraphSeriesOptions.Hatching,
                               isOriginShifted: Bool) {
         if (isOriginShifted) {
-            let w: Float = abs(Float(p2.x) - Float(p1.x))
-            let h: Float = abs(Float(p2.y) - Float(p3.y))
-            var y = max(Float(p1.y),Float(p2.y),Float(p3.y),Float(p4.y)) + (0.1*plotDimensions.subHeight) - yOffset
+            let w = abs(p2.x - p1.x)
+            let h = abs(p2.y - p3.y)
+            var y = max(p1.y,p2.y,p3.y,p4.y) + (0.1*plotDimensions.subHeight) - yOffset
             y = plotDimensions.subHeight - y
-            let x = min(Float(p1.x), Float(p2.x), Float(p3.x), Float(p4.x)) + xOffset + (0.1*plotDimensions.subWidth)
+            let x = min(p1.x, p2.x, p3.x, p4.x) + xOffset + (0.1*plotDimensions.subWidth)
             let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0);opacity:\(fillColor.a)\" />"
             image = image + "\n" + rect
             drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
         }
         else {
-            let w: Float = abs(Float(p2.x) - Float(p1.x))
-            let h: Float = abs(Float(p2.y) - Float(p3.y))
-            var y = max(Float(p1.y),Float(p2.y),Float(p3.y),Float(p4.y)) - yOffset
+            let w: Float = abs(p2.x - p1.x)
+            let h: Float = abs(p2.y - p3.y)
+            var y = max(p1.y,p2.y,p3.y,p4.y) - yOffset
             y = plotDimensions.subHeight - y
-            let x = Float(p1.x) + xOffset
+            let x = p1.x + xOffset
             let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0);opacity:\(fillColor.a)\" />"
             image = image + "\n" + rect
             drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
@@ -166,18 +166,18 @@ public class SVGRenderer: Renderer{
         }
     }
 
-    public func drawSolidRectWithBorder(topLeftPoint p1: Pair<FloatConvertible,FloatConvertible>,
-                                        topRightPoint p2: Pair<FloatConvertible,FloatConvertible>,
-                                        bottomRightPoint p3: Pair<FloatConvertible,FloatConvertible>,
-                                        bottomLeftPoint p4: Pair<FloatConvertible,FloatConvertible>,
+    public func drawSolidRectWithBorder(topLeftPoint p1: Point,
+                                        topRightPoint p2: Point,
+                                        bottomRightPoint p3: Point,
+                                        bottomLeftPoint p4: Point,
                                         strokeWidth thickness: Float,
                                         fillColor: Color = Color.white,
                                         borderColor: Color = Color.black,
                                         isOriginShifted: Bool) {
-        let w: Float = abs(Float(p2.x) - Float(p1.x))
-        let h: Float = abs(Float(p2.y) - Float(p3.y))
-        var y = max(Float(p1.y),Float(p2.y),Float(p3.y),Float(p4.y)) - yOffset
-        var x = Float(p1.x) + xOffset
+        let w: Float = abs(p2.x - p1.x)
+        let h: Float = abs(p2.y - p3.y)
+        var y = max(p1.y,p2.y,p3.y,p4.y) - yOffset
+        var x = p1.x + xOffset
         if (isOriginShifted) {
             y = y + (0.1*plotDimensions.subHeight)
             y = plotDimensions.subHeight - y
@@ -191,12 +191,12 @@ public class SVGRenderer: Renderer{
         image = image + "\n" + rect
     }
 
-    public func drawSolidCircle(center c: Pair<FloatConvertible,FloatConvertible>,
+    public func drawSolidCircle(center c: Point,
                                 radius r: Float,
                                 fillColor: Color,
                                 isOriginShifted: Bool) {
-        var x = Float(c.x);
-        var y = Float(c.y);
+        var x = c.x;
+        var y = c.y;
         if (isOriginShifted) {
             x = x + 0.1*plotDimensions.subWidth
             y = y + 0.1*plotDimensions.subHeight
@@ -206,17 +206,17 @@ public class SVGRenderer: Renderer{
         image = image + "\n" + circle
     }
 
-    public func drawSolidTriangle(point1: Pair<FloatConvertible,FloatConvertible>,
-                                  point2: Pair<FloatConvertible,FloatConvertible>,
-                                  point3: Pair<FloatConvertible,FloatConvertible>,
+    public func drawSolidTriangle(point1: Point,
+                                  point2: Point,
+                                  point3: Point,
                                   fillColor: Color,
                                   isOriginShifted: Bool) {
-        var x1 = Float(point1.x)
-        var x2 = Float(point2.x)
-        var x3 = Float(point3.x)
-        var y1 = Float(point1.y)
-        var y2 = Float(point2.y)
-        var y3 = Float(point3.y)
+        var x1 = point1.x
+        var x2 = point2.x
+        var x3 = point3.x
+        var y1 = point1.y
+        var y2 = point2.y
+        var y3 = point3.y
         if (isOriginShifted) {
             x1 = x1 + 0.1*plotDimensions.subWidth
             x2 = x2 + 0.1*plotDimensions.subWidth
@@ -232,44 +232,44 @@ public class SVGRenderer: Renderer{
         image = image + "\n" + triangle
     }
 
-    public func drawSolidPolygon(points: [Pair<FloatConvertible,FloatConvertible>],
+    public func drawSolidPolygon(points: [Point],
                                  fillColor: Color,
                                  isOriginShifted: Bool) {
-        var pts = [Pair<FloatConvertible,FloatConvertible>]()
+        var pts = [Point]()
         if (isOriginShifted) {
             for index in 0..<points.count {
-                let x = Float(points[index].x) + 0.1*plotDimensions.subWidth
-                var y = Float(points[index].y) + 0.1*plotDimensions.subHeight
+                let x = points[index].x + 0.1*plotDimensions.subWidth
+                var y = points[index].y + 0.1*plotDimensions.subHeight
                 y = plotDimensions.subHeight - y
-                pts.append(Pair<FloatConvertible,FloatConvertible>(x, y))
+                pts.append(Point(x, y))
             }
         }
         else {
           for index in 0..<points.count {
-              let x = Float(points[index].x)
-              var y = Float(points[index].y)
+              let x = points[index].x
+              var y = points[index].y
               y = plotDimensions.subHeight - y
-              pts.append(Pair<FloatConvertible,FloatConvertible>(x, y))
+              pts.append(Point(x, y))
           }
         }
         var pointsString = ""
         for index in 0..<pts.count {
-            pointsString = pointsString + "\(Float(pts[index].x)),\(Float(pts[index].y)) "
+            pointsString = pointsString + "\(pts[index].x),\(pts[index].y) "
         }
         let polygon = "<polygon points=\"" + pointsString + "\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));opacity:\(fillColor.a)\" />"
         image = image + "\n" + polygon
     }
 
-    public func drawLine(startPoint p1: Pair<FloatConvertible,FloatConvertible>,
-                         endPoint p2: Pair<FloatConvertible,FloatConvertible>,
+    public func drawLine(startPoint p1: Point,
+                         endPoint p2: Point,
                          strokeWidth thickness: Float,
                          strokeColor: Color = Color.black,
                          isDashed: Bool,
                          isOriginShifted: Bool) {
-        var x0 = Float(p1.x)
-        var y0 = Float(p1.y)
-        var x1 = Float(p2.x)
-        var y1 = Float(p2.y)
+        var x0 = p1.x
+        var y0 = p1.y
+        var x1 = p2.x
+        var y1 = p2.y
         if (isOriginShifted) {
             x0 = x0 + (0.1*plotDimensions.subWidth)
             y0 = y0 + (0.1*plotDimensions.subHeight)
@@ -288,7 +288,7 @@ public class SVGRenderer: Renderer{
         image = image + "\n" + line
     }
 
-    public func drawPlotLines(points p: [Pair<FloatConvertible,FloatConvertible>],
+    public func drawPlotLines(points p: [Point],
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
@@ -298,13 +298,13 @@ public class SVGRenderer: Renderer{
     }
 
     public func drawText(text s: String,
-                         location p: Pair<FloatConvertible,FloatConvertible>,
+                         location p: Point,
                          textSize size: Float,
                          strokeWidth thickness: Float,
                          angle: Float,
                          isOriginShifted: Bool){
-        var x1 = Float(p.x)
-        var y1 = plotDimensions.subHeight - Float(p.y)
+        var x1 = p.x
+        var y1 = plotDimensions.subHeight - p.y
         if (isOriginShifted) {
             x1 = x1 + 0.1*plotDimensions.subWidth
             y1 = y1 - 0.1*plotDimensions.subHeight

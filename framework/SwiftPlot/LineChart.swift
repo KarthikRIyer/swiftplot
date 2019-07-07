@@ -14,29 +14,29 @@ public class LineGraph: Plot {
     public var plotBorder: PlotBorder = PlotBorder()
     public var plotDimensions: PlotDimensions {
         willSet{
-            plotBorder.topLeft       = Pair<FloatConvertible,FloatConvertible>(newValue.subWidth*0.1,
-                                                                               newValue.subHeight*0.9)
-            plotBorder.topRight      = Pair<FloatConvertible,FloatConvertible>(newValue.subWidth*0.9,
-                                                                               newValue.subHeight*0.9)
-            plotBorder.bottomLeft    = Pair<FloatConvertible,FloatConvertible>(newValue.subWidth*0.1,
-                                                                               newValue.subHeight*0.1)
-            plotBorder.bottomRight   = Pair<FloatConvertible,FloatConvertible>(newValue.subWidth*0.9,
-                                                                               newValue.subHeight*0.1)
-            plotLegend.legendTopLeft = Pair<FloatConvertible,FloatConvertible>(Float(plotBorder.topLeft.x) + Float(20),
-                                                                               Float(plotBorder.topLeft.y) - Float(20))
+            plotBorder.topLeft       = Point(newValue.subWidth*0.1,
+                                             newValue.subHeight*0.9)
+            plotBorder.topRight      = Point(newValue.subWidth*0.9,
+                                             newValue.subHeight*0.9)
+            plotBorder.bottomLeft    = Point(newValue.subWidth*0.1,
+                                             newValue.subHeight*0.1)
+            plotBorder.bottomRight   = Point(newValue.subWidth*0.9,
+                                             newValue.subHeight*0.1)
+            plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + Float(20),
+                                             plotBorder.topLeft.y - Float(20))
         }
     }
 
-    var primaryAxis: Axis<FloatConvertible, FloatConvertible> = Axis<FloatConvertible,FloatConvertible>()
+    var primaryAxis = Axis<FloatConvertible,FloatConvertible>()
     var secondaryAxis: Axis<FloatConvertible, FloatConvertible>? = nil
 
     public var plotLineThickness: Float = 3
 
-    public init(pairs : [Pair<FloatConvertible,FloatConvertible>], width: Float = 1000, height: Float = 660){
+    public init(points : [Pair<FloatConvertible,FloatConvertible>], width: Float = 1000, height: Float = 660){
         plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
         plotDimensions.calculateGraphDimensions()
 
-        let s = Series<FloatConvertible,FloatConvertible>(pairs: pairs,label: "Plot")
+        let s = Series<FloatConvertible,FloatConvertible>(values: points,label: "Plot")
         primaryAxis.series.append(s)
     }
 
@@ -57,33 +57,33 @@ public class LineGraph: Plot {
             secondaryAxis!.series.append(s)
         }
     }
-    public func addSeries(pairs : [Pair<FloatConvertible,FloatConvertible>],
+    public func addSeries(points : [Pair<FloatConvertible,FloatConvertible>],
                           label: String, color: Color = Color.lightBlue,
                           axisType: Axis<FloatConvertible,FloatConvertible>.Location = .primaryAxis){
-        let s = Series<FloatConvertible,FloatConvertible>(pairs: pairs,label: label, color: color)
+        let s = Series<FloatConvertible,FloatConvertible>(values: points,label: label, color: color)
         addSeries(s, axisType: axisType)
     }
     public func addSeries<T: FloatConvertible>(_ y: [T],
                                               label: String,
                                               color: Color = Color.lightBlue,
-                                              axisType: Axis<FloatConvertible,FloatConvertible>.Location = Axis.Location.primaryAxis){
-        var pairs = [Pair<FloatConvertible,FloatConvertible>]()
+                                              axisType: Axis<FloatConvertible,FloatConvertible>.Location = .primaryAxis){
+        var points = [Pair<FloatConvertible,FloatConvertible>]()
         for i in 0..<y.count {
-            pairs.append(Pair<FloatConvertible,FloatConvertible>(Float(i+1), y[i]))
+            points.append(Pair<FloatConvertible,FloatConvertible>(Float(i+1), y[i]))
         }
-        let s = Series<FloatConvertible,FloatConvertible>(pairs: pairs, label: label, color: color)
+        let s = Series<FloatConvertible,FloatConvertible>(values: points, label: label, color: color)
         addSeries(s, axisType: axisType)
     }
     public func addSeries<T: FloatConvertible>(_ x: [T],
                                                _ y: [T],
                                                label: String,
-                                               color: Color = Color.lightBlue,
-                                               axisType: Axis<FloatConvertible,FloatConvertible>.Location = Axis.Location.primaryAxis){
-        var pairs = [Pair<FloatConvertible,FloatConvertible>]()
+                                               color: Color = .lightBlue,
+                                               axisType: Axis<FloatConvertible,FloatConvertible>.Location = .primaryAxis){
+        var points = [Pair<FloatConvertible,FloatConvertible>]()
         for i in 0..<x.count {
-            pairs.append(Pair<FloatConvertible,FloatConvertible>(x[i], y[i]))
+            points.append(Pair<FloatConvertible,FloatConvertible>(x[i], y[i]))
         }
-        let s = Series<FloatConvertible,FloatConvertible>(pairs: pairs, label: label, color: color)
+        let s = Series<FloatConvertible,FloatConvertible>(values: points, label: label, color: color)
         addSeries(s, axisType: axisType)
     }
     public func addFunction<T: FloatConvertible>(_ function: (T)->T,
@@ -106,11 +106,11 @@ public class LineGraph: Plot {
             y.append(clamp(r, minValue: -1.0/step, maxValue: 1.0/step))
             // y.append(r)
         }
-        var pairs = [Pair<FloatConvertible,FloatConvertible>]()
+        var points = [Pair<FloatConvertible,FloatConvertible>]()
         for i in 0..<x.count {
-            pairs.append(Pair<FloatConvertible,FloatConvertible>(x[i], y[i]))
+            points.append(Pair<FloatConvertible,FloatConvertible>(x[i], y[i]))
         }
-        let s = Series<FloatConvertible,FloatConvertible>(pairs: pairs, label: label, color: color)
+        let s = Series<FloatConvertible,FloatConvertible>(values: points, label: label, color: color)
         addSeries(s, axisType: axisType)
     }
 }
@@ -123,16 +123,16 @@ extension LineGraph{
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
         renderer.plotDimensions = plotDimensions
-        plotBorder.topLeft       = Pair<FloatConvertible,FloatConvertible>(plotDimensions.subWidth*0.1,
-                                                                           plotDimensions.subHeight*0.9)
-        plotBorder.topRight      = Pair<FloatConvertible,FloatConvertible>(plotDimensions.subWidth*0.9,
-                                                                           plotDimensions.subHeight*0.9)
-        plotBorder.bottomLeft    = Pair<FloatConvertible,FloatConvertible>(plotDimensions.subWidth*0.1,
-                                                                           plotDimensions.subHeight*0.1)
-        plotBorder.bottomRight   = Pair<FloatConvertible,FloatConvertible>(plotDimensions.subWidth*0.9,
-                                                                           plotDimensions.subHeight*0.1)
-        plotLegend.legendTopLeft = Pair<FloatConvertible,FloatConvertible>(Float(plotBorder.topLeft.x) + Float(20),
-                                                                           Float(plotBorder.topLeft.y) - Float(20))
+        plotBorder.topLeft       = Point(plotDimensions.subWidth*0.1,
+                                        plotDimensions.subHeight*0.9)
+        plotBorder.topRight      = Point(plotDimensions.subWidth*0.9,
+                                        plotDimensions.subHeight*0.9)
+        plotBorder.bottomLeft    = Point(plotDimensions.subWidth*0.1,
+                                        plotDimensions.subHeight*0.1)
+        plotBorder.bottomRight   = Point(plotDimensions.subWidth*0.9,
+                                        plotDimensions.subHeight*0.1)
+        plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + Float(20),
+                                         plotBorder.topLeft.y - Float(20))
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
         drawBorder(renderer: renderer)
@@ -147,16 +147,16 @@ extension LineGraph{
     public func drawGraph(renderer: Renderer){
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
-        plotBorder.topLeft       = Pair<FloatConvertible,FloatConvertible>(plotDimensions.subWidth*0.1,
-                                                                           plotDimensions.subHeight*0.9)
-        plotBorder.topRight      = Pair<FloatConvertible,FloatConvertible>(plotDimensions.subWidth*0.9,
-                                                                           plotDimensions.subHeight*0.9)
-        plotBorder.bottomLeft    = Pair<FloatConvertible,FloatConvertible>(plotDimensions.subWidth*0.1,
-                                                                           plotDimensions.subHeight*0.1)
-        plotBorder.bottomRight   = Pair<FloatConvertible,FloatConvertible>(plotDimensions.subWidth*0.9,
-                                                                           plotDimensions.subHeight*0.1)
-        plotLegend.legendTopLeft = Pair<FloatConvertible,FloatConvertible>(Float(plotBorder.topLeft.x) + Float(20),
-                                                                           Float(plotBorder.topLeft.y) - Float(20))
+        plotBorder.topLeft       = Point(plotDimensions.subWidth*0.1,
+                                         plotDimensions.subHeight*0.9)
+        plotBorder.topRight      = Point(plotDimensions.subWidth*0.9,
+                                         plotDimensions.subHeight*0.9)
+        plotBorder.bottomLeft    = Point(plotDimensions.subWidth*0.1,
+                                         plotDimensions.subHeight*0.1)
+        plotBorder.bottomRight   = Point(plotDimensions.subWidth*0.9,
+                                         plotDimensions.subHeight*0.1)
+        plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + Float(20),
+                                         plotBorder.topLeft.y - Float(20))
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
         drawBorder(renderer: renderer)
@@ -179,47 +179,47 @@ extension LineGraph{
                                                          textSize: plotLabel!.labelSize)
             let yWidth    : Float = renderer.getTextWidth(text: plotLabel!.yLabel,
                                                           textSize: plotLabel!.labelSize)
-            plotLabel!.xLabelLocation = Pair<FloatConvertible,FloatConvertible>(((Float(plotBorder.bottomRight.x) + Float(plotBorder.bottomLeft.x))*Float(0.5)) - xWidth*Float(0.5),
-                                                                                Float(plotBorder.bottomLeft.y) - plotLabel!.labelSize - 0.05*plotDimensions.graphHeight)
-            plotLabel!.yLabelLocation = Pair<FloatConvertible,FloatConvertible>((Float(plotBorder.bottomLeft.x) - plotLabel!.labelSize - 0.05*plotDimensions.graphWidth),
-                                                                               ((Float(plotBorder.bottomLeft.y) + Float(plotBorder.topLeft.y))*Float(0.5) - yWidth))
+            plotLabel!.xLabelLocation = Point(((plotBorder.bottomRight.x + plotBorder.bottomLeft.x)*Float(0.5)) - xWidth*Float(0.5),
+                                                                                plotBorder.bottomLeft.y - plotLabel!.labelSize - 0.05*plotDimensions.graphHeight)
+            plotLabel!.yLabelLocation = Point((plotBorder.bottomLeft.x - plotLabel!.labelSize - 0.05*plotDimensions.graphWidth),
+                                                                               ((plotBorder.bottomLeft.y + plotBorder.topLeft.y)*Float(0.5) - yWidth))
         }
         if (plotTitle != nil) {
           let titleWidth: Float = renderer.getTextWidth(text: plotTitle!.title,
                                                         textSize: plotTitle!.titleSize)
-          plotTitle!.titleLocation = Pair<FloatConvertible,FloatConvertible>(((Float(plotBorder.topRight.x) + Float(plotBorder.topLeft.x))*Float(0.5)) - titleWidth*Float(0.5),
-                                                                               Float(plotBorder.topLeft.y) + plotTitle!.titleSize*Float(0.5))
+          plotTitle!.titleLocation = Point(((plotBorder.topRight.x + plotBorder.topLeft.x)*Float(0.5)) - titleWidth*Float(0.5),
+                                                                               plotBorder.topLeft.y + plotTitle!.titleSize*Float(0.5))
         }
     }
 
     func calcMarkerLocAndScalePts(renderer: Renderer){
 
-        primaryAxis.plotMarkers.xMarkers = [Pair<FloatConvertible,FloatConvertible>]()
-        primaryAxis.plotMarkers.yMarkers = [Pair<FloatConvertible,FloatConvertible>]()
-        primaryAxis.plotMarkers.xMarkersTextLocation = [Pair<FloatConvertible,FloatConvertible>]()
-        primaryAxis.plotMarkers.yMarkersTextLocation = [Pair<FloatConvertible,FloatConvertible>]()
+        primaryAxis.plotMarkers.xMarkers = [Point]()
+        primaryAxis.plotMarkers.yMarkers = [Point]()
+        primaryAxis.plotMarkers.xMarkersTextLocation = [Point]()
+        primaryAxis.plotMarkers.yMarkersTextLocation = [Point]()
         primaryAxis.plotMarkers.xMarkersText = [String]()
         primaryAxis.plotMarkers.xMarkersText = [String]()
 
-        var maximumXPrimary: Float = getMaxX(pairs: primaryAxis.series[0].pairs)
-        var maximumYPrimary: Float = getMaxY(pairs: primaryAxis.series[0].pairs)
-        var minimumXPrimary: Float = getMinX(pairs: primaryAxis.series[0].pairs)
-        var minimumYPrimary: Float = getMinY(pairs: primaryAxis.series[0].pairs)
+        var maximumXPrimary: Float = maxX(points: primaryAxis.series[0].values)
+        var maximumYPrimary: Float = maxY(points: primaryAxis.series[0].values)
+        var minimumXPrimary: Float = minX(points: primaryAxis.series[0].values)
+        var minimumYPrimary: Float = minY(points: primaryAxis.series[0].values)
 
         for index in 1..<primaryAxis.series.count {
 
             let s: Series<FloatConvertible,FloatConvertible> = primaryAxis.series[index]
-            let pairs = s.pairs
-            var x: Float = getMaxX(pairs: pairs)
-            var y: Float = getMaxY(pairs: pairs)
+            // let pairs = s.pairs
+            var x: Float = maxX(points: s.values)
+            var y: Float = maxY(points: s.values)
             if (x > maximumXPrimary) {
                 maximumXPrimary = x
             }
             if (y > maximumYPrimary) {
                 maximumYPrimary = y
             }
-            x = getMinX(pairs: pairs)
-            y = getMinY(pairs: pairs)
+            x = minX(points: s.values)
+            y = minY(points: s.values)
             if (x < minimumXPrimary) {
                 minimumXPrimary = x
             }
@@ -234,30 +234,30 @@ extension LineGraph{
         var minimumYSecondary: Float = 0
 
         if secondaryAxis != nil {
-            secondaryAxis!.plotMarkers.xMarkers = [Pair<FloatConvertible,FloatConvertible>]()
-            secondaryAxis!.plotMarkers.yMarkers = [Pair<FloatConvertible,FloatConvertible>]()
-            secondaryAxis!.plotMarkers.xMarkersTextLocation = [Pair<FloatConvertible,FloatConvertible>]()
-            secondaryAxis!.plotMarkers.yMarkersTextLocation = [Pair<FloatConvertible,FloatConvertible>]()
+            secondaryAxis!.plotMarkers.xMarkers = [Point]()
+            secondaryAxis!.plotMarkers.yMarkers = [Point]()
+            secondaryAxis!.plotMarkers.xMarkersTextLocation = [Point]()
+            secondaryAxis!.plotMarkers.yMarkersTextLocation = [Point]()
             secondaryAxis!.plotMarkers.xMarkersText = [String]()
             secondaryAxis!.plotMarkers.xMarkersText = [String]()
 
-            maximumXSecondary = getMaxX(pairs: secondaryAxis!.series[0].pairs)
-            maximumYSecondary = getMaxY(pairs: secondaryAxis!.series[0].pairs)
-            minimumXSecondary = getMinX(pairs: secondaryAxis!.series[0].pairs)
-            minimumYSecondary = getMinY(pairs: secondaryAxis!.series[0].pairs)
+            maximumXSecondary = maxX(points: secondaryAxis!.series[0].values)
+            maximumYSecondary = maxY(points: secondaryAxis!.series[0].values)
+            minimumXSecondary = minX(points: secondaryAxis!.series[0].values)
+            minimumYSecondary = minY(points: secondaryAxis!.series[0].values)
             for index in 1..<secondaryAxis!.series.count {
                 let s: Series<FloatConvertible,FloatConvertible> = secondaryAxis!.series[index]
-                let pairs = s.pairs
-                var x: Float = getMaxX(pairs: pairs)
-                var y: Float = getMaxY(pairs: pairs)
+                // let pairs = s.pairs
+                var x: Float = maxX(points: s.values)
+                var y: Float = maxY(points: s.values)
                 if (x > maximumXSecondary) {
                     maximumXSecondary = x
                 }
                 if (y > maximumYSecondary) {
                     maximumYSecondary = y
                 }
-                x = getMinX(pairs: pairs)
-                y = getMinY(pairs: pairs)
+                x = minX(points: s.values)
+                y = minY(points: s.values)
                 if (x < minimumXSecondary) {
                     minimumXSecondary = x
                 }
@@ -269,18 +269,18 @@ extension LineGraph{
             minimumXPrimary = min(minimumXPrimary, minimumXSecondary)
         }
 
-        let originPrimary: Pair<FloatConvertible,FloatConvertible> = Pair<FloatConvertible,FloatConvertible>((plotDimensions.graphWidth/(maximumXPrimary-minimumXPrimary))*(-minimumXPrimary),
-                                                                                                             (plotDimensions.graphHeight/(maximumYPrimary-minimumYPrimary))*(-minimumYPrimary))
+        let originPrimary = Point((plotDimensions.graphWidth/(maximumXPrimary-minimumXPrimary))*(-minimumXPrimary),
+                                  (plotDimensions.graphHeight/(maximumYPrimary-minimumYPrimary))*(-minimumYPrimary))
 
         let rightScaleMargin: Float = (plotDimensions.subWidth - plotDimensions.graphWidth)*Float(0.5) - 10.0;
         let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)*Float(0.5) - 10.0;
         primaryAxis.scaleX = (maximumXPrimary - minimumXPrimary) / (plotDimensions.graphWidth - rightScaleMargin);
         primaryAxis.scaleY = (maximumYPrimary - minimumYPrimary) / (plotDimensions.graphHeight - topScaleMargin);
 
-        var originSecondary: Pair<FloatConvertible,FloatConvertible>? = nil
+        var originSecondary: Point? = nil
         if (secondaryAxis != nil) {
-            originSecondary = Pair<FloatConvertible,FloatConvertible>((plotDimensions.graphWidth/(maximumXSecondary-minimumXSecondary))*(-minimumXSecondary),
-                                                                      (plotDimensions.graphHeight/(maximumYSecondary-minimumYSecondary))*(-minimumYSecondary))
+            originSecondary = Point((plotDimensions.graphWidth/(maximumXSecondary-minimumXSecondary))*(-minimumXSecondary),
+                                    (plotDimensions.graphHeight/(maximumYSecondary-minimumYSecondary))*(-minimumYSecondary))
             secondaryAxis!.scaleX = (maximumXSecondary - minimumXSecondary) / (plotDimensions.graphWidth - rightScaleMargin);
             secondaryAxis!.scaleY = (maximumYSecondary - minimumYSecondary) / (plotDimensions.graphHeight - topScaleMargin);
         }
@@ -320,62 +320,62 @@ extension LineGraph{
             noXD = MAX_DIV
         }
 
-        var xM = Float(originPrimary.x)
+        var xM = originPrimary.x
         while xM<=plotDimensions.graphWidth {
             if(xM+inc2Primary<0.0 || xM<0.0) {
                 xM = xM+inc2Primary
                 continue
             }
-            let p = Pair<FloatConvertible,FloatConvertible>(xM, 0)
+            let p = Point(xM, 0)
             primaryAxis.plotMarkers.xMarkers.append(p)
-            let text_p = Pair<FloatConvertible,FloatConvertible>(xM - (renderer.getTextWidth(text: "\(floor(primaryAxis.scaleX*(xM-Float(originPrimary.x))))",
-                                                                                             textSize: primaryAxis.plotMarkers.markerTextSize)/2.0) + 8,
-                                                                 -15)
+            let text_p = Point(xM - (renderer.getTextWidth(text: "\(floor(primaryAxis.scaleX*(xM-originPrimary.x)))",
+                                                           textSize: primaryAxis.plotMarkers.markerTextSize)/2.0) + 8,
+                               -15)
             primaryAxis.plotMarkers.xMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.xMarkersText.append("\(floor(primaryAxis.scaleX*(xM-Float(originPrimary.x))))")
+            primaryAxis.plotMarkers.xMarkersText.append("\(floor(primaryAxis.scaleX*(xM-originPrimary.x)))")
             xM = xM + inc2Primary
         }
 
-        xM = Float(originPrimary.x) - inc2Primary
+        xM = originPrimary.x - inc2Primary
         while xM>0.0 {
             if (xM > plotDimensions.graphWidth) {
                 xM = xM - inc2Primary
                 continue
             }
-            let p = Pair<FloatConvertible,FloatConvertible>(xM, 0)
+            let p = Point(xM, 0)
             primaryAxis.plotMarkers.xMarkers.append(p)
-            let text_p = Pair<FloatConvertible,FloatConvertible>(xM - (renderer.getTextWidth(text: "\(ceil(primaryAxis.scaleX*(xM-Float(originPrimary.x))))",
-                                                                                             textSize: primaryAxis.plotMarkers.markerTextSize)/2.0) + 8,
-                                                                -15)
+            let text_p = Point(xM - (renderer.getTextWidth(text: "\(ceil(primaryAxis.scaleX*(xM-originPrimary.x)))",
+                                                           textSize: primaryAxis.plotMarkers.markerTextSize)/2.0) + 8,
+                               -15)
             primaryAxis.plotMarkers.xMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.xMarkersText.append("\(ceil(primaryAxis.scaleX*(xM-Float(originPrimary.x))))")
+            primaryAxis.plotMarkers.xMarkersText.append("\(ceil(primaryAxis.scaleX*(xM-originPrimary.x)))")
             xM = xM - inc2Primary
         }
 
-        var yM = Float(originPrimary.y)
+        var yM = originPrimary.y
         while yM<=plotDimensions.graphHeight {
             if(yM+inc1Primary<0.0 || yM<0.0){
                 yM = yM + inc1Primary
                 continue
             }
-            let p = Pair<FloatConvertible,FloatConvertible>(0, yM)
+            let p = Point(0, yM)
             primaryAxis.plotMarkers.yMarkers.append(p)
-            let text_p = Pair<FloatConvertible,FloatConvertible>(-(renderer.getTextWidth(text: "\(ceil(primaryAxis.scaleY*(yM-Float(originPrimary.y))))",
-                                                                                         textSize: primaryAxis.plotMarkers.markerTextSize)+5),
-                                                                 yM - 4)
+            let text_p = Point(-(renderer.getTextWidth(text: "\(ceil(primaryAxis.scaleY*(yM-originPrimary.y)))",
+                                                       textSize: primaryAxis.plotMarkers.markerTextSize)+5),
+                               yM - 4)
             primaryAxis.plotMarkers.yMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.yMarkersText.append("\(ceil(primaryAxis.scaleY*(yM-Float(originPrimary.y))))")
+            primaryAxis.plotMarkers.yMarkersText.append("\(ceil(primaryAxis.scaleY*(yM-originPrimary.y)))")
             yM = yM + inc1Primary
         }
-        yM = Float(originPrimary.y) - inc1Primary
+        yM = originPrimary.y - inc1Primary
         while yM>0.0 {
-            let p = Pair<FloatConvertible,FloatConvertible>(0, yM)
+            let p = Point(0, yM)
             primaryAxis.plotMarkers.yMarkers.append(p)
-            let text_p = Pair<FloatConvertible,FloatConvertible>(-(renderer.getTextWidth(text: "\(floor(primaryAxis.scaleY*(yM-Float(originPrimary.y))))",
-                                                                                         textSize: primaryAxis.plotMarkers.markerTextSize)+5),
-                                                                 yM - 4)
+            let text_p = Point(-(renderer.getTextWidth(text: "\(floor(primaryAxis.scaleY*(yM-originPrimary.y)))",
+                                                       textSize: primaryAxis.plotMarkers.markerTextSize)+5),
+                               yM - 4)
             primaryAxis.plotMarkers.yMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.yMarkersText.append("\(floor(primaryAxis.scaleY*(yM-Float(originPrimary.y))))")
+            primaryAxis.plotMarkers.yMarkersText.append("\(floor(primaryAxis.scaleY*(yM-originPrimary.y)))")
             yM = yM - inc1Primary
         }
 
@@ -385,13 +385,13 @@ extension LineGraph{
         let scaleXInvPrimary: Float = 1.0/primaryAxis.scaleX;
         let scaleYInvPrimary: Float = 1.0/primaryAxis.scaleY
         for i in 0..<primaryAxis.series.count {
-            let pairs = primaryAxis.series[i].pairs
-            primaryAxis.series[i].scaledPairs.removeAll();
-            for j in 0..<pairs.count {
-                let scaledPair = Pair<FloatConvertible,FloatConvertible>(Float(pairs[j].x)*scaleXInvPrimary + Float(originPrimary.x),
-                                                                         Float(pairs[j].y)*scaleYInvPrimary + Float(originPrimary.y))
+            // let pairs = primaryAxis.series[i].pairs
+            primaryAxis.series[i].scaledValues.removeAll();
+            for j in 0..<primaryAxis.series[i].count {
+                let scaledPair = Pair<FloatConvertible,FloatConvertible>(Float((primaryAxis.series[i])[j].x)*scaleXInvPrimary + originPrimary.x,
+                                                                         Float((primaryAxis.series[i])[j].y)*scaleYInvPrimary + originPrimary.y)
                 if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= plotDimensions.graphWidth && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= plotDimensions.graphHeight) {
-                    primaryAxis.series[i].scaledPairs.append(scaledPair)
+                    primaryAxis.series[i].scaledValues.append(scaledPair)
                 }
             }
         }
@@ -412,31 +412,31 @@ extension LineGraph{
             if(plotDimensions.graphHeight/nY > MAX_DIV){
                 inc1Secondary = (plotDimensions.graphHeight/nY)*inc1Secondary/MAX_DIV
             }
-            yM = Float(originSecondary!.y)
+            yM = originSecondary!.y
 
             while yM<=plotDimensions.graphHeight {
                 if(yM+inc1Secondary<0.0 || yM<0.0){
                     yM = yM + inc1Secondary
                     continue
                 }
-                let p = Pair<FloatConvertible,FloatConvertible>(0, yM)
+                let p = Point(0, yM)
                 secondaryAxis!.plotMarkers.yMarkers.append(p)
-                let text_p = Pair<FloatConvertible,FloatConvertible>(plotDimensions.graphWidth + (renderer.getTextWidth(text: "\(ceil(secondaryAxis!.scaleY*(yM-Float(originSecondary!.y))))",
-                                                                                                                        textSize: secondaryAxis!.plotMarkers.markerTextSize)*Float(0.5) - 5),
-                                                                     yM - 4)
+                let text_p = Point(plotDimensions.graphWidth + (renderer.getTextWidth(text: "\(ceil(secondaryAxis!.scaleY*(yM-originSecondary!.y)))",
+                                                                                      textSize: secondaryAxis!.plotMarkers.markerTextSize)*Float(0.5) - 5),
+                                   yM - 4)
                 secondaryAxis!.plotMarkers.yMarkersTextLocation.append(text_p)
-                secondaryAxis!.plotMarkers.yMarkersText.append("\(ceil(secondaryAxis!.scaleY*(yM-Float(originSecondary!.y))))")
+                secondaryAxis!.plotMarkers.yMarkersText.append("\(ceil(secondaryAxis!.scaleY*(yM-originSecondary!.y)))")
                 yM = yM + inc1Secondary
             }
-            yM = Float(originSecondary!.y) - inc1Secondary
+            yM = originSecondary!.y - inc1Secondary
             while yM>0.0 {
-                let p = Pair<FloatConvertible,FloatConvertible>(0, yM)
+                let p = Point(0, yM)
                 secondaryAxis!.plotMarkers.yMarkers.append(p)
-                let text_p = Pair<FloatConvertible,FloatConvertible>(plotDimensions.graphWidth + (renderer.getTextWidth(text: "\(floor(secondaryAxis!.scaleY*(yM-Float(originSecondary!.y))))",
-                                                                                                                        textSize: secondaryAxis!.plotMarkers.markerTextSize)*Float(0.5) - 5),
-                                                                     yM - 4)
+                let text_p = Point(plotDimensions.graphWidth + (renderer.getTextWidth(text: "\(floor(secondaryAxis!.scaleY*(yM-originSecondary!.y)))",
+                                                                                      textSize: secondaryAxis!.plotMarkers.markerTextSize)*Float(0.5) - 5),
+                                   yM - 4)
                 secondaryAxis!.plotMarkers.yMarkersTextLocation.append(text_p)
-                secondaryAxis!.plotMarkers.yMarkersText.append("\(floor(secondaryAxis!.scaleY*(yM-Float(originSecondary!.y))))")
+                secondaryAxis!.plotMarkers.yMarkersText.append("\(floor(secondaryAxis!.scaleY*(yM-originSecondary!.y)))")
                 yM = yM - inc1Secondary
             }
 
@@ -445,13 +445,13 @@ extension LineGraph{
             // scale points to be plotted according to plot size
             let scaleYInvSecondary: Float = 1.0/secondaryAxis!.scaleY
             for i in 0..<secondaryAxis!.series.count {
-                let pairs = secondaryAxis!.series[i].pairs
-                secondaryAxis!.series[i].scaledPairs.removeAll();
-                for j in 0..<pairs.count {
-                    let scaledPair = Pair<FloatConvertible,FloatConvertible>(Float(pairs[j].x)*scaleXInvPrimary + Float(originPrimary.x),
-                                                                             Float(pairs[j].y)*scaleYInvSecondary + Float(originSecondary!.y))
+                // let pairs = secondaryAxis!.series[i].pairs
+                secondaryAxis!.series[i].scaledValues.removeAll();
+                for j in 0..<secondaryAxis!.series[i].count {
+                    let scaledPair = Pair<FloatConvertible,FloatConvertible>(Float((secondaryAxis!.series[i])[j].x)*scaleXInvPrimary + originPrimary.x,
+                                                                             Float((secondaryAxis!.series[i])[j].y)*scaleYInvSecondary + originSecondary!.y)
                     if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= plotDimensions.graphWidth && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= plotDimensions.graphHeight) {
-                        secondaryAxis!.series[i].scaledPairs.append(scaledPair)
+                        secondaryAxis!.series[i].scaledValues.append(scaledPair)
                     }
                 }
             }
@@ -471,8 +471,8 @@ extension LineGraph{
 
     func drawMarkers(renderer: Renderer) {
         for index in 0..<primaryAxis.plotMarkers.xMarkers.count {
-            let p1 = Pair<FloatConvertible,FloatConvertible>(Float(primaryAxis.plotMarkers.xMarkers[index].x), -3)
-            let p2 = Pair<FloatConvertible,FloatConvertible>(Float(primaryAxis.plotMarkers.xMarkers[index].x), 0)
+            let p1 = Point(primaryAxis.plotMarkers.xMarkers[index].x, -3)
+            let p2 = Point(primaryAxis.plotMarkers.xMarkers[index].x, 0)
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
                               strokeWidth: plotBorder.borderThickness,
@@ -488,8 +488,8 @@ extension LineGraph{
         }
 
         for index in 0..<primaryAxis.plotMarkers.yMarkers.count {
-            let p1 = Pair<FloatConvertible,FloatConvertible>(-3, Float(primaryAxis.plotMarkers.yMarkers[index].y))
-            let p2 = Pair<FloatConvertible,FloatConvertible>(0, Float(primaryAxis.plotMarkers.yMarkers[index].y))
+            let p1 = Point(-3, primaryAxis.plotMarkers.yMarkers[index].y)
+            let p2 = Point(0, primaryAxis.plotMarkers.yMarkers[index].y)
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
                               strokeWidth: plotBorder.borderThickness,
@@ -506,10 +506,10 @@ extension LineGraph{
 
         if (secondaryAxis != nil) {
             for index in 0..<secondaryAxis!.plotMarkers.yMarkers.count {
-                let p1 = Pair<FloatConvertible,FloatConvertible>(plotDimensions.graphWidth,
-                                                                 Float(secondaryAxis!.plotMarkers.yMarkers[index].y))
-                let p2 = Pair<FloatConvertible,FloatConvertible>(plotDimensions.graphWidth + 3,
-                                                                 Float(secondaryAxis!.plotMarkers.yMarkers[index].y))
+                let p1 = Point(plotDimensions.graphWidth,
+                              (secondaryAxis!.plotMarkers.yMarkers[index].y))
+                let p2 = Point(plotDimensions.graphWidth + 3,
+                              (secondaryAxis!.plotMarkers.yMarkers[index].y))
                 renderer.drawLine(startPoint: p1,
                                   endPoint: p2,
                                   strokeWidth: plotBorder.borderThickness,
@@ -529,14 +529,22 @@ extension LineGraph{
 
     func drawPlots(renderer: Renderer) {
         for s in primaryAxis.series {
-            renderer.drawPlotLines(points: s.scaledPairs,
+            var points = [Point]()
+            for p in s.scaledValues {
+                points.append(Point(Float(p.x),Float(p.y)))
+            }
+            renderer.drawPlotLines(points: points,
                                    strokeWidth: plotLineThickness,
                                    strokeColor: s.color,
                                    isDashed: false)
         }
         if (secondaryAxis != nil) {
             for s in secondaryAxis!.series {
-                renderer.drawPlotLines(points: s.scaledPairs,
+                var points = [Point]()
+                for p in s.scaledValues {
+                    points.append(Point(Float(p.x),Float(p.y)))
+                }
+                renderer.drawPlotLines(points: points,
                                        strokeWidth: plotLineThickness,
                                        strokeColor: s.color,
                                        isDashed: true)
@@ -586,14 +594,14 @@ extension LineGraph{
         plotLegend.legendWidth  = maxWidth + 3.5*plotLegend.legendTextSize
         plotLegend.legendHeight = (Float(allSeries.count)*2.0 + 1.0)*plotLegend.legendTextSize
 
-        let p1 = Pair<FloatConvertible,FloatConvertible>(Float(plotLegend.legendTopLeft.x),
-                                                         Float(plotLegend.legendTopLeft.y))
-        let p2 = Pair<FloatConvertible,FloatConvertible>(Float(plotLegend.legendTopLeft.x) + plotLegend.legendWidth,
-                                                         Float(plotLegend.legendTopLeft.y))
-        let p3 = Pair<FloatConvertible,FloatConvertible>(Float(plotLegend.legendTopLeft.x) + plotLegend.legendWidth,
-                                                         Float(plotLegend.legendTopLeft.y) - plotLegend.legendHeight)
-        let p4 = Pair<FloatConvertible,FloatConvertible>(Float(plotLegend.legendTopLeft.x),
-                                                         Float(plotLegend.legendTopLeft.y) - plotLegend.legendHeight)
+        let p1 = Point(plotLegend.legendTopLeft.x,
+                       plotLegend.legendTopLeft.y)
+        let p2 = Point(plotLegend.legendTopLeft.x + plotLegend.legendWidth,
+                       plotLegend.legendTopLeft.y)
+        let p3 = Point(plotLegend.legendTopLeft.x + plotLegend.legendWidth,
+                       plotLegend.legendTopLeft.y - plotLegend.legendHeight)
+        let p4 = Point(plotLegend.legendTopLeft.x,
+                       plotLegend.legendTopLeft.y - plotLegend.legendHeight)
 
         renderer.drawSolidRectWithBorder(topLeftPoint: p1,
                                          topRightPoint: p2,
@@ -605,12 +613,12 @@ extension LineGraph{
                                          isOriginShifted: false)
 
         for i in 0..<allSeries.count {
-            let tL = Pair<FloatConvertible,FloatConvertible>(Float(plotLegend.legendTopLeft.x) + plotLegend.legendTextSize,
-                                                             Float(plotLegend.legendTopLeft.y) - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize)
-            let bR = Pair<FloatConvertible,FloatConvertible>(Float(tL.x) + plotLegend.legendTextSize,
-                                                             Float(tL.y) - plotLegend.legendTextSize)
-            let tR = Pair<FloatConvertible,FloatConvertible>(Float(bR.x), Float(tL.y))
-            let bL = Pair<FloatConvertible,FloatConvertible>(Float(tL.x), Float(bR.y))
+            let tL = Point(plotLegend.legendTopLeft.x + plotLegend.legendTextSize,
+                           plotLegend.legendTopLeft.y - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize)
+            let bR = Point(tL.x + plotLegend.legendTextSize,
+                           tL.y - plotLegend.legendTextSize)
+            let tR = Point(bR.x, tL.y)
+            let bL = Point(tL.x, bR.y)
             renderer.drawSolidRect(topLeftPoint: tL,
                                    topRightPoint: tR,
                                    bottomRightPoint: bR,
@@ -618,8 +626,8 @@ extension LineGraph{
                                    fillColor: allSeries[i].color,
                                    hatchPattern: .none,
                                    isOriginShifted: false)
-            let p = Pair<FloatConvertible,FloatConvertible>(Float(bR.x) + plotLegend.legendTextSize,
-                                                            Float(bR.y))
+            let p = Point(bR.x + plotLegend.legendTextSize,
+                          bR.y)
             renderer.drawText(text: allSeries[i].label,
                               location: p,
                               textSize: plotLegend.legendTextSize,

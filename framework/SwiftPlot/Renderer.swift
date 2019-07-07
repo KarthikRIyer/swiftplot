@@ -20,10 +20,10 @@ public protocol Renderer: AnyObject{
     var plotDimensions: PlotDimensions { get set }
 
     /*drawRect()
-    *params: topLeftPoint p1: Pair<FloatConvertible,FloatConvertible>,
-             topRightPoint p2: Pair<FloatConvertible,FloatConvertible>,
-             bottomRightPoint p3: Pair<FloatConvertible,FloatConvertible>,
-             bottomLeftPoint p4: Pair<FloatConvertible,FloatConvertible>,
+    *params: topLeftPoint p1: Point,
+             topRightPoint p2: Point,
+             bottomRightPoint p3: Point,
+             bottomLeftPoint p4: Point,
              strokeWidth thickness: Float,
              strokeColor: Color,
              isOriginShifted: Bool
@@ -33,19 +33,19 @@ public protocol Renderer: AnyObject{
     *             without shifted origin. This is decided by the boolean
     *             parameter 'isOriginShifted'.
     */
-    func drawRect(topLeftPoint p1: Pair<FloatConvertible,FloatConvertible>,
-                  topRightPoint p2: Pair<FloatConvertible,FloatConvertible>,
-                  bottomRightPoint p3: Pair<FloatConvertible,FloatConvertible>,
-                  bottomLeftPoint p4: Pair<FloatConvertible,FloatConvertible>,
+    func drawRect(topLeftPoint p1: Point,
+                  topRightPoint p2: Point,
+                  bottomRightPoint p3: Point,
+                  bottomLeftPoint p4: Point,
                   strokeWidth thickness: Float,
                   strokeColor: Color,
                   isOriginShifted: Bool)
 
     /*drawSolidRect()
-    *params: topLeftPoint p1: Pair<FloatConvertible,FloatConvertible>,
-    *        topRightPoint p2: Pair<FloatConvertible,FloatConvertible>,
-    *        bottomRightPoint p3: Pair<FloatConvertible,FloatConvertible>,
-    *        bottomLeftPoint p4: Pair<FloatConvertible,FloatConvertible>,
+    *params: topLeftPoint p1: Point,
+    *        topRightPoint p2: Point,
+    *        bottomRightPoint p3: Point,
+    *        bottomLeftPoint p4: Point,
     *        fillColor: Color,
     *        hatchPattern: BarGraphSeriesOptions.Hatching,
     *        isOriginShifted: Bool
@@ -54,17 +54,17 @@ public protocol Renderer: AnyObject{
     *             without shifted origin.
     *             This is decided by the boolean parameter 'isOriginShifted'.
     */
-    func drawSolidRect(topLeftPoint p1: Pair<FloatConvertible,FloatConvertible>,
-                       topRightPoint p2: Pair<FloatConvertible,FloatConvertible>,
-                       bottomRightPoint p3: Pair<FloatConvertible,FloatConvertible>,
-                       bottomLeftPoint p4: Pair<FloatConvertible,FloatConvertible>,
+    func drawSolidRect(topLeftPoint p1: Point,
+                       topRightPoint p2: Point,
+                       bottomRightPoint p3: Point,
+                       bottomLeftPoint p4: Point,
                        fillColor: Color,
                        hatchPattern: BarGraphSeriesOptions.Hatching,
                        isOriginShifted: Bool)
 
     /*drawLine()
-    *params: startPoint p1: Pair<FloatConvertible,FloatConvertible>,
-    *        endPoint p2: Pair<FloatConvertible,FloatConvertible>,
+    *params: startPoint p1: Point,
+    *        endPoint p2: Point,
     *        strokeWidth thickness: Float,
     *        strokeColor: Color,
     *        isDashed: Bool,
@@ -76,27 +76,27 @@ public protocol Renderer: AnyObject{
     *             without shifted origin.
     *             This is decided by the boolean parameter 'isOriginShifted'.
     */
-    func drawLine(startPoint p1: Pair<FloatConvertible,FloatConvertible>,
-                  endPoint p2: Pair<FloatConvertible,FloatConvertible>,
+    func drawLine(startPoint p1: Point,
+                  endPoint p2: Point,
                   strokeWidth thickness: Float,
                   strokeColor: Color, isDashed: Bool,
                   isOriginShifted: Bool)
 
     /*drawPlotLines()
-    *params: points p: [Pair<FloatConvertible,FloatConvertible>],
+    *params: points p: [Point],
     *        strokeWidth thickness: Float,
     *        strokeColor: Color,
     *        isDashed: Bool
     *description: Draws all the line segments in a single data series for a Line Graph.
     *             This function always operates in the coordinate system with the shifted origin.
     */
-    func drawPlotLines(points p: [Pair<FloatConvertible,FloatConvertible>],
+    func drawPlotLines(points p: [Point],
                        strokeWidth thickness: Float,
                        strokeColor: Color, isDashed: Bool)
 
     /*drawText()
     *params: text s: String,
-    *        location p: Pair<FloatConvertible,FloatConvertible>,
+    *        location p: Point,
     *        textSize size: Float,
     *        strokeWidth thickness: Float,
     *        angle: Float,
@@ -107,17 +107,17 @@ public protocol Renderer: AnyObject{
     *             without shifted origin. This is decided by the boolean parameter isOriginShifted.
     */
     func drawText(text s: String,
-                  location p: Pair<FloatConvertible,FloatConvertible>,
+                  location p: Point,
                   textSize size: Float,
                   strokeWidth thickness: Float,
                   angle: Float,
                   isOriginShifted: Bool)
 
     /*drawSolidRectWithBorder()
-    *params: topLeftPoint p1: Pair<FloatConvertible,FloatConvertible>,
-    *        topRightPoint p2: Pair<FloatConvertible,FloatConvertible>,
-    *        bottomRightPoint p3: Pair<FloatConvertible,FloatConvertible>,
-    *        bottomLeftPoint p4: Pair<FloatConvertible,FloatConvertible>,
+    *params: topLeftPoint p1: Point,
+    *        topRightPoint p2: Point,
+    *        bottomRightPoint p3: Point,
+    *        bottomLeftPoint p4: Point,
     *        strokeWidth thickness: Float, fillColor: Color,
     *        borderColor: Color,
     *        isOriginShifted: Bool
@@ -125,16 +125,16 @@ public protocol Renderer: AnyObject{
     *             This function can operate in both coordinate systems with and without shifted origin.
     *             This is decided by the boolean parameter isOriginShifted.
     */
-    func drawSolidRectWithBorder(topLeftPoint p1: Pair<FloatConvertible,FloatConvertible>,
-                                 topRightPoint p2: Pair<FloatConvertible,FloatConvertible>,
-                                 bottomRightPoint p3: Pair<FloatConvertible,FloatConvertible>,
-                                 bottomLeftPoint p4: Pair<FloatConvertible,FloatConvertible>,
+    func drawSolidRectWithBorder(topLeftPoint p1: Point,
+                                 topRightPoint p2: Point,
+                                 bottomRightPoint p3: Point,
+                                 bottomLeftPoint p4: Point,
                                  strokeWidth thickness: Float, fillColor: Color,
                                  borderColor: Color,
                                  isOriginShifted: Bool)
 
     /*drawSolidCircle()
-    *params: center c: Pair<FloatConvertible,FloatConvertible>,
+    *params: center c: Point,
     *        radius r: Float,
     *        fillColor: Color,
     *        isOriginShifted: Bool
@@ -143,15 +143,15 @@ public protocol Renderer: AnyObject{
     *             without shifted origin.
     *             This is decided by the boolean parameter isOriginShifted.
     */
-    func drawSolidCircle(center c: Pair<FloatConvertible,FloatConvertible>,
+    func drawSolidCircle(center c: Point,
                          radius r: Float,
                          fillColor: Color,
                          isOriginShifted: Bool)
 
     /*drawSolidTriangle()
-    *params: point1: Pair<FloatConvertible,FloatConvertible>,
-    *        point2: Pair<FloatConvertible,FloatConvertible>,
-    *        point3: Pair<FloatConvertible,FloatConvertible>,
+    *params: point1: Point,
+    *        point2: Point,
+    *        point3: Point,
     *        fillColor: Color,
     *        isOriginShifted: Bool
     *description: Draws a triangle with specified fill color from three specified points
@@ -159,14 +159,14 @@ public protocol Renderer: AnyObject{
     *             and without shifted origin.
     *             This is decided by the boolean parameter isOriginShifted.
     */
-    func drawSolidTriangle(point1: Pair<FloatConvertible,FloatConvertible>,
-                           point2: Pair<FloatConvertible,FloatConvertible>,
-                           point3: Pair<FloatConvertible,FloatConvertible>,
+    func drawSolidTriangle(point1: Point,
+                           point2: Point,
+                           point3: Point,
                            fillColor: Color,
                            isOriginShifted: Bool)
 
     /*drawSolidPolygon()
-    *params: points: [Pair<FloatConvertible,FloatConvertible>],
+    *params: points: [Point],
     *                 fillColor: Color,
     *                 isOriginShifted: Bool
     *description: Draws a polygon with specified fill color from an array of Points
@@ -174,7 +174,7 @@ public protocol Renderer: AnyObject{
     *             without shifted origin.
     *             This is decided by the boolean parameter isOriginShifted.
     */
-    func drawSolidPolygon(points: [Pair<FloatConvertible,FloatConvertible>],
+    func drawSolidPolygon(points: [Point],
                           fillColor: Color,
                           isOriginShifted: Bool)
 
