@@ -1,7 +1,7 @@
 import Foundation
 
 // class defining a lineGraph and all its logic
-public class ScatterPlot: Plot {
+public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     let MAX_DIV: Float = 50
 
@@ -32,16 +32,16 @@ public class ScatterPlot: Plot {
     var scaleX: Float = 1
     var scaleY: Float = 1
     var plotMarkers: PlotMarkers = PlotMarkers()
-    var series = [Series<FloatConvertible,FloatConvertible>]()
+    var series = [Series<T,U>]()
 
     public var plotLineThickness: Float = 3
     public var scatterPatternSize: Float = 10
 
-    public init(points p: [Pair<FloatConvertible,FloatConvertible>], width: Float = 1000, height: Float = 660){
+    public init(points p: [Pair<T,U>], width: Float = 1000, height: Float = 660){
         plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
         plotDimensions.calculateGraphDimensions()
 
-        let s = Series<FloatConvertible,FloatConvertible>(values: p,label: "Plot")
+        let s = Series<T,U>(values: p,label: "Plot")
         series.append(s)
     }
 
@@ -50,24 +50,24 @@ public class ScatterPlot: Plot {
     }
 
     // functions to add series
-    public func addSeries(_ s: Series<FloatConvertible,FloatConvertible>){
+    public func addSeries(_ s: Series<T,U>){
         series.append(s)
     }
-    public func addSeries(points: [Pair<FloatConvertible,FloatConvertible>],
+    public func addSeries(points: [Pair<T,U>],
                           label: String,
                           color: Color = .lightBlue,
                           scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
         let s = Series(values: points,label: label, color: color, scatterPattern: scatterPattern)
         addSeries(s)
     }
-    public func addSeries<T: FloatConvertible>(_ x: [T],
-                                               _ y: [T],
-                                               label: String,
-                                               color: Color = .lightBlue,
-                                               scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
-        var points = [Pair<FloatConvertible,FloatConvertible>]()
+    public func addSeries(_ x: [T],
+                          _ y: [U],
+                          label: String,
+                          color: Color = .lightBlue,
+                          scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
+        var points = [Pair<T,U>]()
         for i in 0..<x.count {
-            points.append(Pair<FloatConvertible,FloatConvertible>(x[i], y[i]))
+            points.append(Pair<T,U>(x[i], y[i]))
         }
         let s = Series(values: points,
                        label: label,
@@ -75,15 +75,15 @@ public class ScatterPlot: Plot {
                        scatterPattern: scatterPattern)
         addSeries(s)
     }
-    public func addSeries<T: FloatConvertible>(_ x: [T],
-                                               _ y: [T],
-                                               label: String,
-                                               startColor: Color = .lightBlue,
-                                               endColor: Color = .lightBlue,
-                                               scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
-        var points = [Pair<FloatConvertible,FloatConvertible>]()
+    public func addSeries(_ x: [T],
+                          _ y: [U],
+                          label: String,
+                          startColor: Color = .lightBlue,
+                          endColor: Color = .lightBlue,
+                          scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
+        var points = [Pair<T,U>]()
         for i in 0..<x.count {
-            points.append(Pair<FloatConvertible,FloatConvertible>(x[i], y[i]))
+            points.append(Pair<T,U>(x[i], y[i]))
         }
         let s = Series(values: points,
                        label: label,
@@ -92,13 +92,13 @@ public class ScatterPlot: Plot {
                        scatterPattern: scatterPattern)
         addSeries(s)
     }
-    public func addSeries<T: FloatConvertible>(_ y: [T],
-                                               label: String,
-                                               color: Color = .lightBlue,
-                                               scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
-        var points = [Pair<FloatConvertible,FloatConvertible>]()
+    public func addSeries(_ y: [U],
+                          label: String,
+                          color: Color = .lightBlue,
+                          scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
+        var points = [Pair<T,U>]()
         for i in 0..<y.count {
-            points.append(Pair<FloatConvertible,FloatConvertible>(Float(i+1), y[i]))
+            points.append(Pair<T,U>(T(i+1), y[i]))
         }
         let s = Series(values: points,
                        label: label,
@@ -106,14 +106,14 @@ public class ScatterPlot: Plot {
                        scatterPattern: scatterPattern)
         addSeries(s)
     }
-    public func addSeries<T: FloatConvertible>(_ y: [T],
-                                               label: String,
-                                               startColor: Color = .lightBlue,
-                                               endColor: Color = .lightBlue,
-                                               scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
-        var points = [Pair<FloatConvertible,FloatConvertible>]()
+    public func addSeries(_ y: [U],
+                          label: String,
+                          startColor: Color = .lightBlue,
+                          endColor: Color = .lightBlue,
+                          scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
+        var points = [Pair<T,U>]()
         for i in 0..<y.count {
-            points.append(Pair<FloatConvertible,FloatConvertible>(Float(i+1), y[i]))
+            points.append(Pair<T,U>(T(i+1), y[i]))
         }
         let s = Series(values: points,
                        label: label,
@@ -128,7 +128,7 @@ public class ScatterPlot: Plot {
 extension ScatterPlot{
 
     // call functions to draw the graph
-    public func drawGraphAndOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer){
+    public func drawGraphAndOutput(fileName name: String = "swift_plot_scatter_plot", renderer: Renderer){
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
         renderer.plotDimensions = plotDimensions
@@ -176,7 +176,7 @@ extension ScatterPlot{
         drawLegends(renderer: renderer)
     }
 
-    public func drawGraphOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer){
+    public func drawGraphOutput(fileName name: String = "swift_plot_scatter_plot", renderer: Renderer){
         renderer.plotDimensions = plotDimensions
         renderer.drawOutput(fileName: name)
     }
@@ -209,17 +209,17 @@ extension ScatterPlot{
         plotMarkers.xMarkersText = [String]()
         plotMarkers.xMarkersText = [String]()
 
-        var maximumX: Float = maxX(points: series[0].values)
-        var maximumY: Float = maxY(points: series[0].values)
-        var minimumX: Float = minX(points: series[0].values)
-        var minimumY: Float = minY(points: series[0].values)
+        var maximumX: T = maxX(points: series[0].values)
+        var maximumY: U = maxY(points: series[0].values)
+        var minimumX: T = minX(points: series[0].values)
+        var minimumY: U = minY(points: series[0].values)
 
         for index in 1..<series.count {
 
-            let s: Series<FloatConvertible,FloatConvertible> = series[index]
+            let s: Series<T,U> = series[index]
             // let pairs = s.pairs
-            var x: Float = maxX(points: s.values)
-            var y: Float = maxY(points: s.values)
+            var x: T = maxX(points: s.values)
+            var y: U = maxY(points: s.values)
             if (x > maximumX) {
                 maximumX = x
             }
@@ -236,17 +236,17 @@ extension ScatterPlot{
             }
         }
 
-        let origin = Point((plotDimensions.graphWidth/(maximumX-minimumX))*(-minimumX),
-                           (plotDimensions.graphHeight/(maximumY-minimumY))*(-minimumY))
+        let origin = Point((plotDimensions.graphWidth/Float(maximumX-minimumX))*Float(T(-1)*minimumX),
+                           (plotDimensions.graphHeight/Float(maximumY-minimumY))*Float(U(-1)*minimumY))
 
         let rightScaleMargin: Float = (plotDimensions.subWidth - plotDimensions.graphWidth)*Float(0.5) - 10.0;
         let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)*Float(0.5) - 10.0;
-        scaleX = (maximumX - minimumX) / (plotDimensions.graphWidth - rightScaleMargin);
-        scaleY = (maximumY - minimumY) / (plotDimensions.graphHeight - topScaleMargin);
+        scaleX = Float(maximumX - minimumX) / (plotDimensions.graphWidth - rightScaleMargin);
+        scaleY = Float(maximumY - minimumY) / (plotDimensions.graphHeight - topScaleMargin);
 
-        let nD1: Int = max(getNumberOfDigits(maximumY), getNumberOfDigits(minimumY))
+        let nD1: Int = max(getNumberOfDigits(Float(maximumY)), getNumberOfDigits(Float(minimumY)))
         var v1: Float
-        if (nD1 > 1 && maximumY <= pow(Float(10), Float(nD1 - 1))) {
+        if (nD1 > 1 && maximumY <= U(pow(Float(10), Float(nD1 - 1)))) {
             v1 = Float(pow(Float(10), Float(nD1 - 2)))
         } else if (nD1 > 1) {
             v1 = Float(pow(Float(10), Float(nD1 - 1)))
@@ -260,9 +260,9 @@ extension ScatterPlot{
             inc1 = (plotDimensions.graphHeight/nY)*inc1/MAX_DIV
         }
 
-        let nD2: Int = max(getNumberOfDigits(maximumX), getNumberOfDigits(minimumX))
+        let nD2: Int = max(getNumberOfDigits(Float(maximumX)), getNumberOfDigits(Float(minimumX)))
         var v2: Float
-        if (nD2 > 1 && maximumX <= pow(Float(10), Float(nD2 - 1))) {
+        if (nD2 > 1 && maximumX <= T(pow(Float(10), Float(nD2 - 1)))) {
             v2 = Float(pow(Float(10), Float(nD2 - 2)))
         } else if (nD2 > 1) {
             v2 = Float(pow(Float(10), Float(nD2 - 1)))
@@ -290,7 +290,7 @@ extension ScatterPlot{
                                                            textSize: plotMarkers.markerTextSize)/2.0) + 8,
                                -15)
             plotMarkers.xMarkersTextLocation.append(text_p)
-            plotMarkers.xMarkersText.append("\(floor(scaleX*(xM-origin.x)))")
+            plotMarkers.xMarkersText.append("\(round(scaleX*(xM-origin.x)))")
             xM = xM + inc2
         }
 
@@ -306,7 +306,7 @@ extension ScatterPlot{
                                                            textSize: plotMarkers.markerTextSize)/2.0) + 8,
                                -15)
             plotMarkers.xMarkersTextLocation.append(text_p)
-            plotMarkers.xMarkersText.append("\(ceil(scaleX*(xM-origin.x)))")
+            plotMarkers.xMarkersText.append("\(round(scaleX*(xM-origin.x)))")
             xM = xM - inc2
         }
 
@@ -346,8 +346,8 @@ extension ScatterPlot{
             // let pairs = series[i].pairs
             series[i].scaledValues.removeAll();
             for j in 0..<series[i].count {
-                let scaledPair = Pair<FloatConvertible,FloatConvertible>(Float((series[i])[j].x)*scaleXInv + origin.x,
-                                                                         Float((series[i])[j].y)*scaleYInv + origin.y)
+                let scaledPair = Pair<T,U>(((series[i])[j].x)*T(scaleXInv) + T(origin.x),
+                                           ((series[i])[j].y)*U(scaleYInv) + U(origin.y))
                 if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= plotDimensions.graphWidth && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= plotDimensions.graphHeight) {
                     series[i].scaledValues.append(scaledPair)
                 }
@@ -407,7 +407,7 @@ extension ScatterPlot{
             var s = series[seriesIndex]
             s.maxY = maxY(points: s.scaledValues)
             s.minY = minY(points: s.scaledValues)
-            let seriesYRangeInverse: Float = 1.0/(s.maxY-s.minY)
+            let seriesYRangeInverse: Float = 1.0/Float(s.maxY!-s.minY!)
             switch s.scatterPlotSeriesOptions.scatterPattern {
                 case .circle:
                     for index in 0..<s.scaledValues.count {
@@ -415,7 +415,7 @@ extension ScatterPlot{
                         if (s.startColor != nil && s.endColor != nil) {
                             s.color = lerp(startColor: s.startColor!,
                                            endColor: s.endColor!,
-                                           (Float(s.scaledValues[index].y)-s.minY)*seriesYRangeInverse)
+                                           Float(s.scaledValues[index].y-s.minY!)*seriesYRangeInverse)
                         }
                         renderer.drawSolidCircle(center: p,
                                                  radius: scatterPatternSize*Float(0.5),
@@ -428,7 +428,7 @@ extension ScatterPlot{
                       if (s.startColor != nil && s.endColor != nil) {
                           s.color = lerp(startColor: s.startColor!,
                                          endColor: s.endColor!,
-                                         (Float(s.scaledValues[index].y)-s.minY)*seriesYRangeInverse)
+                                         Float(s.scaledValues[index].y-s.minY!)*seriesYRangeInverse)
                       }
                       let tL = Point(p.x-scatterPatternSize*Float(0.5),
                                      p.y+scatterPatternSize*Float(0.5))
@@ -453,7 +453,7 @@ extension ScatterPlot{
                         if (s.startColor != nil && s.endColor != nil) {
                             s.color = lerp(startColor: s.startColor!,
                                            endColor: s.endColor!,
-                                           (Float(s.scaledValues[index].y)-s.minY)*seriesYRangeInverse)
+                                           Float(s.scaledValues[index].y-s.minY!)*seriesYRangeInverse)
                         }
                         let p1 = Point(p.x + 0,
                                        p.y + r)
@@ -473,7 +473,7 @@ extension ScatterPlot{
                         if (s.startColor != nil && s.endColor != nil) {
                             s.color = lerp(startColor: s.startColor!,
                                            endColor: s.endColor!,
-                                           (Float(s.scaledValues[index].y)-s.minY)*seriesYRangeInverse)
+                                           Float(s.scaledValues[index].y-s.minY!)*seriesYRangeInverse)
                         }
                         var tL = Point(p.x-scatterPatternSize*Float(0.5),
                                        p.y+scatterPatternSize*Float(0.5))
@@ -498,7 +498,7 @@ extension ScatterPlot{
                           if (s.startColor != nil && s.endColor != nil) {
                               s.color = lerp(startColor: s.startColor!,
                                              endColor: s.endColor!,
-                                             (Float(s.scaledValues[index].y)-s.minY)*seriesYRangeInverse)
+                                             Float(s.scaledValues[index].y-s.minY!)*seriesYRangeInverse)
                           }
                           var hexagonPoint = Point(p.x + 0.0,
                                                    p.y + scatterPatternSize*Float(0.5))
@@ -519,7 +519,7 @@ extension ScatterPlot{
                           if (s.startColor != nil && s.endColor != nil) {
                               s.color = lerp(startColor: s.startColor!,
                                              endColor: s.endColor!,
-                                             (Float(s.scaledValues[index].y)-s.minY)*seriesYRangeInverse)
+                                             Float(s.scaledValues[index].y-s.minY!)*seriesYRangeInverse)
                           }
                           var pentagonPoint = Point(p.x + 0.0,
                                                     p.y + scatterPatternSize*Float(0.5))
@@ -540,7 +540,7 @@ extension ScatterPlot{
                           if (s.startColor != nil && s.endColor != nil) {
                               s.color = lerp(startColor: s.startColor!,
                                              endColor: s.endColor!,
-                                             (Float(s.scaledValues[index].y)-s.minY)*seriesYRangeInverse)
+                                             Float(s.scaledValues[index].y-s.minY!)*seriesYRangeInverse)
                           }
                           var starOuterPoint = Point(p.x + 0.0,
                                                      p.y + scatterPatternSize*Float(0.5))

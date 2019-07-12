@@ -1,7 +1,7 @@
 import Foundation
 
 // class defining a barGraph and all it's logic
-public class BarGraph: Plot {
+public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
 
     let MAX_DIV: Float = 50
 
@@ -34,8 +34,8 @@ public class BarGraph: Plot {
     public var scaleY: Float = 1
     public var scaleX: Float = 1
     public var plotMarkers: PlotMarkers = PlotMarkers()
-    public var series: Series<LosslessStringConvertible,FloatConvertible> = Series<LosslessStringConvertible,FloatConvertible>()
-    public var stackSeries = [Series<LosslessStringConvertible,FloatConvertible>]()
+    public var series = Series<T,U>()
+    public var stackSeries = [Series<T,U>]()
 
     var barWidth : Int = 0
     public var space: Int = 20
@@ -45,10 +45,10 @@ public class BarGraph: Plot {
     public init(width: Float = 1000, height: Float = 660){
         plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
     }
-    public func addSeries(_ s: Series<LosslessStringConvertible,FloatConvertible>){
+    public func addSeries(_ s: Series<T,U>){
         series = s
     }
-    public func addStackSeries(_ s: Series<LosslessStringConvertible,FloatConvertible>) {
+    public func addStackSeries(_ s: Series<T,U>) {
         if (series.count != 0 && series.count == s.count) {
             stackSeries.append(s)
         }
@@ -56,46 +56,46 @@ public class BarGraph: Plot {
             print("Stack point count does not match the Series point count.")
         }
     }
-    public func addStackSeries(_ x: [Float],
+    public func addStackSeries(_ x: [U],
                                label: String,
                                color: Color = .lightBlue,
                                hatchPattern: BarGraphSeriesOptions.Hatching = .none) {
-        var values = [Pair<LosslessStringConvertible,FloatConvertible>]()
+        var values = [Pair<T,U>]()
         for i in 0..<x.count {
-            values.append(Pair<LosslessStringConvertible,FloatConvertible>(series.values[i].x, x[i]))
+            values.append(Pair<T,U>(series.values[i].x, x[i]))
         }
-        let s = Series<LosslessStringConvertible,FloatConvertible>(values: values,
-                                                                   label: label,
-                                                                   color: color,
-                                                                   hatchPattern: hatchPattern)
+        let s = Series<T,U>(values: values,
+                            label: label,
+                            color: color,
+                            hatchPattern: hatchPattern)
         addStackSeries(s)
     }
-    public func addSeries(values: [Pair<LosslessStringConvertible,FloatConvertible>],
+    public func addSeries(values: [Pair<T,U>],
                           label: String,
                           color: Color = Color.lightBlue,
                           hatchPattern: BarGraphSeriesOptions.Hatching = .none,
                           graphOrientation: BarGraph.GraphOrientation = .vertical){
-        let s = Series<LosslessStringConvertible,FloatConvertible>(values: values,
-                                                                   label: label,
-                                                                   color: color,
-                                                                   hatchPattern: hatchPattern)
+        let s = Series<T,U>(values: values,
+                            label: label,
+                            color: color,
+                            hatchPattern: hatchPattern)
         addSeries(s)
         self.graphOrientation = graphOrientation
     }
-    public func addSeries<T: LosslessStringConvertible, U: FloatConvertible>(_ x: [T],
-                                                                             _ y: [U],
-                                                                             label: String,
-                                                                             color: Color = Color.lightBlue,
-                                                                             hatchPattern: BarGraphSeriesOptions.Hatching = .none,
-                                                                             graphOrientation: BarGraph.GraphOrientation = .vertical){
-        var values = [Pair<LosslessStringConvertible, FloatConvertible>]()
+    public func addSeries(_ x: [T],
+                          _ y: [U],
+                          label: String,
+                          color: Color = Color.lightBlue,
+                          hatchPattern: BarGraphSeriesOptions.Hatching = .none,
+                          graphOrientation: BarGraph.GraphOrientation = .vertical){
+        var values = [Pair<T,U>]()
         for i in 0..<x.count {
-            values.append(Pair<LosslessStringConvertible,FloatConvertible>(x[i], y[i]))
+            values.append(Pair<T,U>(x[i], y[i]))
         }
-        let s = Series<LosslessStringConvertible,FloatConvertible>(values: values,
-                                                                   label: label,
-                                                                   color: color,
-                                                                   hatchPattern: hatchPattern)
+        let s = Series<T,U>(values: values,
+                            label: label,
+                            color: color,
+                            hatchPattern: hatchPattern)
         addSeries(s)
         self.graphOrientation = graphOrientation
     }
@@ -105,7 +105,7 @@ public class BarGraph: Plot {
 extension BarGraph {
 
     // call functions to draw the graph
-    public func drawGraphAndOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer){
+    public func drawGraphAndOutput(fileName name: String = "swift_plot_bar_graph", renderer: Renderer){
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
         renderer.plotDimensions = plotDimensions
@@ -192,10 +192,10 @@ extension BarGraph {
 
     func calcMarkerLocAndScalePts(renderer: Renderer){
 
-        var maximumY: Float = 0
-        var minimumY: Float = 0
-        var maximumX: Float = 0
-        var minimumX: Float = 0
+        var maximumY: U = U(0)
+        var minimumY: U = U(0)
+        var maximumX: U = U(0)
+        var minimumX: U = U(0)
 
         if (graphOrientation == .vertical) {
             barWidth = Int(round(plotDimensions.graphWidth/Float(series.count)))
@@ -222,30 +222,30 @@ extension BarGraph {
                 let minStackY = minY(points: s.values)
                 let maxStackY = maxY(points: s.values)
 
-                if (maxStackY>0) {
+                if (maxStackY > U(0)) {
                     maximumY = maximumY + maxStackY
                 }
-                if (minStackY<0) {
+                if (minStackY < U(0)) {
                     minimumY = minimumY + minStackY
                 }
 
             }
 
-            if minimumY>=0.0 {
+            if (minimumY >= U(0)) {
                 origin = zeroPoint
-                minimumY = 0.0
+                minimumY = U(0)
             }
             else{
                 origin = Point(0.0,
-                               (plotDimensions.graphHeight/(maximumY-minimumY))*(-minimumY))
+                               (plotDimensions.graphHeight/Float(maximumY-minimumY))*Float(U(-1)*minimumY))
             }
 
             let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)*Float(0.5) - 10.0;
-            scaleY = (maximumY - minimumY) / (plotDimensions.graphHeight - topScaleMargin);
+            scaleY = Float(maximumY - minimumY) / (plotDimensions.graphHeight - topScaleMargin);
 
-            let nD1: Int = max(getNumberOfDigits(maximumY), getNumberOfDigits(minimumY))
+            let nD1: Int = max(getNumberOfDigits(Float(maximumY)), getNumberOfDigits(Float(minimumY)))
             var v1: Float
-            if (nD1 > 1 && maximumY <= pow(Float(10), Float(nD1 - 1))) {
+            if (nD1 > 1 && maximumY <= U(pow(Float(10), Float(nD1 - 1)))) {
                 v1 = Float(pow(Float(10), Float(nD1 - 2)))
             } else if (nD1 > 1) {
                 v1 = Float(pow(Float(10), Float(nD1 - 1)))
@@ -270,7 +270,7 @@ extension BarGraph {
                 let text_p = Point(-(renderer.getTextWidth(text: "\(ceil(scaleY*(yM-origin.y)))",
                                                            textSize: plotMarkers.markerTextSize)+5), yM - 4)
                 plotMarkers.yMarkersTextLocation.append(text_p)
-                plotMarkers.yMarkersText.append("\(ceil(scaleY*(yM-origin.y)))")
+                plotMarkers.yMarkersText.append("\(round(scaleY*(yM-origin.y)))")
                 yM = yM + inc1
             }
             yM = origin.y - inc1
@@ -280,7 +280,7 @@ extension BarGraph {
                 let text_p = Point(-(renderer.getTextWidth(text: "\(floor(scaleY*(yM-origin.y)))",
                                                            textSize: plotMarkers.markerTextSize)+5), yM - 4)
                 plotMarkers.yMarkersTextLocation.append(text_p)
-                plotMarkers.yMarkersText.append("\(floor(scaleY*(yM-origin.y)))")
+                plotMarkers.yMarkersText.append("\(round(scaleY*(yM-origin.y)))")
                 yM = yM - inc1
             }
 
@@ -300,22 +300,22 @@ extension BarGraph {
             let scaleYInv: Float = 1.0/scaleY
             series.scaledValues.removeAll();
             for j in 0..<series.count {
-                let scaledPair = Pair<LosslessStringConvertible,FloatConvertible>(series[j].x,
-                                                                                  Float(series[j].y)*scaleYInv + origin.y)
+                let scaledPair = Pair<T,U>(series[j].x,
+                                           series[j].y*U(scaleYInv) + U(origin.y))
                 series.scaledValues.append(scaledPair)
             }
             for index in 0..<stackSeries.count {
                 stackSeries[index].scaledValues.removeAll()
                 for j in 0..<(stackSeries[index]).count {
-                    let scaledPair = Pair<LosslessStringConvertible,FloatConvertible>((stackSeries[index])[j].x,
-                                                                                      (Float((stackSeries[index])[j].y))*scaleYInv+origin.y)
+                    let scaledPair = Pair<T,U>((stackSeries[index])[j].x,
+                                               ((stackSeries[index])[j].y)*U(scaleYInv)+U(origin.y))
                     stackSeries[index].scaledValues.append(scaledPair)
                 }
             }
         }
 
         else{
-            var x: Float = maxY(points: series.values)
+            var x = maxY(points: series.values)
             if (x > maximumX) {
                 maximumX = x
             }
@@ -331,20 +331,20 @@ extension BarGraph {
                 minimumX = minimumX - minStackX
             }
 
-            if minimumX>=0.0 {
+            if minimumX >= U(0) {
                 origin = zeroPoint
-                minimumX = 0.0
+                minimumX = U(0)
             }
             else{
-                origin = Point((plotDimensions.graphWidth/(maximumX-minimumX))*(-minimumX), 0.0)
+                origin = Point((plotDimensions.graphWidth/Float(maximumX-minimumX))*Float(U(-1)*minimumX), 0.0)
             }
 
             let rightScaleMargin: Float = (plotDimensions.subWidth - plotDimensions.graphWidth)*Float(0.5) - 10.0
-            scaleX = (maximumX - minimumX) / (plotDimensions.graphWidth - rightScaleMargin)
+            scaleX = Float(maximumX - minimumX) / (plotDimensions.graphWidth - rightScaleMargin)
 
-            let nD1: Int = max(getNumberOfDigits(maximumX), getNumberOfDigits(minimumX))
+            let nD1: Int = max(getNumberOfDigits(Float(maximumX)), getNumberOfDigits(Float(minimumX)))
             var v1: Float
-            if (nD1 > 1 && maximumX <= pow(Float(10), Float(nD1 - 1))) {
+            if (nD1 > 1 && maximumX <= U(pow(Float(10), Float(nD1 - 1)))) {
                 v1 = Float(pow(Float(10), Float(nD1 - 2)))
             } else if (nD1 > 1) {
                 v1 = Float(pow(Float(10), Float(nD1 - 1)))
@@ -402,15 +402,15 @@ extension BarGraph {
             let scaleXInv: Float = 1.0/scaleX
             series.scaledValues.removeAll();
             for j in 0..<series.count {
-                let scaledPair = Pair<LosslessStringConvertible,FloatConvertible>(series[j].x,
-                                                                                  Float(series[j].y)*scaleXInv+origin.x)
+                let scaledPair = Pair<T,U>(series[j].x,
+                                           series[j].y*U(scaleXInv)+U(origin.x))
                 series.scaledValues.append(scaledPair)
             }
             for index in 0..<stackSeries.count {
                 stackSeries[index].scaledValues.removeAll()
                 for j in 0..<(stackSeries[index]).count {
-                    let scaledPair = Pair<LosslessStringConvertible,FloatConvertible>((stackSeries[index])[j].x,
-                                                                                      Float((stackSeries[index])[j].y)*scaleXInv+origin.x)
+                    let scaledPair = Pair<T,U>((stackSeries[index])[j].x,
+                                                (stackSeries[index])[j].y*U(scaleXInv)+U(origin.x))
                     stackSeries[index].scaledValues.append(scaledPair)
                 }
             }

@@ -1,7 +1,7 @@
 import Foundation
 
 // class defining a lineGraph and all its logic
-public class LineGraph: Plot {
+public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     let MAX_DIV: Float = 50
 
@@ -27,16 +27,16 @@ public class LineGraph: Plot {
         }
     }
 
-    var primaryAxis = Axis<FloatConvertible,FloatConvertible>()
-    var secondaryAxis: Axis<FloatConvertible, FloatConvertible>? = nil
+    var primaryAxis = Axis<T,U>()
+    var secondaryAxis: Axis<T,U>? = nil
 
     public var plotLineThickness: Float = 3
 
-    public init(points : [Pair<FloatConvertible,FloatConvertible>], width: Float = 1000, height: Float = 660){
+    public init(points : [Pair<T,U>], width: Float = 1000, height: Float = 660){
         plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
         plotDimensions.calculateGraphDimensions()
 
-        let s = Series<FloatConvertible,FloatConvertible>(values: points,label: "Plot")
+        let s = Series<T,U>(values: points,label: "Plot")
         primaryAxis.series.append(s)
     }
 
@@ -45,8 +45,8 @@ public class LineGraph: Plot {
     }
 
     // functions to add series
-    public func addSeries(_ s: Series<FloatConvertible,FloatConvertible>,
-                          axisType: Axis<FloatConvertible,FloatConvertible>.Location = .primaryAxis){
+    public func addSeries(_ s: Series<T,U>,
+                          axisType: Axis<T,U>.Location = .primaryAxis){
         switch axisType {
         case .primaryAxis:
             primaryAxis.series.append(s)
@@ -57,60 +57,60 @@ public class LineGraph: Plot {
             secondaryAxis!.series.append(s)
         }
     }
-    public func addSeries(points : [Pair<FloatConvertible,FloatConvertible>],
+    public func addSeries(points : [Pair<T,U>],
                           label: String, color: Color = Color.lightBlue,
-                          axisType: Axis<FloatConvertible,FloatConvertible>.Location = .primaryAxis){
-        let s = Series<FloatConvertible,FloatConvertible>(values: points,label: label, color: color)
+                          axisType: Axis<T,U>.Location = .primaryAxis){
+        let s = Series<T,U>(values: points,label: label, color: color)
         addSeries(s, axisType: axisType)
     }
-    public func addSeries<T: FloatConvertible>(_ y: [T],
-                                              label: String,
-                                              color: Color = Color.lightBlue,
-                                              axisType: Axis<FloatConvertible,FloatConvertible>.Location = .primaryAxis){
-        var points = [Pair<FloatConvertible,FloatConvertible>]()
+    public func addSeries(_ y: [U],
+                          label: String,
+                          color: Color = Color.lightBlue,
+                        axisType: Axis<T,U>.Location = .primaryAxis){
+        var points = [Pair<T,U>]()
         for i in 0..<y.count {
-            points.append(Pair<FloatConvertible,FloatConvertible>(Float(i+1), y[i]))
+            points.append(Pair<T,U>(T(i+1), y[i]))
         }
-        let s = Series<FloatConvertible,FloatConvertible>(values: points, label: label, color: color)
+        let s = Series<T,U>(values: points, label: label, color: color)
         addSeries(s, axisType: axisType)
     }
-    public func addSeries<T: FloatConvertible>(_ x: [T],
-                                               _ y: [T],
-                                               label: String,
-                                               color: Color = .lightBlue,
-                                               axisType: Axis<FloatConvertible,FloatConvertible>.Location = .primaryAxis){
-        var points = [Pair<FloatConvertible,FloatConvertible>]()
+    public func addSeries(_ x: [T],
+                          _ y: [U],
+                          label: String,
+                          color: Color = .lightBlue,
+                          axisType: Axis<T,U>.Location = .primaryAxis){
+        var points = [Pair<T,U>]()
         for i in 0..<x.count {
-            points.append(Pair<FloatConvertible,FloatConvertible>(x[i], y[i]))
+            points.append(Pair<T,U>(x[i], y[i]))
         }
-        let s = Series<FloatConvertible,FloatConvertible>(values: points, label: label, color: color)
+        let s = Series<T,U>(values: points, label: label, color: color)
         addSeries(s, axisType: axisType)
     }
-    public func addFunction<T: FloatConvertible>(_ function: (T)->T,
-                                                 minX: T,
-                                                 maxX: T,
-                                                 numberOfSamples: Int = 400,
-                                                 label: String,
-                                                 color: Color = Color.lightBlue,
-                                                 axisType: Axis<FloatConvertible,FloatConvertible>.Location = .primaryAxis) {
-        var x = [Float]()
-        var y = [Float]()
-        let step: Float = (Float(maxX)-Float(minX))/Float(numberOfSamples)
-        var r: Float = 0
+    public func addFunction(_ function: (T)->U,
+                            minX: T,
+                            maxX: T,
+                            numberOfSamples: Int = 400,
+                            label: String,
+                            color: Color = Color.lightBlue,
+                            axisType: Axis<T,U>.Location = .primaryAxis) {
+        var x = [T]()
+        var y = [U]()
+        let step = Float(maxX - minX)/Float(numberOfSamples)
+        var r: Float = 0.0
         for i in stride(from: Float(minX), through: Float(maxX), by: step) {
             r = Float(function(T(i)))
             if (r.isNaN || r.isInfinite) {
                 continue
             }
-            x.append(i)
-            y.append(clamp(r, minValue: -1.0/step, maxValue: 1.0/step))
+            x.append(T(i))
+            y.append(clamp(U(r), minValue: U(-1.0/step), maxValue: U(1.0/step)))
             // y.append(r)
         }
-        var points = [Pair<FloatConvertible,FloatConvertible>]()
+        var points = [Pair<T,U>]()
         for i in 0..<x.count {
-            points.append(Pair<FloatConvertible,FloatConvertible>(x[i], y[i]))
+            points.append(Pair<T,U>(x[i], y[i]))
         }
-        let s = Series<FloatConvertible,FloatConvertible>(values: points, label: label, color: color)
+        let s = Series<T,U>(values: points, label: label, color: color)
         addSeries(s, axisType: axisType)
     }
 }
@@ -201,17 +201,17 @@ extension LineGraph{
         primaryAxis.plotMarkers.xMarkersText = [String]()
         primaryAxis.plotMarkers.xMarkersText = [String]()
 
-        var maximumXPrimary: Float = maxX(points: primaryAxis.series[0].values)
-        var maximumYPrimary: Float = maxY(points: primaryAxis.series[0].values)
-        var minimumXPrimary: Float = minX(points: primaryAxis.series[0].values)
-        var minimumYPrimary: Float = minY(points: primaryAxis.series[0].values)
+        var maximumXPrimary: T = maxX(points: primaryAxis.series[0].values)
+        var maximumYPrimary: U = maxY(points: primaryAxis.series[0].values)
+        var minimumXPrimary: T = minX(points: primaryAxis.series[0].values)
+        var minimumYPrimary: U = minY(points: primaryAxis.series[0].values)
 
         for index in 1..<primaryAxis.series.count {
 
-            let s: Series<FloatConvertible,FloatConvertible> = primaryAxis.series[index]
-            // let pairs = s.pairs
-            var x: Float = maxX(points: s.values)
-            var y: Float = maxY(points: s.values)
+            let s: Series<T,U> = primaryAxis.series[index]
+
+            var x: T = maxX(points: s.values)
+            var y: U = maxY(points: s.values)
             if (x > maximumXPrimary) {
                 maximumXPrimary = x
             }
@@ -228,10 +228,10 @@ extension LineGraph{
             }
         }
 
-        var maximumXSecondary: Float = 0
-        var maximumYSecondary: Float = 0
-        var minimumXSecondary: Float = 0
-        var minimumYSecondary: Float = 0
+        var maximumXSecondary = T(0)
+        var maximumYSecondary = U(0)
+        var minimumXSecondary = T(0)
+        var minimumYSecondary = U(0)
 
         if secondaryAxis != nil {
             secondaryAxis!.plotMarkers.xMarkers = [Point]()
@@ -246,10 +246,10 @@ extension LineGraph{
             minimumXSecondary = minX(points: secondaryAxis!.series[0].values)
             minimumYSecondary = minY(points: secondaryAxis!.series[0].values)
             for index in 1..<secondaryAxis!.series.count {
-                let s: Series<FloatConvertible,FloatConvertible> = secondaryAxis!.series[index]
-                // let pairs = s.pairs
-                var x: Float = maxX(points: s.values)
-                var y: Float = maxY(points: s.values)
+                let s: Series<T,U> = secondaryAxis!.series[index]
+
+                var x: T = maxX(points: s.values)
+                var y: U = maxY(points: s.values)
                 if (x > maximumXSecondary) {
                     maximumXSecondary = x
                 }
@@ -269,26 +269,26 @@ extension LineGraph{
             minimumXPrimary = min(minimumXPrimary, minimumXSecondary)
         }
 
-        let originPrimary = Point((plotDimensions.graphWidth/(maximumXPrimary-minimumXPrimary))*(-minimumXPrimary),
-                                  (plotDimensions.graphHeight/(maximumYPrimary-minimumYPrimary))*(-minimumYPrimary))
+        let originPrimary = Point((plotDimensions.graphWidth/Float(maximumXPrimary-minimumXPrimary))*Float(T(-1)*minimumXPrimary),
+                                  (plotDimensions.graphHeight/Float(maximumYPrimary-minimumYPrimary))*Float(U(-1)*minimumYPrimary))
 
         let rightScaleMargin: Float = (plotDimensions.subWidth - plotDimensions.graphWidth)*Float(0.5) - 10.0;
         let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)*Float(0.5) - 10.0;
-        primaryAxis.scaleX = (maximumXPrimary - minimumXPrimary) / (plotDimensions.graphWidth - rightScaleMargin);
-        primaryAxis.scaleY = (maximumYPrimary - minimumYPrimary) / (plotDimensions.graphHeight - topScaleMargin);
+        primaryAxis.scaleX = Float(maximumXPrimary - minimumXPrimary) / (plotDimensions.graphWidth - rightScaleMargin);
+        primaryAxis.scaleY = Float(maximumYPrimary - minimumYPrimary) / (plotDimensions.graphHeight - topScaleMargin);
 
         var originSecondary: Point? = nil
         if (secondaryAxis != nil) {
-            originSecondary = Point((plotDimensions.graphWidth/(maximumXSecondary-minimumXSecondary))*(-minimumXSecondary),
-                                    (plotDimensions.graphHeight/(maximumYSecondary-minimumYSecondary))*(-minimumYSecondary))
-            secondaryAxis!.scaleX = (maximumXSecondary - minimumXSecondary) / (plotDimensions.graphWidth - rightScaleMargin);
-            secondaryAxis!.scaleY = (maximumYSecondary - minimumYSecondary) / (plotDimensions.graphHeight - topScaleMargin);
+            originSecondary = Point((plotDimensions.graphWidth/Float(maximumXSecondary-minimumXSecondary))*Float(T(-1)*minimumXSecondary),
+                                    (plotDimensions.graphHeight/Float(maximumYSecondary-minimumYSecondary))*Float(U(-1)*minimumYSecondary))
+            secondaryAxis!.scaleX = Float(maximumXSecondary - minimumXSecondary) / (plotDimensions.graphWidth - rightScaleMargin);
+            secondaryAxis!.scaleY = Float(maximumYSecondary - minimumYSecondary) / (plotDimensions.graphHeight - topScaleMargin);
         }
 
         //calculations for primary axis
-        var nD1: Int = max(getNumberOfDigits(maximumYPrimary), getNumberOfDigits(minimumYPrimary))
+        var nD1: Int = max(getNumberOfDigits(Float(maximumYPrimary)), getNumberOfDigits(Float(minimumYPrimary)))
         var v1: Float
-        if (nD1 > 1 && maximumYPrimary <= pow(Float(10), Float(nD1 - 1))) {
+        if (nD1 > 1 && maximumYPrimary <= U(pow(Float(10), Float(nD1 - 1)))) {
             v1 = Float(pow(Float(10), Float(nD1 - 2)))
         } else if (nD1 > 1) {
             v1 = Float(pow(Float(10), Float(nD1 - 1)))
@@ -302,9 +302,9 @@ extension LineGraph{
             inc1Primary = (plotDimensions.graphHeight/nY)*inc1Primary/MAX_DIV
         }
 
-        let nD2: Int = max(getNumberOfDigits(maximumXPrimary), getNumberOfDigits(minimumXPrimary))
+        let nD2: Int = max(getNumberOfDigits(Float(maximumXPrimary)), getNumberOfDigits(Float(minimumXPrimary)))
         var v2: Float
-        if (nD2 > 1 && maximumXPrimary <= pow(Float(10), Float(nD2 - 1))) {
+        if (nD2 > 1 && maximumXPrimary <= T(pow(Float(10), Float(nD2 - 1)))) {
             v2 = Float(pow(Float(10), Float(nD2 - 2)))
         } else if (nD2 > 1) {
             v2 = Float(pow(Float(10), Float(nD2 - 1)))
@@ -332,7 +332,7 @@ extension LineGraph{
                                                            textSize: primaryAxis.plotMarkers.markerTextSize)/2.0) + 8,
                                -15)
             primaryAxis.plotMarkers.xMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.xMarkersText.append("\(floor(primaryAxis.scaleX*(xM-originPrimary.x)))")
+            primaryAxis.plotMarkers.xMarkersText.append("\(round(primaryAxis.scaleX*(xM-originPrimary.x)))")
             xM = xM + inc2Primary
         }
 
@@ -348,7 +348,7 @@ extension LineGraph{
                                                            textSize: primaryAxis.plotMarkers.markerTextSize)/2.0) + 8,
                                -15)
             primaryAxis.plotMarkers.xMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.xMarkersText.append("\(ceil(primaryAxis.scaleX*(xM-originPrimary.x)))")
+            primaryAxis.plotMarkers.xMarkersText.append("\(round(primaryAxis.scaleX*(xM-originPrimary.x)))")
             xM = xM - inc2Primary
         }
 
@@ -364,7 +364,7 @@ extension LineGraph{
                                                        textSize: primaryAxis.plotMarkers.markerTextSize)+5),
                                yM - 4)
             primaryAxis.plotMarkers.yMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.yMarkersText.append("\(ceil(primaryAxis.scaleY*(yM-originPrimary.y)))")
+            primaryAxis.plotMarkers.yMarkersText.append("\(round(primaryAxis.scaleY*(yM-originPrimary.y)))")
             yM = yM + inc1Primary
         }
         yM = originPrimary.y - inc1Primary
@@ -375,7 +375,7 @@ extension LineGraph{
                                                        textSize: primaryAxis.plotMarkers.markerTextSize)+5),
                                yM - 4)
             primaryAxis.plotMarkers.yMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.yMarkersText.append("\(floor(primaryAxis.scaleY*(yM-originPrimary.y)))")
+            primaryAxis.plotMarkers.yMarkersText.append("\(round(primaryAxis.scaleY*(yM-originPrimary.y)))")
             yM = yM - inc1Primary
         }
 
@@ -388,8 +388,8 @@ extension LineGraph{
             // let pairs = primaryAxis.series[i].pairs
             primaryAxis.series[i].scaledValues.removeAll();
             for j in 0..<primaryAxis.series[i].count {
-                let scaledPair = Pair<FloatConvertible,FloatConvertible>(Float((primaryAxis.series[i])[j].x)*scaleXInvPrimary + originPrimary.x,
-                                                                         Float((primaryAxis.series[i])[j].y)*scaleYInvPrimary + originPrimary.y)
+                let scaledPair = Pair<T,U>(((primaryAxis.series[i])[j].x)*T(scaleXInvPrimary) + T(originPrimary.x),
+                                           ((primaryAxis.series[i])[j].y)*U(scaleYInvPrimary) + U(originPrimary.y))
                 if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= plotDimensions.graphWidth && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= plotDimensions.graphHeight) {
                     primaryAxis.series[i].scaledValues.append(scaledPair)
                 }
@@ -398,8 +398,8 @@ extension LineGraph{
 
         //calculations for secondary axis
         if (secondaryAxis != nil) {
-            nD1 = max(getNumberOfDigits(maximumYSecondary), getNumberOfDigits(minimumYSecondary))
-            if (nD1 > 1 && maximumYSecondary <= pow(Float(10), Float(nD1 - 1))) {
+            nD1 = max(getNumberOfDigits(Float(maximumYSecondary)), getNumberOfDigits(Float(minimumYSecondary)))
+            if (nD1 > 1 && maximumYSecondary <= U(pow(Float(10), Float(nD1 - 1)))) {
                 v1 = Float(pow(Float(10), Float(nD1 - 2)))
             } else if (nD1 > 1) {
                 v1 = Float(pow(Float(10), Float(nD1 - 1)))
@@ -425,7 +425,7 @@ extension LineGraph{
                                                                                       textSize: secondaryAxis!.plotMarkers.markerTextSize)*Float(0.5) - 5),
                                    yM - 4)
                 secondaryAxis!.plotMarkers.yMarkersTextLocation.append(text_p)
-                secondaryAxis!.plotMarkers.yMarkersText.append("\(ceil(secondaryAxis!.scaleY*(yM-originSecondary!.y)))")
+                secondaryAxis!.plotMarkers.yMarkersText.append("\(round(secondaryAxis!.scaleY*(yM-originSecondary!.y)))")
                 yM = yM + inc1Secondary
             }
             yM = originSecondary!.y - inc1Secondary
@@ -436,7 +436,7 @@ extension LineGraph{
                                                                                       textSize: secondaryAxis!.plotMarkers.markerTextSize)*Float(0.5) - 5),
                                    yM - 4)
                 secondaryAxis!.plotMarkers.yMarkersTextLocation.append(text_p)
-                secondaryAxis!.plotMarkers.yMarkersText.append("\(floor(secondaryAxis!.scaleY*(yM-originSecondary!.y)))")
+                secondaryAxis!.plotMarkers.yMarkersText.append("\(round(secondaryAxis!.scaleY*(yM-originSecondary!.y)))")
                 yM = yM - inc1Secondary
             }
 
@@ -448,8 +448,8 @@ extension LineGraph{
                 // let pairs = secondaryAxis!.series[i].pairs
                 secondaryAxis!.series[i].scaledValues.removeAll();
                 for j in 0..<secondaryAxis!.series[i].count {
-                    let scaledPair = Pair<FloatConvertible,FloatConvertible>(Float((secondaryAxis!.series[i])[j].x)*scaleXInvPrimary + originPrimary.x,
-                                                                             Float((secondaryAxis!.series[i])[j].y)*scaleYInvSecondary + originSecondary!.y)
+                    let scaledPair = Pair<T,U>(((secondaryAxis!.series[i])[j].x)*T(scaleXInvPrimary) + T(originPrimary.x),
+                                               ((secondaryAxis!.series[i])[j].y)*U(scaleYInvSecondary) + U(originSecondary!.y))
                     if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= plotDimensions.graphWidth && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= plotDimensions.graphHeight) {
                         secondaryAxis!.series[i].scaledValues.append(scaledPair)
                     }

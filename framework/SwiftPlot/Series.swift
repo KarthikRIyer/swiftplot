@@ -4,8 +4,8 @@ public struct Series<T,U> {
     public var scatterPlotSeriesOptions = ScatterPlotSeriesOptions()
     public var values = [Pair<T,U>]()
     public var scaledValues = [Pair<T,U>]()
-    public var maxY: Float = 0
-    public var minY: Float = 0
+    public var maxY: U? = nil
+    public var minY: U? = nil
     public var label = "Plot"
     public var color : Color = .blue
     public var startColor: Color? = nil
@@ -19,7 +19,7 @@ public struct Series<T,U> {
     public init(values: [Pair<T,U>],
                 label: String,
                 startColor: Color = .lightBlue,
-                endColor: Color = Color.lightBlue,
+                endColor: Color = .lightBlue,
                 hatchPattern: BarGraphSeriesOptions.Hatching = .none,
                 scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
         self.values = values
@@ -31,7 +31,7 @@ public struct Series<T,U> {
     }
     public init(values: [Pair<T,U>],
                 label: String,
-                color: Color = Color.lightBlue,
+                color: Color = .lightBlue,
                 hatchPattern: BarGraphSeriesOptions.Hatching = .none,
                 scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
         self.values = values

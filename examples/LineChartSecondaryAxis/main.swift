@@ -13,7 +13,7 @@ let y1:[Float] = [0,250,628,241]
 var agg_renderer = AGGRenderer()
 var svg_renderer = SVGRenderer()
 
-var lineGraph = LineGraph()
+var lineGraph = LineGraph<Float,Float>()
 lineGraph.addSeries(x1, y1, label: "Plot 1", color: .lightBlue, axisType: .primaryAxis)
 lineGraph.addSeries(x, y, label: "Plot 2", color: .orange, axisType: .secondaryAxis)
 lineGraph.plotTitle = PlotTitle("SECONDARY AXIS")

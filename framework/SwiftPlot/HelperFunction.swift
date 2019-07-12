@@ -4,6 +4,31 @@ public func clamp<T>(_ value: T, minValue: T, maxValue: T) -> T where T: Compara
     return min(max(value, minValue), maxValue)
 }
 
+public func niceRoundFloor(_ value: Float) -> Float {
+    return floor(value*pow(10, -floor(log10(value)))) / pow(10, -floor(log10(value)))
+}
+
+public func niceRoundCeil(_ value: Float) -> Float {
+    return ceil(value*pow(10, -floor(log10(value)))) / pow(10, -floor(log10(value)))
+}
+
+public func niceRound(_ value: Float) -> Float {
+    if (value>0) {
+        return niceRoundCeil(value)
+    }
+    else {
+        return -niceRoundFloor(-value)
+    }
+}
+
+public func roundCeil10(_ value: Float) -> Float {
+    return ceil(value/10)*10
+}
+
+public func roundFloor10(_ value: Float) -> Float {
+    return floor(value/10)*10
+}
+
 public func getNumberOfDigits(_ n: Float) -> Int{
     var x: Int = Int(n)
     var count: Int = 0
@@ -14,41 +39,41 @@ public func getNumberOfDigits(_ n: Float) -> Int{
     return count
 }
 
-public func maxX<T>(points: [Pair<FloatConvertible,T>]) -> Float {
-    var max = Float(points[0].x)
+public func maxX<T,U>(points: [Pair<T,U>]) -> T where T:Comparable {
+    var max = points[0].x
     for index in 1..<points.count {
-        if (Float(points[index].x) > max) {
-            max = Float(points[index].x)
+        if (points[index].x > max) {
+            max = points[index].x
         }
     }
     return max
 }
 
-public func maxY<T>(points: [Pair<T,FloatConvertible>]) -> Float {
-    var max = Float(points[0].y)
+public func maxY<T,U>(points: [Pair<T,U>]) -> U where U:Comparable {
+    var max = points[0].y
     for index in 1..<points.count {
-        if (Float(points[index].y) > max) {
-            max = Float(points[index].y)
+        if (points[index].y > max) {
+            max = points[index].y
         }
     }
     return max
 }
 
-public func minX<T>(points: [Pair<FloatConvertible,T>]) -> Float {
-    var min = Float(points[0].x)
+public func minX<T,U>(points: [Pair<T,U>]) -> T where T:Comparable {
+    var min = points[0].x
     for index in 1..<points.count {
-        if (Float(points[index].x) < min) {
-            min = Float(points[index].x)
+        if (points[index].x < min) {
+            min = points[index].x
         }
     }
     return min
 }
 
-public func minY<T>(points: [Pair<T,FloatConvertible>]) -> Float {
-    var min = Float(points[0].y)
+public func minY<T,U>(points: [Pair<T,U>]) -> U where U:Comparable {
+    var min = points[0].y
     for index in 1..<points.count {
-        if (Float(points[index].y) < min) {
-            min = Float(points[index].y)
+        if (points[index].y < min) {
+            min = points[index].y
         }
     }
     return min
