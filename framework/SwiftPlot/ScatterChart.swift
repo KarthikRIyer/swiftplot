@@ -217,7 +217,6 @@ extension ScatterPlot{
         for index in 1..<series.count {
 
             let s: Series<T,U> = series[index]
-            // let pairs = s.pairs
             var x: T = maxX(points: s.values)
             var y: U = maxY(points: s.values)
             if (x > maximumX) {
@@ -343,7 +342,6 @@ extension ScatterPlot{
         let scaleXInv: Float = 1.0/scaleX;
         let scaleYInv: Float = 1.0/scaleY
         for i in 0..<series.count {
-            // let pairs = series[i].pairs
             series[i].scaledValues.removeAll();
             for j in 0..<series[i].count {
                 let scaledPair = Pair<T,U>(((series[i])[j].x)*T(scaleXInv) + T(origin.x),

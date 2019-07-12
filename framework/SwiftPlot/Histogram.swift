@@ -227,13 +227,11 @@ extension Histogram {
                         binStart: minimumX,
                         binEnd: maximumX,
                         binInterval: binInterval)
-        // histogramSeries.recalculateBins(binStart: minimumX, binEnd: maximumX, binInterval: binInterval)
         for index in 0..<histogramStackSeries.count {
             recalculateBins(series: histogramStackSeries[index],
                             binStart: minimumX,
                             binEnd: maximumX,
                             binInterval: binInterval)
-            // histogramStackSeries[index].recalculateBins(binStart: minimumX, binEnd: maximumX, binInterval: binInterval)
         }
         for index in 0..<histogramSeries.bins {
             var tempFrequency = histogramSeries.binFrequency[index]

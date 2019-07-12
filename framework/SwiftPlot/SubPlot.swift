@@ -66,15 +66,6 @@ public class SubPlot{
                                         subHeight: subHeight)
     }
 
-    // public init(frameWidth width: Float = 1000, frameHeight height: Float = 660, numberOfRows nR: Int = 1, numberOfColumns nC: Int = 1) {
-    //   frameWidth = width
-    //   frameHeight = height
-    //   subWidth = frameWidth/Float(nC)
-    //   subHeight = frameHeight/Float(nR)
-    //   xOffset = subWidth
-    //   yOffset = subHeight
-    // }
-
     public func draw(plots: [Plot], renderer: Renderer, fileName: String = "subPlot_output") {
         calculateSubPlotParams(numberOfPlots: plots.count)
         renderer.plotDimensions = plotDimensions

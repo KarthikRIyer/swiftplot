@@ -215,8 +215,6 @@ extension BarGraph {
         plotMarkers.xMarkersText = [String]()
         plotMarkers.xMarkersText = [String]()
 
-
-        // let pairs = series.pairs
         if (graphOrientation == .vertical) {
             for s in stackSeries {
                 let minStackY = minY(points: s.values)

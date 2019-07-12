@@ -385,7 +385,6 @@ extension LineGraph{
         let scaleXInvPrimary: Float = 1.0/primaryAxis.scaleX;
         let scaleYInvPrimary: Float = 1.0/primaryAxis.scaleY
         for i in 0..<primaryAxis.series.count {
-            // let pairs = primaryAxis.series[i].pairs
             primaryAxis.series[i].scaledValues.removeAll();
             for j in 0..<primaryAxis.series[i].count {
                 let scaledPair = Pair<T,U>(((primaryAxis.series[i])[j].x)*T(scaleXInvPrimary) + T(originPrimary.x),

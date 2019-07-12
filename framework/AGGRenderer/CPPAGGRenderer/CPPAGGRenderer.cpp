@@ -25,7 +25,6 @@
 #include "savebmp.h"
 
 #define AGG_RGB24
-// #define AGG_BGRA32
 #include "include/pixel_formats.h"
 
 typedef agg::pixfmt_rgb24 pixfmt;
