@@ -1,29 +1,46 @@
 // struct defining a data series
-public struct Series {
+public struct Series<T,U> {
     public var barGraphSeriesOptions = BarGraphSeriesOptions()
     public var scatterPlotSeriesOptions = ScatterPlotSeriesOptions()
-    public var points = [Point]()
-    public var scaledPoints = [Point]()
-    public var maxY: Float = 0
-    public var minY: Float = 0
+    public var values = [Pair<T,U>]()
+    public var scaledValues = [Pair<T,U>]()
+    public var maxY: U? = nil
+    public var minY: U? = nil
     public var label = "Plot"
     public var color : Color = .blue
     public var startColor: Color? = nil
     public var endColor: Color? = nil
-    public init() {}
-    public init(points p: [Point], label l: String, color c: Color = Color.lightBlue, hatchPattern: BarGraphSeriesOptions.Hatching = .none, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
-        points = p
-        label = l
-        color = c
-        barGraphSeriesOptions.hatchPattern = hatchPattern
-        scatterPlotSeriesOptions.scatterPattern = scatterPattern
+    public var count: Int {
+        get {
+          return values.count
+        }
     }
-    public init(points p: [Point], label l: String, startColor : Color = .lightBlue, endColor : Color = Color.lightBlue, hatchPattern: BarGraphSeriesOptions.Hatching = .none, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
-        points = p
-        label = l
+    public init() {}
+    public init(values: [Pair<T,U>],
+                label: String,
+                startColor: Color = .lightBlue,
+                endColor: Color = .lightBlue,
+                hatchPattern: BarGraphSeriesOptions.Hatching = .none,
+                scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
+        self.values = values
+        self.label = label
         self.startColor = startColor
         self.endColor = endColor
         barGraphSeriesOptions.hatchPattern = hatchPattern
         scatterPlotSeriesOptions.scatterPattern = scatterPattern
+    }
+    public init(values: [Pair<T,U>],
+                label: String,
+                color: Color = .lightBlue,
+                hatchPattern: BarGraphSeriesOptions.Hatching = .none,
+                scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
+        self.values = values
+        self.label = label
+        self.color = color
+        barGraphSeriesOptions.hatchPattern = hatchPattern
+        scatterPlotSeriesOptions.scatterPattern = scatterPattern
+    }
+    subscript(index: Int) -> Pair<T,U> {
+        return values[index]
     }
 }

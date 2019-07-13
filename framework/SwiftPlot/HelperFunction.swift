@@ -39,41 +39,41 @@ public func getNumberOfDigits(_ n: Float) -> Int{
     return count
 }
 
-public func getMaxX(points p: [Point]) -> Float {
-    var max = p[0].x
-    for index in 1..<p.count {
-        if (p[index].x > max) {
-            max = p[index].x
+public func maxX<T,U>(points: [Pair<T,U>]) -> T where T:Comparable {
+    var max = points[0].x
+    for index in 1..<points.count {
+        if (points[index].x > max) {
+            max = points[index].x
         }
     }
     return max
 }
 
-public func getMaxY(points p: [Point]) -> Float {
-    var max = p[0].y
-    for index in 1..<p.count {
-        if (p[index].y > max) {
-            max = p[index].y
+public func maxY<T,U>(points: [Pair<T,U>]) -> U where U:Comparable {
+    var max = points[0].y
+    for index in 1..<points.count {
+        if (points[index].y > max) {
+            max = points[index].y
         }
     }
     return max
 }
 
-public func getMinX(points p: [Point]) -> Float {
-    var min = p[0].x
-    for index in 1..<p.count {
-        if (p[index].x < min) {
-            min = p[index].x
+public func minX<T,U>(points: [Pair<T,U>]) -> T where T:Comparable {
+    var min = points[0].x
+    for index in 1..<points.count {
+        if (points[index].x < min) {
+            min = points[index].x
         }
     }
     return min
 }
 
-public func getMinY(points p: [Point]) -> Float {
-    var min = p[0].y
-    for index in 1..<p.count {
-        if (p[index].y < min) {
-            min = p[index].y
+public func minY<T,U>(points: [Pair<T,U>]) -> U where U:Comparable {
+    var min = points[0].y
+    for index in 1..<points.count {
+        if (points[index].y < min) {
+            min = points[index].y
         }
     }
     return min
@@ -92,25 +92,33 @@ public func lerp(startColor: Color, endColor: Color, _ t: Float) -> Color {
     return Color(r, g, b, a)
 }
 
-public func rotatePoint(point: Point, center: Point, angleDegrees: Float) -> Point{
+public func rotatePoint(point: Point,
+                        center: Point,
+                      angleDegrees: Float) -> Point{
     let angle = angleDegrees * .pi/180.0
     let s = sin(angle)
     let c = cos(angle)
     var rotatedPoint = Point(point.x, point.y)
-    rotatedPoint = rotatedPoint - center
+    rotatedPoint = Point(rotatedPoint.x - center.x,
+                         rotatedPoint.y - center.y)
     let xNew = rotatedPoint.x * c - rotatedPoint.y * s
     let yNew = rotatedPoint.x * s + rotatedPoint.y * c
-    rotatedPoint = Point(xNew + center.x, yNew + center.y)
+    rotatedPoint = Point(xNew + center.x,
+                         yNew + center.y)
     return rotatedPoint
 }
 
-public func rotatePoint(point: Point, center: Point, angleRadians: Float) -> Point{
+public func rotatePoint(point: Point,
+                        center: Point,
+                      angleRadians: Float) -> Point{
     let s = sin(angleRadians)
     let c = cos(angleRadians)
     var rotatedPoint = Point(point.x, point.y)
-    rotatedPoint = rotatedPoint - center
+    rotatedPoint = Point(rotatedPoint.x - center.x,
+                         rotatedPoint.y - center.y)
     let xNew = rotatedPoint.x * c - rotatedPoint.y * s
     let yNew = rotatedPoint.x * s + rotatedPoint.y * c
-    rotatedPoint = Point(xNew + center.x, yNew + center.y)
+    rotatedPoint = Point(xNew + center.x,
+                         yNew + center.y)
     return rotatedPoint
 }

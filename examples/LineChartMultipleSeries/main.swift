@@ -13,7 +13,7 @@ let y2:[Float] = [0,20,100,170]
 var agg_renderer = AGGRenderer()
 var svg_renderer = SVGRenderer()
 
-var lineGraph: LineGraph = LineGraph()
+var lineGraph = LineGraph<Float,Float>()
 lineGraph.addSeries(x1, y1, label: "Plot 1", color: .lightBlue)
 lineGraph.addSeries(x2, y2, label: "Plot 2", color: .orange)
 lineGraph.plotTitle = PlotTitle("MULTIPLE SERIES")

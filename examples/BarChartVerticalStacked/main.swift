@@ -12,7 +12,7 @@ let y1:[Float] = [100,100,220,245]
 var agg_renderer = AGGRenderer()
 var svg_renderer = SVGRenderer()
 
-var barGraph = BarGraph()
+var barGraph = BarGraph<String,Float>()
 barGraph.addSeries(x, y, label: "Plot 1", color: .orange)
 barGraph.addStackSeries(y1, label: "Plot 2", color: .blue)
 barGraph.plotTitle = PlotTitle("BAR CHART")
