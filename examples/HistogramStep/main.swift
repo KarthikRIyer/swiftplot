@@ -9,7 +9,7 @@ let fileName = "_21_histogram_step"
 var agg_renderer = AGGRenderer()
 var svg_renderer = SVGRenderer()
 
-var histogram = Histogram<Float>(isNormalized: false)
+var histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
 histogram.addSeries(data: x, bins: 50, label: "Plot 1", color: .blue, histogramType: .step)
 histogram.plotTitle = PlotTitle("HISTOGRAM STEP")
 histogram.plotLabel = PlotLabel(xLabel: "X", yLabel: "Frequency")

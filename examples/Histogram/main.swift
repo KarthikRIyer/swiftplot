@@ -9,7 +9,7 @@ let fileName = "_20_histogram"
 var agg_renderer = AGGRenderer()
 var svg_renderer = SVGRenderer()
 
-var histogram = Histogram<Float>(isNormalized: false)
+var histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
 histogram.addSeries(data: x, bins: 50, label: "Plot 1", color: .blue)
 histogram.plotTitle = PlotTitle("HISTOGRAM")
 histogram.plotLabel = PlotLabel(xLabel: "X", yLabel: "Frequency")

@@ -13,7 +13,7 @@ var svg_renderer = SVGRenderer()
 
 var plotTitle = PlotTitle()
 
-var barGraph = BarGraph<String,Float>()
+var barGraph = BarGraph<String,Float>(enableGrid: true)
 barGraph.addSeries(x, y, label: "Plot 1", color: .orange, hatchPattern: .hollowCircle)
 barGraph.plotTitle = PlotTitle("HATCHED BAR CHART")
 barGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")

@@ -21,25 +21,28 @@ public class Histogram<T:FloatConvertible>: Plot {
             plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + Float(20), plotBorder.topLeft.y - Float(20))
         }
     }
-    public var scaleY: Float = 1
-    public var scaleX: Float = 1
     public var strokeWidth: Float = 2
-    public var plotMarkers: PlotMarkers = PlotMarkers()
+    public var enableGrid = true
+    public var gridLineThickness: Float = 0.5
+    public var gridColor: Color = .gray
 
-
+    var scaleY: Float = 1
+    var scaleX: Float = 1
+    var plotMarkers: PlotMarkers = PlotMarkers()
     var histogramSeries = HistogramSeries<T>()
     var histogramStackSeries = [HistogramSeries<T>]()
     var barWidth: Float = 0
     var xMargin: Float = 5
     var isNormalized = false
-
     var origin = zeroPoint
 
     public init(width: Float = 1000,
                 height: Float = 660,
-                isNormalized: Bool = false){
+                isNormalized: Bool = false,
+                enableGrid: Bool = false){
         plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
         self.isNormalized = isNormalized
+        self.enableGrid = enableGrid
     }
     public func addSeries(_ s: HistogramSeries<T>){
         histogramSeries = s
@@ -155,6 +158,7 @@ extension Histogram {
         plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + Float(20), plotBorder.topLeft.y - Float(20))
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
+        drawGrid(renderer: renderer)
         drawBorder(renderer: renderer)
         drawMarkers(renderer: renderer)
         drawPlots(renderer: renderer)
@@ -174,6 +178,7 @@ extension Histogram {
         plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + Float(20), plotBorder.topLeft.y - Float(20))
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
+        drawGrid(renderer: renderer)
         drawBorder(renderer: renderer)
         drawMarkers(renderer: renderer)
         drawPlots(renderer: renderer)
@@ -338,6 +343,31 @@ extension Histogram {
                           bottomLeftPoint: plotBorder.bottomLeft,
                           strokeWidth: plotBorder.borderThickness,
                           strokeColor: Color.black, isOriginShifted: false)
+    }
+
+    func drawGrid(renderer: Renderer) {
+        if (enableGrid) {
+            for index in 0..<plotMarkers.xMarkers.count {
+                let p1 = Point(plotMarkers.xMarkers[index].x, 0)
+                let p2 = Point(plotMarkers.xMarkers[index].x, plotDimensions.graphHeight)
+                renderer.drawLine(startPoint: p1,
+                                  endPoint: p2,
+                                  strokeWidth: gridLineThickness,
+                                  strokeColor: gridColor,
+                                  isDashed: false,
+                                  isOriginShifted: true)
+            }
+            for index in 0..<plotMarkers.yMarkers.count {
+                let p1 = Point(0, plotMarkers.yMarkers[index].y)
+                let p2 = Point(plotDimensions.graphWidth, plotMarkers.yMarkers[index].y)
+                renderer.drawLine(startPoint: p1,
+                                  endPoint: p2,
+                                  strokeWidth: gridLineThickness,
+                                  strokeColor: gridColor,
+                                  isDashed: false,
+                                  isOriginShifted: true)
+            }
+        }
     }
 
     func drawMarkers(renderer: Renderer) {

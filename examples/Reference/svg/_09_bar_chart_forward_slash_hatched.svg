@@ -1,6 +1,17 @@
 <svg height="660.0" width="1000.0" version="4.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">
 <rect width="100%" height="100%" fill="white"/>
-<rect x="100.0" y="66.0" width="800.0" height="528.0" style="fill:rgb(255,255,255);stroke-width:2.0;stroke:rgb(0,0,0);opacity:1" />
+<line x1="200.0" y1="594.0" x2="200.0" y2="66.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="400.0" y1="594.0" x2="400.0" y2="66.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="600.0" y1="594.0" x2="600.0" y2="66.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="800.0" y1="594.0" x2="800.0" y2="66.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="100.0" y1="506.0" x2="900.0" y2="506.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="100.0" y1="427.33334" x2="900.0" y2="427.33334" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="100.0" y1="348.6667" x2="900.0" y2="348.6667" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="100.0" y1="270.00003" x2="900.0" y2="270.00003" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="100.0" y1="191.33337" x2="900.0" y2="191.33337" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="100.0" y1="112.66675" x2="900.0" y2="112.66675" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="100.0" y1="584.6667" x2="900.0" y2="584.6667" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<rect x="100.0" y="66.0" width="800.0" height="528.0" style="fill:rgb(255,255,255);stroke-width:2.0;stroke:rgb(0,0,0);opacity:1;fill-opacity:0;" />
 <line x1="200.0" y1="597.0" x2="200.0" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
 <text x="181.74" y="610.0" stroke="#000000" stroke-width="0.7" transform="rotate(-0.0,181.74,610.0)">2008</text>
 <line x1="400.0" y1="597.0" x2="400.0" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />

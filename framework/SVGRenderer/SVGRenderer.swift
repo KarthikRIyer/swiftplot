@@ -64,7 +64,7 @@ public class SVGRenderer: Renderer{
         else {
             y = plotDimensions.subHeight - y
         }
-        let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(255,255,255);stroke-width:\(thickness);stroke:rgb(0,0,0);opacity:1\" />"
+        let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(255,255,255);stroke-width:\(thickness);stroke:rgb(0,0,0);opacity:1;fill-opacity:0;\" />"
         image = image + "\n" + rect
     }
 

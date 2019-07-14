@@ -9,7 +9,7 @@ let fileName = "_22_histogram_stacked"
 var agg_renderer = AGGRenderer()
 var svg_renderer = SVGRenderer()
 
-var histogram = Histogram<Float>(isNormalized: false)
+var histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
 histogram.addSeries(data: x, bins: 50, label: "Plot 1", color: .blue)
 histogram.addStackSeries(data: y, label: "Plot 2", color: .orange)
 histogram.plotTitle = PlotTitle("HISTOGRAM STACKED")

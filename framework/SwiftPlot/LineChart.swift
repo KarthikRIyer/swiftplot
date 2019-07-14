@@ -26,22 +26,36 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
                                              plotBorder.topLeft.y - Float(20))
         }
     }
+    public var plotLineThickness: Float = 3
+    public var gridLineThickness: Float = 0.5
+    public var enablePrimaryAxisGrid = false
+    public var enableSecondaryAxisGrid = false
+    public var gridColor: Color = .gray
 
     var primaryAxis = Axis<T,U>()
     var secondaryAxis: Axis<T,U>? = nil
 
-    public var plotLineThickness: Float = 3
-
-    public init(points : [Pair<T,U>], width: Float = 1000, height: Float = 660){
+    public init(points : [Pair<T,U>],
+                width: Float = 1000,
+                height: Float = 660,
+                enablePrimaryAxisGrid: Bool = false,
+                enableSecondaryAxisGrid: Bool = false){
         plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
         plotDimensions.calculateGraphDimensions()
+        self.enablePrimaryAxisGrid = enablePrimaryAxisGrid
+        self.enableSecondaryAxisGrid = enableSecondaryAxisGrid
 
         let s = Series<T,U>(values: points,label: "Plot")
         primaryAxis.series.append(s)
     }
 
-    public init(width: Float = 1000, height: Float = 660){
+    public init(width: Float = 1000,
+                height: Float = 660,
+                enablePrimaryAxisGrid: Bool = false,
+                enableSecondaryAxisGrid: Bool = false){
         plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
+        self.enablePrimaryAxisGrid = enablePrimaryAxisGrid
+        self.enableSecondaryAxisGrid = enableSecondaryAxisGrid
     }
 
     // functions to add series
@@ -135,6 +149,7 @@ extension LineGraph{
                                          plotBorder.topLeft.y - Float(20))
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
+        drawGrid(renderer: renderer)
         drawBorder(renderer: renderer)
         drawMarkers(renderer: renderer)
         drawPlots(renderer: renderer)
@@ -159,6 +174,7 @@ extension LineGraph{
                                          plotBorder.topLeft.y - Float(20))
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
+        drawGrid(renderer: renderer)
         drawBorder(renderer: renderer)
         drawMarkers(renderer: renderer)
         drawPlots(renderer: renderer)
@@ -466,6 +482,47 @@ extension LineGraph{
                           strokeWidth: plotBorder.borderThickness,
                           strokeColor: Color.black,
                           isOriginShifted: false)
+    }
+
+    func drawGrid(renderer: Renderer) {
+        if (enablePrimaryAxisGrid || enableSecondaryAxisGrid) {
+            for index in 0..<primaryAxis.plotMarkers.xMarkers.count {
+                let p1 = Point(primaryAxis.plotMarkers.xMarkers[index].x, 0)
+                let p2 = Point(primaryAxis.plotMarkers.xMarkers[index].x, plotDimensions.graphHeight)
+                renderer.drawLine(startPoint: p1,
+                                  endPoint: p2,
+                                  strokeWidth: gridLineThickness,
+                                  strokeColor: gridColor,
+                                  isDashed: false,
+                                  isOriginShifted: true)
+            }
+        }
+        if (enablePrimaryAxisGrid) {
+            for index in 0..<primaryAxis.plotMarkers.yMarkers.count {
+                let p1 = Point(0, primaryAxis.plotMarkers.yMarkers[index].y)
+                let p2 = Point(plotDimensions.graphWidth, primaryAxis.plotMarkers.yMarkers[index].y)
+                renderer.drawLine(startPoint: p1,
+                                  endPoint: p2,
+                                  strokeWidth: gridLineThickness,
+                                  strokeColor: gridColor,
+                                  isDashed: false,
+                                  isOriginShifted: true)
+            }
+        }
+        if (enableSecondaryAxisGrid) {
+            if (secondaryAxis != nil) {
+                for index in 0..<secondaryAxis!.plotMarkers.yMarkers.count {
+                    let p1 = Point(0, secondaryAxis!.plotMarkers.yMarkers[index].y)
+                    let p2 = Point(plotDimensions.graphWidth, secondaryAxis!.plotMarkers.yMarkers[index].y)
+                    renderer.drawLine(startPoint: p1,
+                                      endPoint: p2,
+                                      strokeWidth: gridLineThickness,
+                                      strokeColor: gridColor,
+                                      isDashed: false,
+                                      isOriginShifted: true)
+                }
+            }
+        }
     }
 
     func drawMarkers(renderer: Renderer) {

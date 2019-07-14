@@ -28,25 +28,34 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
                                              plotBorder.topLeft.y - Float(20))
         }
     }
+    public var plotLineThickness: Float = 3
+    public var scatterPatternSize: Float = 10
+    public var enableGrid = false
+    public var gridColor: Color = .gray
+    public var gridLineThickness: Float = 0.5
 
     var scaleX: Float = 1
     var scaleY: Float = 1
     var plotMarkers: PlotMarkers = PlotMarkers()
     var series = [Series<T,U>]()
 
-    public var plotLineThickness: Float = 3
-    public var scatterPatternSize: Float = 10
-
-    public init(points p: [Pair<T,U>], width: Float = 1000, height: Float = 660){
+    public init(points p: [Pair<T,U>],
+                width: Float = 1000,
+                height: Float = 660,
+                enableGrid: Bool = false){
         plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
         plotDimensions.calculateGraphDimensions()
 
         let s = Series<T,U>(values: p,label: "Plot")
         series.append(s)
+        self.enableGrid = enableGrid
     }
 
-    public init(width: Float = 1000, height: Float = 660){
+    public init(width: Float = 1000,
+                height: Float = 660,
+                enableGrid: Bool = false){
         plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
+        self.enableGrid = enableGrid
     }
 
     // functions to add series
@@ -144,6 +153,7 @@ extension ScatterPlot{
                                          plotBorder.topLeft.y - Float(20))
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
+        drawGrid(renderer: renderer)
         drawBorder(renderer: renderer)
         drawMarkers(renderer: renderer)
         drawPlots(renderer: renderer)
@@ -168,6 +178,7 @@ extension ScatterPlot{
                                          plotBorder.topLeft.y - Float(20))
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
+        drawGrid(renderer: renderer)
         drawBorder(renderer: renderer)
         drawMarkers(renderer: renderer)
         drawPlots(renderer: renderer)
@@ -362,6 +373,31 @@ extension ScatterPlot{
                           strokeWidth: plotBorder.borderThickness,
                           strokeColor: Color.black,
                           isOriginShifted: false)
+    }
+
+    func drawGrid(renderer: Renderer) {
+        if (enableGrid) {
+            for index in 0..<plotMarkers.xMarkers.count {
+                let p1 = Point(plotMarkers.xMarkers[index].x, 0)
+                let p2 = Point(plotMarkers.xMarkers[index].x, plotDimensions.graphHeight)
+                renderer.drawLine(startPoint: p1,
+                                  endPoint: p2,
+                                  strokeWidth: gridLineThickness,
+                                  strokeColor: gridColor,
+                                  isDashed: false,
+                                  isOriginShifted: true)
+            }
+            for index in 0..<plotMarkers.yMarkers.count {
+                let p1 = Point(0, plotMarkers.yMarkers[index].y)
+                let p2 = Point(plotDimensions.graphWidth, plotMarkers.yMarkers[index].y)
+                renderer.drawLine(startPoint: p1,
+                                  endPoint: p2,
+                                  strokeWidth: gridLineThickness,
+                                  strokeColor: gridColor,
+                                  isDashed: false,
+                                  isOriginShifted: true)
+            }
+        }
     }
 
     func drawMarkers(renderer: Renderer) {
