@@ -3,7 +3,7 @@ import AGGRenderer
 import SVGRenderer
 
 var filePath = "examples/Reference/"
-let fileName = "_19_scatter_plot"
+let fileName = "_20_scatter_plot"
 
 var agg_renderer = AGGRenderer()
 var svg_renderer = SVGRenderer()

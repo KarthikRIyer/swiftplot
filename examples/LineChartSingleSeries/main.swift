@@ -12,7 +12,7 @@ var agg_renderer = AGGRenderer()
 var svg_renderer = SVGRenderer()
 
 var lineGraph = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
-lineGraph.addSeries(x, y, label: "Plot 1", color: .lightBlue)
+lineGraph.addSeries(x, y, label: "PLOT 1", color: .lightBlue)
 lineGraph.plotTitle = PlotTitle("SINGLE SERIES")
 lineGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
 

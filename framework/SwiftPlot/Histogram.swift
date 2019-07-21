@@ -286,7 +286,7 @@ extension Histogram {
             }
             let p: Point = Point(0, yM)
             plotMarkers.yMarkers.append(p)
-            let text_p: Point = Point(-(renderer.getTextWidth(text: "\(round(scaleY*(yM-origin.y)))", textSize: plotMarkers.markerTextSize)+5), yM - 4)
+            let text_p: Point = Point(-(renderer.getTextWidth(text: "\(round(scaleY*(yM-origin.y)))", textSize: plotMarkers.markerTextSize)+8), yM - 4)
             plotMarkers.yMarkersTextLocation.append(text_p)
             plotMarkers.yMarkersText.append("\(round(scaleY*(yM-origin.y)))")
             yM = yM + inc1
@@ -372,7 +372,7 @@ extension Histogram {
 
     func drawMarkers(renderer: Renderer) {
         for index in 0..<plotMarkers.xMarkers.count {
-            let p1: Point = Point(plotMarkers.xMarkers[index].x, -3)
+            let p1: Point = Point(plotMarkers.xMarkers[index].x, -6)
             let p2: Point = Point(plotMarkers.xMarkers[index].x, 0)
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
@@ -389,7 +389,7 @@ extension Histogram {
         }
 
         for index in 0..<plotMarkers.yMarkers.count {
-            let p1: Point = Point(-3, plotMarkers.yMarkers[index].y)
+            let p1: Point = Point(-6, plotMarkers.yMarkers[index].y)
             let p2: Point = Point(0, plotMarkers.yMarkers[index].y)
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,

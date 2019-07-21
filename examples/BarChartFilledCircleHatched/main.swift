@@ -3,7 +3,7 @@ import AGGRenderer
 import SVGRenderer
 
 var filePath = "examples/Reference/"
-let fileName = "_16_bar_chart_filled_circle_hatched"
+let fileName = "_17_bar_chart_filled_circle_hatched"
 
 let x:[String] = ["2008","2009","2010","2011"]
 let y:[Float] = [320,-100,420,500]

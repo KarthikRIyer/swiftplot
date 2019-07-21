@@ -4,7 +4,7 @@ import SVGRenderer
 import Foundation
 
 var filePath = "examples/Reference/"
-let fileName = "_20_histogram"
+let fileName = "_21_histogram"
 
 var agg_renderer = AGGRenderer()
 var svg_renderer = SVGRenderer()

@@ -37,11 +37,12 @@ public class SVGRenderer: Renderer{
     let horizontalHatch: String = "<defs><pattern id=\"horizontalHatch\" width=\"10\" height=\"10\" patternUnits=\"userSpaceOnUse\"><line x1=\"0\" y1=\"5\" x2=\"10\" y2=\"5\" style=\"stroke:black; stroke-width:1\" /></pattern></defs>"
     let gridHatch: String = "<defs><pattern id=\"gridHatch\" width=\"10\" height=\"10\" patternUnits=\"userSpaceOnUse\"><line x1=\"0\" y1=\"5\" x2=\"10\" y2=\"5\" style=\"stroke:black; stroke-width:1\" /><line x1=\"5\" y1=\"0\" x2=\"5\" y2=\"10\" style=\"stroke:black; stroke-width:1\" /></pattern></defs>"
     let crossHatch: String = "<defs><pattern id=\"crossHatch\" width=\"10\" height=\"10\" patternUnits=\"userSpaceOnUse\"><line x1=\"0\" y1=\"0\" x2=\"10\" y2=\"10\" style=\"stroke:black; stroke-width:1\" /><line x1=\"0\" y1=\"10\" x2=\"10\" y2=\"0\" style=\"stroke:black; stroke-width:1\" /></pattern></defs>"
-
+    let font: String = "<defs><style type=\"text/css\">@font-face {font-family: DejaVuSans;src: url('DejaVuSans.ttf');}</style></defs>"
     public init(width w: Float = 1000, height h: Float = 660) {
         plotDimensions = PlotDimensions(frameWidth: w, frameHeight: h)
         image = "<svg height=\"\(h)\" width=\"\(w)\" version=\"4.0\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink= \"http://www.w3.org/1999/xlink\">"
         image = image + "\n" + "<rect width=\"100%\" height=\"100%\" fill=\"white\"/>";
+        image = image + "\n" + font
         LCARS_CHAR_SIZE_ARRAY = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 26, 46, 63, 42, 105, 45, 20, 25, 25, 47, 39, 21, 34, 26, 36, 36, 28, 36, 36, 36, 36, 36, 36, 36, 36, 27, 27, 36, 35, 36, 35, 65, 42, 43, 42, 44, 35, 34, 43, 46, 25, 39, 40, 31, 59, 47, 43, 41, 43, 44, 39, 28, 44, 43, 65, 37, 39, 34, 37, 42, 37, 50, 37, 32, 43, 43, 39, 43, 40, 30, 42, 45, 23, 25, 39, 23, 67, 45, 41, 43, 42, 30, 40, 28, 45, 33, 52, 33, 36, 31, 39, 26, 39, 55]
     }
 
@@ -309,7 +310,7 @@ public class SVGRenderer: Renderer{
             x1 = x1 + 0.1*plotDimensions.subWidth
             y1 = y1 - 0.1*plotDimensions.subHeight
         }
-        let text = "<text x=\"\(x1 + xOffset)\" y=\"\(y1 + yOffset)\" stroke=\"#000000\" stroke-width=\"\(thickness)\" transform=\"rotate(\(-angle),\(x1+xOffset),\(y1 + yOffset))\">\(s)</text>"
+        let text = "<text font-size=\"\(size)\" font-family=\"DejaVuSans\" x=\"\(x1 + xOffset)\" y=\"\(y1 + yOffset)\" stroke=\"#000000\" stroke-width=\"\(thickness/4)\" transform=\"rotate(\(-angle),\(x1+xOffset),\(y1 + yOffset))\">\(s)</text>"
         image = image + "\n" + text
     }
 

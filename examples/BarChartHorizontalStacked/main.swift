@@ -3,7 +3,7 @@ import AGGRenderer
 import SVGRenderer
 
 var filePath = "examples/Reference/"
-let fileName = "_18_bar_chart_horizontal_stacked"
+let fileName = "_19_bar_chart_horizontal_stacked"
 
 let x:[String] = ["2008","2009","2010","2011"]
 let y:[Float] = [320,-100,420,500]
