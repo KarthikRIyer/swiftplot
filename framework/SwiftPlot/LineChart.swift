@@ -641,12 +641,11 @@ extension LineGraph{
             allSeries = allSeries + secondaryAxis!.series
         }
         for s in allSeries {
-            let w = renderer.getTextWidth(text: s.label, textSize: plotLegend.legendTextSize)
+            let w: Float = renderer.getTextWidth(text: s.label, textSize: plotLegend.legendTextSize)
             if (w > maxWidth) {
                 maxWidth = w
             }
         }
-
         plotLegend.legendWidth  = maxWidth + 3.5*plotLegend.legendTextSize
         plotLegend.legendHeight = (Float(allSeries.count)*2.0 + 1.0)*plotLegend.legendTextSize
 

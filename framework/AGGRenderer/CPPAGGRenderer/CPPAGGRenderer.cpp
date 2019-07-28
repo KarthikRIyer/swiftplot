@@ -98,6 +98,7 @@ namespace CPPAGGRenderer{
     int font_width = 0;
     bool font_hinting = false;
     bool font_kerning = true;
+    string fontPath = "";
 
     unsigned char* buffer = NULL;
 
@@ -105,7 +106,7 @@ namespace CPPAGGRenderer{
     agg::rendering_buffer m_pattern_rbuf;
     renderer_base_pre rb_pre;
 
-    Plot(float width, float height, float subW, float subH) :
+    Plot(float width, float height, float subW, float subH, const char* fontPathPtr) :
     m_feng(),
     m_fman(m_feng),
     m_curves(m_fman.path_adaptor()),
@@ -121,6 +122,7 @@ namespace CPPAGGRenderer{
       buffer = new unsigned char[frame_width*frame_height*3];
       m_curves.approximation_scale(2.0);
       m_contour.auto_detect_orientation(false);
+      fontPath = fontPathPtr;
     }
 
     void generate_pattern(float r, float g, float b, float a, int hatch_pattern){
@@ -413,30 +415,6 @@ namespace CPPAGGRenderer{
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
     }
 
-    // void draw_text(const char *s, float x, float y, float size, float thickness, float angle, bool is_origin_shifted){
-    //   agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
-    //   pixfmt pixf = pixfmt(rbuf);
-    //   renderer_base rb = renderer_base(pixf);
-    //   ren_aa = renderer_aa(rb);
-    //   agg::gsv_text t;
-    //   t.size(size);
-    //   t.text(s);
-    //   t.start_point(0,0);
-    //   agg::trans_affine matrix;
-    //   matrix *= agg::trans_affine_rotation(agg::deg2rad(angle));
-    //   matrix *= agg::trans_affine_translation(x, y);
-    //   if (is_origin_shifted) {
-    //     matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
-    //   }
-    //   agg::conv_transform<agg::gsv_text, agg::trans_affine> trans(t, matrix);
-    //   agg::conv_curve<agg::conv_transform<agg::gsv_text, agg::trans_affine>> curve(trans);
-    //   agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::gsv_text, agg::trans_affine>>> stroke(curve);
-    //   stroke.width(thickness);
-    //   m_ras.add_path(stroke);
-    //   ren_aa.color(black);
-    //   agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
-    // }
-
     void draw_text(const char *s, float x, float y, float size, float thickness, float angle, bool is_origin_shifted){
       agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
       pixfmt pixf = pixfmt(rbuf);
@@ -445,12 +423,11 @@ namespace CPPAGGRenderer{
       font_width = font_height = size;
       font_weight = thickness;
       m_contour.width(-font_weight*font_height*0.05);
-      if(m_feng.load_font("DejaVuSans.ttf", 0, gren)){
+      if(m_feng.load_font(fontPath.c_str(), 0, gren)){
         m_feng.hinting(font_hinting);
         m_feng.height(font_height);
         m_feng.width(font_width);
         m_feng.flip_y(false);
-        // m_feng.gamma(1.0);
         if (is_origin_shifted) {
           x+=(sub_width*0.1f);
           y+=(sub_height*0.1f);
@@ -477,18 +454,15 @@ namespace CPPAGGRenderer{
       }
     }
 
-    // float get_text_width(const char *s, float size){
-    //   agg::gsv_text t;
-    //   t.text(s);
-    //   t.size(size);
-    //   return t.text_width();
-    // }
-
     float get_text_width(const char *s, float size){
       font_width = font_height = size;
       m_contour.width(-font_weight*font_height*0.05);
       float x = 0;
-      if(m_feng.load_font("DejaVuSans.ttf", 0, gren)){
+      // set rotation of font engine to zero before calculating text width
+      agg::trans_affine matrix;
+      matrix *= agg::trans_affine_rotation(agg::deg2rad(0));
+      m_feng.transform(matrix);
+      if(m_feng.load_font(fontPath.c_str(), 0, gren)){
         m_feng.hinting(font_hinting);
         m_feng.height(font_height);
         m_feng.width(font_width);
@@ -528,8 +502,8 @@ namespace CPPAGGRenderer{
 
   };
 
-  const void * initializePlot(float w, float h, float subW, float subH){
-    Plot *plot = new Plot(w, h, subW, subH);
+  const void * initializePlot(float w, float h, float subW, float subH, const char* fontPath){
+    Plot *plot = new Plot(w, h, subW, subH, fontPath);
     memset(plot->buffer, 255, frame_width*frame_height*3);
     return (void *)plot;
   }

@@ -1,6 +1,6 @@
 <svg height="660.0" width="1000.0" version="4.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">
 <rect width="100%" height="100%" fill="white"/>
-<defs><style type="text/css">@font-face {font-family: DejaVuSans;src: url('DejaVuSans.ttf');}</style></defs>
+<defs><style>@import url("https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i");</style></defs>
 <line x1="100.0" y1="594.0" x2="100.0" y2="66.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
 <line x1="245.19427" y1="594.0" x2="245.19427" y2="66.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
 <line x1="390.38855" y1="594.0" x2="390.38855" y2="66.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
@@ -13,32 +13,32 @@
 <line x1="100.0" y1="151.5" x2="900.0" y2="151.5" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
 <rect x="100.0" y="66.0" width="800.0" height="528.0" style="fill:rgb(255,255,255);stroke-width:2.0;stroke:rgb(0,0,0);opacity:1;fill-opacity:0;" />
 <line x1="100.0" y1="600.0" x2="100.0" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="DejaVuSans" x="86.62" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,86.62,614.0)">0.0</text>
+<text font-size="12.0" font-family="Roboto" x="86.62" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,86.62,614.0)">0.0</text>
 <line x1="245.19427" y1="600.0" x2="245.19427" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="DejaVuSans" x="227.97427" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,227.97427,614.0)">100.0</text>
+<text font-size="12.0" font-family="Roboto" x="227.97427" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,227.97427,614.0)">100.0</text>
 <line x1="390.38855" y1="600.0" x2="390.38855" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="DejaVuSans" x="372.68854" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,372.68854,614.0)">200.0</text>
+<text font-size="12.0" font-family="Roboto" x="372.68854" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,372.68854,614.0)">200.0</text>
 <line x1="535.5828" y1="600.0" x2="535.5828" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="DejaVuSans" x="517.8828" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,517.8828,614.0)">300.0</text>
+<text font-size="12.0" font-family="Roboto" x="517.8828" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,517.8828,614.0)">300.0</text>
 <line x1="680.7771" y1="600.0" x2="680.7771" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="DejaVuSans" x="663.0771" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,663.0771,614.0)">400.0</text>
+<text font-size="12.0" font-family="Roboto" x="663.0771" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,663.0771,614.0)">400.0</text>
 <line x1="825.9714" y1="600.0" x2="825.9714" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="DejaVuSans" x="808.27136" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,808.27136,614.0)">500.0</text>
+<text font-size="12.0" font-family="Roboto" x="808.27136" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,808.27136,614.0)">500.0</text>
 <line x1="94.0" y1="594.0" x2="100.0" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="DejaVuSans" x="55.24" y="598.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,55.24,598.0)">0.0</text>
+<text font-size="12.0" font-family="Roboto" x="55.24" y="598.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,55.24,598.0)">0.0</text>
 <line x1="94.0" y1="446.5" x2="100.0" y2="446.5" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="DejaVuSans" x="47.56" y="450.5" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,47.56,450.5)">100.0</text>
+<text font-size="12.0" font-family="Roboto" x="47.56" y="450.5" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,47.56,450.5)">100.0</text>
 <line x1="94.0" y1="299.0" x2="100.0" y2="299.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="DejaVuSans" x="46.6" y="303.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,46.6,303.0)">200.0</text>
+<text font-size="12.0" font-family="Roboto" x="46.6" y="303.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,46.6,303.0)">200.0</text>
 <line x1="94.0" y1="151.5" x2="100.0" y2="151.5" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="DejaVuSans" x="46.6" y="155.5" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,46.6,155.5)">300.0</text>
+<text font-size="12.0" font-family="Roboto" x="46.6" y="155.5" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,46.6,155.5)">300.0</text>
 <line x1="100.0" y1="594.0" x2="245.19427" y2="122.0" style="stroke:rgb(206.04001,206.04001,235.11);stroke-width:3.0;opacity:1.0;stroke-linecap:round" />
 <line x1="245.19427" y1="122.0" x2="481.86096" y2="136.75" style="stroke:rgb(206.04001,206.04001,235.11);stroke-width:3.0;opacity:1.0;stroke-linecap:round" />
 <line x1="481.86096" y1="136.75" x2="810.0" y2="343.25" style="stroke:rgb(206.04001,206.04001,235.11);stroke-width:3.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="20.0" font-family="DejaVuSans" x="442.1" y="56.0" stroke="#000000" stroke-width="0.3" transform="rotate(-0.0,442.1,56.0)">SINGLE SERIES</text>
-<text font-size="15.0" font-family="DejaVuSans" x="471.45" y="635.4" stroke="#000000" stroke-width="0.3" transform="rotate(-0.0,471.45,635.4)">X-AXIS</text>
-<text font-size="15.0" font-family="DejaVuSans" x="45.0" y="387.4" stroke="#000000" stroke-width="0.3" transform="rotate(-90.0,45.0,387.4)">Y-AXIS</text>
-<rect x="120.0" y="86.0" width="78.8" height="30.0" style="fill:rgb(255.0,255.0,255.0);stroke-width:2.0;stroke:rgb(0.0,0.0,0.0);opacity:0.7" />
+<text font-size="20.0" font-family="Roboto" x="442.1" y="56.0" stroke="#000000" stroke-width="0.3" transform="rotate(-0.0,442.1,56.0)">SINGLE SERIES</text>
+<text font-size="15.0" font-family="Roboto" x="471.45" y="635.4" stroke="#000000" stroke-width="0.3" transform="rotate(-0.0,471.45,635.4)">X-AXIS</text>
+<text font-size="15.0" font-family="Roboto" x="45.0" y="387.4" stroke="#000000" stroke-width="0.3" transform="rotate(-90.0,45.0,387.4)">Y-AXIS</text>
+<rect x="120.0" y="86.0" width="77.8" height="30.0" style="fill:rgb(255.0,255.0,255.0);stroke-width:2.0;stroke:rgb(0.0,0.0,0.0);opacity:0.7" />
 <rect x="130.0" y="96.0" width="10.0" height="10.0" style="fill:rgb(206.04001,206.04001,235.11);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
-<text font-size="10.0" font-family="DejaVuSans" x="150.0" y="106.0" stroke="#000000" stroke-width="0.3" transform="rotate(-0.0,150.0,106.0)">PLOT 1</text>
+<text font-size="10.0" font-family="Roboto" x="150.0" y="106.0" stroke="#000000" stroke-width="0.3" transform="rotate(-0.0,150.0,106.0)">Plot 1</text>
 </svg>

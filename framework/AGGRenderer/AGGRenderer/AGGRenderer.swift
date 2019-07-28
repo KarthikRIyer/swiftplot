@@ -7,27 +7,29 @@ public class AGGRenderer: Renderer{
     var initialized = false
     public var xOffset: Float = 0
     public var yOffset: Float = 0
-
     public var plotDimensions: PlotDimensions {
         willSet {
             if (initialized) {
                 agg_object = initializePlot(newValue.frameWidth,
                                             newValue.frameHeight,
                                             newValue.subWidth,
-                                            newValue.subHeight)
+                                            newValue.subHeight,
+                                            fontPath)
             }
         }
     }
-
     var agg_object: UnsafeRawPointer
+    var fontPath = "Roboto-Regular.ttf"
 
-    public init(width w: Float = 1000, height h: Float = 660) {
+    public init(width w: Float = 1000, height h: Float = 660, fontPath: String = "Roboto-Regular.ttf") {
         initialized = false
+        self.fontPath = fontPath
         plotDimensions = PlotDimensions(frameWidth: w, frameHeight: h)
         agg_object = initializePlot(plotDimensions.frameWidth,
                                     plotDimensions.frameHeight,
                                     plotDimensions.subWidth,
-                                    plotDimensions.subHeight)
+                                    plotDimensions.subHeight,
+                                    fontPath)
         initialized = true
     }
 
