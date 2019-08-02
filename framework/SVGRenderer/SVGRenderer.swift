@@ -44,7 +44,7 @@ public class SVGRenderer: Renderer{
         plotDimensions = PlotDimensions(frameWidth: w, frameHeight: h)
         image = "<svg height=\"\(h)\" width=\"\(w)\" version=\"4.0\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink= \"http://www.w3.org/1999/xlink\">"
         image = image + "\n" + "<rect width=\"100%\" height=\"100%\" fill=\"white\"/>";
-        font = "<defs><style>@import url(\"https://fonts.googleapis.com/css?family="+"\(fontFamily));</style></defs>"
+        font = "<defs><style>@import url(\"https://fonts.googleapis.com/css?family="+"\(fontFamily)\");</style></defs>"
         image = image + "\n" + font
         LCARS_CHAR_SIZE_ARRAY = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 26, 46, 63, 42, 105, 45, 20, 25, 25, 47, 39, 21, 34, 26, 36, 36, 28, 36, 36, 36, 36, 36, 36, 36, 36, 27, 27, 36, 35, 36, 35, 65, 42, 43, 42, 44, 35, 34, 43, 46, 25, 39, 40, 31, 59, 47, 43, 41, 43, 44, 39, 28, 44, 43, 65, 37, 39, 34, 37, 42, 37, 50, 37, 32, 43, 43, 39, 43, 40, 30, 42, 45, 23, 25, 39, 23, 67, 45, 41, 43, 42, 30, 40, 28, 45, 33, 52, 33, 36, 31, 39, 26, 39, 55]
     }

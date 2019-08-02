@@ -1,6 +1,6 @@
 <svg height="1000.0" width="1000.0" version="4.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">
 <rect width="100%" height="100%" fill="white"/>
-<defs><style>@import url("https://fonts.googleapis.com/css?family=Roboto);</style></defs>
+<defs><style>@import url("https://fonts.googleapis.com/css?family=Roboto");</style></defs>
 <line x1="163.63637" y1="900.0" x2="163.63637" y2="100.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
 <line x1="235.35353" y1="900.0" x2="235.35353" y2="100.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
 <line x1="307.0707" y1="900.0" x2="307.0707" y2="100.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
