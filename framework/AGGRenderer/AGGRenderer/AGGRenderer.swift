@@ -19,9 +19,9 @@ public class AGGRenderer: Renderer{
         }
     }
     var agg_object: UnsafeRawPointer
-    var fontPath = "Roboto-Regular.ttf"
+    var fontPath = ""
 
-    public init(width w: Float = 1000, height h: Float = 660, fontPath: String = "Roboto-Regular.ttf") {
+    public init(width w: Float = 1000, height h: Float = 660, fontPath: String = "") {
         initialized = false
         self.fontPath = fontPath
         plotDimensions = PlotDimensions(frameWidth: w, frameHeight: h)

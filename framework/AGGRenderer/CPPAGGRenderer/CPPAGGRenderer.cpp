@@ -27,7 +27,6 @@
 #include "lodepng.h"
 //header to save bitmaps
 #include "savebmp.h"
-
 #define AGG_RGB24
 #include "include/pixel_formats.h"
 
@@ -123,6 +122,11 @@ namespace CPPAGGRenderer{
       m_curves.approximation_scale(2.0);
       m_contour.auto_detect_orientation(false);
       fontPath = fontPathPtr;
+      if(fontPath.empty()){
+        string file_path = __FILE__;
+        string dir_path = file_path.substr(0, file_path.rfind("/"));
+        fontPath = dir_path.append("/Roboto-Regular.ttf");
+      }
     }
 
     void generate_pattern(float r, float g, float b, float a, int hatch_pattern){
@@ -424,6 +428,7 @@ namespace CPPAGGRenderer{
       font_weight = thickness;
       m_contour.width(-font_weight*font_height*0.05);
       if(m_feng.load_font(fontPath.c_str(), 0, gren)){
+      // if(m_feng.load_font(0, gren, roboto, roboto_size)){
         m_feng.hinting(font_hinting);
         m_feng.height(font_height);
         m_feng.width(font_width);
