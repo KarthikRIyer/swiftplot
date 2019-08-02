@@ -72,37 +72,49 @@ public class Histogram<T:FloatConvertible>: Plot {
                              label: String,
                              color: Color,
                              histogramType: HistogramSeriesOptions.HistogramType) -> HistogramSeries<T> {
-        var sortedData = data
-        sortedData.sort()
-        let minimumX = T(roundFloor10(Float(sortedData[0])))
-        let maximumX = T(roundCeil10(Float(sortedData[sortedData.count-1])))
+
+        var minimumElement = data[0]
+        var maximumElement = data[0]
+        for index in 1..<data.count {
+            if (data[index]>maximumElement) {
+                maximumElement = data[index]
+            }
+            if(data[index]<minimumElement) {
+                minimumElement = data[index]
+            }
+        }
+        let minimumX = T(roundFloor10(Float(minimumElement)))
+        let maximumX = T(roundCeil10(Float(maximumElement)))
         let binInterval = (maximumX-minimumX)/T(bins)
         var dataIndex: Int = 0
         var binStart = minimumX
         var binEnd = minimumX + binInterval
         var maximumFrequency: Float = 0
-        var binFrequency = [Float]()
-        for _ in 1...bins {
-            var count: Float = 0
-            while (dataIndex<sortedData.count && sortedData[dataIndex] >= binStart && sortedData[dataIndex] < binEnd) {
-                count+=1
-                dataIndex+=1
+        var binFrequency = [Float](repeating: 0, count: bins)
+
+        for index in 0..<data.count {
+            let binIndex = Int(Float(data[index] - minimumElement)/Float(binInterval))
+            if(binIndex < binFrequency.count) {
+                binFrequency[binIndex]+=1;
+                if(binFrequency[binIndex] > maximumFrequency) {
+                    maximumFrequency = binFrequency[binIndex]
+                }
             }
-            if (count > maximumFrequency) {
-                maximumFrequency = count
+            else {
+                binFrequency[binIndex-1]+=1;
+                if(binFrequency[binIndex-1] > maximumFrequency) {
+                    maximumFrequency = binFrequency[binIndex-1]
+                }
             }
-            binFrequency.append(count)
-            binStart = binStart + binInterval
-            binEnd = binEnd + binInterval
         }
         if (isNormalized) {
-            let factor = Float(sortedData.count)*Float(binInterval)
+            let factor = Float(data.count)*Float(binInterval)
             for index in 0..<bins {
                 binFrequency[index]/=factor
             }
             maximumFrequency/=factor
         }
-        return HistogramSeries<T>(data: sortedData,
+        return HistogramSeries<T>(data: data,
                                   bins: bins,
                                   isNormalized: isNormalized,
                                   label: label,
@@ -112,6 +124,8 @@ public class Histogram<T:FloatConvertible>: Plot {
                                   maximumFrequency: maximumFrequency,
                                   minimumX: minimumX,
                                   maximumX: maximumX,
+                                  minimumElement: minimumElement,
+                                  maximumElement: maximumElement,
                                   binInterval: binInterval)
     }
     func recalculateBins(series: HistogramSeries<T>,
@@ -120,18 +134,36 @@ public class Histogram<T:FloatConvertible>: Plot {
                          binInterval: T) {
         series.binFrequency.removeAll()
         series.maximumFrequency = 0
-        for start in stride(from: Float(binStart), through: Float(binEnd), by: Float(binInterval)){
-            let end = start + Float(binInterval)
-            var count: Float = 0
-            for d in series.data {
-                if(d < T(end) && d >= T(start)) {
-                    count += 1
+        series.bins = Int(Float(binEnd - binStart)/Float(binInterval))
+        series.binFrequency = [Float](repeating: 0, count: series.bins)
+        series.binInterval = binInterval
+        // for start in stride(from: Float(binStart), through: Float(binEnd), by: Float(binInterval)){
+        //     let end = start + Float(binInterval)
+        //     var count: Float = 0
+        //     for d in series.data {
+        //         if(d < T(end) && d >= T(start)) {
+        //             count += 1
+        //         }
+        //     }
+        //     if (count > series.maximumFrequency) {
+        //         series.maximumFrequency = count
+        //     }
+        //     series.binFrequency.append(count)
+        // }
+        for index in 0..<series.data.count {
+            let binIndex = Int(Float(series.data[index] - series.minimumElement!)/Float(binInterval))
+            if(binIndex < series.binFrequency.count) {
+                series.binFrequency[binIndex]+=1;
+                if(series.binFrequency[binIndex] > series.maximumFrequency) {
+                    series.maximumFrequency = series.binFrequency[binIndex]
                 }
             }
-            if (count > series.maximumFrequency) {
-                series.maximumFrequency = count
+            else {
+                series.binFrequency[binIndex-1]+=1;
+                if(series.binFrequency[binIndex-1] > series.maximumFrequency) {
+                    series.maximumFrequency = series.binFrequency[binIndex-1]
+                }
             }
-            series.binFrequency.append(count)
         }
         if (isNormalized) {
             let factor = Float(series.data.count)*Float(binInterval)

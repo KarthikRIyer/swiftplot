@@ -6,6 +6,8 @@ public class HistogramSeries<T> {
     public var maximumFrequency: Float = 0
     public var minimumX: T?
     public var maximumX: T?
+    public var minimumElement: T?
+    public var maximumElement: T?
     public var binInterval: T?
     public var label = ""
     public var color: Color = .lightBlue
@@ -22,6 +24,8 @@ public class HistogramSeries<T> {
                 maximumFrequency: Float,
                 minimumX: T,
                 maximumX: T,
+                minimumElement: T,
+                maximumElement: T,
                 binInterval: T) {
         self.data = data
         self.bins = bins
@@ -33,6 +37,8 @@ public class HistogramSeries<T> {
         self.maximumFrequency = maximumFrequency
         self.minimumX = minimumX
         self.maximumX = maximumX
+        self.minimumElement = minimumElement
+        self.maximumElement = maximumElement
         self.binInterval = binInterval
     }
 }
