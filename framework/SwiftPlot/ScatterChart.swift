@@ -254,6 +254,31 @@ extension ScatterPlot{
         scaleX = Float(maximumX - minimumX) / (plotDimensions.graphWidth - rightScaleMargin);
         scaleY = Float(maximumY - minimumY) / (plotDimensions.graphHeight - topScaleMargin);
 
+        var inc1: Float = -1
+        var inc2: Float = -1
+        var yIncRound: Int = 1
+        var xIncRound: Int = 1
+        if(Float(maximumY-minimumY)<=2.0) {
+            let differenceY = Float(maximumY-minimumY)
+            inc1 = 0.5*(1.0/differenceY)
+            var c = 0
+            while(abs(inc1)*pow(10.0,Float(c))<1.0) {
+                c+=1
+            }
+            inc1 = inc1/scaleY
+            yIncRound = c+1
+        }
+        if(Float(maximumX-minimumX)<=2.0) {
+            let differenceX = Float(maximumX-minimumX)
+            inc1 = 0.5*(1.0/differenceX)
+            var c = 0
+            while(abs(inc2)*pow(10.0,Float(c))<1.0) {
+                c+=1
+            }
+            inc2 = inc2/scaleX
+            xIncRound = c+1
+        }
+
         let nD1: Int = max(getNumberOfDigits(Float(maximumY)), getNumberOfDigits(Float(minimumY)))
         var v1: Float
         if (nD1 > 1 && maximumY <= U(pow(Float(10), Float(nD1 - 1)))) {
@@ -264,10 +289,12 @@ extension ScatterPlot{
             v1 = Float(pow(Float(10), Float(0)))
         }
 
-        let nY: Float = v1/scaleY
-        var inc1: Float = nY
-        if(plotDimensions.graphHeight/nY > MAX_DIV){
-            inc1 = (plotDimensions.graphHeight/nY)*inc1/MAX_DIV
+        if(inc1 == -1) {
+            let nY: Float = v1/scaleY
+            inc1 = nY
+            if(plotDimensions.graphHeight/nY > MAX_DIV){
+                inc1 = (plotDimensions.graphHeight/nY)*inc1/MAX_DIV
+            }
         }
 
         let nD2: Int = max(getNumberOfDigits(Float(maximumX)), getNumberOfDigits(Float(minimumX)))
@@ -280,12 +307,14 @@ extension ScatterPlot{
             v2 = Float(pow(Float(10), Float(0)))
         }
 
-        let nX: Float = v2/scaleX
-        var inc2: Float = nX
-        var noXD: Float = plotDimensions.graphWidth/nX
-        if(noXD > MAX_DIV){
-            inc2 = (plotDimensions.graphWidth/nX)*inc2/MAX_DIV
-            noXD = MAX_DIV
+        if(inc2 == -1) {
+            let nX: Float = v2/scaleX
+            inc2 = nX
+            var noXD: Float = plotDimensions.graphWidth/nX
+            if(noXD > MAX_DIV){
+                inc2 = (plotDimensions.graphWidth/nX)*inc2/MAX_DIV
+                noXD = MAX_DIV
+            }
         }
 
         var xM = Float(origin.x)
@@ -300,7 +329,7 @@ extension ScatterPlot{
                                                            textSize: plotMarkers.markerTextSize)/2.0) + 8,
                                -20)
             plotMarkers.xMarkersTextLocation.append(text_p)
-            plotMarkers.xMarkersText.append("\(round(scaleX*(xM-origin.x)))")
+            plotMarkers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
             xM = xM + inc2
         }
 
@@ -316,7 +345,7 @@ extension ScatterPlot{
                                                            textSize: plotMarkers.markerTextSize)/2.0) + 8,
                                -20)
             plotMarkers.xMarkersTextLocation.append(text_p)
-            plotMarkers.xMarkersText.append("\(round(scaleX*(xM-origin.x)))")
+            plotMarkers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
             xM = xM - inc2
         }
 
@@ -332,7 +361,7 @@ extension ScatterPlot{
                                                        textSize: plotMarkers.markerTextSize)+8),
                                yM - 4)
             plotMarkers.yMarkersTextLocation.append(text_p)
-            plotMarkers.yMarkersText.append("\(ceil(scaleY*(yM-origin.y)))")
+            plotMarkers.yMarkersText.append("\(ceilToN(scaleY*(yM-origin.y), yIncRound))")
             yM = yM + inc1
         }
         yM = origin.y - inc1
@@ -343,7 +372,7 @@ extension ScatterPlot{
                                                        textSize: plotMarkers.markerTextSize)+8),
                                yM - 4)
             plotMarkers.yMarkersTextLocation.append(text_p)
-            plotMarkers.yMarkersText.append("\(floor(scaleY*(yM-origin.y)))")
+            plotMarkers.yMarkersText.append("\(floorToN(scaleY*(yM-origin.y), xIncRound))")
             yM = yM - inc1
         }
 

@@ -86,9 +86,9 @@ public class Histogram<T:FloatConvertible>: Plot {
         let minimumX = T(roundFloor10(Float(minimumElement)))
         let maximumX = T(roundCeil10(Float(maximumElement)))
         let binInterval = (maximumX-minimumX)/T(bins)
-        var dataIndex: Int = 0
-        var binStart = minimumX
-        var binEnd = minimumX + binInterval
+        // var dataIndex: Int = 0
+        // var binStart = minimumX
+        // var binEnd = minimumX + binInterval
         var maximumFrequency: Float = 0
         var binFrequency = [Float](repeating: 0, count: bins)
 
@@ -294,6 +294,22 @@ extension Histogram {
         let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)*Float(0.5) - 10.0
         scaleY = Float(maximumY - minimumY) / (plotDimensions.graphHeight - topScaleMargin)
         scaleX = Float(maximumX - minimumX) / (plotDimensions.graphWidth-Float(2.0*xMargin))
+
+        var inc1: Float = -1
+        var yIncRound: Int = 1
+
+        if(Float(maximumY-minimumY)<=2.0) {
+            let differenceY = Float(maximumY-minimumY)
+            inc1 = 0.5*(1.0/differenceY)
+            // print("\(differenceY)")
+            var c = 0
+            while(abs(inc1)*pow(10.0,Float(c))<1.0) {
+                c+=1
+            }
+            inc1 = inc1/scaleY
+            yIncRound = c+1
+        }
+
         let nD1: Int = max(getNumberOfDigits(Float(maximumY)), getNumberOfDigits(Float(minimumY)))
         var v1: Float
         if (nD1 > 1 && maximumY <= pow(Float(10), Float(nD1 - 1))) {
@@ -304,10 +320,12 @@ extension Histogram {
             v1 = Float(pow(Float(10), Float(0)))
         }
 
-        let nY: Float = v1/scaleY
-        var inc1: Float = nY
-        if(plotDimensions.graphHeight/nY > MAX_DIV){
-            inc1 = (plotDimensions.graphHeight/nY)*inc1/MAX_DIV
+        if(inc1 == -1) {
+            let nY: Float = v1/scaleY
+            inc1 = nY
+            if(plotDimensions.graphHeight/nY > MAX_DIV){
+                inc1 = (plotDimensions.graphHeight/nY)*inc1/MAX_DIV
+            }
         }
 
         var yM: Float = origin.y
@@ -318,9 +336,9 @@ extension Histogram {
             }
             let p: Point = Point(0, yM)
             plotMarkers.yMarkers.append(p)
-            let text_p: Point = Point(-(renderer.getTextWidth(text: "\(round(scaleY*(yM-origin.y)))", textSize: plotMarkers.markerTextSize)+8), yM - 4)
+            let text_p: Point = Point(-(renderer.getTextWidth(text: "\(roundToN(scaleY*(yM-origin.y), yIncRound))", textSize: plotMarkers.markerTextSize)+8), yM - 4)
             plotMarkers.yMarkersTextLocation.append(text_p)
-            plotMarkers.yMarkersText.append("\(round(scaleY*(yM-origin.y)))")
+            plotMarkers.yMarkersText.append("\(roundToN(scaleY*(yM-origin.y), yIncRound))")
             yM = yM + inc1
         }
 
@@ -338,7 +356,7 @@ extension Histogram {
         let nX: Float = v2/scaleX
         var inc2: Float = nX
         if(plotDimensions.graphWidth/nX > MAX_DIV){
-            inc2 = (plotDimensions.graphHeight/nY)*inc1/MAX_DIV
+            inc2 = (plotDimensions.graphHeight/nX)*inc1/MAX_DIV
         }
         let xM: Float = xMargin
         let scaleXInv = 1.0/scaleX

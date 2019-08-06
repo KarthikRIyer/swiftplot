@@ -26,7 +26,7 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
                                              plotBorder.topLeft.y - Float(20))
         }
     }
-    public var plotLineThickness: Float = 3
+    public var plotLineThickness: Float = 1.5
     public var gridLineThickness: Float = 0.5
     public var enablePrimaryAxisGrid = false
     public var enableSecondaryAxisGrid = false
@@ -285,23 +285,62 @@ extension LineGraph{
             minimumXPrimary = min(minimumXPrimary, minimumXSecondary)
         }
 
-        let originPrimary = Point((plotDimensions.graphWidth/Float(maximumXPrimary-minimumXPrimary))*Float(T(-1)*minimumXPrimary),
-                                  (plotDimensions.graphHeight/Float(maximumYPrimary-minimumYPrimary))*Float(U(-1)*minimumYPrimary))
-
-        let rightScaleMargin: Float = (plotDimensions.subWidth - plotDimensions.graphWidth)*Float(0.5) - 10.0;
-        let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)*Float(0.5) - 10.0;
-        primaryAxis.scaleX = Float(maximumXPrimary - minimumXPrimary) / (plotDimensions.graphWidth - rightScaleMargin);
-        primaryAxis.scaleY = Float(maximumYPrimary - minimumYPrimary) / (plotDimensions.graphHeight - topScaleMargin);
+        let rightScaleMargin: Float = (plotDimensions.subWidth - plotDimensions.graphWidth)*Float(0.2) - 10.0;
+        let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)*Float(0.2) - 10.0;
+        var originPrimaryX: Float = (plotDimensions.graphWidth/Float(maximumXPrimary-minimumXPrimary))*Float(T(-1)*minimumXPrimary)
+        var originPrimaryY: Float = (plotDimensions.graphHeight/Float(maximumYPrimary-minimumYPrimary))*Float(U(-1)*minimumYPrimary)
+        if(minimumXPrimary >= T(0)) {
+            originPrimaryX+=rightScaleMargin
+        }
+        if(minimumYPrimary >= U(0)) {
+            originPrimaryY+=topScaleMargin
+        }
+        let originPrimary = Point(originPrimaryX, originPrimaryY)
+        primaryAxis.scaleX = Float(maximumXPrimary - minimumXPrimary) / (plotDimensions.graphWidth - 2*rightScaleMargin);
+        primaryAxis.scaleY = Float(maximumYPrimary - minimumYPrimary) / (plotDimensions.graphHeight - 2*topScaleMargin);
 
         var originSecondary: Point? = nil
         if (secondaryAxis != nil) {
-            originSecondary = Point((plotDimensions.graphWidth/Float(maximumXSecondary-minimumXSecondary))*Float(T(-1)*minimumXSecondary),
-                                    (plotDimensions.graphHeight/Float(maximumYSecondary-minimumYSecondary))*Float(U(-1)*minimumYSecondary))
-            secondaryAxis!.scaleX = Float(maximumXSecondary - minimumXSecondary) / (plotDimensions.graphWidth - rightScaleMargin);
-            secondaryAxis!.scaleY = Float(maximumYSecondary - minimumYSecondary) / (plotDimensions.graphHeight - topScaleMargin);
+            var originSecondaryX: Float = (plotDimensions.graphWidth/Float(maximumXSecondary-minimumXSecondary))*Float(T(-1)*minimumXSecondary)
+            var originSecondaryY: Float = (plotDimensions.graphHeight/Float(maximumYSecondary-minimumYSecondary))*Float(U(-1)*minimumYSecondary)
+            if(minimumXSecondary >= T(0)) {
+                originSecondaryX+=rightScaleMargin
+            }
+            if(minimumYSecondary >= U(0)) {
+                originSecondaryY+=topScaleMargin
+            }
+            originSecondary = Point(originSecondaryX, originSecondaryY)
+            secondaryAxis!.scaleX = Float(maximumXSecondary - minimumXSecondary) / (plotDimensions.graphWidth - 2*rightScaleMargin);
+            secondaryAxis!.scaleY = Float(maximumYSecondary - minimumYSecondary) / (plotDimensions.graphHeight - 2*topScaleMargin);
         }
 
         //calculations for primary axis
+        var inc1Primary: Float = -1
+        var inc2Primary: Float = -1
+        var xIncRound: Int   = 1
+        var yIncRoundPrimary: Int = 1
+        var yIncRoundSecondary: Int = 1
+        // var inc2Primary: Float
+        if(Float(maximumYPrimary-minimumYPrimary)<=2.0) {
+          let differenceY = Float(maximumYPrimary-minimumYPrimary)
+          inc1Primary = 0.5*(1.0/differenceY)
+          var c = 0
+          while(abs(inc1Primary)*pow(10.0,Float(c))<1.0) {
+            c+=1
+          }
+          inc1Primary = inc1Primary/primaryAxis.scaleY
+          yIncRoundPrimary = c+1
+        }
+        if(Float(maximumXPrimary-minimumXPrimary)<=2.0) {
+          let differenceX = Float(maximumXPrimary-minimumXPrimary)
+          inc2Primary = 0.5*(1.0/differenceX)
+          var c = 0
+          while(abs(inc2Primary)*pow(10.0,Float(c))<1.0) {
+            c+=1
+          }
+          inc2Primary = inc1Primary/primaryAxis.scaleX
+          xIncRound = c+1
+        }
         var nD1: Int = max(getNumberOfDigits(Float(maximumYPrimary)), getNumberOfDigits(Float(minimumYPrimary)))
         var v1: Float
         if (nD1 > 1 && maximumYPrimary <= U(pow(Float(10), Float(nD1 - 1)))) {
@@ -311,11 +350,12 @@ extension LineGraph{
         } else {
             v1 = Float(pow(Float(10), Float(0)))
         }
-
         var nY: Float = v1/primaryAxis.scaleY
-        var inc1Primary: Float = nY
-        if(plotDimensions.graphHeight/nY > MAX_DIV){
-            inc1Primary = (plotDimensions.graphHeight/nY)*inc1Primary/MAX_DIV
+        if(inc1Primary == -1) {
+            inc1Primary = nY
+            if(plotDimensions.graphHeight/nY > MAX_DIV){
+                inc1Primary = (plotDimensions.graphHeight/nY)*inc1Primary/MAX_DIV
+            }
         }
 
         let nD2: Int = max(getNumberOfDigits(Float(maximumXPrimary)), getNumberOfDigits(Float(minimumXPrimary)))
@@ -329,11 +369,13 @@ extension LineGraph{
         }
 
         let nX: Float = v2/primaryAxis.scaleX
-        var inc2Primary: Float = nX
-        var noXD: Float = plotDimensions.graphWidth/nX
-        if(noXD > MAX_DIV){
-            inc2Primary = (plotDimensions.graphWidth/nX)*inc2Primary/MAX_DIV
-            noXD = MAX_DIV
+        if(inc2Primary == -1) {
+            inc2Primary = nX
+            var noXD: Float = plotDimensions.graphWidth/nX
+            if(noXD > MAX_DIV){
+                inc2Primary = (plotDimensions.graphWidth/nX)*inc2Primary/MAX_DIV
+                noXD = MAX_DIV
+            }
         }
 
         var xM = originPrimary.x
@@ -344,11 +386,11 @@ extension LineGraph{
             }
             let p = Point(xM, 0)
             primaryAxis.plotMarkers.xMarkers.append(p)
-            let text_p = Point(xM - (renderer.getTextWidth(text: "\(floor(primaryAxis.scaleX*(xM-originPrimary.x)))",
+            let text_p = Point(xM - (renderer.getTextWidth(text: "\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))",
                                                            textSize: primaryAxis.plotMarkers.markerTextSize)/2.0) + 5,
                                -20)
             primaryAxis.plotMarkers.xMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.xMarkersText.append("\(round(primaryAxis.scaleX*(xM-originPrimary.x)))")
+            primaryAxis.plotMarkers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
             xM = xM + inc2Primary
         }
 
@@ -360,11 +402,11 @@ extension LineGraph{
             }
             let p = Point(xM, 0)
             primaryAxis.plotMarkers.xMarkers.append(p)
-            let text_p = Point(xM - (renderer.getTextWidth(text: "\(ceil(primaryAxis.scaleX*(xM-originPrimary.x)))",
+            let text_p = Point(xM - (renderer.getTextWidth(text: "\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))",
                                                            textSize: primaryAxis.plotMarkers.markerTextSize)/2.0) + 5,
                                -20)
             primaryAxis.plotMarkers.xMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.xMarkersText.append("\(round(primaryAxis.scaleX*(xM-originPrimary.x)))")
+            primaryAxis.plotMarkers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
             xM = xM - inc2Primary
         }
 
@@ -376,22 +418,22 @@ extension LineGraph{
             }
             let p = Point(0, yM)
             primaryAxis.plotMarkers.yMarkers.append(p)
-            let text_p = Point(-(renderer.getTextWidth(text: "\(ceil(primaryAxis.scaleY*(yM-originPrimary.y)))",
+            let text_p = Point(-(renderer.getTextWidth(text: "\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))",
                                                        textSize: primaryAxis.plotMarkers.markerTextSize)+8),
                                yM - 4)
             primaryAxis.plotMarkers.yMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.yMarkersText.append("\(round(primaryAxis.scaleY*(yM-originPrimary.y)))")
+            primaryAxis.plotMarkers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
             yM = yM + inc1Primary
         }
         yM = originPrimary.y - inc1Primary
         while yM>0.0 {
             let p = Point(0, yM)
             primaryAxis.plotMarkers.yMarkers.append(p)
-            let text_p = Point(-(renderer.getTextWidth(text: "\(floor(primaryAxis.scaleY*(yM-originPrimary.y)))",
+            let text_p = Point(-(renderer.getTextWidth(text: "\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))",
                                                        textSize: primaryAxis.plotMarkers.markerTextSize)+8),
                                yM - 4)
             primaryAxis.plotMarkers.yMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.yMarkersText.append("\(round(primaryAxis.scaleY*(yM-originPrimary.y)))")
+            primaryAxis.plotMarkers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
             yM = yM - inc1Primary
         }
 
@@ -413,6 +455,18 @@ extension LineGraph{
 
         //calculations for secondary axis
         if (secondaryAxis != nil) {
+            var inc1Secondary: Float = -1
+            if(Float(maximumYSecondary-minimumYSecondary)<=2.0){
+              let differenceY = Float(maximumYSecondary-minimumYSecondary)
+              inc1Secondary = 0.5*(1.0/differenceY)
+              var c = 0
+              while(abs(inc1Secondary)*pow(10.0,Float(c))<1.0){
+                c+=1
+              }
+              inc1Secondary = inc1Secondary/secondaryAxis!.scaleY
+              yIncRoundSecondary = c+1
+            }
+
             nD1 = max(getNumberOfDigits(Float(maximumYSecondary)), getNumberOfDigits(Float(minimumYSecondary)))
             if (nD1 > 1 && maximumYSecondary <= U(pow(Float(10), Float(nD1 - 1)))) {
                 v1 = Float(pow(Float(10), Float(nD1 - 2)))
@@ -423,9 +477,11 @@ extension LineGraph{
             }
 
             nY = v1/secondaryAxis!.scaleY
-            var inc1Secondary: Float = nY
-            if(plotDimensions.graphHeight/nY > MAX_DIV){
-                inc1Secondary = (plotDimensions.graphHeight/nY)*inc1Secondary/MAX_DIV
+            if(inc1Secondary == -1) {
+                inc1Secondary = nY
+                if(plotDimensions.graphHeight/nY > MAX_DIV){
+                    inc1Secondary = (plotDimensions.graphHeight/nY)*inc1Secondary/MAX_DIV
+                }
             }
             yM = originSecondary!.y
 
@@ -436,22 +492,22 @@ extension LineGraph{
                 }
                 let p = Point(0, yM)
                 secondaryAxis!.plotMarkers.yMarkers.append(p)
-                let text_p = Point(plotDimensions.graphWidth + (renderer.getTextWidth(text: "\(ceil(secondaryAxis!.scaleY*(yM-originSecondary!.y)))",
+                let text_p = Point(plotDimensions.graphWidth + (renderer.getTextWidth(text: "\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))",
                                                                                       textSize: secondaryAxis!.plotMarkers.markerTextSize)*Float(0.5) - 8),
                                    yM - 4)
                 secondaryAxis!.plotMarkers.yMarkersTextLocation.append(text_p)
-                secondaryAxis!.plotMarkers.yMarkersText.append("\(round(secondaryAxis!.scaleY*(yM-originSecondary!.y)))")
+                secondaryAxis!.plotMarkers.yMarkersText.append("\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))")
                 yM = yM + inc1Secondary
             }
             yM = originSecondary!.y - inc1Secondary
             while yM>0.0 {
                 let p = Point(0, yM)
                 secondaryAxis!.plotMarkers.yMarkers.append(p)
-                let text_p = Point(plotDimensions.graphWidth + (renderer.getTextWidth(text: "\(floor(secondaryAxis!.scaleY*(yM-originSecondary!.y)))",
+                let text_p = Point(plotDimensions.graphWidth + (renderer.getTextWidth(text: "\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))",
                                                                                       textSize: secondaryAxis!.plotMarkers.markerTextSize)*Float(0.5) - 8),
                                    yM - 4)
                 secondaryAxis!.plotMarkers.yMarkersTextLocation.append(text_p)
-                secondaryAxis!.plotMarkers.yMarkersText.append("\(round(secondaryAxis!.scaleY*(yM-originSecondary!.y)))")
+                secondaryAxis!.plotMarkers.yMarkersText.append("\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))")
                 yM = yM - inc1Secondary
             }
 
