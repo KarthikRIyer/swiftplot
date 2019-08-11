@@ -321,7 +321,7 @@ extension LineGraph{
         var yIncRoundPrimary: Int = 1
         var yIncRoundSecondary: Int = 1
         // var inc2Primary: Float
-        if(Float(maximumYPrimary-minimumYPrimary)<=2.0) {
+        if(Float(maximumYPrimary-minimumYPrimary)<=2.0 && Float(maximumYPrimary-minimumYPrimary)>=1.0) {
           let differenceY = Float(maximumYPrimary-minimumYPrimary)
           inc1Primary = 0.5*(1.0/differenceY)
           var c = 0
@@ -331,9 +331,29 @@ extension LineGraph{
           inc1Primary = inc1Primary/primaryAxis.scaleY
           yIncRoundPrimary = c+1
         }
-        if(Float(maximumXPrimary-minimumXPrimary)<=2.0) {
+        else if(Float(maximumYPrimary-minimumYPrimary)<1.0) {
+          let differenceY = Float(maximumYPrimary-minimumYPrimary)
+          inc1Primary = differenceY/10.0
+          var c = 0
+          while(abs(inc1Primary)*pow(10.0,Float(c))<1.0) {
+            c+=1
+          }
+          inc1Primary = inc1Primary/primaryAxis.scaleY
+          yIncRoundPrimary = c+1
+        }
+        if(Float(maximumXPrimary-minimumXPrimary)<=2.0 && Float(maximumXPrimary-minimumXPrimary)>=1.0) {
           let differenceX = Float(maximumXPrimary-minimumXPrimary)
           inc2Primary = 0.5*(1.0/differenceX)
+          var c = 0
+          while(abs(inc2Primary)*pow(10.0,Float(c))<1.0) {
+            c+=1
+          }
+          inc2Primary = inc1Primary/primaryAxis.scaleX
+          xIncRound = c+1
+        }
+        if(Float(maximumXPrimary-minimumXPrimary)<1.0) {
+          let differenceX = Float(maximumXPrimary-minimumXPrimary)
+          inc2Primary = differenceX/10
           var c = 0
           while(abs(inc2Primary)*pow(10.0,Float(c))<1.0) {
             c+=1

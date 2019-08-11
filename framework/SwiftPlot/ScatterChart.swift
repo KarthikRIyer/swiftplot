@@ -258,7 +258,7 @@ extension ScatterPlot{
         var inc2: Float = -1
         var yIncRound: Int = 1
         var xIncRound: Int = 1
-        if(Float(maximumY-minimumY)<=2.0) {
+        if(Float(maximumY-minimumY)<=2.0 && Float(maximumY-minimumY)>=1.0) {
             let differenceY = Float(maximumY-minimumY)
             inc1 = 0.5*(1.0/differenceY)
             var c = 0
@@ -268,9 +268,29 @@ extension ScatterPlot{
             inc1 = inc1/scaleY
             yIncRound = c+1
         }
-        if(Float(maximumX-minimumX)<=2.0) {
+        if(Float(maximumY-minimumY)<1.0) {
+            let differenceY = Float(maximumY-minimumY)
+            inc1 = differenceY/10.0
+            var c = 0
+            while(abs(inc1)*pow(10.0,Float(c))<1.0) {
+                c+=1
+            }
+            inc1 = inc1/scaleY
+            yIncRound = c+1
+        }
+        if(Float(maximumX-minimumX)<=2.0 && Float(maximumX-minimumX)>=1.0) {
             let differenceX = Float(maximumX-minimumX)
             inc1 = 0.5*(1.0/differenceX)
+            var c = 0
+            while(abs(inc2)*pow(10.0,Float(c))<1.0) {
+                c+=1
+            }
+            inc2 = inc2/scaleX
+            xIncRound = c+1
+        }
+        else if(Float(maximumX-minimumX)<1.0) {
+            let differenceX = Float(maximumX-minimumX)
+            inc1 = differenceX/10.0
             var c = 0
             while(abs(inc2)*pow(10.0,Float(c))<1.0) {
                 c+=1
