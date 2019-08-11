@@ -28,6 +28,7 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
     }
     public var plotLineThickness: Float = 1.5
     public var gridLineThickness: Float = 0.5
+    public var markerTextSize: Float = 12
     public var enablePrimaryAxisGrid = false
     public var enableSecondaryAxisGrid = false
     public var gridColor: Color = .gray
@@ -216,6 +217,7 @@ extension LineGraph{
         primaryAxis.plotMarkers.yMarkersTextLocation = [Point]()
         primaryAxis.plotMarkers.xMarkersText = [String]()
         primaryAxis.plotMarkers.xMarkersText = [String]()
+        primaryAxis.plotMarkers.markerTextSize = markerTextSize
 
         var maximumXPrimary: T = maxX(points: primaryAxis.series[0].values)
         var maximumYPrimary: U = maxY(points: primaryAxis.series[0].values)
@@ -256,6 +258,7 @@ extension LineGraph{
             secondaryAxis!.plotMarkers.yMarkersTextLocation = [Point]()
             secondaryAxis!.plotMarkers.xMarkersText = [String]()
             secondaryAxis!.plotMarkers.xMarkersText = [String]()
+            secondaryAxis!.plotMarkers.markerTextSize = markerTextSize
 
             maximumXSecondary = maxX(points: secondaryAxis!.series[0].values)
             maximumYSecondary = maxY(points: secondaryAxis!.series[0].values)

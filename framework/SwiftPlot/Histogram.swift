@@ -24,6 +24,7 @@ public class Histogram<T:FloatConvertible>: Plot {
     public var strokeWidth: Float = 2
     public var enableGrid = true
     public var gridLineThickness: Float = 0.5
+    public var markerTextSize: Float = 12
     public var gridColor: Color = .gray
 
     var scaleY: Float = 1
@@ -213,6 +214,8 @@ extension Histogram {
     }
 
     func calcMarkerLocAndScalePts(renderer: Renderer){
+
+        plotMarkers.markerTextSize = markerTextSize
 
         var maximumY = Float(histogramSeries.maximumFrequency)
         let minimumY = Float(0)

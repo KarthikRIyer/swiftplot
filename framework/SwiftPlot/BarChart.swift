@@ -35,6 +35,7 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
     public var enableGrid = true
     public var gridColor: Color = .gray
     public var gridLineThickness: Float = 0.5
+    public var markerTextSize: Float = 12
 
     var scaleY: Float = 1
     var scaleX: Float = 1
@@ -198,6 +199,8 @@ extension BarGraph {
     }
 
     func calcMarkerLocAndScalePts(renderer: Renderer){
+
+        plotMarkers.markerTextSize = markerTextSize
 
         var maximumY: U = U(0)
         var minimumY: U = U(0)

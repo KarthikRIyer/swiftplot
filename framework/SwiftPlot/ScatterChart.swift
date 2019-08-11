@@ -30,6 +30,7 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
     }
     public var plotLineThickness: Float = 3
     public var scatterPatternSize: Float = 10
+    public var markerTextSize: Float = 12
     public var enableGrid = false
     public var gridColor: Color = .gray
     public var gridLineThickness: Float = 0.5
@@ -212,6 +213,8 @@ extension ScatterPlot{
     }
 
     func calcMarkerLocAndScalePts(renderer: Renderer){
+
+        plotMarkers.markerTextSize = markerTextSize
 
         plotMarkers.xMarkers = [Point]()
         plotMarkers.yMarkers = [Point]()
