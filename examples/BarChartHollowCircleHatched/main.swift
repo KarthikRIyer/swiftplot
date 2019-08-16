@@ -3,7 +3,7 @@ import AGGRenderer
 import SVGRenderer
 
 var filePath = "examples/Reference/"
-let fileName = "_15_bar_chart_hollow_circle_hatched"
+let fileName = "_16_bar_chart_hollow_circle_hatched"
 
 let x:[String] = ["2008","2009","2010","2011"]
 let y:[Float] = [320,-100,420,500]
@@ -13,7 +13,7 @@ var svg_renderer = SVGRenderer()
 
 var plotTitle = PlotTitle()
 
-var barGraph = BarGraph<String,Float>()
+var barGraph = BarGraph<String,Float>(enableGrid: true)
 barGraph.addSeries(x, y, label: "Plot 1", color: .orange, hatchPattern: .hollowCircle)
 barGraph.plotTitle = PlotTitle("HATCHED BAR CHART")
 barGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")

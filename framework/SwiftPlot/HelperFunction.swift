@@ -29,6 +29,21 @@ public func roundFloor10(_ value: Float) -> Float {
     return floor(value/10)*10
 }
 
+public func roundToN(_ value: Float, _ n: Int) -> Float {
+    let p = pow(10,Float(n))
+    return round(value*p)/p
+}
+
+public func floorToN(_ value: Float, _ n: Int) -> Float {
+    let p = pow(10,Float(n))
+    return floor(value*p)/p
+}
+
+public func ceilToN(_ value: Float, _ n: Int) -> Float {
+    let p = pow(10,Float(n))
+    return ceil(value*p)/p
+}
+
 public func getNumberOfDigits(_ n: Float) -> Int{
     var x: Int = Int(n)
     var count: Int = 0

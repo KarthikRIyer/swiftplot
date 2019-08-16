@@ -5,6 +5,6 @@ public struct PlotMarkers{
     public var yMarkersTextLocation = [Point]()
     public var xMarkersText = [String]()
     public var yMarkersText = [String]()
-    public var markerTextSize : Float = 8
+    public var markerTextSize : Float = 12
     public init() {}
 }

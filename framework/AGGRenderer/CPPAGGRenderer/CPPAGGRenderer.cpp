@@ -13,6 +13,10 @@
 #include "platform/agg_platform_support.h"
 #include "agg_gsv_text.h"
 #include "agg_conv_curve.h"
+#include "agg_scanline_u.h"
+#include "agg_scanline_bin.h"
+#include "agg_conv_contour.h"
+#include "agg_font_freetype.h"
 #include "agg_conv_dash.h"
 #include "agg_span_allocator.h"
 #include "agg_span_pattern_gray.h"
@@ -23,7 +27,6 @@
 #include "lodepng.h"
 //header to save bitmaps
 #include "savebmp.h"
-
 #define AGG_RGB24
 #include "include/pixel_formats.h"
 
@@ -32,6 +35,8 @@ typedef agg::renderer_base<pixfmt> renderer_base;
 typedef agg::renderer_base<pixfmt_pre> renderer_base_pre;
 typedef agg::renderer_scanline_aa_solid<renderer_base> renderer_aa;
 typedef agg::renderer_scanline_bin_solid<renderer_base> renderer_bin;
+typedef agg::font_engine_freetype_int32 font_engine_type;
+typedef agg::font_cache_manager<font_engine_type> font_manager_type;
 typedef agg::rasterizer_scanline_aa<> rasterizer_scanline;
 typedef agg::scanline_p8 scanline;
 typedef agg::rgba Color;
@@ -81,13 +86,31 @@ namespace CPPAGGRenderer{
     renderer_aa ren_aa;
     int pngBufferSize = 0;
 
+    font_engine_type  m_feng;
+    font_manager_type m_fman;
+    agg::glyph_rendering gren = agg::glyph_ren_agg_gray8;
+    //Pipeline to process the vector glyph paths (curves + contour)
+    agg::conv_curve<font_manager_type::path_adaptor_type> m_curves;
+    agg::conv_contour<agg::conv_curve<font_manager_type::path_adaptor_type>> m_contour;
+    int font_weight = 0;
+    int font_height = 0;
+    int font_width = 0;
+    bool font_hinting = false;
+    bool font_kerning = true;
+    string fontPath = "";
+
     unsigned char* buffer = NULL;
 
     agg::int8u*           m_pattern;
     agg::rendering_buffer m_pattern_rbuf;
     renderer_base_pre rb_pre;
 
-    Plot(float width, float height, float subW, float subH){
+    Plot(float width, float height, float subW, float subH, const char* fontPathPtr) :
+    m_feng(),
+    m_fman(m_feng),
+    m_curves(m_fman.path_adaptor()),
+    m_contour(m_curves)
+    {
       frame_width = width;
       frame_height = height;
       sub_width = subW;
@@ -96,6 +119,14 @@ namespace CPPAGGRenderer{
         delete[] buffer;
       }
       buffer = new unsigned char[frame_width*frame_height*3];
+      m_curves.approximation_scale(2.0);
+      m_contour.auto_detect_orientation(false);
+      fontPath = fontPathPtr;
+      if(fontPath.empty()){
+        string file_path = __FILE__;
+        string dir_path = file_path.substr(0, file_path.rfind("/"));
+        fontPath = dir_path.append("/Roboto-Regular.ttf");
+      }
     }
 
     void generate_pattern(float r, float g, float b, float a, int hatch_pattern){
@@ -393,30 +424,63 @@ namespace CPPAGGRenderer{
       pixfmt pixf = pixfmt(rbuf);
       renderer_base rb = renderer_base(pixf);
       ren_aa = renderer_aa(rb);
-      agg::gsv_text t;
-      t.size(size);
-      t.text(s);
-      t.start_point(0,0);
-      agg::trans_affine matrix;
-      matrix *= agg::trans_affine_rotation(agg::deg2rad(angle));
-      matrix *= agg::trans_affine_translation(x, y);
-      if (is_origin_shifted) {
-        matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
+      font_width = font_height = size;
+      font_weight = thickness;
+      m_contour.width(-font_weight*font_height*0.05);
+      if(m_feng.load_font(fontPath.c_str(), 0, gren)){
+      // if(m_feng.load_font(0, gren, roboto, roboto_size)){
+        m_feng.hinting(font_hinting);
+        m_feng.height(font_height);
+        m_feng.width(font_width);
+        m_feng.flip_y(false);
+        if (is_origin_shifted) {
+          x+=(sub_width*0.1f);
+          y+=(sub_height*0.1f);
+        }
+        agg::trans_affine matrix;
+        matrix *= agg::trans_affine_rotation(agg::deg2rad(angle));
+        m_feng.transform(matrix);
+        while(*s){
+          const agg::glyph_cache* glyph = m_fman.glyph(*s);
+          if(glyph){
+            if(font_kerning){
+              double dx = double(x);
+              double dy = double(y);
+              m_fman.add_kerning(&dx, &dy);
+            }
+            m_fman.init_embedded_adaptors(glyph, x, y);
+            ren_aa.color(black);
+            agg::render_scanlines(m_fman.gray8_adaptor(), m_fman.gray8_scanline(), ren_aa);
+            x+=glyph->advance_x;
+            y+=glyph->advance_y;
+          }
+          ++s;
+        }
       }
-      agg::conv_transform<agg::gsv_text, agg::trans_affine> trans(t, matrix);
-      agg::conv_curve<agg::conv_transform<agg::gsv_text, agg::trans_affine>> curve(trans);
-      agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::gsv_text, agg::trans_affine>>> stroke(curve);
-      stroke.width(thickness);
-      m_ras.add_path(stroke);
-      ren_aa.color(black);
-      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
     }
 
     float get_text_width(const char *s, float size){
-      agg::gsv_text t;
-      t.text(s);
-      t.size(size);
-      return t.text_width();
+      font_width = font_height = size;
+      m_contour.width(-font_weight*font_height*0.05);
+      float x = 0;
+      // set rotation of font engine to zero before calculating text width
+      agg::trans_affine matrix;
+      matrix *= agg::trans_affine_rotation(agg::deg2rad(0));
+      m_feng.transform(matrix);
+      if(m_feng.load_font(fontPath.c_str(), 0, gren)){
+        m_feng.hinting(font_hinting);
+        m_feng.height(font_height);
+        m_feng.width(font_width);
+        m_feng.flip_y(false);
+        while(*s){
+          const agg::glyph_cache* glyph = m_fman.glyph(*s);
+          if(glyph){
+            x+=glyph->advance_x;
+          }
+          ++s;
+        }
+      }
+      return x;
     }
 
     void save_image(const char *s){
@@ -443,8 +507,8 @@ namespace CPPAGGRenderer{
 
   };
 
-  const void * initializePlot(float w, float h, float subW, float subH){
-    Plot *plot = new Plot(w, h, subW, subH);
+  const void * initializePlot(float w, float h, float subW, float subH, const char* fontPath){
+    Plot *plot = new Plot(w, h, subW, subH, fontPath);
     memset(plot->buffer, 255, frame_width*frame_height*3);
     return (void *)plot;
   }

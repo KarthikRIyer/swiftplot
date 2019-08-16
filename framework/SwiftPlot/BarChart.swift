@@ -31,19 +31,25 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
         case horizontal
     }
     public var graphOrientation: GraphOrientation = .vertical
-    public var scaleY: Float = 1
-    public var scaleX: Float = 1
-    public var plotMarkers: PlotMarkers = PlotMarkers()
-    public var series = Series<T,U>()
-    public var stackSeries = [Series<T,U>]()
-
-    var barWidth : Int = 0
     public var space: Int = 20
+    public var enableGrid = true
+    public var gridColor: Color = .gray
+    public var gridLineThickness: Float = 0.5
+    public var markerTextSize: Float = 12
 
+    var scaleY: Float = 1
+    var scaleX: Float = 1
+    var plotMarkers: PlotMarkers = PlotMarkers()
+    var series = Series<T,U>()
+    var stackSeries = [Series<T,U>]()
+    var barWidth : Int = 0
     var origin = zeroPoint
 
-    public init(width: Float = 1000, height: Float = 660){
+    public init(width: Float = 1000,
+                height: Float = 660,
+                enableGrid: Bool = false){
         plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
+        self.enableGrid = enableGrid
     }
     public func addSeries(_ s: Series<T,U>){
         series = s
@@ -121,6 +127,7 @@ extension BarGraph {
                                          plotBorder.topLeft.y - Float(20))
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
+        drawGrid(renderer: renderer)
         drawBorder(renderer: renderer)
         drawMarkers(renderer: renderer)
         drawPlots(renderer: renderer)
@@ -145,6 +152,7 @@ extension BarGraph {
                                          plotBorder.topLeft.y - Float(20))
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
+        drawGrid(renderer: renderer)
         drawBorder(renderer: renderer)
         drawMarkers(renderer: renderer)
         drawPlots(renderer: renderer)
@@ -191,6 +199,8 @@ extension BarGraph {
     }
 
     func calcMarkerLocAndScalePts(renderer: Renderer){
+
+        plotMarkers.markerTextSize = markerTextSize
 
         var maximumY: U = U(0)
         var minimumY: U = U(0)
@@ -266,7 +276,7 @@ extension BarGraph {
                 let p = Point(0, yM)
                 plotMarkers.yMarkers.append(p)
                 let text_p = Point(-(renderer.getTextWidth(text: "\(ceil(scaleY*(yM-origin.y)))",
-                                                           textSize: plotMarkers.markerTextSize)+5), yM - 4)
+                                                           textSize: plotMarkers.markerTextSize)+8), yM - 4)
                 plotMarkers.yMarkersTextLocation.append(text_p)
                 plotMarkers.yMarkersText.append("\(round(scaleY*(yM-origin.y)))")
                 yM = yM + inc1
@@ -276,7 +286,7 @@ extension BarGraph {
                 let p = Point(0, yM)
                 plotMarkers.yMarkers.append(p)
                 let text_p = Point(-(renderer.getTextWidth(text: "\(floor(scaleY*(yM-origin.y)))",
-                                                           textSize: plotMarkers.markerTextSize)+5), yM - 4)
+                                                           textSize: plotMarkers.markerTextSize)+8), yM - 4)
                 plotMarkers.yMarkersTextLocation.append(text_p)
                 plotMarkers.yMarkersText.append("\(round(scaleY*(yM-origin.y)))")
                 yM = yM - inc1
@@ -366,7 +376,7 @@ extension BarGraph {
                 plotMarkers.xMarkers.append(p)
                 let text_p = Point(xM - (renderer.getTextWidth(text: "\(floor(scaleX*(xM-origin.x)))",
                                                                textSize: plotMarkers.markerTextSize)*Float(0.5)) + 8,
-                                   -15)
+                                   -20)
                 plotMarkers.xMarkersTextLocation.append(text_p)
                 plotMarkers.xMarkersText.append("\(ceil(scaleX*(xM-origin.x)))")
                 xM = xM + inc1
@@ -377,7 +387,7 @@ extension BarGraph {
                 plotMarkers.xMarkers.append(p)
                 let text_p = Point(xM - (renderer.getTextWidth(text: "\(floor(scaleX*(xM-origin.x)))",
                                                                textSize: plotMarkers.markerTextSize)*Float(0.5)) + 8,
-                                   -15)
+                                   -20)
                 plotMarkers.xMarkersTextLocation.append(text_p)
                 plotMarkers.xMarkersText.append("\(floor(scaleX*(xM-origin.x)))")
                 xM = xM - inc1
@@ -426,9 +436,34 @@ extension BarGraph {
                           strokeColor: Color.black, isOriginShifted: false)
     }
 
+    func drawGrid(renderer: Renderer) {
+        if (enableGrid) {
+            for index in 0..<plotMarkers.xMarkers.count {
+                let p1 = Point(plotMarkers.xMarkers[index].x, 0)
+                let p2 = Point(plotMarkers.xMarkers[index].x, plotDimensions.graphHeight)
+                renderer.drawLine(startPoint: p1,
+                                  endPoint: p2,
+                                  strokeWidth: gridLineThickness,
+                                  strokeColor: gridColor,
+                                  isDashed: false,
+                                  isOriginShifted: true)
+            }
+            for index in 0..<plotMarkers.yMarkers.count {
+                let p1 = Point(0, plotMarkers.yMarkers[index].y)
+                let p2 = Point(plotDimensions.graphWidth, plotMarkers.yMarkers[index].y)
+                renderer.drawLine(startPoint: p1,
+                                  endPoint: p2,
+                                  strokeWidth: gridLineThickness,
+                                  strokeColor: gridColor,
+                                  isDashed: false,
+                                  isOriginShifted: true)
+            }
+        }
+    }
+
     func drawMarkers(renderer: Renderer) {
         for index in 0..<plotMarkers.xMarkers.count {
-            let p1 = Point(plotMarkers.xMarkers[index].x, -3)
+            let p1 = Point(plotMarkers.xMarkers[index].x, -6)
             let p2 = Point(plotMarkers.xMarkers[index].x, 0)
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
@@ -445,7 +480,7 @@ extension BarGraph {
         }
 
         for index in 0..<plotMarkers.yMarkers.count {
-            let p1 = Point(-3, plotMarkers.yMarkers[index].y)
+            let p1 = Point(-6, plotMarkers.yMarkers[index].y)
             let p2 = Point(0, plotMarkers.yMarkers[index].y)
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,

@@ -28,25 +28,35 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
                                              plotBorder.topLeft.y - Float(20))
         }
     }
+    public var plotLineThickness: Float = 3
+    public var scatterPatternSize: Float = 10
+    public var markerTextSize: Float = 12
+    public var enableGrid = false
+    public var gridColor: Color = .gray
+    public var gridLineThickness: Float = 0.5
 
     var scaleX: Float = 1
     var scaleY: Float = 1
     var plotMarkers: PlotMarkers = PlotMarkers()
     var series = [Series<T,U>]()
 
-    public var plotLineThickness: Float = 3
-    public var scatterPatternSize: Float = 10
-
-    public init(points p: [Pair<T,U>], width: Float = 1000, height: Float = 660){
+    public init(points p: [Pair<T,U>],
+                width: Float = 1000,
+                height: Float = 660,
+                enableGrid: Bool = false){
         plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
         plotDimensions.calculateGraphDimensions()
 
         let s = Series<T,U>(values: p,label: "Plot")
         series.append(s)
+        self.enableGrid = enableGrid
     }
 
-    public init(width: Float = 1000, height: Float = 660){
+    public init(width: Float = 1000,
+                height: Float = 660,
+                enableGrid: Bool = false){
         plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
+        self.enableGrid = enableGrid
     }
 
     // functions to add series
@@ -144,6 +154,7 @@ extension ScatterPlot{
                                          plotBorder.topLeft.y - Float(20))
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
+        drawGrid(renderer: renderer)
         drawBorder(renderer: renderer)
         drawMarkers(renderer: renderer)
         drawPlots(renderer: renderer)
@@ -168,6 +179,7 @@ extension ScatterPlot{
                                          plotBorder.topLeft.y - Float(20))
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
+        drawGrid(renderer: renderer)
         drawBorder(renderer: renderer)
         drawMarkers(renderer: renderer)
         drawPlots(renderer: renderer)
@@ -201,6 +213,8 @@ extension ScatterPlot{
     }
 
     func calcMarkerLocAndScalePts(renderer: Renderer){
+
+        plotMarkers.markerTextSize = markerTextSize
 
         plotMarkers.xMarkers = [Point]()
         plotMarkers.yMarkers = [Point]()
@@ -243,6 +257,51 @@ extension ScatterPlot{
         scaleX = Float(maximumX - minimumX) / (plotDimensions.graphWidth - rightScaleMargin);
         scaleY = Float(maximumY - minimumY) / (plotDimensions.graphHeight - topScaleMargin);
 
+        var inc1: Float = -1
+        var inc2: Float = -1
+        var yIncRound: Int = 1
+        var xIncRound: Int = 1
+        if(Float(maximumY-minimumY)<=2.0 && Float(maximumY-minimumY)>=1.0) {
+            let differenceY = Float(maximumY-minimumY)
+            inc1 = 0.5*(1.0/differenceY)
+            var c = 0
+            while(abs(inc1)*pow(10.0,Float(c))<1.0) {
+                c+=1
+            }
+            inc1 = inc1/scaleY
+            yIncRound = c+1
+        }
+        if(Float(maximumY-minimumY)<1.0) {
+            let differenceY = Float(maximumY-minimumY)
+            inc1 = differenceY/10.0
+            var c = 0
+            while(abs(inc1)*pow(10.0,Float(c))<1.0) {
+                c+=1
+            }
+            inc1 = inc1/scaleY
+            yIncRound = c+1
+        }
+        if(Float(maximumX-minimumX)<=2.0 && Float(maximumX-minimumX)>=1.0) {
+            let differenceX = Float(maximumX-minimumX)
+            inc1 = 0.5*(1.0/differenceX)
+            var c = 0
+            while(abs(inc2)*pow(10.0,Float(c))<1.0) {
+                c+=1
+            }
+            inc2 = inc2/scaleX
+            xIncRound = c+1
+        }
+        else if(Float(maximumX-minimumX)<1.0) {
+            let differenceX = Float(maximumX-minimumX)
+            inc1 = differenceX/10.0
+            var c = 0
+            while(abs(inc2)*pow(10.0,Float(c))<1.0) {
+                c+=1
+            }
+            inc2 = inc2/scaleX
+            xIncRound = c+1
+        }
+
         let nD1: Int = max(getNumberOfDigits(Float(maximumY)), getNumberOfDigits(Float(minimumY)))
         var v1: Float
         if (nD1 > 1 && maximumY <= U(pow(Float(10), Float(nD1 - 1)))) {
@@ -253,10 +312,12 @@ extension ScatterPlot{
             v1 = Float(pow(Float(10), Float(0)))
         }
 
-        let nY: Float = v1/scaleY
-        var inc1: Float = nY
-        if(plotDimensions.graphHeight/nY > MAX_DIV){
-            inc1 = (plotDimensions.graphHeight/nY)*inc1/MAX_DIV
+        if(inc1 == -1) {
+            let nY: Float = v1/scaleY
+            inc1 = nY
+            if(plotDimensions.graphHeight/nY > MAX_DIV){
+                inc1 = (plotDimensions.graphHeight/nY)*inc1/MAX_DIV
+            }
         }
 
         let nD2: Int = max(getNumberOfDigits(Float(maximumX)), getNumberOfDigits(Float(minimumX)))
@@ -269,12 +330,14 @@ extension ScatterPlot{
             v2 = Float(pow(Float(10), Float(0)))
         }
 
-        let nX: Float = v2/scaleX
-        var inc2: Float = nX
-        var noXD: Float = plotDimensions.graphWidth/nX
-        if(noXD > MAX_DIV){
-            inc2 = (plotDimensions.graphWidth/nX)*inc2/MAX_DIV
-            noXD = MAX_DIV
+        if(inc2 == -1) {
+            let nX: Float = v2/scaleX
+            inc2 = nX
+            var noXD: Float = plotDimensions.graphWidth/nX
+            if(noXD > MAX_DIV){
+                inc2 = (plotDimensions.graphWidth/nX)*inc2/MAX_DIV
+                noXD = MAX_DIV
+            }
         }
 
         var xM = Float(origin.x)
@@ -287,9 +350,9 @@ extension ScatterPlot{
             plotMarkers.xMarkers.append(p)
             let text_p = Point(xM - (renderer.getTextWidth(text: "\(floor(scaleX*(xM-origin.x)))",
                                                            textSize: plotMarkers.markerTextSize)/2.0) + 8,
-                               -15)
+                               -20)
             plotMarkers.xMarkersTextLocation.append(text_p)
-            plotMarkers.xMarkersText.append("\(round(scaleX*(xM-origin.x)))")
+            plotMarkers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
             xM = xM + inc2
         }
 
@@ -303,9 +366,9 @@ extension ScatterPlot{
             plotMarkers.xMarkers.append(p)
             let text_p = Point(xM - (renderer.getTextWidth(text: "\(ceil(scaleX*(xM-origin.x)))",
                                                            textSize: plotMarkers.markerTextSize)/2.0) + 8,
-                               -15)
+                               -20)
             plotMarkers.xMarkersTextLocation.append(text_p)
-            plotMarkers.xMarkersText.append("\(round(scaleX*(xM-origin.x)))")
+            plotMarkers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
             xM = xM - inc2
         }
 
@@ -318,10 +381,10 @@ extension ScatterPlot{
             let p = Point(0, yM)
             plotMarkers.yMarkers.append(p)
             let text_p = Point(-(renderer.getTextWidth(text: "\(ceil(scaleY*(yM-origin.y)))",
-                                                       textSize: plotMarkers.markerTextSize)+5),
+                                                       textSize: plotMarkers.markerTextSize)+8),
                                yM - 4)
             plotMarkers.yMarkersTextLocation.append(text_p)
-            plotMarkers.yMarkersText.append("\(ceil(scaleY*(yM-origin.y)))")
+            plotMarkers.yMarkersText.append("\(ceilToN(scaleY*(yM-origin.y), yIncRound))")
             yM = yM + inc1
         }
         yM = origin.y - inc1
@@ -329,10 +392,10 @@ extension ScatterPlot{
             let p = Point(0, yM)
             plotMarkers.yMarkers.append(p)
             let text_p = Point(-(renderer.getTextWidth(text: "\(floor(scaleY*(yM-origin.y)))",
-                                                       textSize: plotMarkers.markerTextSize)+5),
+                                                       textSize: plotMarkers.markerTextSize)+8),
                                yM - 4)
             plotMarkers.yMarkersTextLocation.append(text_p)
-            plotMarkers.yMarkersText.append("\(floor(scaleY*(yM-origin.y)))")
+            plotMarkers.yMarkersText.append("\(floorToN(scaleY*(yM-origin.y), xIncRound))")
             yM = yM - inc1
         }
 
@@ -364,9 +427,34 @@ extension ScatterPlot{
                           isOriginShifted: false)
     }
 
+    func drawGrid(renderer: Renderer) {
+        if (enableGrid) {
+            for index in 0..<plotMarkers.xMarkers.count {
+                let p1 = Point(plotMarkers.xMarkers[index].x, 0)
+                let p2 = Point(plotMarkers.xMarkers[index].x, plotDimensions.graphHeight)
+                renderer.drawLine(startPoint: p1,
+                                  endPoint: p2,
+                                  strokeWidth: gridLineThickness,
+                                  strokeColor: gridColor,
+                                  isDashed: false,
+                                  isOriginShifted: true)
+            }
+            for index in 0..<plotMarkers.yMarkers.count {
+                let p1 = Point(0, plotMarkers.yMarkers[index].y)
+                let p2 = Point(plotDimensions.graphWidth, plotMarkers.yMarkers[index].y)
+                renderer.drawLine(startPoint: p1,
+                                  endPoint: p2,
+                                  strokeWidth: gridLineThickness,
+                                  strokeColor: gridColor,
+                                  isDashed: false,
+                                  isOriginShifted: true)
+            }
+        }
+    }
+
     func drawMarkers(renderer: Renderer) {
         for index in 0..<plotMarkers.xMarkers.count {
-            let p1 = Point(plotMarkers.xMarkers[index].x, -3)
+            let p1 = Point(plotMarkers.xMarkers[index].x, -6)
             let p2 = Point(plotMarkers.xMarkers[index].x, 0)
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
@@ -383,7 +471,7 @@ extension ScatterPlot{
         }
 
         for index in 0..<plotMarkers.yMarkers.count {
-            let p1 = Point(-3, plotMarkers.yMarkers[index].y)
+            let p1 = Point(-6, plotMarkers.yMarkers[index].y)
             let p2 = Point(0, plotMarkers.yMarkers[index].y)
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,

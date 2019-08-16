@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "CFreeType",
+        "repositoryURL": "https://github.com/KarthikRIyer/CFreeType.git",
+        "state": {
+          "branch": "master",
+          "revision": "61b9f6354af1476b8d025cfcbc1d90fad7d393a6",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

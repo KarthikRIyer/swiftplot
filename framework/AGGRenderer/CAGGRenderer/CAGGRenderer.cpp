@@ -2,8 +2,8 @@
 #include "CPPAGGRenderer.h"
 #include <iostream>
 
-const void * initializePlot(float w, float h, float subW, float subH){
-  return CPPAGGRenderer::initializePlot(w, h, subW, subH);
+const void * initializePlot(float w, float h, float subW, float subH, const char* fontPath){
+  return CPPAGGRenderer::initializePlot(w, h, subW, subH, fontPath);
 }
 
 void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_origin_shifted, const void *object){
