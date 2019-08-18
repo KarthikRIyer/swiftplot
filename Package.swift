@@ -23,7 +23,7 @@ let package = Package(
             name: "AGG",
             dependencies: [],
     	      path: "framework/AGG"),
-  .target(
+    .target(
             name: "lodepng",
             dependencies: [],
             path: "framework/lodepng"),
@@ -35,111 +35,115 @@ let package = Package(
             name: "CAGGRenderer",
             dependencies: ["CPPAGGRenderer"],
     	       path: "framework/AGGRenderer/CAGGRenderer"),
-  .target(
+    .target(
+            name: "QuartzRenderer",
+            dependencies: [],
+            path: "framework/QuartzRenderer"),
+    .target(
             name: "SwiftPlot",
             dependencies: [],
   	        path: "framework/SwiftPlot"),
-  .target(
+    .target(
             name: "AGGRenderer",
             dependencies: ["CAGGRenderer","SwiftPlot"],
             path: "framework/AGGRenderer/AGGRenderer"),
-  .target(
+    .target(
             name: "SVGRenderer",
             dependencies: ["SwiftPlot"],
             path: "framework/SVGRenderer"),
 	.target(
             name: "LineChartSingleSeriesExample",
-            dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
+            dependencies: ["AGGRenderer", "SVGRenderer","QuartzRenderer", "SwiftPlot"],
   	        path: "examples/LineChartSingleSeries"),
-  .target(
+    .target(
             name: "LineChartMultipleSeriesExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
         	  path: "examples/LineChartMultipleSeries"),
-  .target(
+    .target(
             name: "LineChartSubPlotHorizontallyStackedExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/LineChartSubPlotHorizontallyStacked"),
-  .target(
+    .target(
             name: "LineChartSubPlotVerticallyStackedExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/LineChartSubPlotVerticallyStacked"),
-  .target(
+    .target(
             name: "LineChartSubPlotGridStackedExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/LineChartSubPlotGridStacked"),
-  .target(
+    .target(
             name: "LineChartFunctionPlotExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/LineChartFunctionPlot"),
-  .target(
+    .target(
             name: "LineChartSecondaryAxisExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/LineChartSecondaryAxis"),
-  .target(
+    .target(
             name: "BarChartExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/BarChart"),
-  .target(
+    .target(
             name: "BarChartForwardSlashHatchedExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/BarChartForwardSlashHatched"),
-  .target(
+    .target(
             name: "BarChartBackwardSlashHatchedExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/BarChartBackwardSlashHatched"),
-  .target(
+    .target(
             name: "BarChartVerticalHatchedExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/BarChartVerticalHatched"),
-  .target(
+    .target(
             name: "BarChartHorizontalHatchedExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/BarChartHorizontalHatched"),
-  .target(
+    .target(
             name: "BarChartGridHatchedExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/BarChartGridHatched"),
-  .target(
+    .target(
             name: "BarChartCrossHatchedExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/BarChartCrossHatched"),
-  .target(
+    .target(
             name: "BarChartHollowCircleHatchedExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/BarChartHollowCircleHatched"),
-  .target(
+    .target(
             name: "BarChartFilledCircleHatchedExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/BarChartFilledCircleHatched"),
-  .target(
+    .target(
             name: "BarChartOrientationHorizontalExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/BarChartOrientationHorizontal"),
-  .target(
+    .target(
             name: "BarChartVerticalStackedExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/BarChartVerticalStacked"),
-  .target(
+    .target(
             name: "BarChartHorizontalStackedExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/BarChartHorizontalStacked"),
-  .target(
+    .target(
             name: "ScatterPlotExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/ScatterPlot"),
-  .target(
+    .target(
             name: "HistogramExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/Histogram"),
-  .target(
+    .target(
             name: "HistogramStepExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/HistogramStep"),
-  .target(
+    .target(
             name: "HistogramStackedExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/HistogramStacked"),
-  .target(
+    .target(
             name: "HistogramStackedStepExample",
             dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"],
             path: "examples/HistogramStackedStep"),
