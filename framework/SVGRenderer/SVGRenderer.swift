@@ -199,8 +199,8 @@ public class SVGRenderer: Renderer{
                                 radius r: Float,
                                 fillColor: Color,
                                 isOriginShifted: Bool) {
-        var x = c.x;
-        var y = c.y;
+        var x = c.x + xOffset;
+        var y = c.y - yOffset;
         if (isOriginShifted) {
             x = x + 0.1*plotDimensions.subWidth
             y = y + 0.1*plotDimensions.subHeight
@@ -215,12 +215,12 @@ public class SVGRenderer: Renderer{
                                   point3: Point,
                                   fillColor: Color,
                                   isOriginShifted: Bool) {
-        var x1 = point1.x
-        var x2 = point2.x
-        var x3 = point3.x
-        var y1 = point1.y
-        var y2 = point2.y
-        var y3 = point3.y
+        var x1 = point1.x + xOffset
+        var x2 = point2.x + xOffset
+        var x3 = point3.x + xOffset
+        var y1 = point1.y - yOffset
+        var y2 = point2.y - yOffset
+        var y3 = point3.y - yOffset
         if (isOriginShifted) {
             x1 = x1 + 0.1*plotDimensions.subWidth
             x2 = x2 + 0.1*plotDimensions.subWidth
@@ -242,16 +242,16 @@ public class SVGRenderer: Renderer{
         var pts = [Point]()
         if (isOriginShifted) {
             for index in 0..<points.count {
-                let x = points[index].x + 0.1*plotDimensions.subWidth
-                var y = points[index].y + 0.1*plotDimensions.subHeight
+                let x = points[index].x + 0.1*plotDimensions.subWidth + xOffset
+                var y = points[index].y + 0.1*plotDimensions.subHeight - yOffset
                 y = plotDimensions.subHeight - y
                 pts.append(Point(x, y))
             }
         }
         else {
           for index in 0..<points.count {
-              let x = points[index].x
-              var y = points[index].y
+              let x = points[index].x + xOffset
+              var y = points[index].y - yOffset
               y = plotDimensions.subHeight - y
               pts.append(Point(x, y))
           }

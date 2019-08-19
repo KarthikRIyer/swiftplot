@@ -7,6 +7,7 @@ swift run LineChartSubPlotGridStackedExample
 swift run LineChartFunctionPlotExample
 swift run LineChartSecondaryAxisExample
 swift run BarChartExample
+swift run BarChartOrientationHorizontalExample
 swift run BarChartForwardSlashHatchedExample
 swift run BarChartBackwardSlashHatchedExample
 swift run BarChartVerticalHatchedExample

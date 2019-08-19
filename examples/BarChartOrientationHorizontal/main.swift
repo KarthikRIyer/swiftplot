@@ -4,7 +4,7 @@ import SVGRenderer
 import QuartzRenderer
 
 var filePath = "examples/Reference/"
-let fileName = "_09_bar_chart"
+let fileName = "_09_bar_chart_orientation_horizontal"
 
 let x:[String] = ["2008","2009","2010","2011"]
 let y:[Float] = [320,-100,420,500]

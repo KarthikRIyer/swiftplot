@@ -16,15 +16,15 @@ public class QuartzRenderer: Renderer {
             if (initialized) {
                 context = CGContext(data: nil,
                                     width: Int(plotDimensions.frameWidth),
-                                    height: Int(plotDimensions.frameHeight),
+                                    height: Int(newValue.frameHeight),
                                     bitsPerComponent: 8,
                                     bytesPerRow: 0,
                                     space: colorSpace,
                                     bitmapInfo: bitmapInfo)!
                 let rect = CGRect(x: 0,
                                   y: 0,
-                                  width: Int(plotDimensions.frameWidth),
-                                  height: Int(plotDimensions.frameHeight))
+                                  width: Int(newValue.frameWidth),
+                                  height: Int(newValue.frameHeight))
                 context.setFillColor(CGColor(red: 1,
                                              green: 1,
                                              blue: 1,
@@ -104,7 +104,7 @@ public class QuartzRenderer: Renderer {
                                          blue: CGFloat(fillColor.b),
                                          alpha: CGFloat(fillColor.a)))
             context.fill(rect)
-//            drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
+            drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
         }
         else {
             let w: Float = abs(p2.x - p1.x)
@@ -120,7 +120,257 @@ public class QuartzRenderer: Renderer {
                                          blue: CGFloat(fillColor.b),
                                          alpha: CGFloat(fillColor.a)))
             context.fill(rect)
-//            drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
+            drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
+        }
+    }
+    
+    func drawHatchingRect(x: Float,
+                          y: Float,
+                          width w: Float,
+                          height h: Float,
+                          hatchPattern: BarGraphSeriesOptions.Hatching) {
+        switch (hatchPattern.rawValue) {
+        case 0:
+            break
+        case 1:
+            let drawPattern: CGPatternDrawPatternCallback = { _, context in
+                let line = CGMutablePath()
+                line.move(to: CGPoint(x: Double(0), y: Double(0)))
+                line.addLine(to: CGPoint(x: Double(10), y: Double(10)))
+                context.setStrokeColor(NSColor.black.cgColor)
+                context.setLineWidth(CGFloat(1))
+                context.addPath(line)
+                context.strokePath()
+            }
+            var callbacks = CGPatternCallbacks(
+                version: 0, drawPattern: drawPattern, releaseInfo: nil)
+            let pattern = CGPattern(
+                info: nil,
+                bounds: CGRect(x: 0, y: 0, width: 10, height: 10),
+                matrix: .identity,
+                xStep: 10,
+                yStep: 10,
+                tiling: .constantSpacing,
+                isColored: true,
+                callbacks: &callbacks)
+            let patternSpace = CGColorSpace(patternBaseSpace: nil)!
+            context.setFillColorSpace(patternSpace)
+            var alpha : CGFloat = 1.0
+            context.setFillPattern(pattern!, colorComponents: &alpha)
+            context.fill(CGRect(x: Double(x + xOffset),
+                                y: Double(y + yOffset),
+                                width: Double(w),
+                                height: Double(h)))
+        case 2:
+            let drawPattern: CGPatternDrawPatternCallback = { _, context in
+                let line = CGMutablePath()
+                line.move(to: CGPoint(x: Double(10), y: Double(0)))
+                line.addLine(to: CGPoint(x: Double(0), y: Double(10)))
+                context.setStrokeColor(NSColor.black.cgColor)
+                context.setLineWidth(CGFloat(1))
+                context.addPath(line)
+                context.strokePath()
+            }
+            var callbacks = CGPatternCallbacks(
+                version: 0, drawPattern: drawPattern, releaseInfo: nil)
+            let pattern = CGPattern(
+                info: nil,
+                bounds: CGRect(x: 0, y: 0, width: 10, height: 10),
+                matrix: .identity,
+                xStep: 10,
+                yStep: 10,
+                tiling: .constantSpacing,
+                isColored: true,
+                callbacks: &callbacks)
+            let patternSpace = CGColorSpace(patternBaseSpace: nil)!
+            context.setFillColorSpace(patternSpace)
+            var alpha : CGFloat = 1.0
+            context.setFillPattern(pattern!, colorComponents: &alpha)
+            context.fill(CGRect(x: Double(x + xOffset),
+                                y: Double(y + yOffset),
+                                width: Double(w),
+                                height: Double(h)))
+
+        case 3:
+            let drawPattern: CGPatternDrawPatternCallback = { _, context in
+                context.addArc(
+                    center: CGPoint(x: 0, y: 0), radius: 4.0,
+                    startAngle: 0, endAngle: CGFloat(2.0 * .pi),
+                    clockwise: false)
+                context.setStrokeColor(NSColor.black.cgColor)
+                context.setLineWidth(1)
+                context.strokePath()
+            }
+            var callbacks = CGPatternCallbacks(
+                version: 0, drawPattern: drawPattern, releaseInfo: nil)
+            let pattern = CGPattern(
+                info: nil,
+                bounds: CGRect(x: 0, y: 0, width: 20, height: 20),
+                matrix: .identity,
+                xStep: 12,
+                yStep: 12,
+                tiling: .constantSpacing,
+                isColored: true,
+                callbacks: &callbacks)
+            let patternSpace = CGColorSpace(patternBaseSpace: nil)!
+            context.setFillColorSpace(patternSpace)
+            var alpha : CGFloat = 1.0
+            context.setFillPattern(pattern!, colorComponents: &alpha)
+            context.fill(CGRect(x: Double(x + xOffset),
+                                y: Double(y + yOffset),
+                                width: Double(w),
+                                height: Double(h)))
+        case 4:
+            let drawPattern: CGPatternDrawPatternCallback = { _, context in
+                context.addArc(
+                    center: CGPoint(x: 0, y: 0), radius: 4.0,
+                    startAngle: 0, endAngle: CGFloat(2.0 * .pi),
+                    clockwise: false)
+                context.setFillColor(NSColor.black.cgColor)
+                context.fillPath()
+            }
+            var callbacks = CGPatternCallbacks(
+                version: 0, drawPattern: drawPattern, releaseInfo: nil)
+            let pattern = CGPattern(
+                info: nil,
+                bounds: CGRect(x: 0, y: 0, width: 20, height: 20),
+                matrix: .identity,
+                xStep: 12,
+                yStep: 12,
+                tiling: .constantSpacing,
+                isColored: true,
+                callbacks: &callbacks)
+            let patternSpace = CGColorSpace(patternBaseSpace: nil)!
+            context.setFillColorSpace(patternSpace)
+            var alpha : CGFloat = 1.0
+            context.setFillPattern(pattern!, colorComponents: &alpha)
+            context.fill(CGRect(x: Double(x + xOffset),
+                                y: Double(y + yOffset),
+                                width: Double(w),
+                                height: Double(h)))
+
+        case 5:
+            let drawPattern: CGPatternDrawPatternCallback = { _, context in
+                let line = CGMutablePath()
+                line.move(to: CGPoint(x: Double(5), y: Double(0)))
+                line.addLine(to: CGPoint(x: Double(5), y: Double(10)))
+                context.setStrokeColor(NSColor.black.cgColor)
+                context.setLineWidth(CGFloat(1))
+                context.addPath(line)
+                context.strokePath()
+            }
+            var callbacks = CGPatternCallbacks(
+                version: 0, drawPattern: drawPattern, releaseInfo: nil)
+            let pattern = CGPattern(
+                info: nil,
+                bounds: CGRect(x: 0, y: 0, width: 10, height: 10),
+                matrix: .identity,
+                xStep: 10,
+                yStep: 10,
+                tiling: .constantSpacing,
+                isColored: true,
+                callbacks: &callbacks)
+            let patternSpace = CGColorSpace(patternBaseSpace: nil)!
+            context.setFillColorSpace(patternSpace)
+            var alpha : CGFloat = 1.0
+            context.setFillPattern(pattern!, colorComponents: &alpha)
+            context.fill(CGRect(x: Double(x + xOffset),
+                                y: Double(y + yOffset),
+                                width: Double(w),
+                                height: Double(h)))
+        case 6:
+            let drawPattern: CGPatternDrawPatternCallback = { _, context in
+                let line = CGMutablePath()
+                line.move(to: CGPoint(x: Double(0), y: Double(5)))
+                line.addLine(to: CGPoint(x: Double(10), y: Double(5)))
+                context.setStrokeColor(NSColor.black.cgColor)
+                context.setLineWidth(CGFloat(1))
+                context.addPath(line)
+                context.strokePath()
+            }
+            var callbacks = CGPatternCallbacks(
+                version: 0, drawPattern: drawPattern, releaseInfo: nil)
+            let pattern = CGPattern(
+                info: nil,
+                bounds: CGRect(x: 0, y: 0, width: 10, height: 10),
+                matrix: .identity,
+                xStep: 10,
+                yStep: 10,
+                tiling: .constantSpacing,
+                isColored: true,
+                callbacks: &callbacks)
+            let patternSpace = CGColorSpace(patternBaseSpace: nil)!
+            context.setFillColorSpace(patternSpace)
+            var alpha : CGFloat = 1.0
+            context.setFillPattern(pattern!, colorComponents: &alpha)
+            context.fill(CGRect(x: Double(x + xOffset),
+                                y: Double(y + yOffset),
+                                width: Double(w),
+                                height: Double(h)))
+        case 7:
+            let drawPattern: CGPatternDrawPatternCallback = { _, context in
+                let line = CGMutablePath()
+                line.move(to: CGPoint(x: Double(0), y: Double(5)))
+                line.addLine(to: CGPoint(x: Double(10), y: Double(5)))
+                line.move(to: CGPoint(x: Double(5), y: Double(0)))
+                line.addLine(to: CGPoint(x: Double(5), y: Double(10)))
+                context.setStrokeColor(NSColor.black.cgColor)
+                context.setLineWidth(CGFloat(1))
+                context.addPath(line)
+                context.strokePath()
+            }
+            var callbacks = CGPatternCallbacks(
+                version: 0, drawPattern: drawPattern, releaseInfo: nil)
+            let pattern = CGPattern(
+                info: nil,
+                bounds: CGRect(x: 0, y: 0, width: 10, height: 10),
+                matrix: .identity,
+                xStep: 10,
+                yStep: 10,
+                tiling: .constantSpacing,
+                isColored: true,
+                callbacks: &callbacks)
+            let patternSpace = CGColorSpace(patternBaseSpace: nil)!
+            context.setFillColorSpace(patternSpace)
+            var alpha : CGFloat = 1.0
+            context.setFillPattern(pattern!, colorComponents: &alpha)
+            context.fill(CGRect(x: Double(x + xOffset),
+                                y: Double(y + yOffset),
+                                width: Double(w),
+                                height: Double(h)))
+        case 8:
+            let drawPattern: CGPatternDrawPatternCallback = { _, context in
+                let line = CGMutablePath()
+                line.move(to: CGPoint(x: Double(0), y: Double(0)))
+                line.addLine(to: CGPoint(x: Double(10), y: Double(10)))
+                line.move(to: CGPoint(x: Double(0), y: Double(10)))
+                line.addLine(to: CGPoint(x: Double(10), y: Double(00)))
+                context.setStrokeColor(NSColor.black.cgColor)
+                context.setLineWidth(CGFloat(1))
+                context.addPath(line)
+                context.strokePath()
+            }
+            var callbacks = CGPatternCallbacks(
+                version: 0, drawPattern: drawPattern, releaseInfo: nil)
+            let pattern = CGPattern(
+                info: nil,
+                bounds: CGRect(x: 0, y: 0, width: 10, height: 10),
+                matrix: .identity,
+                xStep: 10,
+                yStep: 10,
+                tiling: .constantSpacing,
+                isColored: true,
+                callbacks: &callbacks)
+            let patternSpace = CGColorSpace(patternBaseSpace: nil)!
+            context.setFillColorSpace(patternSpace)
+            var alpha : CGFloat = 1.0
+            context.setFillPattern(pattern!, colorComponents: &alpha)
+            context.fill(CGRect(x: Double(x + xOffset),
+                                y: Double(y + yOffset),
+                                width: Double(w),
+                                height: Double(h)))
+        default:
+            break
         }
     }
 
@@ -162,8 +412,8 @@ public class QuartzRenderer: Renderer {
                                 radius r: Float,
                                 fillColor: Color,
                                 isOriginShifted: Bool) {
-        var x = c.x;
-        var y = c.y;
+        var x = c.x + xOffset;
+        var y = c.y + yOffset;
         if (isOriginShifted) {
             x = x + 0.1*plotDimensions.subWidth
             y = y + 0.1*plotDimensions.subHeight
@@ -186,12 +436,12 @@ public class QuartzRenderer: Renderer {
                                   point3: Point,
                                   fillColor: Color,
                                   isOriginShifted: Bool) {
-        var x1 = point1.x
-        var x2 = point2.x
-        var x3 = point3.x
-        var y1 = point1.y
-        var y2 = point2.y
-        var y3 = point3.y
+        var x1 = point1.x + xOffset
+        var x2 = point2.x + xOffset
+        var x3 = point3.x + xOffset
+        var y1 = point1.y + yOffset
+        var y2 = point2.y + yOffset
+        var y3 = point3.y + yOffset
         if (isOriginShifted) {
             x1 = x1 + 0.1*plotDimensions.subWidth
             x2 = x2 + 0.1*plotDimensions.subWidth
@@ -217,9 +467,19 @@ public class QuartzRenderer: Renderer {
                                  fillColor: Color,
                                  isOriginShifted: Bool) {
         let polygonPath = CGMutablePath()
-        polygonPath.move(to: CGPoint(x: Double(points[0].x), y: Double(points[0].y)))
+        if (isOriginShifted) {
+            polygonPath.move(to: CGPoint(x: Double(points[0].x + 0.1*plotDimensions.subWidth + xOffset), y: Double(points[0].y + 0.1*plotDimensions.subHeight + yOffset)))
+        }
+        else {
+            polygonPath.move(to: CGPoint(x: Double(points[0].x + xOffset), y: Double(points[0].y + yOffset)))
+        }
         for index in 1..<points.count {
-            polygonPath.addLine(to: CGPoint(x: Double(points[index].x), y: Double(points[index].y)))
+            if (isOriginShifted) {
+                polygonPath.addLine(to: CGPoint(x: Double(points[index].x + 0.1*plotDimensions.subWidth + xOffset), y: Double(points[index].y + 0.1*plotDimensions.subHeight + yOffset)))
+            }
+            else {
+                polygonPath.addLine(to: CGPoint(x: Double(points[index].x + xOffset), y: Double(points[index].y + yOffset)))
+            }
         }
         polygonPath.closeSubpath()
         context.setFillColor(CGColor(red: CGFloat(fillColor.r),
@@ -238,26 +498,27 @@ public class QuartzRenderer: Renderer {
                          isOriginShifted: Bool) {
         let line = CGMutablePath()
         if (isOriginShifted) {
-            line.move(to: CGPoint(x: Double(p1.x + 0.1*plotDimensions.subWidth),
-                                  y: Double(p1.y + 0.1*plotDimensions.subHeight)))
-            line.addLine(to: CGPoint(x: Double(p2.x + 0.1*plotDimensions.subWidth),
-                                     y: Double(p2.y + 0.1*plotDimensions.subHeight)))
+            line.move(to: CGPoint(x: Double(p1.x + 0.1*plotDimensions.subWidth + xOffset),
+                                  y: Double(p1.y + 0.1*plotDimensions.subHeight + yOffset)))
+            line.addLine(to: CGPoint(x: Double(p2.x + 0.1*plotDimensions.subWidth + xOffset),
+                                     y: Double(p2.y + 0.1*plotDimensions.subHeight + yOffset)))
         }
         else {
-            line.move(to: CGPoint(x: Double(p1.x), y: Double(p1.y)))
-            line.addLine(to: CGPoint(x: Double(p2.x), y: Double(p2.y)))
+            line.move(to: CGPoint(x: Double(p1.x + xOffset), y: Double(p1.y + yOffset)))
+            line.addLine(to: CGPoint(x: Double(p2.x + xOffset), y: Double(p2.y + yOffset)))
         }
         context.setStrokeColor(CGColor(red: CGFloat(strokeColor.r),
                                        green: CGFloat(strokeColor.g),
                                        blue: CGFloat(strokeColor.b),
                                        alpha: CGFloat(strokeColor.a)))
+        context.setLineWidth(CGFloat(thickness))
         context.addPath(line)
         if(isDashed) {
             let dashes: [ CGFloat ] = [ CGFloat(thickness + 1), CGFloat(thickness + 1) ]
             context.setLineDash(phase: 1, lengths: dashes)
         }
         context.strokePath()
-        context.setLineDash(phase: 1, lengths: [0, 0])
+        context.setLineDash(phase: 1, lengths: [])
     }
 
     public func drawPlotLines(points p: [Point],
@@ -280,8 +541,8 @@ public class QuartzRenderer: Renderer {
                          strokeWidth thickness: Float,
                          angle: Float,
                          isOriginShifted: Bool){
-        var x1 = p.x
-        var y1 = p.y
+        var x1 = p.x + xOffset
+        var y1 = p.y + yOffset
         if (isOriginShifted) {
             x1 = x1 + 0.1*plotDimensions.subWidth
             y1 = y1 + 0.1*plotDimensions.subHeight
