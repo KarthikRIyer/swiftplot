@@ -1,6 +1,7 @@
 import SwiftPlot
 import AGGRenderer
 import SVGRenderer
+import QuartzRenderer
 
 var filePath = "examples/Reference/"
 let fileName = "_05_sub_plot_grid_stacked_line_chart"
@@ -8,8 +9,9 @@ let fileName = "_05_sub_plot_grid_stacked_line_chart"
 let x:[Float] = [0,100,263,489]
 let y:[Float] = [0,320,310,170]
 
-var agg_renderer: AGGRenderer = AGGRenderer()
-var svg_renderer: SVGRenderer = SVGRenderer()
+var agg_renderer = AGGRenderer()
+var svg_renderer = SVGRenderer()
+var quartz_renderer = QuartzRenderer()
 
 var plots = [Plot]()
 
@@ -43,5 +45,12 @@ plots.append(lineGraph3)
 plots.append(lineGraph4)
 
 var subPlot = SubPlot(numberOfPlots: 4, numberOfRows: 2, numberOfColumns: 2, stackPattern: .gridStacked)
-subPlot.draw(plots: plots, renderer: svg_renderer, fileName: filePath+"svg/"+fileName)
-subPlot.draw(plots: plots, renderer: agg_renderer, fileName: filePath+"agg/"+fileName)
+subPlot.draw(plots: plots,
+             renderer: svg_renderer,
+             fileName: filePath+"svg/"+fileName)
+subPlot.draw(plots: plots,
+             renderer: agg_renderer,
+             fileName: filePath+"agg/"+fileName)
+subPlot.draw(plots: plots,
+             renderer: quartz_renderer,
+             fileName: filePath+"quartz/"+fileName)
