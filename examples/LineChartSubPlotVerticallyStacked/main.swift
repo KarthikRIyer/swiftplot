@@ -1,6 +1,7 @@
 import SwiftPlot
 import AGGRenderer
 import SVGRenderer
+import QuartzRenderer
 
 var filePath = "examples/Reference/"
 let fileName = "_04_sub_plot_vertically_stacked_line_chart"
@@ -10,6 +11,7 @@ let y:[Float] = [10,120,500,800]
 
 var agg_renderer = AGGRenderer()
 var svg_renderer = SVGRenderer()
+var quartz_renderer = QuartzRenderer()
 
 var plots = [Plot]()
 
@@ -29,5 +31,12 @@ plots.append(lineGraph1)
 plots.append(lineGraph2)
 
 var subPlot = SubPlot(numberOfPlots: 2, stackPattern: .verticallyStacked)
-subPlot.draw(plots: plots, renderer: svg_renderer, fileName: filePath+"svg/"+fileName)
-subPlot.draw(plots: plots, renderer: agg_renderer, fileName: filePath+"agg/"+fileName)
+subPlot.draw(plots: plots,
+             renderer: svg_renderer,
+             fileName: filePath+"svg/"+fileName)
+subPlot.draw(plots: plots,
+             renderer: agg_renderer,
+             fileName: filePath+"agg/"+fileName)
+subPlot.draw(plots: plots,
+             renderer: quartz_renderer,
+             fileName: filePath+"quartz/"+fileName)

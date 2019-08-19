@@ -19,6 +19,9 @@ lineGraph.plotTitle = PlotTitle("SINGLE SERIES")
 lineGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
 lineGraph.plotLineThickness = 3.0
 
-lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
-lineGraph.drawGraphAndOutput(fileName: filePath+"svg/"+fileName, renderer: svg_renderer)
-lineGraph.drawGraphAndOutput(fileName: filePath+"quartz/"+fileName, renderer: quartz_renderer)
+lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName,
+                             renderer: agg_renderer)
+lineGraph.drawGraphAndOutput(fileName: filePath+"svg/"+fileName,
+                             renderer: svg_renderer)
+lineGraph.drawGraphAndOutput(fileName: filePath+"quartz/"+fileName,
+                             renderer: quartz_renderer)

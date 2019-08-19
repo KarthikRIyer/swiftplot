@@ -8,7 +8,7 @@ public class QuartzRenderer: Renderer {
     var context: CGContext
     var fontPath = ""
     var initialized = false
-    
+
     public var xOffset: Float = 0
     public var yOffset: Float = 0
     public var plotDimensions: PlotDimensions {
@@ -33,7 +33,7 @@ public class QuartzRenderer: Renderer {
             }
         }
     }
-    
+
     public init(width w: Float = 1000, height h: Float = 660, fontPath: String = ""){
         initialized = false
         plotDimensions = PlotDimensions(frameWidth: w, frameHeight: h)
@@ -55,7 +55,7 @@ public class QuartzRenderer: Renderer {
         context.fill(rect)
         initialized = true
     }
-    
+
     public func drawRect(topLeftPoint p1: Point,
                          topRightPoint p2: Point,
                          bottomRightPoint p3: Point,
@@ -82,7 +82,7 @@ public class QuartzRenderer: Renderer {
         context.setLineWidth(CGFloat(thickness))
         context.stroke(rect)
     }
-    
+
     public func drawSolidRect(topLeftPoint p1: Point,
                               topRightPoint p2: Point,
                               bottomRightPoint p3: Point,
@@ -123,7 +123,7 @@ public class QuartzRenderer: Renderer {
 //            drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
         }
     }
-    
+
     public func drawSolidRectWithBorder(topLeftPoint p1: Point,
                                         topRightPoint p2: Point,
                                         bottomRightPoint p3: Point,
@@ -140,7 +140,7 @@ public class QuartzRenderer: Renderer {
             y = y + (0.1*plotDimensions.subHeight)
             x = x + (0.1*plotDimensions.subWidth)
         }
-        
+
         let rect = CGRect(x: Double(x),
                           y: Double(y),
                           width: Double(w),
@@ -157,7 +157,7 @@ public class QuartzRenderer: Renderer {
         context.setLineWidth(CGFloat(thickness))
         context.stroke(rect)
     }
-    
+
     public func drawSolidCircle(center c: Point,
                                 radius r: Float,
                                 fillColor: Color,
@@ -168,7 +168,7 @@ public class QuartzRenderer: Renderer {
             x = x + 0.1*plotDimensions.subWidth
             y = y + 0.1*plotDimensions.subHeight
         }
-        
+
         let rectBound = CGRect(x: Double(x-r),
                                y: Double(y-r),
                                width: Double(2.0*r),
@@ -180,7 +180,7 @@ public class QuartzRenderer: Renderer {
         context.addEllipse(in: rectBound)
         context.drawPath(using: .fill)
     }
-    
+
     public func drawSolidTriangle(point1: Point,
                                   point2: Point,
                                   point3: Point,
@@ -212,7 +212,7 @@ public class QuartzRenderer: Renderer {
         context.addPath(trianglePath)
         context.fillPath()
     }
-    
+
     public func drawSolidPolygon(points: [Point],
                                  fillColor: Color,
                                  isOriginShifted: Bool) {
@@ -229,7 +229,7 @@ public class QuartzRenderer: Renderer {
         context.addPath(polygonPath)
         context.fillPath()
     }
-    
+
     public func drawLine(startPoint p1: Point,
                          endPoint p2: Point,
                          strokeWidth thickness: Float,
@@ -253,13 +253,13 @@ public class QuartzRenderer: Renderer {
                                        alpha: CGFloat(strokeColor.a)))
         context.addPath(line)
         if(isDashed) {
-            let dashes: [ CGFloat ] = [ 16.0, 32.0 ]
+            let dashes: [ CGFloat ] = [ CGFloat(thickness + 1), CGFloat(thickness + 1) ]
             context.setLineDash(phase: 1, lengths: dashes)
         }
         context.strokePath()
         context.setLineDash(phase: 1, lengths: [0, 0])
     }
-    
+
     public func drawPlotLines(points p: [Point],
                               strokeWidth thickness: Float,
                               strokeColor: Color,
@@ -273,7 +273,7 @@ public class QuartzRenderer: Renderer {
                      isOriginShifted: true)
         }
     }
-    
+
     public func drawText(text s: String,
                          location p: Point,
                          textSize size: Float,
@@ -299,7 +299,7 @@ public class QuartzRenderer: Renderer {
         CTLineDraw(line, context)
 //        context.textMatrix = CGAffineTransform(rotationAngle: 0)
     }
-    
+
     public func getTextWidth(text: String,
                              textSize s: Float) -> Float {
         let font = NSFont.systemFont(ofSize: CGFloat(s))
@@ -308,7 +308,7 @@ public class QuartzRenderer: Renderer {
         let size = string.size()
         return Float(size.width)
     }
-    
+
     public func drawOutput(fileName name: String) {
         if !name.isEmpty {
             let fileName = name + ".png"
