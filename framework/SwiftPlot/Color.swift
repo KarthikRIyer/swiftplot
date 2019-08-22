@@ -1,4 +1,9 @@
-public struct Color{
+#if os(macOS)
+import AppKit
+#elseif os(iOS)
+import UIKit
+#endif
+public struct Color {
     public var r: Float
     public var g: Float
     public var b: Float
@@ -28,3 +33,14 @@ public struct Color{
     public static let gray: Color = Color(0.5, 0.5, 0.5, 1.0)
     public static let darkGray: Color = Color(0.66, 0.66, 0.66, 1.0)
 }
+
+#if os(macOS) || os(iOS)
+public extension Color {
+    public var cgColor : CGColor {
+        return CGColor(red: CGFloat(r),
+                       green: CGFloat(g),
+                       blue: CGFloat(b),
+                       alpha: CGFloat(a))
+    }
+}
+#endif
