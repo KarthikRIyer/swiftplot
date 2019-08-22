@@ -45,7 +45,7 @@ run_examples.sh
 ```
 Jupyter Notebook examples are under the `Notebooks` directory.
 
-The resultant images are stored in the `examples/Reference` directory. The images rendered by each of the backends are stored their respective directories: [agg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/agg) and [svg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/svg)
+The resultant images are stored in the `examples/Reference` directory. The images rendered by each of the backends are stored their respective directories: [agg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/agg), [svg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/svg) and [quartz](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/svg)
 
 
 ## License
@@ -60,7 +60,22 @@ dependencies: [
     ],
 ```
 
+In case you get an error saying that a file <b>ft2build.h</b> is not found, you need to install the freetype development package.
+
+<b>Linux</b></br>
+```console
+sudo apt-get install libfreetype6-dev
+```
+
+<b>macOS</b></br>
+```console
+brew install freetype
+```
+
+If the above method doesn't work you can also build and install freetype on your own. You can find the source code and build instructions [here](https://www.freetype.org/download.html).
+
 ## How to include the library in your Jupyter Notebook
+<b>Currently this is broken for the latest release. It will be fixed in the future.</b></br>
 Add this line to the first cell:
 ```swift
 %install '.package(url: "https://github.com/KarthikRIyer/swiftplot", from: "0.0.1")' SwiftPlot
@@ -71,7 +86,7 @@ In order to display the generated plot in the notebook, add this line:
 ```
 
 ## Examples
-Here are some examples to provide you with a headstart to using this library. Here we will be looking at plots using only the AGGRenderer, but the procedure will remain the same for SVGRenderer too.
+Here are some examples to provide you with a headstart to using this library. Here we will be looking at plots using only the AGGRenderer, but the procedure will remain the same for SVGRenderer and QuartzRenderer too. QuartzRenderer is available only on macOS and iOS.
 To use the library in your package, include it as a dependency to your target, in the Package.swift file.
 
 #### Simple Line Graph
@@ -80,16 +95,16 @@ To use the library in your package, include it as a dependency to your target, i
 import SwiftPlot
 import AGGRenderer
 
-let x:[Float] = [0,100,263,489]
-let y:[Float] = [0,320,310,170]
+let x:[Float] = [10,100,263,489]
+let y:[Float] = [10,120,500,800]
 
 var agg_renderer: AGGRenderer = AGGRenderer()
-var plotTitle: PlotTitle = PlotTitle()
-var lineGraph: LineGraph = LineGraph()
+var lineGraph = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
 lineGraph.addSeries(x, y, label: "Plot 1", color: .lightBlue)
-plotTitle.title = "SINGLE SERIES"
-lineGraph.plotTitle = plotTitle
-lineGraph.drawGraphAndOutput(fileName: "lineChartSingleSeries", renderer: agg_renderer)
+lineGraph.plotTitle = PlotTitle("SINGLE SERIES")
+lineGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
+lineGraph.plotLineThickness = 3.0
+lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
 ```
 <img src="examples/Reference/agg/_01_single_series_line_chart.png" width="500">
 
@@ -106,13 +121,13 @@ let x2:[Float] = [0,50,113,250]
 let y2:[Float] = [0,20,100,170]
 
 var agg_renderer: AGGRenderer = AGGRenderer()
-var plotTitle: PlotTitle = PlotTitle()
-var lineGraph: LineGraph = LineGraph()
+var lineGraph = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
 lineGraph.addSeries(x1, y1, label: "Plot 1", color: .lightBlue)
 lineGraph.addSeries(x2, y2, label: "Plot 2", color: .orange)
-plotTitle.title = "MULTIPLE SERIES"
-lineGraph.plotTitle = plotTitle
-lineGraph.drawGraphAndOutput(fileName: "lineChartMultipleSeries", renderer: agg_renderer)
+lineGraph.plotTitle = PlotTitle("MULTIPLE SERIES")
+lineGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
+lineGraph.plotLineThickness = 3.0
+lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
 ```
 
 <img src="examples/Reference/agg/_02_multiple_series_line_chart.png" width="500">
@@ -123,22 +138,23 @@ lineGraph.drawGraphAndOutput(fileName: "lineChartMultipleSeries", renderer: agg_
 import SwiftPlot
 import AGGRenderer
 
-let x:[Float] = [0,100,263,489]
-let y:[Float] = [0,320,310,170]
+let x:[Float] = [10,100,263,489]
+let y:[Float] = [10,120,500,800]
 
 var agg_renderer: AGGRenderer = AGGRenderer()
-var plotTitle: PlotTitle = PlotTitle()
 var plots = [Plot]()
 
-var lineGraph1: LineGraph = LineGraph()
+var lineGraph1 = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
 lineGraph1.addSeries(x, y, label: "Plot 1", color: .lightBlue)
-plotTitle.title = "PLOT 1"
-lineGraph1.plotTitle = plotTitle
+lineGraph1.plotTitle = PlotTitle("PLOT 1")
+lineGraph1.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
+lineGraph1.plotLineThickness = 3.0
 
-var lineGraph2: LineGraph = LineGraph()
+var lineGraph2 = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
 lineGraph2.addSeries(x, y, label: "Plot 2", color: .orange)
-plotTitle.title = "PLOT 2"
-lineGraph2.plotTitle = plotTitle
+lineGraph2.plotTitle = PlotTitle("PLOT 2")
+lineGraph2.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
+lineGraph2.plotLineThickness = 3.0
 
 plots.append(lineGraph1)
 plots.append(lineGraph2)
@@ -161,11 +177,10 @@ func function(_ x: Float)->Float {
 }
 
 var agg_renderer: AGGRenderer = AGGRenderer()
-var plotTitle: PlotTitle = PlotTitle()
-var lineGraph: LineGraph = LineGraph()
+var lineGraph = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
 lineGraph.addFunction(function, minX: -5.0, maxX: 5.0, numberOfSamples: 400, label: "Function", color: .orange)
-plotTitle.title = "FUNCTION"
-lineGraph.plotTitle = plotTitle
+lineGraph.plotTitle = PlotTitle("FUNCTION")
+lineGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
 lineGraph.drawGraphAndOutput(fileName: "functionPlotLineGraph", renderer: agg_renderer)
 ```
 
@@ -177,18 +192,17 @@ lineGraph.drawGraphAndOutput(fileName: "functionPlotLineGraph", renderer: agg_re
 import SwiftPlot
 import AGGRenderer
 
-let x:[Float] = [0,100,263,489]
-let y:[Float] = [0,320,310,170]
-let x1:[Float] = [0,200,361,672]
-let y1:[Float] = [0,250,628,241]
+let x:[Float] = [10,100,263,489]
+let y:[Float] = [10,120,500,800]
+let x1:[Float] = [100,200,361,672]
+let y1:[Float] = [150,250,628,800]
 
-var agg_renderer: AGGRenderer = AGGRenderer()
-var plotTitle: PlotTitle = PlotTitle()
-var lineGraph: LineGraph = LineGraph()
+var lineGraph = LineGraph<Float,Float>()
 lineGraph.addSeries(x1, y1, label: "Plot 1", color: .lightBlue, axisType: .primaryAxis)
 lineGraph.addSeries(x, y, label: "Plot 2", color: .orange, axisType: .secondaryAxis)
-plotTitle.title = "SECONDARY AXIS"
-lineGraph.plotTitle = plotTitle
+lineGraph.plotTitle = PlotTitle("SECONDARY AXIS")
+lineGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
+lineGraph.plotLineThickness = 3.0
 lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
 ```
 The series plotted on the secondary axis are drawn dashed.
@@ -206,7 +220,7 @@ display(base64EncodedPNG: agg_renderer.base64Png())
 
 ## How does this work
 
-All the plotting code, utility functions, and necessary types are included in the SwiftPlot module. Each Renderer is implemented as a separate module. Each Renderer must have SwiftPlot as its dependency and must conform to the Renderer protocol defined in Renderer.swift in the SwiftPlot module.
+All the plotting code, utility functions, and necessary types are included in the SwiftPlot module. Each Renderer is implemented as a separate module. Each Renderer must have SwiftPlot as its dependency and must conform to the Renderer protocol defined in Renderer.swift in the SwiftPlot module. Each plot type is a generic that accepts data conforming to a protocol, FloatConvertible. At the moment FloatConvertible supports both Float and Double.
 The Renderer protocol defines all the necessary functions that a Renderer needs to implement. 
 Each Plot must conform to the Plot protocol. At the moment this protocol defines the necessary variablse and functions that each Plot must implement in order to support SubPlots.
 </br></br>
@@ -218,19 +232,48 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 
 ## Documentation
 
-### LineGraph
+### LineGraph<T: FloatConvertible, U: FloatConvertible>
 
 |Function                                                                            |Description                                 |
 |------------------------------------------------------------------------------------|--------------------------------------------|
-|init(points: [Point], width: Float = 1000, height: Float = 660)                     |Initialize a LineGraph with a set of points |
-|init(width: Float = 1000, height: Float = 660)                                      |Initialize a LineGraph                      |
+|init(points: [Point], width: Float = 1000, height: Float = 660, enablePrimaryAxisGrid: Bool = false,
+                                                                 enableSecondaryAxisGrid: Bool = false)                     |Initialize a LineGraph with a set of points |
+|init(width: Float = 1000, height: Float = 660, enablePrimaryAxisGrid: Bool = false,
+                                                enableSecondaryAxisGrid: Bool = false)                                      |Initialize a LineGraph                      |
 |addSeries(_ s: Series, axisType: Axis.Location = Axis.Location.primaryAxis)         |Add a series to the plot                    |
-|addSeries(points p: [Point], label: String, color: Color = Color.lightBlue, axisType: Axis.Location = Axis.Location.primaryAxis)         |Add a series to the plot with a set of points, a label and a color for the series |
-|addSeries(_ x: [Float], _ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Axis.Location = Axis.Location.primaryAxis)|Add a series to the plot with a set of x and y coordinates, a label and a color for the series|
-|addSeries(_ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Axis.Location = Axis.Location.primaryAxis)|Add a series to the plot with only the y-coordinates. The x-coordinates are automatically enumerated [1, 2, 3, ...]|
+|addSeries(points p: [Point], label: String, color: Color = Color.lightBlue, axisType: Axis<T,U>.Location = Axis<T,U>.Location.primaryAxis)         |Add a series to the plot with a set of points, a label and a color for the series |
+|addSeries(_ x: [Float], _ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Axis<T,U>.Location = Axis<T,U>.Location.primaryAxis)|Add a series to the plot with a set of x and y coordinates, a label and a color for the series|
+|addSeries(_ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Axis<T,U>.Location = Axis<T,U>.Location.primaryAxis)|Add a series to the plot with only the y-coordinates. The x-coordinates are automatically enumerated [1, 2, 3, ...]|
 |addFunction(_ function: (Float)->Float, minX: Float, maxX: Float, numberOfSamples: Int = 400, label: String, color: Color = Color.lightBlue, axisType: Axis.Location = Axis.Location.primaryAxis)|Add a function to plot along with the range of x-coordinates over which to plot, number of samples of the function to take for plotting, a label, and color for the plot|
 |drawGraphAndOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer)|Generate the plot and save the resultant image|
+|drawGraph(renderer: Renderer)|Generate the plot in memory|
 |drawGraphOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer)|Save the generated plot to disk|
+
+### BarChart<T: LosslessStringConvertible, U: FloatConvertible>
+
+|Function                                                                            |Description                                 |
+|------------------------------------------------------------------------------------|--------------------------------------------|
+|init(width: Float = 1000, height: Float = 660, enableGrid: Bool = true)                                      |Initialize a BarChart                      |
+|addSeries(_ s: Series<T,U>)         |Add a series to the plot .                               |
+|addStackSeries(_ s: Series<T,U>)         |Add a stacked series to the plot                    |
+|addStackSeries(_ x: [U],   
+                label: String,
+                color: Color = .lightBlue,
+                hatchPattern: BarGraphSeriesOptions.Hatching = .none)         |Add a stacked series to the plot|
+|addSeries(values: [Pair<T,U>],
+           label: String,
+           color: Color = Color.lightBlue,
+           hatchPattern: BarGraphSeriesOptions.Hatching = .none,
+           graphOrientation: BarGraph.GraphOrientation = .vertical)         |Add a series to the plot using a Pair array|
+|addSeries(_ x: [T],
+           _ y: [U],
+           label: String,
+           color: Color = Color.lightBlue,
+           hatchPattern: BarGraphSeriesOptions.Hatching = .none,
+           graphOrientation: BarGraph.GraphOrientation = .vertical)         |Add a series to the plot using a Pair array|                          
+|drawGraphAndOutput(fileName name: String = "swift_plot_bar_graph", renderer: Renderer)|Generate the plot and save the resultant image|
+|drawGraph(renderer: Renderer)|Generate the plot in memory|
+|drawGraphOutput(fileName name: String = "swift_plot_bar_graph", renderer: Renderer)|Save the generated plot to disk|
 
 ### SubPlot
 
@@ -251,16 +294,25 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |----------------------------------------------------------|---------------------------------------------------------------|
 |init(frameWidth : Float = 1000, frameHeight : Float = 660)|Create a PlotDimensions variable with a frame width and height |
 
-### Point
+### Pair<T,U>
 
-|Property            |
-|--------------------|
-|x: Float = "X-Axis  |
-|y: Float = "Y-Axis" |
+|Property |
+|---------|
+|x: T     |
+|y: U     |
 
 |Function                    |Description                              |
 |----------------------------|-----------------------------------------|
-|init(_ x: Float, _ y: Float)|Create a Point with an x and y coordinate|
+|init(_ x: T, _ y: T)        |Create a Pair using x and y              |
+
+
+|typealias                   |
+|----------------------------|
+|Point = Pair<Float, Float>  |
+
+|Property                          |
+|----------------------------------|
+|zeroPoint = Point(0.0, 0.0)       |
 
 ### PlotLabel
 
@@ -268,14 +320,17 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |----------------------------------|
 |xLabel: String = "X-Axis"         |
 |yLabel: String = "Y-Axis"         |
-|labelSize: Float = 10             |
+|labelSize: Float = 15             |
+|xLabelLocation = zeroPoint        |
+|yLabelLocation = zeroPoint        |
 
 ### PlotTitle
 
-|Property                |
-|------------------------|
-|title : String = "TITLE"|
-|titleSize : Float = 15  |
+|Property                 |
+|-------------------------|
+|title : String = "TITLE" |
+|titleSize : Float = 15   |
+|titleLocation = zeroPoint|
 
 ### Color
 
@@ -283,15 +338,22 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |----------------------------------------------------|--------------------------------------------------------------------------|
 |init(_ r: Float, _ g: Float, _ b: Float, _ a: Float)|Create a Color with r, g, b and a values. Each of them being between 0.0 and 1.0|
 
+|Property(only on macOS and iOS)                    |
+|---------------------------------------------------|
+|cgColor: CGColor (return the corresponding CGColor)|
+
+
 ### PlotLabel
 
 |Property                          |
 |----------------------------------|
 |xLabel: String = "X-Axis"         |
 |yLabel: String = "Y-Axis"         |
-|labelSize: Float = 10             |
+|labelSize: Float = 15             |
+|xLabelLocation = zeroPoint        |
+|yLabelLocation = zeroPoint        |
 
-### Axis
+### Axis<T,U>
 
 |enum Location (to be passed into addSeries function in LineGraph)|
 |-----------------------------------------------------------------|
@@ -299,9 +361,11 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |secondaryAxis                                                    |
 
 ## Limitations
-- Currently we cannot change the plot dimensions in case the AGGRenderer is used. The plot can be generated with the default dimensions i.e. 1000x660. This issue will be fixed in the future.
+- FloatConvertible supports only Float and Double. We plan to extend this to Int in the future.
+- The latest release doesn't work with Jupyter. This is because we use FreeType to draw text and the system isn't able to find the FreeType install when building in Jupyter.
 
 ## Credits
 1. Maxim Shemanarev : The AGG library is directly used to render plots.
 2. [Lode Vandevenne](https://github.com/lvandeve) : The lodepng library is directly used to encode PNG images.
-3. [Brad Larson](https://github.com/BradLarson) and [Marc Rasi](https://github.com/marcrasi) for their invaluable guidance
+3. [The FreeType Project](https://www.freetype.org) : AGG uses FreeType to draw text.
+4. [Brad Larson](https://github.com/BradLarson) and [Marc Rasi](https://github.com/marcrasi) for their invaluable guidance
