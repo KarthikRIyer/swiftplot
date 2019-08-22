@@ -1,5 +1,9 @@
 import Foundation
+#if os(macOS)
 import AppKit
+#elseif os(iOS)
+import UIKit
+#endif
 import SwiftPlot
 
 public class QuartzRenderer: Renderer {
@@ -137,7 +141,7 @@ public class QuartzRenderer: Renderer {
                 let line = CGMutablePath()
                 line.move(to: CGPoint(x: Double(0), y: Double(0)))
                 line.addLine(to: CGPoint(x: Double(10), y: Double(10)))
-                context.setStrokeColor(NSColor.black.cgColor)
+                context.setStrokeColor(Color.black.cgColor)
                 context.setLineWidth(CGFloat(1))
                 context.addPath(line)
                 context.strokePath()
@@ -166,7 +170,7 @@ public class QuartzRenderer: Renderer {
                 let line = CGMutablePath()
                 line.move(to: CGPoint(x: Double(10), y: Double(0)))
                 line.addLine(to: CGPoint(x: Double(0), y: Double(10)))
-                context.setStrokeColor(NSColor.black.cgColor)
+                context.setStrokeColor(Color.black.cgColor)
                 context.setLineWidth(CGFloat(1))
                 context.addPath(line)
                 context.strokePath()
@@ -197,7 +201,7 @@ public class QuartzRenderer: Renderer {
                     center: CGPoint(x: 0, y: 0), radius: 4.0,
                     startAngle: 0, endAngle: CGFloat(2.0 * .pi),
                     clockwise: false)
-                context.setStrokeColor(NSColor.black.cgColor)
+                context.setStrokeColor(Color.black.cgColor)
                 context.setLineWidth(1)
                 context.strokePath()
             }
@@ -226,7 +230,7 @@ public class QuartzRenderer: Renderer {
                     center: CGPoint(x: 0, y: 0), radius: 4.0,
                     startAngle: 0, endAngle: CGFloat(2.0 * .pi),
                     clockwise: false)
-                context.setFillColor(NSColor.black.cgColor)
+                context.setFillColor(Color.black.cgColor)
                 context.fillPath()
             }
             var callbacks = CGPatternCallbacks(
@@ -254,7 +258,7 @@ public class QuartzRenderer: Renderer {
                 let line = CGMutablePath()
                 line.move(to: CGPoint(x: Double(5), y: Double(0)))
                 line.addLine(to: CGPoint(x: Double(5), y: Double(10)))
-                context.setStrokeColor(NSColor.black.cgColor)
+                context.setStrokeColor(Color.black.cgColor)
                 context.setLineWidth(CGFloat(1))
                 context.addPath(line)
                 context.strokePath()
@@ -283,7 +287,7 @@ public class QuartzRenderer: Renderer {
                 let line = CGMutablePath()
                 line.move(to: CGPoint(x: Double(0), y: Double(5)))
                 line.addLine(to: CGPoint(x: Double(10), y: Double(5)))
-                context.setStrokeColor(NSColor.black.cgColor)
+                context.setStrokeColor(Color.black.cgColor)
                 context.setLineWidth(CGFloat(1))
                 context.addPath(line)
                 context.strokePath()
@@ -314,7 +318,7 @@ public class QuartzRenderer: Renderer {
                 line.addLine(to: CGPoint(x: Double(10), y: Double(5)))
                 line.move(to: CGPoint(x: Double(5), y: Double(0)))
                 line.addLine(to: CGPoint(x: Double(5), y: Double(10)))
-                context.setStrokeColor(NSColor.black.cgColor)
+                context.setStrokeColor(Color.black.cgColor)
                 context.setLineWidth(CGFloat(1))
                 context.addPath(line)
                 context.strokePath()
@@ -345,7 +349,7 @@ public class QuartzRenderer: Renderer {
                 line.addLine(to: CGPoint(x: Double(10), y: Double(10)))
                 line.move(to: CGPoint(x: Double(0), y: Double(10)))
                 line.addLine(to: CGPoint(x: Double(10), y: Double(00)))
-                context.setStrokeColor(NSColor.black.cgColor)
+                context.setStrokeColor(Color.black.cgColor)
                 context.setLineWidth(CGFloat(1))
                 context.addPath(line)
                 context.strokePath()
@@ -547,10 +551,9 @@ public class QuartzRenderer: Renderer {
             x1 = x1 + 0.1*plotDimensions.subWidth
             y1 = y1 + 0.1*plotDimensions.subHeight
         }
+        #if os(macOS)
         let font = NSFont.systemFont(ofSize: CGFloat(size))
-//        let transform = CGAffineTransform(rotationAngle: CGFloat(angle))
-//        context.textMatrix = transform
-        let attr:CFDictionary = [NSAttributedString.Key.font:font,NSAttributedString.Key.foregroundColor:NSColor.black] as CFDictionary
+        let attr = [NSAttributedString.Key.font:font,NSAttributedString.Key.foregroundColor:NSColor.black] as CFDictionary
         let cfstring:CFString = s as NSString
         let text = CFAttributedStringCreate(nil, cfstring, attr)
         let line = CTLineCreateWithAttributedString(text!)
@@ -558,13 +561,28 @@ public class QuartzRenderer: Renderer {
         context.setTextDrawingMode(.fill)
         context.textPosition = CGPoint(x: Double(x1), y: Double(y1))
         CTLineDraw(line, context)
-//        context.textMatrix = CGAffineTransform(rotationAngle: 0)
+        #elseif os(iOS)
+        let font = UIFont.systemFont(ofSize: CGFloat(size))
+        let attr = [NSAttributedString.Key.font:font,NSAttributedString.Key.foregroundColor:UIColor.black] as CFDictionary
+        let cfstring:CFString = s as NSString
+        let text = CFAttributedStringCreate(nil, cfstring, attr)
+        let line = CTLineCreateWithAttributedString(text!)
+        context.setLineWidth(1)
+        context.setTextDrawingMode(.fill)
+        context.textPosition = CGPoint(x: Double(x1), y: Double(y1))
+        CTLineDraw(line, context)
+        #endif
     }
 
     public func getTextWidth(text: String,
                              textSize s: Float) -> Float {
+        #if os(macOS)
         let font = NSFont.systemFont(ofSize: CGFloat(s))
         context.setFont(CTFontCopyGraphicsFont(font, nil))
+        #elseif os(iOS)
+        let font = UIFont.systemFont(ofSize: CGFloat(s))
+        context.setFont(CTFontCopyGraphicsFont(font, nil))
+        #endif
         let string = NSAttributedString(string: "\(text)", attributes: [NSAttributedString.Key.font: font])
         let size = string.size()
         return Float(size.width)
@@ -574,20 +592,24 @@ public class QuartzRenderer: Renderer {
         if !name.isEmpty {
             let fileName = name + ".png"
             let destinationURL = URL(fileURLWithPath: fileName)
+            #if os(macOS)
             let image = NSImage(cgImage: context.makeImage()!, size: NSZeroSize)
-            if image.pngWrite(to: destinationURL) {
-                print("File Saved")
-            }
+            image.writePng(to: destinationURL)
+            #elseif os(iOS)
+            let image: UIImage = UIImage.init(cgImage: context.makeImage()!)
+            image.writePng(to: destinationURL)
+            #endif
         }
     }
 }
 
+#if os(macOS)
 extension NSImage {
     var pngData: Data? {
         guard let tiffRepresentation = tiffRepresentation, let bitmapImage = NSBitmapImageRep(data: tiffRepresentation) else { return nil }
         return bitmapImage.representation(using: .png, properties: [:])
     }
-    func pngWrite(to url: URL, options: Data.WritingOptions = .atomic) -> Bool {
+    func writePng(to url: URL, options: Data.WritingOptions = .atomic) -> Bool {
         do {
             try pngData?.write(to: url, options: options)
             return true
@@ -597,3 +619,23 @@ extension NSImage {
         }
     }
 }
+#endif
+
+#if os(iOS)
+extension UIImage {
+    var pngData: Data? {
+        guard let data = UIImagePNGRepresentation(image) else { return nil }
+        return data
+    }
+    
+    func writePng(to url: URL, options: Data.WritingOptions = .atomic) -> Bool {
+        do {
+            try pngData?.write(to: url, options: options)
+            return true
+        } catch {
+            print(error)
+            return false
+        }
+    }
+}
+#endif
