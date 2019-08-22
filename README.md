@@ -247,11 +247,21 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |drawGraph(renderer: Renderer)|Generate the plot in memory|
 |drawGraphOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer)|Save the generated plot to disk|
 
+|Property                                         |
+|-------------------------------------------------|
+|plotTitle: PlotTitle? = nil                      |
+|plotLabel: PlotLabel? = nil                      |
+|var plotDimensions: PlotDimensions               |
+|plotLineThickness: Float = 1.5                   |
+|gridLineThickness: Float = 0.5                   |
+|markerTextSize: Float = 12                       |
+|gridColor: Color = .gray                         |
+
 ### BarChart<T: LosslessStringConvertible, U: FloatConvertible>
 
 |Function                                                                            |Description                                 |
 |------------------------------------------------------------------------------------|--------------------------------------------|
-|init(width: Float = 1000, height: Float = 660, enableGrid: Bool = true)                                      |Initialize a BarChart                      |
+|init(width: Float = 1000, height: Float = 660, enableGrid: Bool = false)                                      |Initialize a BarChart                      |
 |addSeries(_ s: Series<T,U>)         |Add a series to the plot .                               |
 |addStackSeries(_ s: Series<T,U>)         |Add a stacked series to the plot                    |
 |addStackSeries(_ x: [U],   label: String, color: Color = .lightBlue, hatchPattern: BarGraphSeriesOptions.Hatching = .none) |Add a stacked series to the plot|
@@ -260,6 +270,64 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |drawGraphAndOutput(fileName name: String = "swift_plot_bar_graph", renderer: Renderer)|Generate the plot and save the resultant image|
 |drawGraph(renderer: Renderer)|Generate the plot in memory|
 |drawGraphOutput(fileName name: String = "swift_plot_bar_graph", renderer: Renderer)|Save the generated plot to disk|
+
+|Property                                         |
+|-------------------------------------------------|
+|plotTitle: PlotTitle? = nil                      |
+|plotLabel: PlotLabel? = nil                      |
+|var plotDimensions: PlotDimensions               |
+|space: Int = 20 (Sets the space between two bars)|
+|gridLineThickness: Float = 0.5                   |
+|markerTextSize: Float = 12                       |
+|gridColor: Color = .gray                         |
+
+### Histogram<T:FloatConvertible>
+
+|Function                                                                            |Description                                 |
+|------------------------------------------------------------------------------------|--------------------------------------------|
+|init(width: Float = 1000, height: Float = 660, isNormalized: Bool = false, enableGrid: Bool = false)                                      |Initialize a Histogram                      |
+|addSeries(_ s: HistogramSeries<T>)|Add a series to the plot.|
+|addSeries(data: [T], bins: Int, label: String, color: Color = .lightBlue, histogramType: HistogramSeriesOptions.HistogramType = .bar) | Add a series using an array. |
+|addStackSeries(data: [T], label: String, color: Color = .lightBlue) |Add a stacked series to the plot|           
+|drawGraphAndOutput(fileName name: String = "swift_plot_histogram", renderer: Renderer)|Generate the plot and save the resultant image|
+|drawGraph(renderer: Renderer)|Generate the plot in memory|
+|drawGraphOutput(fileName name: String = "swift_plot_histogram", renderer: Renderer)|Save the generated plot to disk|
+ 
+|Property                           |
+|-----------------------------------|
+|plotTitle: PlotTitle? = nil        |
+|plotLabel: PlotLabel? = nil        |
+|var plotDimensions: PlotDimensions |
+|var strokeWidth: Float = 2         |
+|gridLineThickness: Float = 0.5     |
+|markerTextSize: Float = 12         |
+|gridColor: Color = .gray           |
+
+### ScatterPlot<T:FloatConvertible, U:FloatConvertible>
+
+|Function                                                                            |Description                                 |
+|------------------------------------------------------------------------------------|--------------------------------------------|
+|init(width: Float = 1000, height: Float = 660, isNormalized: Bool = false, enableGrid: Bool = false)                                      |Initialize a ScatterPlot.                     |
+|init(points p: [Pair<T,U>], width: Float = 1000, height: Float = 660, enableGrid: Bool = false)                                            |Initialize a ScatterPlot.                     |
+|addSeries(_ s: Series<T,U>)|Add a series to the plot.|
+|addSeries(points: [Pair<T,U>], label: String, color: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle) | Add a series using an array of Pairs. |
+|addSeries(_ x: [T], _ y: [U], label: String, color: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle) | Add a series using separate x and y arrays. |
+|addSeries(_ x: [T], _ y: [U], label: String, startColor: Color = .lightBlue, endColor: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle)) | Add a series using separate x and y arrays and specify a start and end color for the scatter points. |
+|addSeries(_ y: [U], label: String, color: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle) | Add a series using just the y array. It will be plotted against the index of the point. |
+|addSeries(_ y: [U], label: String, startColor: Color = .lightBlue, endColor: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle) | Add a series using just the y array. It will be plotted against the index of the point. Also specify the start and end color for the scatter points.|        
+|drawGraphAndOutput(fileName name: String = "swift_plot_scatter_plot", renderer: Renderer)|Generate the plot and save the resultant image|
+|drawGraph(renderer: Renderer)|Generate the plot in memory|
+|drawGraphOutput(fileName name: String = "swift_plot_scatter_plot", renderer: Renderer)|Save the generated plot to disk|
+ 
+|Property                           |
+|-----------------------------------|
+|plotTitle: PlotTitle? = nil        |
+|plotLabel: PlotLabel? = nil        |
+|plotDimensions: PlotDimensions     |
+|scatterPatternSize: Float = 10     |
+|gridLineThickness: Float = 0.5     |
+|markerTextSize: Float = 12         |
+|gridColor: Color = .gray           |
 
 ### SubPlot
 
@@ -345,6 +413,46 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |-----------------------------------------------------------------|
 |primaryAxis                                                      |
 |secondaryAxis                                                    |
+
+### ScatterPlotSeriesOptions
+
+|enum ScatterPattern (to be passed into addSeries function in ScatterPlot)|
+|-------------------------------------------------------------------------|
+|circle                                                                   |
+|square                                                                   |
+|triangle                                                                 |
+|diamond                                                                  |
+|hexagon                                                                  |
+|pentagon                                                                 |
+|star                                                                     |
+
+
+### HistogramSeriesOptions
+
+|enum HistogramType: CaseIterable (to be passed into addSeries function in Histogram)|
+|------------------------------------------------------------------------------------|
+|bar                                                                                 |
+|step                                                                                |
+
+### BarGraphSeriesOptions
+
+|enum Hatching: Int, CaseIterable (to be passed into addSeries function in BarGraph)|
+|------------------------------------------------------------------------------------|
+|none = 0                                                                            |
+|forwardSlash = 1                                                                    |
+|backwardSlash = 2                                                                   |
+|hollowCircle = 3                                                                    |
+|filledCircle = 4                                                                    |
+|vertical = 5                                                                        |
+|horizontal = 6                                                                      |
+|grid = 7                                                                            |
+|cross = 8                                                                           |
+
+### Base64Encoder
+
+|Function                                            |Description                                                                |
+|----------------------------------------------------|--------------------------------------------------------------------------|
+|encodeBase64PNG(pngBufferPointer: UnsafePointer<UInt8>, bufferSize: Int) -> String|Encode a PNG image into base64 format.|
 
 ## Limitations
 - FloatConvertible supports only Float and Double. We plan to extend this to Int in the future.
