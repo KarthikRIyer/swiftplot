@@ -236,11 +236,9 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 
 |Function                                                                            |Description                                 |
 |------------------------------------------------------------------------------------|--------------------------------------------|
-|init(points: [Point], width: Float = 1000, height: Float = 660, enablePrimaryAxisGrid: Bool = false,
-                                                                 enableSecondaryAxisGrid: Bool = false)                     |Initialize a LineGraph with a set of points |
-|init(width: Float = 1000, height: Float = 660, enablePrimaryAxisGrid: Bool = false,
-                                                enableSecondaryAxisGrid: Bool = false)                                      |Initialize a LineGraph                      |
-|addSeries(_ s: Series, axisType: Axis.Location = Axis.Location.primaryAxis)         |Add a series to the plot                    |
+|init(points: [Point], width: Float = 1000, height: Float = 660, enablePrimaryAxisGrid: Bool = false, enableSecondaryAxisGrid: Bool = false)| Initialize a LineGraph with a set of points |
+|init(width: Float = 1000, height: Float = 660, enablePrimaryAxisGrid: Bool = false,enableSecondaryAxisGrid: Bool = false)| Initialize a LineGraph|
+|addSeries(_ s: Series, axisType: Axis.Location = Axis.Location.primaryAxis)| Add a series to the plot                    |
 |addSeries(points p: [Point], label: String, color: Color = Color.lightBlue, axisType: Axis<T,U>.Location = Axis<T,U>.Location.primaryAxis)         |Add a series to the plot with a set of points, a label and a color for the series |
 |addSeries(_ x: [Float], _ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Axis<T,U>.Location = Axis<T,U>.Location.primaryAxis)|Add a series to the plot with a set of x and y coordinates, a label and a color for the series|
 |addSeries(_ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Axis<T,U>.Location = Axis<T,U>.Location.primaryAxis)|Add a series to the plot with only the y-coordinates. The x-coordinates are automatically enumerated [1, 2, 3, ...]|
@@ -256,21 +254,9 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |init(width: Float = 1000, height: Float = 660, enableGrid: Bool = true)                                      |Initialize a BarChart                      |
 |addSeries(_ s: Series<T,U>)         |Add a series to the plot .                               |
 |addStackSeries(_ s: Series<T,U>)         |Add a stacked series to the plot                    |
-|addStackSeries(_ x: [U],   
-                label: String,
-                color: Color = .lightBlue,
-                hatchPattern: BarGraphSeriesOptions.Hatching = .none)         |Add a stacked series to the plot|
-|addSeries(values: [Pair<T,U>],
-           label: String,
-           color: Color = Color.lightBlue,
-           hatchPattern: BarGraphSeriesOptions.Hatching = .none,
-           graphOrientation: BarGraph.GraphOrientation = .vertical)         |Add a series to the plot using a Pair array|
-|addSeries(_ x: [T],
-           _ y: [U],
-           label: String,
-           color: Color = Color.lightBlue,
-           hatchPattern: BarGraphSeriesOptions.Hatching = .none,
-           graphOrientation: BarGraph.GraphOrientation = .vertical)         |Add a series to the plot using a Pair array|                          
+|addStackSeries(_ x: [U],   label: String, color: Color = .lightBlue, hatchPattern: BarGraphSeriesOptions.Hatching = .none) |Add a stacked series to the plot|
+|addSeries(values: [Pair<T,U>], label: String, color: Color = Color.lightBlue, hatchPattern: BarGraphSeriesOptions.Hatching = .none, graphOrientation: BarGraph.GraphOrientation = .vertical)         |Add a series to the plot using a Pair array|
+|addSeries(_ x: [T], _ y: [U], label: String, color: Color = Color.lightBlue, hatchPattern: BarGraphSeriesOptions.Hatching = .none, graphOrientation: BarGraph.GraphOrientation = .vertical)         |Add a series to the plot using a Pair array|            
 |drawGraphAndOutput(fileName name: String = "swift_plot_bar_graph", renderer: Renderer)|Generate the plot and save the resultant image|
 |drawGraph(renderer: Renderer)|Generate the plot in memory|
 |drawGraphOutput(fileName name: String = "swift_plot_bar_graph", renderer: Renderer)|Save the generated plot to disk|
