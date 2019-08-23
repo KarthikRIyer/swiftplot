@@ -1,7 +1,9 @@
 import SwiftPlot
 import AGGRenderer
 import SVGRenderer
+#if os(iOS) || os(macOS)
 import QuartzRenderer
+#endif
 
 var filePath = "examples/Reference/"
 let fileName = "_16_bar_chart_hollow_circle_hatched"
@@ -11,7 +13,9 @@ let y:[Float] = [320,-100,420,500]
 
 var agg_renderer = AGGRenderer()
 var svg_renderer = SVGRenderer()
+#if os(iOS) || os(macOS)
 var quartz_renderer = QuartzRenderer()
+#endif
 
 var plotTitle = PlotTitle()
 
@@ -24,5 +28,7 @@ barGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName,
                             renderer: agg_renderer)
 barGraph.drawGraphAndOutput(fileName: filePath+"svg/"+fileName,
                             renderer: svg_renderer)
+#if os(iOS) || os(macOS)
 barGraph.drawGraphAndOutput(fileName: filePath+"quartz/"+fileName,
                             renderer: quartz_renderer)
+#endif

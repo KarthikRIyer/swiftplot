@@ -68,3 +68,4 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 
 Notebooks/.ipynb_checkpoints/
+**/.DS_Store

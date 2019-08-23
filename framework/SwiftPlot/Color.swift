@@ -1,7 +1,7 @@
-#if os(macOS)
-import AppKit
-#elseif os(iOS)
+#if os(iOS)
 import UIKit
+#elseif os(macOS)
+import AppKit
 #endif
 public struct Color {
     public var r: Float
@@ -36,7 +36,7 @@ public struct Color {
 
 #if os(macOS) || os(iOS)
 public extension Color {
-    public var cgColor : CGColor {
+    var cgColor : CGColor {
         return CGColor(red: CGFloat(r),
                        green: CGFloat(g),
                        blue: CGFloat(b),
