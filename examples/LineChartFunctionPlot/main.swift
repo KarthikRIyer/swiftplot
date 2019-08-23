@@ -1,7 +1,9 @@
 import SwiftPlot
 import AGGRenderer
 import SVGRenderer
+#if os(iOS) || os(macOS)
 import QuartzRenderer
+#endif
 
 func function(_ x: Float)->Float {
     return 1.0/x
@@ -12,7 +14,9 @@ let fileName = "_06_function_plot_line_chart"
 
 var agg_renderer = AGGRenderer()
 var svg_renderer = SVGRenderer()
+#if os(iOS) || os(macOS)
 var quartz_renderer = QuartzRenderer()
+#endif
 
 var lineGraph = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
 lineGraph.addFunction(function,
@@ -28,5 +32,7 @@ lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName,
                              renderer: agg_renderer)
 lineGraph.drawGraphAndOutput(fileName: filePath+"svg/"+fileName,
                              renderer: svg_renderer)
+#if os(iOS) || os(macOS)
 lineGraph.drawGraphAndOutput(fileName: filePath+"quartz/"+fileName,
                              renderer: quartz_renderer)
+#endif

@@ -28,7 +28,7 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
                                              plotBorder.topLeft.y - Float(20))
         }
     }
-    public var plotLineThickness: Float = 3
+    // public var plotLineThickness: Float = 3
     public var scatterPatternSize: Float = 10
     public var markerTextSize: Float = 12
     public var enableGrid = false

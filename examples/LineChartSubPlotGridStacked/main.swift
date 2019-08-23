@@ -1,7 +1,9 @@
 import SwiftPlot
 import AGGRenderer
 import SVGRenderer
+#if os(iOS) || os(macOS)
 import QuartzRenderer
+#endif
 
 var filePath = "examples/Reference/"
 let fileName = "_05_sub_plot_grid_stacked_line_chart"
@@ -11,7 +13,9 @@ let y:[Float] = [0,320,310,170]
 
 var agg_renderer = AGGRenderer()
 var svg_renderer = SVGRenderer()
+#if os(iOS) || os(macOS)
 var quartz_renderer = QuartzRenderer()
+#endif
 
 var plots = [Plot]()
 
@@ -51,6 +55,8 @@ subPlot.draw(plots: plots,
 subPlot.draw(plots: plots,
              renderer: agg_renderer,
              fileName: filePath+"agg/"+fileName)
+#if os(iOS) || os(macOS)
 subPlot.draw(plots: plots,
              renderer: quartz_renderer,
              fileName: filePath+"quartz/"+fileName)
+#endif
