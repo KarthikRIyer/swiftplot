@@ -45,7 +45,7 @@ run_examples.sh
 ```
 Jupyter Notebook examples are under the `Notebooks` directory.
 
-The resultant images are stored in the `examples/Reference` directory. The images rendered by each of the backends are stored their respective directories: [agg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/agg), [svg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/svg) and [quartz](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/quartz)
+The resultant images are stored in the `examples/Reference` directory. The images rendered by each of the backends are stored their respective directories: [agg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/agg) and [svg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/svg).
 
 
 ## License
@@ -86,7 +86,7 @@ In order to display the generated plot in the notebook, add this line:
 ```
 
 ## Examples
-Here are some examples to provide you with a headstart to using this library. Here we will be looking at plots using only the AGGRenderer, but the procedure will remain the same for SVGRenderer and QuartzRenderer too. QuartzRenderer is available only on macOS and iOS.
+Here are some examples to provide you with a headstart to using this library. Here we will be looking at plots using only the AGGRenderer, but the procedure will remain the same for SVGRenderer.
 To use the library in your package, include it as a dependency to your target, in the Package.swift file.
 
 #### Simple Line Graph
@@ -462,4 +462,4 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 1. Maxim Shemanarev : The AGG library is directly used to render plots.
 2. [Lode Vandevenne](https://github.com/lvandeve) : The lodepng library is directly used to encode PNG images.
 3. [The FreeType Project](https://www.freetype.org) : AGG uses FreeType to draw text.
-4. [Brad Larson](https://github.com/BradLarson) and [Marc Rasi](https://github.com/marcrasi) for their invaluable guidance
+4. [Brad Larson](https://github.com/BradLarson) and [Marc Rasi](https://github.com/marcrasi) for their invaluable guidance.
