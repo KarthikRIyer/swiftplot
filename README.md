@@ -45,7 +45,7 @@ run_examples.sh
 ```
 Jupyter Notebook examples are under the `Notebooks` directory.
 
-The resultant images are stored in the `examples/Reference` directory. The images rendered by each of the backends are stored their respective directories: [agg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/agg), [svg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/svg) and [quartz](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/svg)
+The resultant images are stored in the `examples/Reference` directory. The images rendered by each of the backends are stored their respective directories: [agg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/agg), [svg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/svg) and [quartz](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/quartz)
 
 
 ## License
