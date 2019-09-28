@@ -56,7 +56,7 @@ The resultant images are stored in the `examples/Reference` directory. The image
 Add the library to your projects dependencies in the Package.swift file as shown below.
 ```swift
 dependencies: [
-        .package(url: "https://github.com/KarthikRIyer/swiftplot.git", .exact("0.0.1")),
+        .package(url: "https://github.com/KarthikRIyer/swiftplot.git", .exact("1.0.0")),
     ],
 ```
 
@@ -79,7 +79,7 @@ If the above method doesn't work you can also build and install freetype on your
 Add these lines to the first cell:
 ```swift
 %install-swiftpm-flags -Xcc -isystem/usr/include/freetype2 -Xswiftc -lfreetype
-%install '.package(url: "https://github.com/KarthikRIyer/swiftplot", from: "0.0.1")' SwiftPlot
+%install '.package(url: "https://github.com/KarthikRIyer/swiftplot", from: "1.0.0")' SwiftPlot
 ```
 In order to display the generated plot in the notebook, add this line to a new cell:
 ```swift
