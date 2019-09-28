@@ -75,12 +75,13 @@ brew install freetype
 If the above method doesn't work you can also build and install freetype on your own. You can find the source code and build instructions [here](https://www.freetype.org/download.html).
 
 ## How to include the library in your Jupyter Notebook
-<b>Currently this is broken for the latest release. It will be fixed in the future.</b></br>
-Add this line to the first cell:
+
+Add these lines to the first cell:
 ```swift
+%install-swiftpm-flags -Xcc -isystem/usr/include/freetype2 -Xswiftc -lfreetype
 %install '.package(url: "https://github.com/KarthikRIyer/swiftplot", from: "0.0.1")' SwiftPlot
 ```
-In order to display the generated plot in the notebook, add this line:
+In order to display the generated plot in the notebook, add this line to a new cell:
 ```swift
 %include "EnableJupyterDisplay.swift"
 ```
@@ -456,7 +457,6 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 
 ## Limitations
 - FloatConvertible supports only Float and Double. We plan to extend this to Int in the future.
-- The latest release doesn't work with Jupyter. This is because we use FreeType to draw text and the system isn't able to find the FreeType install when building in Jupyter.
 
 ## Credits
 1. Maxim Shemanarev : The AGG library is directly used to render plots.
