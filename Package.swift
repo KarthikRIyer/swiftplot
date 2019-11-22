@@ -87,20 +87,16 @@ let platformTargets: [Target] = [
         name: "SVGRenderer",
         dependencies: ["SwiftPlot"],
         path: "framework/SVGRenderer"),
-    .target(
-        name: "Examples",
-        dependencies: ["AGGRenderer", "SVGRenderer", "QuartzRenderer", "SwiftPlot"],
-        path: "framework/Examples"),
+    
+    .testTarget(
+      name: "SwiftPlotTests",
+      dependencies: ["AGGRenderer", "SVGRenderer", "QuartzRenderer", "SwiftPlot"])
 ]
 let platformProducts: [Product] =  [
       .library(
           name: "SwiftPlot",
           targets: ["AGG", "lodepng", "CPPAGGRenderer", "CAGGRenderer", "SwiftPlot", "SVGRenderer", "AGGRenderer", "QuartzRenderer"]
     ),
-      .executable(
-          name: "Examples",
-          targets: ["Examples"]
-    )
 ]
 #endif
 
