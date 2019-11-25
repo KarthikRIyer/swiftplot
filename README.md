@@ -20,6 +20,7 @@
   * [How does this work ?](#how-does-this-work)
   * [Documentation](#documentation)
   * [Limitations](#limitations)
+  * [Guidelines for Contributors](#guidelines-for-contributors)
   * [Credits](#credits)
 
 ## Overview
@@ -457,6 +458,9 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 
 ## Limitations
 - FloatConvertible supports only Float and Double. We plan to extend this to Int in the future.
+
+## Guidelines for Contributors
+If you want to contribute to improve this library, please read our [guidelines](https://github.com/KarthikRIyer/swiftplot/blob/master/CONTRIBUTING.md). Feel free to [open an issue](https://github.com/KarthikRIyer/swiftplot/issues).
 
 ## Credits
 1. Maxim Shemanarev : The AGG library is directly used to render plots.
