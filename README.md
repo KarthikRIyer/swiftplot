@@ -38,15 +38,11 @@ To encode the plots as PNG images it uses the [lodepng](https://github.com/lvand
 SwiftPlot can also be used in Jupyter Notebooks.
 </br>
 
-Examples, demonstrating all the features, have been included with the repository under the `examples` directory.
-To run the examples, clone the repository, and run the run_examples.sh script as shown below.
+Examples, demonstrating all the features, have been included with the repository under the `Tests/SwiftPlotTests` directory. To run the examples, clone the repository, and run the `swift test` command from the package directory.
 
-```console
-run_examples.sh
-```
 Jupyter Notebook examples are under the `Notebooks` directory.
 
-The resultant images are stored in the `examples/Reference` directory. The images rendered by each of the backends are stored their respective directories: [agg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/agg) and [svg](https://github.com/KarthikRIyer/swiftplot/tree/master/examples/Reference/svg).
+The resultant images are stored in a directory named  `output`. The `Tests` folder includes a collection of reference images in the `Reference` directory.
 
 
 ## License
