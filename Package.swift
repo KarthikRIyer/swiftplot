@@ -6,43 +6,34 @@ import PackageDescription
 #if os(Linux)
 
 let platformTargets: [Target] = [
-    .target(
-        name: "SwiftPlot",
-        dependencies: [],
-        path: "framework/SwiftPlot"),
+    .target(name: "SwiftPlot"),
     
     // AGG renderer and dependencies.
     .systemLibrary(
         name: "CFreeType",
-        path: "framework/CFreeType",
         pkgConfig: "freetype2",
         providers: [.brew(["freetype2"]), .apt(["libfreetype6-dev"])]),
     .target(
         name: "AGG",
-        dependencies: ["CFreeType"],
-        path: "framework/AGG"),
-    .target(
-        name: "lodepng",
-        dependencies: [],
-        path: "framework/lodepng"),
+        dependencies: ["CFreeType"]),
+    .target(name: "lodepng"),
     .target(
         name: "CPPAGGRenderer",
         dependencies: ["AGG","lodepng"],
-        path: "framework/AGGRenderer/CPPAGGRenderer"),
+        path: "Sources/AGGRenderer/CPPAGGRenderer"),
     .target(
         name: "CAGGRenderer",
         dependencies: ["CPPAGGRenderer"],
-        path: "framework/AGGRenderer/CAGGRenderer"),
+        path: "Sources/AGGRenderer/CAGGRenderer"),
     .target(
         name: "AGGRenderer",
         dependencies: ["CAGGRenderer","SwiftPlot"],
-        path: "framework/AGGRenderer/AGGRenderer"),
+        path: "Sources/AGGRenderer/AGGRenderer"),
 
     // Other renderers.
     .target(
         name: "SVGRenderer",
-        dependencies: ["SwiftPlot"],
-        path: "framework/SVGRenderer"),
+        dependencies: ["SwiftPlot"]),
     
     .testTarget(
       name: "SwiftPlotTests",
@@ -57,47 +48,37 @@ let platformProducts: [Product] =  [
 #elseif os(macOS)
 
 let platformTargets: [Target] = [
-    .target(
-        name: "SwiftPlot",
-        dependencies: [],
-        path: "framework/SwiftPlot"),
+    .target(name: "SwiftPlot"),
     
     // AGG renderer and dependencies.
     .systemLibrary(
         name: "CFreeType",
-        path: "framework/CFreeType",
         pkgConfig: "freetype2",
         providers: [.brew(["freetype2"]), .apt(["libfreetype6-dev"])]),
     .target(
         name: "AGG",
-        dependencies: ["CFreeType"],
-        path: "framework/AGG"),
-    .target(
-        name: "lodepng",
-        dependencies: [],
-        path: "framework/lodepng"),
+        dependencies: ["CFreeType"]),
+    .target(name: "lodepng"),
     .target(
         name: "CPPAGGRenderer",
         dependencies: ["AGG","lodepng"],
-        path: "framework/AGGRenderer/CPPAGGRenderer"),
+        path: "Sources/AGGRenderer/CPPAGGRenderer"),
     .target(
         name: "CAGGRenderer",
         dependencies: ["CPPAGGRenderer"],
-        path: "framework/AGGRenderer/CAGGRenderer"),
+        path: "Sources/AGGRenderer/CAGGRenderer"),
     .target(
         name: "AGGRenderer",
         dependencies: ["CAGGRenderer","SwiftPlot"],
-        path: "framework/AGGRenderer/AGGRenderer"),
+        path: "Sources/AGGRenderer/AGGRenderer"),
 
     // Other renderers.
     .target(
         name: "SVGRenderer",
-        dependencies: ["SwiftPlot"],
-        path: "framework/SVGRenderer"),
+        dependencies: ["SwiftPlot"]),
     .target(
         name: "QuartzRenderer",
-        dependencies: ["SwiftPlot"],
-        path: "framework/QuartzRenderer"),
+        dependencies: ["SwiftPlot"]),
     
     .testTarget(
       name: "SwiftPlotTests",
@@ -121,19 +102,14 @@ let platformProducts: [Product] =  [
 // configuration until it looks like this:
 
 let platformTargets: [Target] = [
-    .target(
-        name: "SwiftPlot",
-        dependencies: [],
-        path: "framework/SwiftPlot"),
+    .target(name: "SwiftPlot"),
     
     .target(
         name: "SVGRenderer",
-        dependencies: ["SwiftPlot"],
-        path: "framework/SVGRenderer"),
+        dependencies: ["SwiftPlot"]),
     .target(
         name: "QuartzRenderer",
-        dependencies: ["SwiftPlot"],
-        path: "framework/QuartzRenderer"),
+        dependencies: ["SwiftPlot"]),
     
     .testTarget(
       name: "SwiftPlotTests",
