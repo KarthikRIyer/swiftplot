@@ -35,20 +35,16 @@ let platformTargets: [Target] = [
         name: "SVGRenderer",
         dependencies: ["SwiftPlot"],
         path: "framework/SVGRenderer"),
-    .target(
-        name: "Examples",
-        dependencies: ["AGGRenderer", "SVGRenderer", "QuartzRenderer", "SwiftPlot"],
-        path: "framework/Examples"),
+    
+    .testTarget(
+        name: "SwiftPlotTests",
+        dependencies: ["AGGRenderer", "SVGRenderer", "SwiftPlot"])
 ]
 let platformProducts: [Product] =  [
     .library(
         name: "SwiftPlot",
         targets: ["AGG", "lodepng", "CPPAGGRenderer", "CAGGRenderer", "SwiftPlot", "SVGRenderer", "AGGRenderer"]
   ),
-    .executable(
-        name: "Examples",
-        targets: ["Examples"]
-  )
 ]
 
 #elseif os(iOS) || os(macOS)
