@@ -4,12 +4,15 @@
 import PackageDescription
 
 #if os(Linux)
-let platformDependencies: [Package.Dependency] = [
-    .package(url:"https://github.com/KarthikRIyer/CFreeType.git", .branch("master"))]
 let platformTargets: [Target] = [
+    .systemLibrary(
+        name: "CFreeType",
+        path: "framework/CFreeType",
+        pkgConfig: "freetype2",
+        providers: [.brew(["freetype2"]), .apt(["libfreetype6-dev"])]),
     .target(
         name: "AGG",
-        dependencies: [],
+        dependencies: ["CFreeType"],
         path: "framework/AGG"),
     .target(
         name: "lodepng",
@@ -48,12 +51,15 @@ let platformProducts: [Product] =  [
 ]
 
 #elseif os(iOS) || os(macOS)
-let platformDependencies: [Package.Dependency] = [
-    .package(url:"https://github.com/KarthikRIyer/CFreeType.git", .branch("master"))]
 let platformTargets: [Target] = [
+    .systemLibrary(
+        name: "CFreeType",
+        path: "framework/CFreeType",
+        pkgConfig: "freetype2",
+        providers: [.brew(["freetype2"]), .apt(["libfreetype6-dev"])]),
     .target(
         name: "AGG",
-        dependencies: [],
+        dependencies: ["CFreeType"],
         path: "framework/AGG"),
     .target(
         name: "lodepng",
@@ -99,7 +105,6 @@ let platformProducts: [Product] =  [
 let package = Package(
     name: "SwiftPlot",
     products: platformProducts,
-    dependencies: platformDependencies,
     targets: platformTargets,
     cxxLanguageStandard: .cxx11
 )
