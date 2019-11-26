@@ -14,34 +14,31 @@ import UIKit
 public class QuartzRenderer: Renderer {
     static let colorSpace = CGColorSpaceCreateDeviceRGB()
     static let bitmapInfo = CGImageAlphaInfo.premultipliedFirst.rawValue
+    
     var context: CGContext
     var fontPath = ""
-    var initialized = false
-
     public var xOffset: Float = 0
     public var yOffset: Float = 0
+    
     public var plotDimensions: PlotDimensions {
-        willSet{
-            if (initialized) {
-                context = CGContext(data: nil,
-                                    width: Int(plotDimensions.frameWidth),
-                                    height: Int(newValue.frameHeight),
-                                    bitsPerComponent: 8,
-                                    bytesPerRow: 0,
-                                    space: Self.colorSpace,
-                                    bitmapInfo: Self.bitmapInfo)!
-                let rect = CGRect(x: 0,
-                                  y: 0,
-                                  width: Int(newValue.frameWidth),
-                                  height: Int(newValue.frameHeight))
-                context.setFillColor(Color.white.cgColor)
-                context.fill(rect)
-            }
+        didSet {
+            context = CGContext(data: nil,
+                                width: Int(plotDimensions.frameWidth),
+                                height: Int(plotDimensions.frameHeight),
+                                bitsPerComponent: 8,
+                                bytesPerRow: 0,
+                                space: Self.colorSpace,
+                                bitmapInfo: Self.bitmapInfo)!
+            let rect = CGRect(x: 0,
+                              y: 0,
+                              width: Int(plotDimensions.frameWidth),
+                              height: Int(plotDimensions.frameHeight))
+            context.setFillColor(Color.white.cgColor)
+            context.fill(rect)
         }
     }
 
-    public init(width w: Float = 1000, height h: Float = 660, fontPath: String = ""){
-        initialized = false
+    public init(width w: Float = 1000, height h: Float = 660, fontPath: String = "") {
         plotDimensions = PlotDimensions(frameWidth: w, frameHeight: h)
         context = CGContext(data: nil,
                             width: Int(plotDimensions.frameWidth),
@@ -56,7 +53,6 @@ public class QuartzRenderer: Renderer {
                           height: Int(plotDimensions.frameHeight))
         context.setFillColor(Color.white.cgColor)
         context.fill(rect)
-        initialized = true
     }
 
     public func drawRect(topLeftPoint p1: Point,
