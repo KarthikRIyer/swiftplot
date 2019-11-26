@@ -1,10 +1,13 @@
 import SwiftPlot
-import AGGRenderer
 import SVGRenderer
+#if canImport(AGGRenderer)
+import AGGRenderer
+#endif
 #if canImport(QuartzRenderer)
 import QuartzRenderer
 #endif
 
+@available(tvOS 13, watchOS 13, *)
 extension LineChartTests {
   
   func testLineChartSubplotVerticallyStacked() {
@@ -13,13 +16,7 @@ extension LineChartTests {
     
     let x:[Float] = [10,100,263,489]
     let y:[Float] = [10,120,500,800]
-    
-    let agg_renderer = AGGRenderer()
-    let svg_renderer = SVGRenderer()
-    #if canImport(QuartzRenderer)
-    let quartz_renderer = QuartzRenderer()
-    #endif
-    
+
     var plots = [Plot]()
     
     let lineGraph1 = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
@@ -38,16 +35,22 @@ extension LineChartTests {
     plots.append(lineGraph2)
     
     let subPlot = SubPlot(numberOfPlots: 2, stackPattern: .verticallyStacked)
+    let svg_renderer = SVGRenderer()
     subPlot.draw(plots: plots,
                  renderer: svg_renderer,
                  fileName: self.svgOutputDirectory+fileName)
+    #if canImport(AGGRenderer)
+    let agg_renderer = AGGRenderer()
     subPlot.draw(plots: plots,
                  renderer: agg_renderer,
                  fileName: self.aggOutputDirectory+fileName)
+    #endif
     #if canImport(QuartzRenderer)
+    let quartz_renderer = QuartzRenderer()
     subPlot.draw(plots: plots,
                  renderer: quartz_renderer,
                  fileName: self.coreGraphicsOutputDirectory+fileName)
     #endif
+    
   }
 }

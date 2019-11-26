@@ -1,8 +1,3 @@
-#if os(iOS)
-import UIKit
-#elseif os(macOS)
-import AppKit
-#endif
 public struct Color {
     public var r: Float
     public var g: Float
@@ -34,13 +29,24 @@ public struct Color {
     public static let darkGray: Color = Color(0.66, 0.66, 0.66, 1.0)
 }
 
-#if os(macOS) || os(iOS)
+#if canImport(CoreGraphics)
+import CoreGraphics
 public extension Color {
+    @available(tvOS 13, watchOS 13, *)
     var cgColor : CGColor {
+      if #available(OSX 10.15, iOS 13, *) {
+        return CGColor(srgbRed: CGFloat(r),
+                       green: CGFloat(g),
+                       blue: CGFloat(b),
+                       alpha: CGFloat(a))
+      } else {
+        #if !os(tvOS) || os(watchOS) // Shouldn't be necessary, but it is.
         return CGColor(red: CGFloat(r),
                        green: CGFloat(g),
                        blue: CGFloat(b),
                        alpha: CGFloat(a))
+        #endif
+      }
     }
 }
 #endif
