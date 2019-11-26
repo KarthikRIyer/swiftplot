@@ -1,30 +1,35 @@
 import SwiftPlot
 import AGGRenderer
 import SVGRenderer
-#if os(iOS) || os(macOS)
+#if canImport(QuartzRenderer)
 import QuartzRenderer
 #endif
 
-var filePath = "examples/Reference/"
-let fileName = "_23_histogram_stacked"
-
-var agg_renderer = AGGRenderer()
-var svg_renderer = SVGRenderer()
-#if os(iOS) || os(macOS)
-var quartz_renderer = QuartzRenderer()
-#endif
-
-var histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
-histogram.addSeries(data: x, bins: 50, label: "Plot 1", color: .blue)
-histogram.addStackSeries(data: y, label: "Plot 2", color: .orange)
-histogram.plotTitle = PlotTitle("HISTOGRAM STACKED")
-histogram.plotLabel = PlotLabel(xLabel: "X", yLabel: "Frequency")
-
-histogram.drawGraphAndOutput(fileName: filePath+"agg/"+fileName,
-                             renderer: agg_renderer)
-histogram.drawGraphAndOutput(fileName: filePath+"svg/"+fileName,
-                             renderer: svg_renderer)
-#if os(iOS) || os(macOS)
-histogram.drawGraphAndOutput(fileName: filePath+"quartz/"+fileName,
-                             renderer: quartz_renderer)
-#endif
+extension HistogramTests {
+  
+  func testHistogramStacked() {
+    
+    let fileName = "_23_histogram_stacked"
+    
+    let agg_renderer = AGGRenderer()
+    let svg_renderer = SVGRenderer()
+    #if canImport(QuartzRenderer)
+    let quartz_renderer = QuartzRenderer()
+    #endif
+    
+    let histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
+    histogram.addSeries(data: histogram_stacked_values, bins: 50, label: "Plot 1", color: .blue)
+    histogram.addStackSeries(data: histogram_stacked_values_2, label: "Plot 2", color: .orange)
+    histogram.plotTitle = PlotTitle("HISTOGRAM STACKED")
+    histogram.plotLabel = PlotLabel(xLabel: "X", yLabel: "Frequency")
+    
+    histogram.drawGraphAndOutput(fileName: self.aggOutputDirectory+fileName,
+                                 renderer: agg_renderer)
+    histogram.drawGraphAndOutput(fileName: self.svgOutputDirectory+fileName,
+                                 renderer: svg_renderer)
+    #if canImport(QuartzRenderer)
+    histogram.drawGraphAndOutput(fileName: self.coreGraphicsOutputDirectory+fileName,
+                                 renderer: quartz_renderer)
+    #endif
+  }
+}
