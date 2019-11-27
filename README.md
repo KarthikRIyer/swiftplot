@@ -104,7 +104,7 @@ lineGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
 lineGraph.plotLineThickness = 3.0
 lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
 ```
-<img src="examples/Reference/agg/_01_single_series_line_chart.png" width="500">
+<img src="output/agg/_01_single_series_line_chart.png" width="500">
 
 #### Line Graph with multiple series of data
 
@@ -128,7 +128,7 @@ lineGraph.plotLineThickness = 3.0
 lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
 ```
 
-<img src="examples/Reference/agg/_02_multiple_series_line_chart.png" width="500">
+<img src="output/agg/_02_multiple_series_line_chart.png" width="500">
 
 #### Line Graph with Sub Plots stacked horizontally
 
@@ -161,7 +161,7 @@ var subPlot: SubPlot = SubPlot(numberOfPlots: 2, stackPattern: .horizontallyStac
 subPlot.draw(plots: plots, renderer: agg_renderer, fileName: "subPlotsHorizontallyStacked")
 ```
 
-<img src="examples/Reference/agg/_03_sub_plot_horizontally_stacked_line_chart.png" width="500">
+<img src="output/agg/_03_sub_plot_horizontally_stacked_line_chart.png" width="500">
 
 #### Plot functions using LineGraph
 
@@ -182,7 +182,7 @@ lineGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
 lineGraph.drawGraphAndOutput(fileName: "functionPlotLineGraph", renderer: agg_renderer)
 ```
 
-<img src="examples/Reference/agg/_06_function_plot_line_chart.png" width="500">
+<img src="output/agg/_06_function_plot_line_chart.png" width="500">
 
 #### Using a secondary axis in LineGraph
 
@@ -205,7 +205,7 @@ lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_r
 ```
 The series plotted on the secondary axis are drawn dashed.
 
-<img src="examples/Reference/agg/_07_secondary_axis_line_chart.png" width="500">
+<img src="output/agg/_07_secondary_axis_line_chart.png" width="500">
 
 #### Displaying plots in Jupyter Notebook
 
