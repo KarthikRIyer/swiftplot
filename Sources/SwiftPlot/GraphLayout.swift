@@ -9,6 +9,11 @@ public struct GraphLayout {
     // Inputs.
     var plotDimensions: PlotDimensions
     
+    init(plotDimensions: PlotDimensions) {
+        self.plotDimensions = plotDimensions
+        self.plotDimensions.calculateGraphDimensions()
+    }
+    
     var plotTitle: PlotTitle? = nil
     var plotLabel: PlotLabel? = nil
     var plotLegend = PlotLegend()

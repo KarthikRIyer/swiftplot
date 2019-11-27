@@ -7,28 +7,25 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     let sqrt3: Float = sqrt(3)
 
+    public var layout: GraphLayout
+
     public var xOffset: Float = 0
     public var yOffset: Float = 0
     
-    public var layout: GraphLayout
-
     // public var plotLineThickness: Float = 3
     public var scatterPatternSize: Float = 10
 
+    var series = [Series<T,U>]()
     var scaleX: Float = 1
     var scaleY: Float = 1
-    var series = [Series<T,U>]()
 
-    public init(points p: [Pair<T,U>],
-                width: Float = 1000,
-                height: Float = 660,
-                enableGrid: Bool = false){
-        layout = GraphLayout(plotDimensions: PlotDimensions(frameWidth: width, frameHeight: height))
-        plotDimensions.calculateGraphDimensions()
-
+    public convenience init(points p: [Pair<T,U>],
+                            width: Float = 1000,
+                            height: Float = 660,
+                            enableGrid: Bool = false){
+        self.init(width: width, height: height, enableGrid: enableGrid)
         let s = Series<T,U>(values: p,label: "Plot")
         series.append(s)
-        self.enableGrid = enableGrid
     }
 
     public init(width: Float = 1000,

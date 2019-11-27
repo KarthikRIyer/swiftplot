@@ -5,10 +5,10 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
 
     let MAX_DIV: Float = 50
 
+    public var layout: GraphLayout
+
     public var xOffset: Float = 0
     public var yOffset: Float = 0
-
-    public var layout: GraphLayout
     
     public enum GraphOrientation {
         case vertical
@@ -17,11 +17,10 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
     public var graphOrientation: GraphOrientation = .vertical
     public var space: Int = 20
     
-    var scaleY: Float = 1
-    var scaleX: Float = 1
-
     var series = Series<T,U>()
     var stackSeries = [Series<T,U>]()
+    var scaleY: Float = 1
+    var scaleX: Float = 1
     var barWidth : Int = 0
     var origin = zeroPoint
 

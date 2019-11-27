@@ -5,21 +5,20 @@ public class Histogram<T:FloatConvertible>: Plot {
 
     let MAX_DIV: Float = 50
 
+    public var layout: GraphLayout
+
     public var xOffset: Float = 0
     public var yOffset: Float = 0
-    
-    public var layout: GraphLayout
-    
+        
     public var strokeWidth: Float = 2
     
-    var scaleY: Float = 1
-    var scaleX: Float = 1
-
     var histogramSeries = HistogramSeries<T>()
     var histogramStackSeries = [HistogramSeries<T>]()
+    var isNormalized = false
+    var scaleY: Float = 1
+    var scaleX: Float = 1
     var barWidth: Float = 0
     var xMargin: Float = 5
-    var isNormalized = false
     var origin = zeroPoint
 
     public init(width: Float = 1000,
