@@ -500,26 +500,23 @@ extension ScatterPlot{
             }
         }
     }
-
-    func drawSeriesIcon(idx i: Int, inBoundingRect rect: Rect, renderer: Renderer) {
-        if (series[i].startColor != nil && series[i].endColor != nil) {
-            series[i].color = series[i].startColor!
-        }
-        drawScatterPlotPattern(pattern: series[i].scatterPlotSeriesOptions.scatterPattern,
-                               inBoundingRect: rect,
-                               color: series[i].color,
-                               renderer: renderer)
-    }
     
-    func drawScatterPlotPattern(pattern: ScatterPlotSeriesOptions.ScatterPattern, inBoundingRect rect: Rect,
-                                color: Color, renderer: Renderer) {
-        
+    func saveImage(fileName name: String, renderer: Renderer) {
+        renderer.drawOutput(fileName: name)
+    }
+}
+
+extension ScatterPlotSeriesOptions.ScatterPattern {
+    
+    static let sqrt3: Float = sqrt(3)
+
+    func draw(in rect: Rect, color: Color, renderer: Renderer) {
         let tL = Point(rect.minX, rect.maxY)
         let bR = Point(rect.maxX, rect.minY)
         let tR = Point(bR.x, tL.y)
         let bL = Point(tL.x, bR.y)
         
-        switch pattern {
+        switch self {
         case .circle:
             let c = Point((tL.x+bR.x)*Float(0.5),
                           (tL.y+bR.y)*Float(0.5))
@@ -538,9 +535,9 @@ extension ScatterPlot{
             let r: Float = (tR.x-tL.x)*Float(0.5)
             let p1 = Point(c.x + 0,
                            c.y + r)
-            let p2 = Point(c.x + r*sqrt3*Float(0.5),
+            let p2 = Point(c.x + r*Self.sqrt3*Float(0.5),
                            c.y - r*Float(0.5))
-            let p3 = Point(c.x - r*sqrt3*Float(0.5),
+            let p3 = Point(c.x - r*Self.sqrt3*Float(0.5),
                            c.y - r*Float(0.5))
             renderer.drawSolidTriangle(point1: p1,
                                        point2: p2,
@@ -612,9 +609,5 @@ extension ScatterPlot{
                                       fillColor: color,
                                       isOriginShifted: false)
         }
-    }
-
-    func saveImage(fileName name: String, renderer: Renderer) {
-        renderer.drawOutput(fileName: name)
     }
 }

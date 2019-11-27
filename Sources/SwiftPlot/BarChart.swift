@@ -266,7 +266,9 @@ public struct GraphLayout {
                                        hatchPattern: .none,
                                        isOriginShifted: false)
             case .shape(let shape, let color):
-                break
+                shape.draw(in: seriesIcon,
+                           color: color,
+                           renderer: renderer)
             }
             let p = Point(seriesIcon.maxX + plotLegend.legendTextSize, seriesIcon.minY)
             renderer.drawText(text: entries[i].0,
@@ -276,7 +278,6 @@ public struct GraphLayout {
                               angle: 0,
                               isOriginShifted: false)
         }
-        
     }
 }
 
