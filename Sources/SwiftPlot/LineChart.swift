@@ -128,24 +128,15 @@ extension LineGraph{
         drawGraph(renderer: renderer)
         saveImage(fileName: name, renderer: renderer)
     }
-
-    public func drawGraph(renderer: Renderer){
-        renderer.xOffset = xOffset
-        renderer.yOffset = yOffset
-        
+    
+    public var legendLabels: [(String, LegendIcon)] {
         var allSeries: [Series] = primaryAxis.series
         if (secondaryAxis != nil) {
             allSeries = allSeries + secondaryAxis!.series
         }
-        layout.legendLabels = allSeries.map { ($0.label, .square($0.color)) }
-        
-        let results = layout.layout(renderer: renderer, calculateMarkers: { primary, secondary in
-            calcMarkerLocAndScalePts(primaryMarkers: &primary, secondaryMarkers: &secondary, renderer: renderer)
-        })
-        layout.drawBackground(results: results, renderer: renderer)
-        drawPlots(renderer: renderer)
-        layout.drawForeground(results: results, renderer: renderer)
+        return allSeries.map { ($0.label, .square($0.color)) }
     }
+
 
     public func drawGraphOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer){
         renderer.plotDimensions = plotDimensions
@@ -153,7 +144,7 @@ extension LineGraph{
     }
 
     // functions implementing plotting logic
-    func calcMarkerLocAndScalePts(primaryMarkers: inout PlotMarkers, secondaryMarkers: inout PlotMarkers?,
+    public func calculateScaleAndMarkerLocations(primaryMarkers: inout PlotMarkers, secondaryMarkers: inout PlotMarkers?,
                                   renderer: Renderer){
 
         var maximumXPrimary: T = maxX(points: primaryAxis.series[0].values)
@@ -484,7 +475,7 @@ extension LineGraph{
     }
 
     //functions to draw the plot
-    func drawPlots(renderer: Renderer) {
+    public func drawData(primaryMarkers: PlotMarkers, renderer: Renderer) {
         for s in primaryAxis.series {
             var points = [Point]()
             for p in s.scaledValues {

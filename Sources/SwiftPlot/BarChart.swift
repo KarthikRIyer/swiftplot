@@ -109,25 +109,15 @@ extension BarGraph {
         renderer.drawOutput(fileName: name)
     }
     
-    public func drawGraph(renderer: Renderer){
-        renderer.xOffset = xOffset
-        renderer.yOffset = yOffset
-        
-        var legendSeries = stackSeries.map { ($0.label, GraphLayout.LegendIcon.square($0.color)) }
+    public var legendLabels: [(String, LegendIcon)] {
+        var legendSeries = stackSeries.map { ($0.label, LegendIcon.square($0.color)) }
         legendSeries.insert((series.label, .square(series.color)), at: 0)
-        layout.legendLabels = legendSeries
-        
-        let results = layout.layout(renderer: renderer, calculateMarkers: { primary, secondary in
-            calcMarkerLocAndScalePts(markers: &primary, renderer: renderer)
-        })
-        layout.drawBackground(results: results, renderer: renderer)
-          drawPlots(markers: results.primaryAxisPlotMarkers, renderer: renderer)
-        layout.drawForeground(results: results, renderer: renderer)
+        return legendSeries
     }
-
+    
     // functions implementing plotting logic
-    func calcMarkerLocAndScalePts(markers: inout PlotMarkers, renderer: Renderer) {
-
+    public func calculateScaleAndMarkerLocations(primaryMarkers: inout PlotMarkers, secondaryMarkers: inout PlotMarkers?, renderer: Renderer) {
+    
         var maximumY: U = U(0)
         var minimumY: U = U(0)
         var maximumX: U = U(0)
@@ -193,34 +183,34 @@ extension BarGraph {
                     continue
                 }
                 let p = Point(0, yM)
-                markers.yMarkers.append(p)
+                primaryMarkers.yMarkers.append(p)
                 let text_p = Point(-(renderer.getTextWidth(text: "\(ceil(scaleY*(yM-origin.y)))",
                                                            textSize: layout.markerTextSize)+8), yM - 4)
-                markers.yMarkersTextLocation.append(text_p)
-                markers.yMarkersText.append("\(round(scaleY*(yM-origin.y)))")
+                primaryMarkers.yMarkersTextLocation.append(text_p)
+                primaryMarkers.yMarkersText.append("\(round(scaleY*(yM-origin.y)))")
                 yM = yM + inc1
             }
             yM = origin.y - inc1
             while yM>0.0 {
                 let p = Point(0, yM)
-                markers.yMarkers.append(p)
+                primaryMarkers.yMarkers.append(p)
                 let text_p = Point(-(renderer.getTextWidth(text: "\(floor(scaleY*(yM-origin.y)))",
                                                            textSize: layout.markerTextSize)+8), yM - 4)
-                markers.yMarkersTextLocation.append(text_p)
-                markers.yMarkersText.append("\(round(scaleY*(yM-origin.y)))")
+                primaryMarkers.yMarkersTextLocation.append(text_p)
+                primaryMarkers.yMarkersText.append("\(round(scaleY*(yM-origin.y)))")
                 yM = yM - inc1
             }
 
             for i in 0..<series.count {
                 let p = Point(Float(i*barWidth) + Float(barWidth)*Float(0.5), 0)
-                markers.xMarkers.append(p)
+                primaryMarkers.xMarkers.append(p)
                 let bW: Int = barWidth*(i+1)
                 let textWidth: Float = renderer.getTextWidth(text: "\(series[i].x)",
                                                              textSize: layout.markerTextSize)
                 let text_p = Point(Float(bW) - textWidth*Float(0.5) - Float(barWidth)*Float(0.5),
                                                                      -2.0*layout.markerTextSize)
-                markers.xMarkersTextLocation.append(text_p)
-                markers.xMarkersText.append("\(series[i].x)")
+                primaryMarkers.xMarkersTextLocation.append(text_p)
+                primaryMarkers.xMarkersText.append("\(series[i].x)")
             }
 
             // scale points to be plotted according to plot size
@@ -292,37 +282,37 @@ extension BarGraph {
                     continue
                 }
                 let p = Point(xM, 0)
-                markers.xMarkers.append(p)
+                primaryMarkers.xMarkers.append(p)
                 let text_p = Point(xM - (renderer.getTextWidth(text: "\(floor(scaleX*(xM-origin.x)))",
                                                                textSize: layout.markerTextSize)*Float(0.5)) + 8,
                                    -20)
-                markers.xMarkersTextLocation.append(text_p)
-                markers.xMarkersText.append("\(ceil(scaleX*(xM-origin.x)))")
+                primaryMarkers.xMarkersTextLocation.append(text_p)
+                primaryMarkers.xMarkersText.append("\(ceil(scaleX*(xM-origin.x)))")
                 xM = xM + inc1
             }
             xM = origin.x - inc1
             while xM>0.0 {
                 let p = Point(xM, 0)
-                markers.xMarkers.append(p)
+                primaryMarkers.xMarkers.append(p)
                 let text_p = Point(xM - (renderer.getTextWidth(text: "\(floor(scaleX*(xM-origin.x)))",
                                                                textSize: layout.markerTextSize)*Float(0.5)) + 8,
                                    -20)
-                markers.xMarkersTextLocation.append(text_p)
-                markers.xMarkersText.append("\(floor(scaleX*(xM-origin.x)))")
+                primaryMarkers.xMarkersTextLocation.append(text_p)
+                primaryMarkers.xMarkersText.append("\(floor(scaleX*(xM-origin.x)))")
                 xM = xM - inc1
             }
 
             for i in 0..<series.count {
                 let p = Point(0, Float(i*barWidth) + Float(barWidth)*Float(0.5))
-                markers.yMarkers.append(p)
+                primaryMarkers.yMarkers.append(p)
                 let bW: Int = barWidth*(i+1)
                 let textWidth: Float = renderer.getTextWidth(text: "\(series[i].x)", textSize: layout.markerTextSize)
                 let text_p = Point(-1.2*textWidth,
                                    Float(bW)
                                    - layout.markerTextSize/2
                                    - Float(barWidth)*Float(0.5))
-                markers.yMarkersTextLocation.append(text_p)
-                markers.yMarkersText.append("\(series[i].x)")
+                primaryMarkers.yMarkersTextLocation.append(text_p)
+                primaryMarkers.yMarkersText.append("\(series[i].x)")
             }
 
             // scale points to be plotted according to plot size
@@ -346,14 +336,14 @@ extension BarGraph {
     }
 
     //functions to draw the plot
-    func drawPlots(markers: PlotMarkers, renderer: Renderer) {
+    public func drawData(primaryMarkers: PlotMarkers, renderer: Renderer) {
         if (graphOrientation == .vertical) {
             for index in 0..<series.count {
                 var currentHeightPositive: Float = 0
                 var currentHeightNegative: Float = 0
                 var rect = Rect(
                     origin: Point(
-                        markers.xMarkers[index].x-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5),
+                        primaryMarkers.xMarkers[index].x-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5),
                         origin.y),
                     size: Size(
                         width: Float(barWidth - space),
@@ -393,7 +383,7 @@ extension BarGraph {
                 var currentWidthPositive: Float = 0
                 var currentWidthNegative: Float = 0
                 var rect = Rect(
-                    origin: Point(origin.x, markers.yMarkers[index].y-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5)),
+                    origin: Point(origin.x, primaryMarkers.yMarkers[index].y-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5)),
                     size: Size(
                         width: Float(series.scaledValues[index].y) - origin.x,
                         height: Float(barWidth - space))

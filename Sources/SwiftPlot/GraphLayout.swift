@@ -1,5 +1,10 @@
 import Foundation
 
+public enum LegendIcon {
+    case square(Color)
+    case shape(ScatterPlotSeriesOptions.ScatterPattern, Color)
+}
+
 public struct GraphLayout {
     // Inputs.
     var plotDimensions: PlotDimensions
@@ -8,6 +13,7 @@ public struct GraphLayout {
     var plotLabel: PlotLabel? = nil
     var plotLegend = PlotLegend()
     var plotBorder = PlotBorder()
+    var legendLabels: [(String, LegendIcon)] = []
     
     var enablePrimaryAxisGrid = true
     var enableSecondaryAxisGrid = true
@@ -29,15 +35,7 @@ public struct GraphLayout {
     }
     
     // Layout.
-    
-    enum LegendIcon {
-        case square(Color)
-        case shape(ScatterPlotSeriesOptions.ScatterPattern, Color)
-    }
-    
-    var legendLabels: [(String, LegendIcon)] = []
-    var drawLegendIcon: Optional<(Int, Rect, Renderer)->Void> = nil
-    
+        
     func layout(renderer: Renderer, calculateMarkers: (inout PlotMarkers, inout PlotMarkers?)->Void) -> Results {
         var results = Results()
         calcBorderAndLegend(results: &results)
@@ -282,7 +280,16 @@ public struct GraphLayout {
 }
 
 public protocol HasGraphLayout: AnyObject {
+    
     var layout: GraphLayout { get set }
+    
+    var legendLabels: [(String, LegendIcon)] { get }
+    
+    func calculateScaleAndMarkerLocations(primaryMarkers: inout PlotMarkers,
+                                          secondaryMarkers: inout PlotMarkers?,
+                                          renderer: Renderer)
+    
+    func drawData(primaryMarkers: PlotMarkers, renderer: Renderer)
 }
 
 extension HasGraphLayout {
@@ -318,4 +325,23 @@ extension HasGraphLayout {
         get { layout.markerTextSize }
         set { layout.markerTextSize = newValue }
     }
+}
+
+extension Plot where Self: HasGraphLayout {
+    
+    public func drawGraph(renderer: Renderer) {
+        renderer.xOffset = xOffset
+        renderer.yOffset = yOffset
+        
+        layout.legendLabels = self.legendLabels
+        let results = layout.layout(renderer: renderer, calculateMarkers: { primary, secondary in
+            calculateScaleAndMarkerLocations(primaryMarkers: &primary,
+                                             secondaryMarkers: &secondary,
+                                             renderer: renderer)
+        })
+        layout.drawBackground(results: results, renderer: renderer)
+        drawData(primaryMarkers: results.primaryAxisPlotMarkers, renderer: renderer)
+        layout.drawForeground(results: results, renderer: renderer)
+    }
+    
 }

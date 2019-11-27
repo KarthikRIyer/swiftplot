@@ -127,21 +127,11 @@ extension ScatterPlot{
         drawGraph(renderer: renderer)
         saveImage(fileName: name, renderer: renderer)
     }
-
-    public func drawGraph(renderer: Renderer){
-        renderer.xOffset = xOffset
-        renderer.yOffset = yOffset
-        
-        layout.legendLabels = series.map {
+    
+    public var legendLabels: [(String, LegendIcon)] {
+        return series.map {
             ($0.label, .shape($0.scatterPlotSeriesOptions.scatterPattern, $0.startColor ?? $0.color))
         }
-        
-        let results = layout.layout(renderer: renderer, calculateMarkers: { primary, _ in
-            calcMarkerLocAndScalePts(markers: &primary, renderer: renderer)
-        })
-        layout.drawBackground(results: results, renderer: renderer)
-        drawPlots(renderer: renderer)
-        layout.drawForeground(results: results, renderer: renderer)
     }
 
     public func drawGraphOutput(fileName name: String = "swift_plot_scatter_plot", renderer: Renderer){
@@ -150,7 +140,8 @@ extension ScatterPlot{
     }
 
     // functions implementing plotting logic
-    func calcMarkerLocAndScalePts(markers: inout PlotMarkers, renderer: Renderer){
+    public func calculateScaleAndMarkerLocations(primaryMarkers: inout PlotMarkers, secondaryMarkers: inout PlotMarkers?, renderer: Renderer) {
+        
         var maximumX: T = maxX(points: series[0].values)
         var maximumY: U = maxY(points: series[0].values)
         var minimumX: T = minX(points: series[0].values)
@@ -275,12 +266,12 @@ extension ScatterPlot{
                 continue
             }
             let p = Point(xM, 0)
-            markers.xMarkers.append(p)
+            primaryMarkers.xMarkers.append(p)
             let text_p = Point(xM - (renderer.getTextWidth(text: "\(floor(scaleX*(xM-origin.x)))",
                                                            textSize: layout.markerTextSize)/2.0) + 8,
                                -20)
-            markers.xMarkersTextLocation.append(text_p)
-            markers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
+            primaryMarkers.xMarkersTextLocation.append(text_p)
+            primaryMarkers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
             xM = xM + inc2
         }
 
@@ -291,12 +282,12 @@ extension ScatterPlot{
                 continue
             }
             let p = Point(xM, 0)
-            markers.xMarkers.append(p)
+            primaryMarkers.xMarkers.append(p)
             let text_p = Point(xM - (renderer.getTextWidth(text: "\(ceil(scaleX*(xM-origin.x)))",
                                                            textSize: layout.markerTextSize)/2.0) + 8,
                                -20)
-            markers.xMarkersTextLocation.append(text_p)
-            markers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
+            primaryMarkers.xMarkersTextLocation.append(text_p)
+            primaryMarkers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
             xM = xM - inc2
         }
 
@@ -307,23 +298,23 @@ extension ScatterPlot{
                 continue
             }
             let p = Point(0, yM)
-            markers.yMarkers.append(p)
+            primaryMarkers.yMarkers.append(p)
             let text_p = Point(-(renderer.getTextWidth(text: "\(ceil(scaleY*(yM-origin.y)))",
                                                        textSize: layout.markerTextSize)+8),
                                yM - 4)
-            markers.yMarkersTextLocation.append(text_p)
-            markers.yMarkersText.append("\(ceilToN(scaleY*(yM-origin.y), yIncRound))")
+            primaryMarkers.yMarkersTextLocation.append(text_p)
+            primaryMarkers.yMarkersText.append("\(ceilToN(scaleY*(yM-origin.y), yIncRound))")
             yM = yM + inc1
         }
         yM = origin.y - inc1
         while yM>0.0 {
             let p = Point(0, yM)
-            markers.yMarkers.append(p)
+            primaryMarkers.yMarkers.append(p)
             let text_p = Point(-(renderer.getTextWidth(text: "\(floor(scaleY*(yM-origin.y)))",
                                                        textSize: layout.markerTextSize)+8),
                                yM - 4)
-            markers.yMarkersTextLocation.append(text_p)
-            markers.yMarkersText.append("\(floorToN(scaleY*(yM-origin.y), xIncRound))")
+            primaryMarkers.yMarkersTextLocation.append(text_p)
+            primaryMarkers.yMarkersText.append("\(floorToN(scaleY*(yM-origin.y), xIncRound))")
             yM = yM - inc1
         }
 
@@ -345,7 +336,7 @@ extension ScatterPlot{
     }
 
     //functions to draw the plot
-    func drawPlots(renderer: Renderer) {
+    public func drawData(primaryMarkers: PlotMarkers, renderer: Renderer) {
         for seriesIndex in 0..<series.count {
             var s = series[seriesIndex]
             s.maxY = maxY(points: s.scaledValues)

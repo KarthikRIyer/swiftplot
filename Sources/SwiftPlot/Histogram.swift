@@ -144,21 +144,11 @@ extension Histogram {
         drawGraph(renderer: renderer)
         saveImage(fileName: name, renderer: renderer)
     }
-
-    public func drawGraph(renderer: Renderer){
-        renderer.xOffset = xOffset
-        renderer.yOffset = yOffset
-        
-        var legendSeries = histogramStackSeries.map { ($0.label, GraphLayout.LegendIcon.square($0.color)) }
+    
+    public var legendLabels: [(String, LegendIcon)] {
+        var legendSeries = histogramStackSeries.map { ($0.label, LegendIcon.square($0.color)) }
         legendSeries.insert((histogramSeries.label, .square(histogramSeries.color)), at: 0)
-        layout.legendLabels = legendSeries
-        
-        let results = layout.layout(renderer: renderer, calculateMarkers: { primary, secondary in
-            calcMarkerLocAndScalePts(markers: &primary, renderer: renderer)
-        })
-        layout.drawBackground(results: results, renderer: renderer)
-        drawPlots(renderer: renderer)
-        layout.drawForeground(results: results, renderer: renderer)
+        return legendSeries
     }
 
     public func drawGraphOutput(fileName name: String = "swift_plot_histogram", renderer: Renderer){
@@ -167,8 +157,8 @@ extension Histogram {
     }
 
     // functions implementing plotting logic
-    func calcMarkerLocAndScalePts(markers: inout PlotMarkers, renderer: Renderer) {
-
+    public func calculateScaleAndMarkerLocations(primaryMarkers: inout PlotMarkers, secondaryMarkers: inout PlotMarkers?, renderer: Renderer) {
+        
         var maximumY = Float(histogramSeries.maximumFrequency)
         let minimumY = Float(0)
         var maximumX: T = histogramSeries.maximumX!
@@ -262,10 +252,10 @@ extension Histogram {
                 continue
             }
             let p: Point = Point(0, yM)
-            markers.yMarkers.append(p)
+            primaryMarkers.yMarkers.append(p)
             let text_p: Point = Point(-(renderer.getTextWidth(text: "\(roundToN(scaleY*(yM-origin.y), yIncRound))", textSize: layout.markerTextSize)+8), yM - 4)
-            markers.yMarkersTextLocation.append(text_p)
-            markers.yMarkersText.append("\(roundToN(scaleY*(yM-origin.y), yIncRound))")
+            primaryMarkers.yMarkersTextLocation.append(text_p)
+            primaryMarkers.yMarkersText.append("\(roundToN(scaleY*(yM-origin.y), yIncRound))")
             yM = yM + inc1
         }
 
@@ -290,11 +280,11 @@ extension Histogram {
         let xIncrement = inc2*scaleX
         for i in stride(from: Float(minimumX), through: Float(maximumX), by: xIncrement)  {
             let p: Point = Point((i-Float(minimumX))*scaleXInv + xM , 0)
-            markers.xMarkers.append(p)
+            primaryMarkers.xMarkers.append(p)
             let textWidth: Float = renderer.getTextWidth(text: "\(i)", textSize: layout.markerTextSize)
             let text_p: Point = Point((i - Float(minimumX))*scaleXInv - textWidth/Float(2), -2.0*layout.markerTextSize)
-            markers.xMarkersTextLocation.append(text_p)
-            markers.xMarkersText.append("\(i)")
+            primaryMarkers.xMarkersTextLocation.append(text_p)
+            primaryMarkers.xMarkersText.append("\(i)")
         }
 
         // scale points to be plotted according to plot size
@@ -313,7 +303,7 @@ extension Histogram {
     }
 
     //functions to draw the plot
-    func drawPlots(renderer: Renderer) {
+    public func drawData(primaryMarkers: PlotMarkers, renderer: Renderer) {
         var xM = Float(xMargin)
         switch histogramSeries.histogramSeriesOptions.histogramType {
         case .bar:
