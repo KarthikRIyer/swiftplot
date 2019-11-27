@@ -7,18 +7,16 @@ public class Histogram<T:FloatConvertible>: Plot {
 
     public var xOffset: Float = 0
     public var yOffset: Float = 0
-
+    
     public var plotTitle: PlotTitle? = nil
     public var plotLabel: PlotLabel? = nil
     public var plotLegend: PlotLegend = PlotLegend()
     public var plotBorder: PlotBorder = PlotBorder()
     public var plotDimensions: PlotDimensions {
-        willSet{
-            plotBorder.topLeft       = Point(newValue.subWidth*0.1, newValue.subHeight*0.9)
-            plotBorder.topRight      = Point(newValue.subWidth*0.9, newValue.subHeight*0.9)
-            plotBorder.bottomLeft    = Point(newValue.subWidth*0.1, newValue.subHeight*0.1)
-            plotBorder.bottomRight   = Point(newValue.subWidth*0.9, newValue.subHeight*0.1)
-            plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + Float(20), plotBorder.topLeft.y - Float(20))
+        didSet {
+            Self.updatePlot(legend: &plotLegend,
+                            border: &plotBorder,
+                            fromDimensions: plotDimensions)
         }
     }
     public var strokeWidth: Float = 2
@@ -36,6 +34,17 @@ public class Histogram<T:FloatConvertible>: Plot {
     var xMargin: Float = 5
     var isNormalized = false
     var origin = zeroPoint
+    
+    static func updatePlot(legend: inout PlotLegend, border: inout PlotBorder, fromDimensions dimensions: PlotDimensions) {
+        border.rect.origin.x = dimensions.subWidth*0.1
+        border.rect.origin.y = dimensions.subHeight*0.9
+        border.rect.size.width = dimensions.subWidth*0.8
+        border.rect.size.height = dimensions.subHeight * -0.8
+        border.rect = border.rect.normalized
+
+        legend.legendTopLeft = Point(border.rect.minX + Float(20),
+                                     border.rect.maxY - Float(20))
+    }
 
     public init(width: Float = 1000,
                 height: Float = 660,
@@ -152,11 +161,9 @@ extension Histogram {
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
         renderer.plotDimensions = plotDimensions
-        plotBorder.topLeft       = Point(plotDimensions.subWidth*0.1, plotDimensions.subHeight*0.9)
-        plotBorder.topRight      = Point(plotDimensions.subWidth*0.9, plotDimensions.subHeight*0.9)
-        plotBorder.bottomLeft    = Point(plotDimensions.subWidth*0.1, plotDimensions.subHeight*0.1)
-        plotBorder.bottomRight   = Point(plotDimensions.subWidth*0.9, plotDimensions.subHeight*0.1)
-        plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + Float(20), plotBorder.topLeft.y - Float(20))
+        Self.updatePlot(legend: &plotLegend,
+                        border: &plotBorder,
+                        fromDimensions: plotDimensions)
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
         drawGrid(renderer: renderer)
@@ -172,11 +179,9 @@ extension Histogram {
     public func drawGraph(renderer: Renderer){
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
-        plotBorder.topLeft       = Point(plotDimensions.subWidth*0.1, plotDimensions.subHeight*0.9)
-        plotBorder.topRight      = Point(plotDimensions.subWidth*0.9, plotDimensions.subHeight*0.9)
-        plotBorder.bottomLeft    = Point(plotDimensions.subWidth*0.1, plotDimensions.subHeight*0.1)
-        plotBorder.bottomRight   = Point(plotDimensions.subWidth*0.9, plotDimensions.subHeight*0.1)
-        plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + Float(20), plotBorder.topLeft.y - Float(20))
+        Self.updatePlot(legend: &plotLegend,
+                        border: &plotBorder,
+                        fromDimensions: plotDimensions)
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
         drawGrid(renderer: renderer)
@@ -200,16 +205,22 @@ extension Histogram {
                                                       textSize: plotLabel!.labelSize)
             let yWidth: Float = renderer.getTextWidth(text: plotLabel!.yLabel,
                                                       textSize: plotLabel!.labelSize)
-            plotLabel!.xLabelLocation = Point(((plotBorder.bottomRight.x + plotBorder.bottomLeft.x)*Float(0.5)) - xWidth*Float(0.5),
-                                              plotBorder.bottomLeft.y - plotLabel!.labelSize - 0.05*plotDimensions.graphHeight)
-            plotLabel!.yLabelLocation = Point((plotBorder.bottomLeft.x - plotLabel!.labelSize - 0.05*plotDimensions.graphWidth),
-                                              ((plotBorder.bottomLeft.y + plotBorder.topLeft.y)*Float(0.5) - yWidth))
+            plotLabel!.xLabelLocation = Point(
+                plotBorder.rect.midX - xWidth * 0.5,
+                plotBorder.rect.minY - plotLabel!.labelSize - 0.05 * plotDimensions.graphHeight
+            )
+            plotLabel!.yLabelLocation = Point(
+                plotBorder.rect.origin.x - plotLabel!.labelSize - 0.05 * plotDimensions.graphWidth,
+                plotBorder.rect.midY - yWidth
+            )
         }
         if (plotTitle != nil) {
             let titleWidth: Float = renderer.getTextWidth(text: plotTitle!.title,
                                                           textSize: plotTitle!.titleSize)
-            plotTitle!.titleLocation = Point(((plotBorder.topRight.x + plotBorder.topLeft.x)*Float(0.5)) - titleWidth*Float(0.5),
-                                             plotBorder.topLeft.y + plotTitle!.titleSize*Float(0.5))
+            plotTitle!.titleLocation = Point(
+              plotBorder.rect.midX - titleWidth * 0.5,
+              plotBorder.rect.maxY + plotTitle!.titleSize * 0.5
+            )
         }
     }
 
@@ -369,10 +380,7 @@ extension Histogram {
 
     //functions to draw the plot
     func drawBorder(renderer: Renderer){
-        renderer.drawRect(topLeftPoint: plotBorder.topLeft,
-                          topRightPoint: plotBorder.topRight,
-                          bottomRightPoint: plotBorder.bottomRight,
-                          bottomLeftPoint: plotBorder.bottomLeft,
+        renderer.drawRect(plotBorder.rect,
                           strokeWidth: plotBorder.borderThickness,
                           strokeColor: Color.black, isOriginShifted: false)
     }
@@ -445,27 +453,19 @@ extension Histogram {
         case .bar:
             for i in 0..<histogramSeries.bins {
                 var currentHeight: Float = histogramSeries.scaledBinFrequency[i]
-                var bL = Point(xM,0.0)
-                var bR = Point(xM+barWidth,0.0)
-                var tL = Point(xM,currentHeight)
-                var tR = Point(xM+barWidth,currentHeight)
-                renderer.drawSolidRect(topLeftPoint: tL,
-                                       topRightPoint: tR,
-                                       bottomRightPoint: bR,
-                                       bottomLeftPoint: bL,
+                var rect = Rect(
+                    origin: Point(xM, 0),
+                    size: Size(width: barWidth, height: currentHeight)
+                )
+                renderer.drawSolidRect(rect,
                                        fillColor: histogramSeries.color,
                                        hatchPattern: .none,
                                        isOriginShifted: true)
 
                 for series in histogramStackSeries {
-                    bL = Point(bL.x, currentHeight)
-                    bR = Point(bR.x, currentHeight)
-                    tL = Point(tL.x, bL.y + series.scaledBinFrequency[i])
-                    tR = Point(tR.x, bR.y + series.scaledBinFrequency[i])
-                    renderer.drawSolidRect(topLeftPoint: tL,
-                                           topRightPoint: tR,
-                                           bottomRightPoint: bR,
-                                           bottomLeftPoint: bL,
+                    rect.origin.y = currentHeight
+                    rect.size.height = series.scaledBinFrequency[i]
+                    renderer.drawSolidRect(rect,
                                            fillColor: series.color,
                                            hatchPattern: .none,
                                            isOriginShifted: true)
@@ -603,33 +603,27 @@ extension Histogram {
         plotLegend.legendWidth  = maxWidth + 3.5*plotLegend.legendTextSize
         plotLegend.legendHeight = (Float(histogramStackSeries.count + 1)*2.0 + 1.0)*plotLegend.legendTextSize
 
-        let p1: Point = Point(plotLegend.legendTopLeft.x, plotLegend.legendTopLeft.y)
-        let p2: Point = Point(plotLegend.legendTopLeft.x + plotLegend.legendWidth, plotLegend.legendTopLeft.y)
-        let p3: Point = Point(plotLegend.legendTopLeft.x + plotLegend.legendWidth, plotLegend.legendTopLeft.y - plotLegend.legendHeight)
-        let p4: Point = Point(plotLegend.legendTopLeft.x, plotLegend.legendTopLeft.y - plotLegend.legendHeight)
-
-        renderer.drawSolidRectWithBorder(topLeftPoint: p1,
-                                         topRightPoint: p2,
-                                         bottomRightPoint: p3,
-                                         bottomLeftPoint: p4,
+        let legendRect = Rect(
+            origin: plotLegend.legendTopLeft,
+            size: Size(width: plotLegend.legendWidth, height: -plotLegend.legendHeight)
+        ).normalized
+        renderer.drawSolidRectWithBorder(legendRect,
                                          strokeWidth: plotBorder.borderThickness,
                                          fillColor: Color.transluscentWhite,
                                          borderColor: Color.black,
                                          isOriginShifted: false)
 
         for i in 0..<legendSeries.count {
-            let tL: Point = Point(plotLegend.legendTopLeft.x + plotLegend.legendTextSize, plotLegend.legendTopLeft.y - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize)
-            let bR: Point = Point(tL.x + plotLegend.legendTextSize, tL.y - plotLegend.legendTextSize)
-            let tR: Point = Point(bR.x, tL.y)
-            let bL: Point = Point(tL.x, bR.y)
-            renderer.drawSolidRect(topLeftPoint: tL,
-                                   topRightPoint: tR,
-                                   bottomRightPoint: bR,
-                                   bottomLeftPoint: bL,
+            let seriesIcon = Rect(
+                origin: Point(legendRect.origin.x + plotLegend.legendTextSize,
+                              legendRect.maxY - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize),
+                size: Size(width: plotLegend.legendTextSize, height: -plotLegend.legendTextSize)
+            )
+            renderer.drawSolidRect(seriesIcon,
                                    fillColor: legendSeries[i].color,
                                    hatchPattern: .none,
                                    isOriginShifted: false)
-            let p: Point = Point(bR.x + plotLegend.legendTextSize, bR.y)
+            let p: Point = Point(seriesIcon.maxX + plotLegend.legendTextSize, seriesIcon.minY)
             renderer.drawText(text: legendSeries[i].label,
                               location: p,
                               textSize: plotLegend.legendTextSize,

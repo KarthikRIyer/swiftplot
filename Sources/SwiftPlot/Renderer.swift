@@ -33,10 +33,7 @@ public protocol Renderer: AnyObject{
     *             without shifted origin. This is decided by the boolean
     *             parameter 'isOriginShifted'.
     */
-    func drawRect(topLeftPoint p1: Point,
-                  topRightPoint p2: Point,
-                  bottomRightPoint p3: Point,
-                  bottomLeftPoint p4: Point,
+    func drawRect(_ rect: Rect,
                   strokeWidth thickness: Float,
                   strokeColor: Color,
                   isOriginShifted: Bool)
@@ -54,10 +51,7 @@ public protocol Renderer: AnyObject{
     *             without shifted origin.
     *             This is decided by the boolean parameter 'isOriginShifted'.
     */
-    func drawSolidRect(topLeftPoint p1: Point,
-                       topRightPoint p2: Point,
-                       bottomRightPoint p3: Point,
-                       bottomLeftPoint p4: Point,
+    func drawSolidRect(_ rect: Rect,
                        fillColor: Color,
                        hatchPattern: BarGraphSeriesOptions.Hatching,
                        isOriginShifted: Bool)
@@ -125,10 +119,7 @@ public protocol Renderer: AnyObject{
     *             This function can operate in both coordinate systems with and without shifted origin.
     *             This is decided by the boolean parameter isOriginShifted.
     */
-    func drawSolidRectWithBorder(topLeftPoint p1: Point,
-                                 topRightPoint p2: Point,
-                                 bottomRightPoint p3: Point,
-                                 bottomLeftPoint p4: Point,
+    func drawSolidRectWithBorder(_ rect: Rect,
                                  strokeWidth thickness: Float, fillColor: Color,
                                  borderColor: Color,
                                  isOriginShifted: Bool)

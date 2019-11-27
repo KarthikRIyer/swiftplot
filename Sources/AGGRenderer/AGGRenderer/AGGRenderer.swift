@@ -32,24 +32,32 @@ public class AGGRenderer: Renderer{
                                     fontPath)
         initialized = true
     }
+    
+    func getPoints(from rect: Rect) -> (tL: Point, tR: Point, bL: Point, bR: Point) {
+        let rect = rect.normalized
+        return (
+            Point(rect.origin.x, rect.maxY),
+            Point(rect.maxX, rect.maxY),
+            rect.origin,
+            Point(rect.maxX, rect.origin.y)
+        )
+    }
 
-    public func drawRect(topLeftPoint p1: Point,
-                         topRightPoint p2: Point,
-                         bottomRightPoint p3: Point,
-                         bottomLeftPoint p4: Point,
+    public func drawRect(_ rect: Rect,
                          strokeWidth thickness: Float,
                          strokeColor: Color = Color.black,
                          isOriginShifted: Bool) {
         var x = [Float]()
         var y = [Float]()
-        x.append(p1.x + xOffset)
-        x.append(p2.x + xOffset)
-        x.append(p3.x + xOffset)
-        x.append(p4.x + xOffset)
-        y.append(p1.y + yOffset)
-        y.append(p2.y + yOffset)
-        y.append(p3.y + yOffset)
-        y.append(p4.y + yOffset)
+        let pts = getPoints(from: rect)
+        x.append(pts.tL.x + xOffset)
+        x.append(pts.tR.x + xOffset)
+        x.append(pts.bR.x + xOffset)
+        x.append(pts.bL.x + xOffset)
+        y.append(pts.tL.y + yOffset)
+        y.append(pts.tR.y + yOffset)
+        y.append(pts.bR.y + yOffset)
+        y.append(pts.bL.y + yOffset)
         draw_rect(x,
                   y,
                   thickness,
@@ -61,23 +69,21 @@ public class AGGRenderer: Renderer{
                   agg_object)
     }
 
-    public func drawSolidRect(topLeftPoint p1: Point,
-                              topRightPoint p2: Point,
-                              bottomRightPoint p3: Point,
-                              bottomLeftPoint p4: Point,
+    public func drawSolidRect(_ rect: Rect,
                               fillColor: Color = Color.white,
                               hatchPattern: BarGraphSeriesOptions.Hatching,
                               isOriginShifted: Bool) {
         var x = [Float]()
         var y = [Float]()
-        x.append(p1.x + xOffset)
-        x.append(p2.x + xOffset)
-        x.append(p3.x + xOffset)
-        x.append(p4.x + xOffset)
-        y.append(p1.y + yOffset)
-        y.append(p2.y + yOffset)
-        y.append(p3.y + yOffset)
-        y.append(p4.y + yOffset)
+        let pts = getPoints(from: rect)
+        x.append(pts.tL.x + xOffset)
+        x.append(pts.tR.x + xOffset)
+        x.append(pts.bR.x + xOffset)
+        x.append(pts.bL.x + xOffset)
+        y.append(pts.tL.y + yOffset)
+        y.append(pts.tR.y + yOffset)
+        y.append(pts.bR.y + yOffset)
+        y.append(pts.bL.y + yOffset)
         draw_solid_rect(x,
                         y,
                         fillColor.r,
@@ -89,10 +95,7 @@ public class AGGRenderer: Renderer{
                         agg_object)
     }
 
-    public func drawSolidRectWithBorder(topLeftPoint p1: Point,
-                                        topRightPoint p2: Point,
-                                        bottomRightPoint p3: Point,
-                                        bottomLeftPoint p4: Point,
+    public func drawSolidRectWithBorder(_ rect: Rect,
                                         strokeWidth thickness: Float,
                                         fillColor: Color = Color.white,
                                         borderColor: Color = Color.black,
@@ -100,14 +103,15 @@ public class AGGRenderer: Renderer{
         var x = [Float]()
         var y = [Float]()
 
-        x.append(p1.x + xOffset)
-        x.append(p2.x + xOffset)
-        x.append(p3.x + xOffset)
-        x.append(p4.x + xOffset)
-        y.append(p1.y + yOffset)
-        y.append(p2.y + yOffset)
-        y.append(p3.y + yOffset)
-        y.append(p4.y + yOffset)
+        let pts = getPoints(from: rect)
+        x.append(pts.tL.x + xOffset)
+        x.append(pts.tR.x + xOffset)
+        x.append(pts.bR.x + xOffset)
+        x.append(pts.bL.x + xOffset)
+        y.append(pts.tL.y + yOffset)
+        y.append(pts.tR.y + yOffset)
+        y.append(pts.bR.y + yOffset)
+        y.append(pts.bL.y + yOffset)
 
         draw_solid_rect(x,
                         y,

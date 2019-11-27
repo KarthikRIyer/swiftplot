@@ -13,17 +13,10 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
     public var plotLegend: PlotLegend = PlotLegend()
     public var plotBorder: PlotBorder = PlotBorder()
     public var plotDimensions: PlotDimensions {
-        willSet{
-            plotBorder.topLeft       = Point(newValue.subWidth*0.1,
-                                             newValue.subHeight*0.9)
-            plotBorder.topRight      = Point(newValue.subWidth*0.9,
-                                             newValue.subHeight*0.9)
-            plotBorder.bottomLeft    = Point(newValue.subWidth*0.1,
-                                             newValue.subHeight*0.1)
-            plotBorder.bottomRight   = Point(newValue.subWidth*0.9,
-                                             newValue.subHeight*0.1)
-            plotLegend.legendTopLeft = Point(Float(plotBorder.topLeft.x) + Float(20),
-                                             plotBorder.topLeft.y - Float(20))
+        didSet {
+            Self.updatePlot(legend: &plotLegend,
+                            border: &plotBorder,
+                            fromDimensions: plotDimensions)
         }
     }
     public enum GraphOrientation {
@@ -45,6 +38,17 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
     var barWidth : Int = 0
     var origin = zeroPoint
 
+    static func updatePlot(legend: inout PlotLegend, border: inout PlotBorder, fromDimensions dimensions: PlotDimensions) {
+        border.rect.origin.x = dimensions.subWidth*0.1
+        border.rect.origin.y = dimensions.subHeight*0.9
+        border.rect.size.width = dimensions.subWidth*0.8
+        border.rect.size.height = dimensions.subHeight * -0.8
+        border.rect = border.rect.normalized
+        
+        legend.legendTopLeft = Point(border.rect.minX + Float(20),
+                                     border.rect.maxY - Float(20))
+    }
+    
     public init(width: Float = 1000,
                 height: Float = 660,
                 enableGrid: Bool = false){
@@ -115,16 +119,9 @@ extension BarGraph {
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
         renderer.plotDimensions = plotDimensions
-        plotBorder.topLeft       = Point(plotDimensions.subWidth*0.1,
-                                         plotDimensions.subHeight*0.9)
-        plotBorder.topRight      = Point(plotDimensions.subWidth*0.9,
-                                         plotDimensions.subHeight*0.9)
-        plotBorder.bottomLeft    = Point(plotDimensions.subWidth*0.1,
-                                         plotDimensions.subHeight*0.1)
-        plotBorder.bottomRight   = Point(plotDimensions.subWidth*0.9,
-                                         plotDimensions.subHeight*0.1)
-        plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + Float(20),
-                                         plotBorder.topLeft.y - Float(20))
+        Self.updatePlot(legend: &plotLegend,
+                        border: &plotBorder,
+                        fromDimensions: plotDimensions)
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
         drawGrid(renderer: renderer)
@@ -140,16 +137,9 @@ extension BarGraph {
     public func drawGraph(renderer: Renderer){
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
-        plotBorder.topLeft       = Point(plotDimensions.subWidth*0.1,
-                                         plotDimensions.subHeight*0.9)
-        plotBorder.topRight      = Point(plotDimensions.subWidth*0.9,
-                                         plotDimensions.subHeight*0.9)
-        plotBorder.bottomLeft    = Point(plotDimensions.subWidth*0.1,
-                                         plotDimensions.subHeight*0.1)
-        plotBorder.bottomRight   = Point(plotDimensions.subWidth*0.9,
-                                         plotDimensions.subHeight*0.1)
-        plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + Float(20),
-                                         plotBorder.topLeft.y - Float(20))
+        Self.updatePlot(legend: &plotLegend,
+                        border: &plotBorder,
+                        fromDimensions: plotDimensions)
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
         drawGrid(renderer: renderer)
@@ -174,27 +164,22 @@ extension BarGraph {
                                                          textSize: plotLabel!.labelSize)
             let yWidth    : Float = renderer.getTextWidth(text: plotLabel!.yLabel,
                                                           textSize: plotLabel!.labelSize)
-            plotLabel!.xLabelLocation = Point(((plotBorder.bottomRight.x
-                                              + plotBorder.bottomLeft.x)*Float(0.5))
-                                              - xWidth*Float(0.5),
-                                                plotBorder.bottomLeft.y
-                                              - plotLabel!.labelSize
-                                              - 0.05*plotDimensions.graphHeight)
-            plotLabel!.yLabelLocation = Point((plotBorder.bottomLeft.x
-                                              - plotLabel!.labelSize
-                                              - 0.05*plotDimensions.graphWidth),
-                                              ((plotBorder.bottomLeft.y
-                                              + Float(plotBorder.topLeft.y))*Float(0.5)
-                                              - yWidth))
+            plotLabel!.xLabelLocation = Point(
+                plotBorder.rect.midX - xWidth * 0.5,
+                plotBorder.rect.minY - plotLabel!.labelSize - 0.05 * plotDimensions.graphHeight
+            )
+            plotLabel!.yLabelLocation = Point(
+                plotBorder.rect.origin.x - plotLabel!.labelSize - 0.05 * plotDimensions.graphWidth,
+                plotBorder.rect.midY - yWidth
+            )
         }
         if (plotTitle != nil) {
           let titleWidth: Float = renderer.getTextWidth(text: plotTitle!.title,
                                                         textSize: plotTitle!.titleSize)
-          plotTitle!.titleLocation = Point(((plotBorder.topRight.x
-                                           + plotBorder.topLeft.x)*Float(0.5))
-                                           - titleWidth*Float(0.5),
-                                           plotBorder.topLeft.y
-                                           + plotTitle!.titleSize*Float(0.5))
+          plotTitle!.titleLocation = Point(
+            plotBorder.rect.midX - titleWidth * 0.5,
+            plotBorder.rect.maxY + plotTitle!.titleSize * 0.5
+          )
         }
     }
 
@@ -428,10 +413,7 @@ extension BarGraph {
 
     //functions to draw the plot
     func drawBorder(renderer: Renderer){
-        renderer.drawRect(topLeftPoint: plotBorder.topLeft,
-                          topRightPoint: plotBorder.topRight,
-                          bottomRightPoint: plotBorder.bottomRight,
-                          bottomLeftPoint: plotBorder.bottomLeft,
+        renderer.drawRect(plotBorder.rect,
                           strokeWidth: plotBorder.borderThickness,
                           strokeColor: Color.black, isOriginShifted: false)
     }
@@ -503,63 +485,37 @@ extension BarGraph {
             for index in 0..<series.count {
                 var currentHeightPositive: Float = 0
                 var currentHeightNegative: Float = 0
-                var tL = Point(plotMarkers.xMarkers[index].x-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5),
-                               Float(series.scaledValues[index].y))
-                var tR = Point(plotMarkers.xMarkers[index].x+Float(barWidth)*Float(0.5)-Float(space)*Float(0.5),
-                               Float(series.scaledValues[index].y))
-                var bL = Point(plotMarkers.xMarkers[index].x-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5),
-                               origin.y)
-                var bR = Point(plotMarkers.xMarkers[index].x+Float(barWidth)*Float(0.5)-Float(space)*Float(0.5),
-                               origin.y)
-                if (tL.y - bL.y >= 0) {
-                    currentHeightPositive = Float(tL.y) - Float(bL.y)
+                var rect = Rect(
+                    origin: Point(
+                        plotMarkers.xMarkers[index].x-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5),
+                        origin.y),
+                    size: Size(
+                        width: Float(barWidth - space),
+                        height: Float(series.scaledValues[index].y) - origin.y)
+                )
+                if (rect.size.height >= 0) {
+                    currentHeightPositive = rect.size.height
                 }
                 else {
-                    currentHeightNegative = Float(tL.y) - Float(bL.y)
+                    currentHeightNegative = rect.size.height
                 }
-                renderer.drawSolidRect(topLeftPoint: tL,
-                                       topRightPoint: tR,
-                                       bottomRightPoint: bR,
-                                       bottomLeftPoint: bL,
+                renderer.drawSolidRect(rect,
                                        fillColor: series.color,
                                        hatchPattern: series.barGraphSeriesOptions.hatchPattern,
                                        isOriginShifted: true)
                 for s in stackSeries {
-                    tL = Point(plotMarkers.xMarkers[index].x-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5),
-                               Float(s.scaledValues[index].y))
-                    bL = Point(plotMarkers.xMarkers[index].x-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5),
-                               origin.y)
-                    if (tL.y - bL.y >= 0) {
-                        tL = Point(plotMarkers.xMarkers[index].x-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5),
-                                   Float(s.scaledValues[index].y) + currentHeightPositive)
-                        tR = Point(plotMarkers.xMarkers[index].x+Float(barWidth)*Float(0.5)-Float(space)*Float(0.5),
-                                   Float(s.scaledValues[index].y) + currentHeightPositive)
-                        bL = Point(plotMarkers.xMarkers[index].x-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5),
-                                   origin.y + currentHeightPositive)
-                        bR = Point(plotMarkers.xMarkers[index].x + Float(barWidth)*Float(0.5) - Float(space)*Float(0.5),
-                                   origin.y + currentHeightPositive)
+                    let stackValue = Float(s.scaledValues[index].y)
+                    if (stackValue - origin.y >= 0) {
+                        rect.origin.y = origin.y + currentHeightPositive
+                        rect.size.height = stackValue - origin.y
+                        currentHeightPositive += stackValue
                     }
                     else {
-                        tL = Point(plotMarkers.xMarkers[index].x-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5),
-                                   Float(s.scaledValues[index].y) + currentHeightNegative)
-                        tR = Point(plotMarkers.xMarkers[index].x+Float(barWidth)*Float(0.5)-Float(space)*Float(0.5),
-                                   Float(s.scaledValues[index].y) + currentHeightNegative)
-                        bL = Point(plotMarkers.xMarkers[index].x-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5),
-                                   origin.y + currentHeightNegative)
-                        bR = Point(plotMarkers.xMarkers[index].x+Float(barWidth)*Float(0.5)-Float(space)*Float(0.5),
-                                   origin.y + currentHeightNegative)
+                        rect.origin.y = origin.y - currentHeightNegative - stackValue
+                        rect.size.height = stackValue - origin.y
+                        currentHeightNegative += stackValue
                     }
-                    let heightIncrement = tL.y - bL.y
-                    if (heightIncrement >= 0) {
-                        currentHeightPositive = currentHeightPositive + heightIncrement
-                    }
-                    else {
-                        currentHeightNegative = currentHeightNegative + heightIncrement
-                    }
-                    renderer.drawSolidRect(topLeftPoint: tL,
-                                           topRightPoint: tR,
-                                           bottomRightPoint: bR,
-                                           bottomLeftPoint: bL,
+                    renderer.drawSolidRect(rect,
                                            fillColor: s.color,
                                            hatchPattern: s.barGraphSeriesOptions.hatchPattern,
                                            isOriginShifted: true)
@@ -570,64 +526,35 @@ extension BarGraph {
             for index in 0..<series.count {
                 var currentWidthPositive: Float = 0
                 var currentWidthNegative: Float = 0
-                var tL = Point(origin.x,
-                               plotMarkers.yMarkers[index].y+Float(barWidth)*Float(0.5)-Float(space)*Float(0.5))
-                var tR = Point(Float(series.scaledValues[index].y),
-                               plotMarkers.yMarkers[index].y+Float(barWidth)*Float(0.5)-Float(space)*Float(0.5))
-                var bL = Point(origin.x,
-                               plotMarkers.yMarkers[index].y-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5))
-                var bR = Point(Float(series.scaledValues[index].y),
-                               plotMarkers.yMarkers[index].y-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5))
-                if (tR.x - tL.x >= 0) {
-                    currentWidthPositive = tR.x - tL.x
+                var rect = Rect(
+                    origin: Point(origin.x, plotMarkers.yMarkers[index].y-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5)),
+                    size: Size(
+                        width: Float(series.scaledValues[index].y) - origin.x,
+                        height: Float(barWidth - space))
+                )
+                if (rect.size.width >= 0) {
+                    currentWidthPositive = rect.size.width
                 }
                 else {
-                    currentWidthNegative = tR.x - tL.x
+                    currentWidthNegative = rect.size.width
                 }
-                renderer.drawSolidRect(topLeftPoint: tL,
-                                       topRightPoint: tR,
-                                       bottomRightPoint: bR,
-                                       bottomLeftPoint: bL,
+                renderer.drawSolidRect(rect,
                                        fillColor: series.color,
                                        hatchPattern: series.barGraphSeriesOptions.hatchPattern,
                                        isOriginShifted: true)
                 for s in stackSeries {
-
-                    tL = Point(origin.x,
-                               plotMarkers.yMarkers[index].y+Float(barWidth)*Float(0.5)-Float(space)*Float(0.5))
-                    tR = Point(Float(s.scaledValues[index].y),
-                               plotMarkers.yMarkers[index].y+Float(barWidth)*Float(0.5)-Float(space)*Float(0.5))
-                    if (tR.x - tL.x >= 0) {
-                        tL = Point(origin.x+currentWidthPositive,
-                                   plotMarkers.yMarkers[index].y+Float(barWidth)*Float(0.5)-Float(space)*Float(0.5))
-                        tR = Point(Float(s.scaledValues[index].y)+currentWidthPositive,
-                                   plotMarkers.yMarkers[index].y+Float(barWidth)/2.0-Float(space)*Float(0.5))
-                        bL = Point(origin.x+currentWidthPositive,
-                                   plotMarkers.yMarkers[index].y-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5))
-                        bR = Point(Float(s.scaledValues[index].y)+currentWidthPositive,
-                                   plotMarkers.yMarkers[index].y-Float(barWidth)/2.0+Float(space)*Float(0.5))
+                    let stackValue = Float(s.scaledValues[index].y)
+                    if (stackValue - origin.x >= 0) {
+                        rect.origin.x = origin.x + currentWidthPositive
+                        rect.size.width = stackValue - origin.x
+                        currentWidthPositive += stackValue
                     }
                     else {
-                        tL = Point(origin.x+currentWidthNegative,
-                                   plotMarkers.yMarkers[index].y+Float(barWidth)*Float(0.5)-Float(space)*Float(0.5))
-                        tR = Point(Float(s.scaledValues[index].y)+currentWidthNegative,
-                                   plotMarkers.yMarkers[index].y+Float(barWidth)/2.0-Float(space)*Float(0.5))
-                        bL = Point(origin.x+currentWidthNegative,
-                                   plotMarkers.yMarkers[index].y-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5))
-                        bR = Point(Float(s.scaledValues[index].y)+currentWidthNegative,
-                                   plotMarkers.yMarkers[index].y-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5))
+                        rect.origin.x = origin.x - currentWidthNegative - stackValue
+                        rect.size.width = stackValue - origin.x
+                        currentWidthNegative += stackValue
                     }
-                    let widthIncrement = Float(tR.x) - Float(tL.x)
-                    if (widthIncrement >= 0) {
-                        currentWidthPositive = currentWidthPositive + widthIncrement
-                    }
-                    else {
-                        currentWidthNegative = currentWidthNegative + widthIncrement
-                    }
-                    renderer.drawSolidRect(topLeftPoint: tL,
-                                           topRightPoint: tR,
-                                           bottomRightPoint: bR,
-                                           bottomLeftPoint: bL,
+                    renderer.drawSolidRect(rect,
                                            fillColor: s.color,
                                            hatchPattern: s.barGraphSeriesOptions.hatchPattern,
                                            isOriginShifted: true)
@@ -677,40 +604,27 @@ extension BarGraph {
         plotLegend.legendWidth  = maxWidth + 3.5*plotLegend.legendTextSize
         plotLegend.legendHeight = (Float(stackSeries.count + 1)*2.0 + 1.0)*plotLegend.legendTextSize
 
-        let p1 = Point(plotLegend.legendTopLeft.x,
-                       plotLegend.legendTopLeft.y)
-        let p2 = Point(plotLegend.legendTopLeft.x+plotLegend.legendWidth,
-                       plotLegend.legendTopLeft.y)
-        let p3 = Point(plotLegend.legendTopLeft.x+plotLegend.legendWidth,
-                       plotLegend.legendTopLeft.y-plotLegend.legendHeight)
-        let p4 = Point(plotLegend.legendTopLeft.x,
-                       plotLegend.legendTopLeft.y-plotLegend.legendHeight)
-
-        renderer.drawSolidRectWithBorder(topLeftPoint: p1,
-                                         topRightPoint: p2,
-                                         bottomRightPoint: p3,
-                                         bottomLeftPoint: p4,
+        let legendRect = Rect(
+            origin: plotLegend.legendTopLeft,
+            size: Size(width: plotLegend.legendWidth, height: -plotLegend.legendHeight)
+        ).normalized
+        renderer.drawSolidRectWithBorder(legendRect,
                                          strokeWidth: plotBorder.borderThickness,
                                          fillColor: .transluscentWhite,
                                          borderColor: .black,
                                          isOriginShifted: false)
 
         for i in 0..<legendSeries.count {
-        	let tL = Point(plotLegend.legendTopLeft.x+plotLegend.legendTextSize,
-                         plotLegend.legendTopLeft.y-(2.0*Float(i) + 1.0)*plotLegend.legendTextSize)
-        	let bR = Point(tL.x+plotLegend.legendTextSize,
-                         tL.y-plotLegend.legendTextSize)
-        	let tR = Point(bR.x, tL.y)
-        	let bL = Point(tL.x, bR.y)
-        	renderer.drawSolidRect(topLeftPoint: tL,
-                                 topRightPoint: tR,
-                                 bottomRightPoint: bR,
-                                 bottomLeftPoint: bL,
-                                 fillColor: legendSeries[i].color,
-                                 hatchPattern: .none,
-                                 isOriginShifted: false)
-        	let p = Point(bR.x + plotLegend.legendTextSize,
-                        bR.y)
+        	let seriesIcon = Rect(
+                origin: Point(legendRect.origin.x + plotLegend.legendTextSize,
+                              legendRect.maxY - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize),
+                size: Size(width: plotLegend.legendTextSize, height: -plotLegend.legendTextSize)
+            )
+            renderer.drawSolidRect(seriesIcon,
+                                   fillColor: legendSeries[i].color,
+                                   hatchPattern: .none,
+                                   isOriginShifted: false)
+        	let p = Point(seriesIcon.maxX + plotLegend.legendTextSize, seriesIcon.minY)
         	renderer.drawText(text: legendSeries[i].label,
                             location: p,
                             textSize: plotLegend.legendTextSize,
