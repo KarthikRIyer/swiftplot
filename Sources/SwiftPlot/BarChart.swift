@@ -30,14 +30,20 @@ public struct GraphLayout {
     
     // Layout.
     
-    var legendInfo: [(String, Color)] = []
+    enum LegendIcon {
+        case square(Color)
+        case shape(ScatterPlotSeriesOptions.ScatterPattern, Color)
+    }
+    
+    var legendLabels: [(String, LegendIcon)] = []
+    var drawLegendIcon: Optional<(Int, Rect, Renderer)->Void> = nil
     
     func layout(renderer: Renderer, calculateMarkers: (inout PlotMarkers, inout PlotMarkers?)->Void) -> Results {
         var results = Results()
         calcBorderAndLegend(results: &results)
         calcLabelLocations(renderer: renderer, results: &results)
         calculateMarkers(&results.primaryAxisPlotMarkers, &results.secondaryAxisPlotMarkers)
-        calcLegend(legendInfo, results: &results, renderer: renderer)
+        calcLegend(legendLabels, results: &results, renderer: renderer)
         return results
     }
     
@@ -74,7 +80,7 @@ public struct GraphLayout {
         }
     }
     
-    func calcLegend(_ labels: [(String, Color)], results: inout Results, renderer: Renderer) {
+    func calcLegend(_ labels: [(String, LegendIcon)], results: inout Results, renderer: Renderer) {
 
         let maxWidth = labels.lazy.map {
             renderer.getTextWidth(text: $0.0, textSize: self.plotLegend.legendTextSize)
@@ -100,7 +106,7 @@ public struct GraphLayout {
     func drawForeground(results: Results, renderer: Renderer) {
         drawTitle(results: results, renderer: renderer)
         drawLabels(results: results, renderer: renderer)
-        drawLegend(legendInfo, results: results, renderer: renderer)
+        drawLegend(legendLabels, results: results, renderer: renderer)
     }
     
     func drawTitle(results: Results, renderer: Renderer) {
@@ -238,7 +244,7 @@ public struct GraphLayout {
         }
     }
     
-    func drawLegend(_ legendSeries: [(String, Color)], results: Results, renderer: Renderer) {
+    func drawLegend(_ entries: [(String, LegendIcon)], results: Results, renderer: Renderer) {
         
         guard let legendRect = results.legendRect else { return }
         renderer.drawSolidRectWithBorder(legendRect,
@@ -247,18 +253,23 @@ public struct GraphLayout {
                                          borderColor: .black,
                                          isOriginShifted: false)
         
-        for i in 0..<legendSeries.count {
+        for i in 0..<entries.count {
             let seriesIcon = Rect(
                 origin: Point(legendRect.origin.x + plotLegend.legendTextSize,
                               legendRect.maxY - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize),
                 size: Size(width: plotLegend.legendTextSize, height: -plotLegend.legendTextSize)
             )
-            renderer.drawSolidRect(seriesIcon,
-                                   fillColor: legendSeries[i].1,
-                                   hatchPattern: .none,
-                                   isOriginShifted: false)
+            switch entries[i].1 {
+            case .square(let color):
+                renderer.drawSolidRect(seriesIcon,
+                                       fillColor: color,
+                                       hatchPattern: .none,
+                                       isOriginShifted: false)
+            case .shape(let shape, let color):
+                break
+            }
             let p = Point(seriesIcon.maxX + plotLegend.legendTextSize, seriesIcon.minY)
-            renderer.drawText(text: legendSeries[i].0,
+            renderer.drawText(text: entries[i].0,
                               location: p,
                               textSize: plotLegend.legendTextSize,
                               strokeWidth: 1.2,
@@ -421,9 +432,9 @@ extension BarGraph {
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
         
-        var legendSeries = stackSeries.map { ($0.label, $0.color) }
-        legendSeries.insert((series.label, series.color), at: 0)
-        layout.legendInfo = legendSeries
+        var legendSeries = stackSeries.map { ($0.label, GraphLayout.LegendIcon.square($0.color)) }
+        legendSeries.insert((series.label, .square(series.color)), at: 0)
+        layout.legendLabels = legendSeries
         
         let results = layout.layout(renderer: renderer, calculateMarkers: { primary, secondary in
             calcMarkerLocAndScalePts(markers: &primary, renderer: renderer)

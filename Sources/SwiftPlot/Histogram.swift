@@ -149,9 +149,9 @@ extension Histogram {
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
         
-        var legendSeries = histogramStackSeries.map { ($0.label, $0.color) }
-        legendSeries.insert((histogramSeries.label, histogramSeries.color), at: 0)
-        layout.legendInfo = legendSeries
+        var legendSeries = histogramStackSeries.map { ($0.label, GraphLayout.LegendIcon.square($0.color)) }
+        legendSeries.insert((histogramSeries.label, .square(histogramSeries.color)), at: 0)
+        layout.legendLabels = legendSeries
         
         let results = layout.layout(renderer: renderer, calculateMarkers: { primary, secondary in
             calcMarkerLocAndScalePts(markers: &primary, renderer: renderer)

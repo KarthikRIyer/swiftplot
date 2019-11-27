@@ -137,7 +137,7 @@ extension LineGraph{
         if (secondaryAxis != nil) {
             allSeries = allSeries + secondaryAxis!.series
         }
-        layout.legendInfo = allSeries.map { ($0.label, $0.color) }
+        layout.legendLabels = allSeries.map { ($0.label, .square($0.color)) }
         
         let results = layout.layout(renderer: renderer, calculateMarkers: { primary, secondary in
             calcMarkerLocAndScalePts(primaryMarkers: &primary, secondaryMarkers: &secondary, renderer: renderer)
