@@ -57,28 +57,26 @@ public struct GraphLayout {
                        height: plotDimensions.subHeight * 0.8)
         )
         results.plotBorderRect = borderRect
-        results.plotLegendTopLeft = Point(borderRect.minX + Float(20),
-                                          borderRect.maxY - Float(20))
     }
 
     func calcLabelLocations(renderer: Renderer, results: inout Results) {
         if let plotLabel = plotLabel {
-            let xWidth = renderer.getTextWidth(text: plotLabel.xLabel, textSize: plotLabel.labelSize)
-            let yWidth = renderer.getTextWidth(text: plotLabel.yLabel, textSize: plotLabel.labelSize)
+            let xWidth = renderer.getTextWidth(text: plotLabel.xLabel, textSize: plotLabel.size)
+            let yWidth = renderer.getTextWidth(text: plotLabel.yLabel, textSize: plotLabel.size)
             results.xLabelLocation = Point(
                 results.plotBorderRect!.midX - xWidth * 0.5,
-                results.plotBorderRect!.minY - plotLabel.labelSize - 0.05 * plotDimensions.graphHeight
+                results.plotBorderRect!.minY - plotLabel.size - 0.05 * plotDimensions.graphHeight
             )
             results.yLabelLocation = Point(
-                results.plotBorderRect!.origin.x - plotLabel.labelSize - 0.05 * plotDimensions.graphWidth,
+                results.plotBorderRect!.origin.x - plotLabel.size - 0.05 * plotDimensions.graphWidth,
                 results.plotBorderRect!.midY - yWidth
             )
         }
         if let plotTitle = plotTitle {
-          let titleWidth = renderer.getTextWidth(text: plotTitle.title, textSize: plotTitle.titleSize)
+          let titleWidth = renderer.getTextWidth(text: plotTitle.title, textSize: plotTitle.size)
           results.titleLocation = Point(
             results.plotBorderRect!.midX - titleWidth * 0.5,
-            results.plotBorderRect!.maxY + plotTitle.titleSize * 0.5
+            results.plotBorderRect!.maxY + plotTitle.size * 0.5
           )
         }
     }
@@ -86,14 +84,16 @@ public struct GraphLayout {
     func calcLegend(_ labels: [(String, LegendIcon)], results: inout Results, renderer: Renderer) {
         guard !labels.isEmpty else { return }
         let maxWidth = labels.lazy.map {
-            renderer.getTextWidth(text: $0.0, textSize: self.plotLegend.legendTextSize)
+            renderer.getTextWidth(text: $0.0, textSize: self.plotLegend.textSize)
         }.max() ?? 0
         
-        let legendWidth  = maxWidth + 3.5 * plotLegend.legendTextSize
-        let legendHeight = (Float(labels.count)*2.0 + 1.0) * plotLegend.legendTextSize
+        let legendWidth  = maxWidth + 3.5 * plotLegend.textSize
+        let legendHeight = (Float(labels.count)*2.0 + 1.0) * plotLegend.textSize
         
+        let legendTopLeft = Point(results.plotBorderRect!.minX + Float(20),
+                                  results.plotBorderRect!.maxY - Float(20))
         results.legendRect = Rect(
-            origin: results.plotLegendTopLeft!,
+            origin: legendTopLeft,
             size: Size(width: legendWidth, height: -legendHeight)
         ).normalized
     }
@@ -116,7 +116,7 @@ public struct GraphLayout {
         guard let plotTitle = self.plotTitle, let location = results.titleLocation else { return }
         renderer.drawText(text: plotTitle.title,
                           location: location,
-                          textSize: plotTitle.titleSize,
+                          textSize: plotTitle.size,
                           strokeWidth: 1.2,
                           angle: 0,
                           isOriginShifted: false)
@@ -127,7 +127,7 @@ public struct GraphLayout {
         if let xLocation = results.xLabelLocation {
             renderer.drawText(text: plotLabel.xLabel,
                               location: xLocation,
-                              textSize: plotLabel.labelSize,
+                              textSize: plotLabel.size,
                               strokeWidth: 1.2,
                               angle: 0,
                               isOriginShifted: false)
@@ -135,7 +135,7 @@ public struct GraphLayout {
         if let yLocation = results.yLabelLocation {
             renderer.drawText(text: plotLabel.yLabel,
                               location: yLocation,
-                              textSize: plotLabel.labelSize,
+                              textSize: plotLabel.size,
                               strokeWidth: 1.2,
                               angle: 90,
                               isOriginShifted: false)
@@ -145,8 +145,8 @@ public struct GraphLayout {
     func drawBorder(results: Results, renderer: Renderer) {
         guard let borderRect = results.plotBorderRect else { return }
         renderer.drawRect(borderRect,
-                          strokeWidth: plotBorder.borderThickness,
-                          strokeColor: Color.black, isOriginShifted: false)
+                          strokeWidth: plotBorder.thickness,
+                          strokeColor: plotBorder.color, isOriginShifted: false)
     }
     
     func drawGrid(results: Results, renderer: Renderer) {
@@ -196,8 +196,8 @@ public struct GraphLayout {
             let p2 = Point(results.primaryAxisPlotMarkers.xMarkers[index].x, 0)
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
-                              strokeWidth: plotBorder.borderThickness,
-                              strokeColor: Color.black,
+                              strokeWidth: plotBorder.thickness,
+                              strokeColor: plotBorder.color,
                               isDashed: false,
                               isOriginShifted: true)
             renderer.drawText(text: results.primaryAxisPlotMarkers.xMarkersText[index],
@@ -213,8 +213,8 @@ public struct GraphLayout {
             let p2 = Point(0, results.primaryAxisPlotMarkers.yMarkers[index].y)
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
-                              strokeWidth: plotBorder.borderThickness,
-                              strokeColor: Color.black,
+                              strokeWidth: plotBorder.thickness,
+                              strokeColor: plotBorder.color,
                               isDashed: false,
                               isOriginShifted: true)
             renderer.drawText(text: results.primaryAxisPlotMarkers.yMarkersText[index],
@@ -233,8 +233,8 @@ public struct GraphLayout {
                                (secondaryAxisMarkers.yMarkers[index].y))
                 renderer.drawLine(startPoint: p1,
                                   endPoint: p2,
-                                  strokeWidth: plotBorder.borderThickness,
-                                  strokeColor: Color.black,
+                                  strokeWidth: plotBorder.thickness,
+                                  strokeColor: plotBorder.color,
                                   isDashed: false,
                                   isOriginShifted: true)
                 renderer.drawText(text: secondaryAxisMarkers.yMarkersText[index],
@@ -251,16 +251,16 @@ public struct GraphLayout {
         
         guard let legendRect = results.legendRect else { return }
         renderer.drawSolidRectWithBorder(legendRect,
-                                         strokeWidth: plotBorder.borderThickness,
-                                         fillColor: .transluscentWhite,
-                                         borderColor: .black,
+                                         strokeWidth: plotLegend.borderThickness,
+                                         fillColor: plotLegend.backgroundColor,
+                                         borderColor: plotLegend.borderColor,
                                          isOriginShifted: false)
         
         for i in 0..<entries.count {
             let seriesIcon = Rect(
-                origin: Point(legendRect.origin.x + plotLegend.legendTextSize,
-                              legendRect.maxY - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize),
-                size: Size(width: plotLegend.legendTextSize, height: -plotLegend.legendTextSize)
+                origin: Point(legendRect.origin.x + plotLegend.textSize,
+                              legendRect.maxY - (2.0*Float(i) + 1.0)*plotLegend.textSize),
+                size: Size(width: plotLegend.textSize, height: -plotLegend.textSize)
             )
             switch entries[i].1 {
             case .square(let color):
@@ -273,10 +273,10 @@ public struct GraphLayout {
                            color: color,
                            renderer: renderer)
             }
-            let p = Point(seriesIcon.maxX + plotLegend.legendTextSize, seriesIcon.minY)
+            let p = Point(seriesIcon.maxX + plotLegend.textSize, seriesIcon.minY)
             renderer.drawText(text: entries[i].0,
                               location: p,
-                              textSize: plotLegend.legendTextSize,
+                              textSize: plotLegend.textSize,
                               strokeWidth: 1.2,
                               angle: 0,
                               isOriginShifted: false)
@@ -310,10 +310,10 @@ extension HasGraphLayout {
         get { layout.plotLegend }
         set { layout.plotLegend = newValue }
     }
-    //    public var plotBorder: PlotBorder {
-    //        get { layout.plotBorder }
-    //        set { layout.plotBorder = newValue }
-    //    }
+    public var plotBorder: PlotBorder {
+        get { layout.plotBorder }
+        set { layout.plotBorder = newValue }
+    }
     public var plotDimensions: PlotDimensions {
         get { layout.plotDimensions }
         set { layout.plotDimensions = newValue }

@@ -1,7 +1,8 @@
 public struct PlotLegend {
-    public var legendTopLeft = zeroPoint
-    public var legendWidth: Float = 0
-    public var legendHeight: Float = 0
-    public var legendTextSize: Float = 10
+    public var backgroundColor = Color.transluscentWhite
+    public var borderColor = Color.black
+    public var borderThickness: Float = 2
+    public var textColor = Color.black
+    public var textSize: Float = 10
     public init() {}
 }
