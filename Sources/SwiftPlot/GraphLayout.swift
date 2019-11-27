@@ -79,7 +79,7 @@ public struct GraphLayout {
     }
     
     func calcLegend(_ labels: [(String, LegendIcon)], results: inout Results, renderer: Renderer) {
-
+        guard !labels.isEmpty else { return }
         let maxWidth = labels.lazy.map {
             renderer.getTextWidth(text: $0.0, textSize: self.plotLegend.legendTextSize)
         }.max() ?? 0
