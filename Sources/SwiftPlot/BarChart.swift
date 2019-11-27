@@ -9,7 +9,8 @@ public struct GraphLayout {
     var plotLegend = PlotLegend()
     var plotBorder = PlotBorder()
     
-    var enableGrid = true
+    var enablePrimaryAxisGrid = true
+    var enableSecondaryAxisGrid = true
     var gridColor = Color.gray
     var gridLineThickness: Float = 0.5
     var markerTextSize: Float = 12
@@ -21,7 +22,8 @@ public struct GraphLayout {
         
         var plotBorderRect: Rect?
         var plotLegendTopLeft: Point?
-        var plotMarkers = PlotMarkers()
+        var primaryAxisPlotMarkers = PlotMarkers()
+        var secondaryAxisPlotMarkers: PlotMarkers? = nil
         
         var legendRect: Rect?
     }
@@ -30,11 +32,11 @@ public struct GraphLayout {
     
     var legendInfo: [(String, Color)] = []
     
-    func layout(renderer: Renderer, calculateMarkers: (inout PlotMarkers)->Void) -> Results {
+    func layout(renderer: Renderer, calculateMarkers: (inout PlotMarkers, inout PlotMarkers?)->Void) -> Results {
         var results = Results()
         calcBorderAndLegend(results: &results)
         calcLabelLocations(renderer: renderer, results: &results)
-        calculateMarkers(&results.plotMarkers)
+        calculateMarkers(&results.primaryAxisPlotMarkers, &results.secondaryAxisPlotMarkers)
         calcLegend(legendInfo, results: &results, renderer: renderer)
         return results
     }
@@ -139,10 +141,22 @@ public struct GraphLayout {
     }
     
     func drawGrid(results: Results, renderer: Renderer) {
-        if (enableGrid) {
-            for index in 0..<results.plotMarkers.xMarkers.count {
-                let p1 = Point(results.plotMarkers.xMarkers[index].x, 0)
-                let p2 = Point(results.plotMarkers.xMarkers[index].x, plotDimensions.graphHeight)
+        guard enablePrimaryAxisGrid || enablePrimaryAxisGrid else { return }
+        for index in 0..<results.primaryAxisPlotMarkers.xMarkers.count {
+            let p1 = Point(results.primaryAxisPlotMarkers.xMarkers[index].x, 0)
+            let p2 = Point(results.primaryAxisPlotMarkers.xMarkers[index].x, plotDimensions.graphHeight)
+            renderer.drawLine(startPoint: p1,
+                              endPoint: p2,
+                              strokeWidth: gridLineThickness,
+                              strokeColor: gridColor,
+                              isDashed: false,
+                              isOriginShifted: true)
+        }
+    
+        if (enablePrimaryAxisGrid) {
+            for index in 0..<results.primaryAxisPlotMarkers.yMarkers.count {
+                let p1 = Point(0, results.primaryAxisPlotMarkers.yMarkers[index].y)
+                let p2 = Point(plotDimensions.graphWidth, results.primaryAxisPlotMarkers.yMarkers[index].y)
                 renderer.drawLine(startPoint: p1,
                                   endPoint: p2,
                                   strokeWidth: gridLineThickness,
@@ -150,52 +164,77 @@ public struct GraphLayout {
                                   isDashed: false,
                                   isOriginShifted: true)
             }
-            for index in 0..<results.plotMarkers.yMarkers.count {
-                let p1 = Point(0, results.plotMarkers.yMarkers[index].y)
-                let p2 = Point(plotDimensions.graphWidth, results.plotMarkers.yMarkers[index].y)
-                renderer.drawLine(startPoint: p1,
-                                  endPoint: p2,
-                                  strokeWidth: gridLineThickness,
-                                  strokeColor: gridColor,
-                                  isDashed: false,
-                                  isOriginShifted: true)
+        }
+        if (enableSecondaryAxisGrid) {
+            if let secondaryAxisMarkers = results.secondaryAxisPlotMarkers {
+                for index in 0..<secondaryAxisMarkers.yMarkers.count {
+                    let p1 = Point(0, secondaryAxisMarkers.yMarkers[index].y)
+                    let p2 = Point(plotDimensions.graphWidth, secondaryAxisMarkers.yMarkers[index].y)
+                    renderer.drawLine(startPoint: p1,
+                                      endPoint: p2,
+                                      strokeWidth: gridLineThickness,
+                                      strokeColor: gridColor,
+                                      isDashed: false,
+                                      isOriginShifted: true)
+                }
             }
         }
     }
 
     func drawMarkers(results: Results, renderer: Renderer) {
-        for index in 0..<results.plotMarkers.xMarkers.count {
-            let p1 = Point(results.plotMarkers.xMarkers[index].x, -6)
-            let p2 = Point(results.plotMarkers.xMarkers[index].x, 0)
+        for index in 0..<results.primaryAxisPlotMarkers.xMarkers.count {
+            let p1 = Point(results.primaryAxisPlotMarkers.xMarkers[index].x, -6)
+            let p2 = Point(results.primaryAxisPlotMarkers.xMarkers[index].x, 0)
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
                               strokeWidth: plotBorder.borderThickness,
                               strokeColor: Color.black,
                               isDashed: false,
                               isOriginShifted: true)
-            renderer.drawText(text: results.plotMarkers.xMarkersText[index],
-                              location: results.plotMarkers.xMarkersTextLocation[index],
+            renderer.drawText(text: results.primaryAxisPlotMarkers.xMarkersText[index],
+                              location: results.primaryAxisPlotMarkers.xMarkersTextLocation[index],
                               textSize: markerTextSize,
                               strokeWidth: 0.7,
                               angle: 0,
                               isOriginShifted: true)
         }
 
-        for index in 0..<results.plotMarkers.yMarkers.count {
-            let p1 = Point(-6, results.plotMarkers.yMarkers[index].y)
-            let p2 = Point(0, results.plotMarkers.yMarkers[index].y)
+        for index in 0..<results.primaryAxisPlotMarkers.yMarkers.count {
+            let p1 = Point(-6, results.primaryAxisPlotMarkers.yMarkers[index].y)
+            let p2 = Point(0, results.primaryAxisPlotMarkers.yMarkers[index].y)
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
                               strokeWidth: plotBorder.borderThickness,
                               strokeColor: Color.black,
                               isDashed: false,
                               isOriginShifted: true)
-            renderer.drawText(text: results.plotMarkers.yMarkersText[index],
-                              location: results.plotMarkers.yMarkersTextLocation[index],
+            renderer.drawText(text: results.primaryAxisPlotMarkers.yMarkersText[index],
+                              location: results.primaryAxisPlotMarkers.yMarkersTextLocation[index],
                               textSize: markerTextSize,
                               strokeWidth: 0.7,
                               angle: 0,
                               isOriginShifted: true)
+        }
+        
+        if let secondaryAxisMarkers = results.secondaryAxisPlotMarkers {
+            for index in 0..<secondaryAxisMarkers.yMarkers.count {
+                let p1 = Point(plotDimensions.graphWidth,
+                               (secondaryAxisMarkers.yMarkers[index].y))
+                let p2 = Point(plotDimensions.graphWidth + 6,
+                               (secondaryAxisMarkers.yMarkers[index].y))
+                renderer.drawLine(startPoint: p1,
+                                  endPoint: p2,
+                                  strokeWidth: plotBorder.borderThickness,
+                                  strokeColor: Color.black,
+                                  isDashed: false,
+                                  isOriginShifted: true)
+                renderer.drawText(text: secondaryAxisMarkers.yMarkersText[index],
+                                  location: secondaryAxisMarkers.yMarkersTextLocation[index],
+                                  textSize: secondaryAxisMarkers.markerTextSize,
+                                  strokeWidth: 0.7,
+                                  angle: 0,
+                                  isOriginShifted: true)
+            }
         }
     }
     
@@ -255,10 +294,6 @@ extension HasGraphLayout {
         get { layout.plotDimensions }
         set { layout.plotDimensions = newValue }
     }
-    public var enableGrid: Bool {
-        get { layout.enableGrid }
-        set { layout.enableGrid = newValue }
-    }
     public var gridColor: Color {
         get { layout.gridColor }
         set { layout.gridColor = newValue }
@@ -302,8 +337,14 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot, Has
                 height: Float = 660,
                 enableGrid: Bool = false){
         layout = GraphLayout(plotDimensions: PlotDimensions(frameWidth: width, frameHeight: height))
-        layout.enableGrid = enableGrid
+        self.enableGrid = enableGrid
     }
+    
+    public var enableGrid: Bool {
+        get { layout.enablePrimaryAxisGrid }
+        set { layout.enablePrimaryAxisGrid = newValue }
+    }
+    
     public func addSeries(_ s: Series<T,U>){
         series = s
     }
@@ -384,12 +425,11 @@ extension BarGraph {
         legendSeries.insert((series.label, series.color), at: 0)
         layout.legendInfo = legendSeries
         
-        let results = layout.layout(
-            renderer: renderer,
-            calculateMarkers: { calcMarkerLocAndScalePts(markers: &$0, renderer: renderer )}
-        )
+        let results = layout.layout(renderer: renderer, calculateMarkers: { primary, secondary in
+            calcMarkerLocAndScalePts(markers: &primary, renderer: renderer)
+        })
         layout.drawBackground(results: results, renderer: renderer)
-          drawPlots(markers: results.plotMarkers, renderer: renderer)
+          drawPlots(markers: results.primaryAxisPlotMarkers, renderer: renderer)
         layout.drawForeground(results: results, renderer: renderer)
     }
 

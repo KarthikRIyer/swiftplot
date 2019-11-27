@@ -30,6 +30,12 @@ public class Histogram<T:FloatConvertible>: Plot, HasGraphLayout {
         self.isNormalized = isNormalized
         self.enableGrid = enableGrid
     }
+    
+    public var enableGrid: Bool {
+        get { layout.enablePrimaryAxisGrid }
+        set { layout.enablePrimaryAxisGrid = newValue }
+    }
+    
     public func addSeries(_ s: HistogramSeries<T>){
         histogramSeries = s
     }
@@ -147,8 +153,8 @@ extension Histogram {
         legendSeries.insert((histogramSeries.label, histogramSeries.color), at: 0)
         layout.legendInfo = legendSeries
         
-        let results = layout.layout(renderer: renderer, calculateMarkers: {
-            calcMarkerLocAndScalePts(markers: &$0, renderer: renderer)
+        let results = layout.layout(renderer: renderer, calculateMarkers: { primary, secondary in
+            calcMarkerLocAndScalePts(markers: &primary, renderer: renderer)
         })
         layout.drawBackground(results: results, renderer: renderer)
         drawPlots(renderer: renderer)
