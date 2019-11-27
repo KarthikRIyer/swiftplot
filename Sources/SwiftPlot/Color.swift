@@ -40,7 +40,7 @@ public extension Color {
                        blue: CGFloat(b),
                        alpha: CGFloat(a))
       } else {
-        #if !os(tvOS) || os(watchOS) // Shouldn't be necessary, but it is.
+        #if !os(tvOS) && !os(watchOS) // Shouldn't be necessary, but it is.
         return CGColor(red: CGFloat(r),
                        green: CGFloat(g),
                        blue: CGFloat(b),
