@@ -14,9 +14,7 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
     public var plotBorder: PlotBorder = PlotBorder()
     public var plotDimensions: PlotDimensions {
         didSet {
-            Self.updatePlot(legend: &plotLegend,
-                            border: &plotBorder,
-                            fromDimensions: plotDimensions)
+            calcBorderAndLegend()
         }
     }
     public var plotLineThickness: Float = 1.5
@@ -28,17 +26,6 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     var primaryAxis = Axis<T,U>()
     var secondaryAxis: Axis<T,U>? = nil
-    
-    static func updatePlot(legend: inout PlotLegend, border: inout PlotBorder, fromDimensions dimensions: PlotDimensions) {
-        border.rect.origin.x = dimensions.subWidth*0.1
-        border.rect.origin.y = dimensions.subHeight*0.9
-        border.rect.size.width = dimensions.subWidth*0.8
-        border.rect.size.height = dimensions.subHeight * -0.8
-        border.rect = border.rect.normalized
-        
-        legend.legendTopLeft = Point(border.rect.minX + Float(20),
-                                     border.rect.maxY - Float(20))
-    }
 
     public init(points : [Pair<T,U>],
                 width: Float = 1000,
@@ -142,9 +129,7 @@ extension LineGraph{
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
         renderer.plotDimensions = plotDimensions
-        Self.updatePlot(legend: &plotLegend,
-                        border: &plotBorder,
-                        fromDimensions: plotDimensions)
+        calcBorderAndLegend()
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
         drawGrid(renderer: renderer)
@@ -160,9 +145,7 @@ extension LineGraph{
     public func drawGraph(renderer: Renderer){
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
-        Self.updatePlot(legend: &plotLegend,
-                        border: &plotBorder,
-                        fromDimensions: plotDimensions)
+        calcBorderAndLegend()
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
         drawGrid(renderer: renderer)
@@ -203,6 +186,17 @@ extension LineGraph{
                 plotBorder.rect.maxY + plotTitle!.titleSize * 0.5
             )
         }
+    }
+    
+    func calcBorderAndLegend() {
+        plotBorder.rect.origin.x = plotDimensions.subWidth*0.1
+        plotBorder.rect.origin.y = plotDimensions.subHeight*0.9
+        plotBorder.rect.size.width = plotDimensions.subWidth*0.8
+        plotBorder.rect.size.height = plotDimensions.subHeight * -0.8
+        plotBorder.rect = plotBorder.rect.normalized
+        
+        plotLegend.legendTopLeft = Point(plotBorder.rect.minX + Float(20),
+                                         plotBorder.rect.maxY - Float(20))
     }
 
     func calcMarkerLocAndScalePts(renderer: Renderer){
