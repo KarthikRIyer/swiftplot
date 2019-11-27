@@ -1,6 +1,6 @@
 import Foundation
 
-struct GraphLayout {
+public struct GraphLayout {
     // Inputs.
     var plotDimensions: PlotDimensions
     
@@ -230,16 +230,11 @@ struct GraphLayout {
     }
 }
 
-// class defining a barGraph and all it's logic
-public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
+public protocol HasGraphLayout: AnyObject {
+    var layout: GraphLayout { get set }
+}
 
-    let MAX_DIV: Float = 50
-
-    public var xOffset: Float = 0
-    public var yOffset: Float = 0
-
-    var layout: GraphLayout
-    
+extension HasGraphLayout {
     public var plotTitle: PlotTitle? {
         get { layout.plotTitle }
         set { layout.plotTitle = newValue }
@@ -252,10 +247,10 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
         get { layout.plotLegend }
         set { layout.plotLegend = newValue }
     }
-//    public var plotBorder: PlotBorder {
-//        get { layout.plotBorder }
-//        set { layout.plotBorder = newValue }
-//    }
+    //    public var plotBorder: PlotBorder {
+    //        get { layout.plotBorder }
+    //        set { layout.plotBorder = newValue }
+    //    }
     public var plotDimensions: PlotDimensions {
         get { layout.plotDimensions }
         set { layout.plotDimensions = newValue }
@@ -276,7 +271,17 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
         get { layout.markerTextSize }
         set { layout.markerTextSize = newValue }
     }
+}
 
+// class defining a barGraph and all it's logic
+public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot, HasGraphLayout {
+
+    let MAX_DIV: Float = 50
+
+    public var xOffset: Float = 0
+    public var yOffset: Float = 0
+
+    public var layout: GraphLayout
     
     public enum GraphOrientation {
         case vertical
