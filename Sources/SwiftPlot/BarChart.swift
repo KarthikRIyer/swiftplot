@@ -1,5 +1,235 @@
 import Foundation
 
+struct GraphLayout {
+    // Inputs.
+    var plotDimensions: PlotDimensions
+    
+    var plotTitle: PlotTitle? = nil
+    var plotLabel: PlotLabel? = nil
+    var plotLegend = PlotLegend()
+    var plotBorder = PlotBorder()
+    
+    var enableGrid = true
+    var gridColor = Color.gray
+    var gridLineThickness: Float = 0.5
+    var markerTextSize: Float = 12
+    
+    struct Results {
+        var xLabelLocation: Point?
+        var yLabelLocation: Point?
+        var titleLocation: Point?
+        
+        var plotBorderRect: Rect?
+        var plotLegendTopLeft: Point?
+        var plotMarkers = PlotMarkers()
+        
+        var legendRect: Rect?
+    }
+    
+    // Layout.
+    
+    var legendInfo: [(String, Color)] = []
+    
+    func layout(renderer: Renderer, calculateMarkers: (inout PlotMarkers)->Void) -> Results {
+        var results = Results()
+        calcBorderAndLegend(results: &results)
+        calcLabelLocations(renderer: renderer, results: &results)
+        calculateMarkers(&results.plotMarkers)
+        calcLegend(legendInfo, results: &results, renderer: renderer)
+        return results
+    }
+    
+    func calcBorderAndLegend(results: inout Results) {
+        let borderRect = Rect(
+            origin: Point(plotDimensions.subWidth * 0.1, plotDimensions.subHeight * 0.1),
+            size: Size(width: plotDimensions.subWidth * 0.8,
+                       height: plotDimensions.subHeight * 0.8)
+        )
+        results.plotBorderRect = borderRect
+        results.plotLegendTopLeft = Point(borderRect.minX + Float(20),
+                                          borderRect.maxY - Float(20))
+    }
+
+    func calcLabelLocations(renderer: Renderer, results: inout Results) {
+        if let plotLabel = plotLabel {
+            let xWidth = renderer.getTextWidth(text: plotLabel.xLabel, textSize: plotLabel.labelSize)
+            let yWidth = renderer.getTextWidth(text: plotLabel.yLabel, textSize: plotLabel.labelSize)
+            results.xLabelLocation = Point(
+                results.plotBorderRect!.midX - xWidth * 0.5,
+                results.plotBorderRect!.minY - plotLabel.labelSize - 0.05 * plotDimensions.graphHeight
+            )
+            results.yLabelLocation = Point(
+                results.plotBorderRect!.origin.x - plotLabel.labelSize - 0.05 * plotDimensions.graphWidth,
+                results.plotBorderRect!.midY - yWidth
+            )
+        }
+        if let plotTitle = plotTitle {
+          let titleWidth = renderer.getTextWidth(text: plotTitle.title, textSize: plotTitle.titleSize)
+          results.titleLocation = Point(
+            results.plotBorderRect!.midX - titleWidth * 0.5,
+            results.plotBorderRect!.maxY + plotTitle.titleSize * 0.5
+          )
+        }
+    }
+    
+    func calcLegend(_ labels: [(String, Color)], results: inout Results, renderer: Renderer) {
+
+        let maxWidth = labels.lazy.map {
+            renderer.getTextWidth(text: $0.0, textSize: self.plotLegend.legendTextSize)
+        }.max() ?? 0
+        
+        let legendWidth  = maxWidth + 3.5 * plotLegend.legendTextSize
+        let legendHeight = (Float(labels.count)*2.0 + 1.0) * plotLegend.legendTextSize
+        
+        results.legendRect = Rect(
+            origin: results.plotLegendTopLeft!,
+            size: Size(width: legendWidth, height: -legendHeight)
+        ).normalized
+    }
+    
+    // Drawing.
+    
+    func drawBackground(results: Results, renderer: Renderer) {
+        drawGrid(results: results, renderer: renderer)
+        drawBorder(results: results, renderer: renderer)
+        drawMarkers(results: results, renderer: renderer)
+    }
+    
+    func drawForeground(results: Results, renderer: Renderer) {
+        drawTitle(results: results, renderer: renderer)
+        drawLabels(results: results, renderer: renderer)
+        drawLegend(legendInfo, results: results, renderer: renderer)
+    }
+    
+    func drawTitle(results: Results, renderer: Renderer) {
+        guard let plotTitle = self.plotTitle, let location = results.titleLocation else { return }
+        renderer.drawText(text: plotTitle.title,
+                          location: location,
+                          textSize: plotTitle.titleSize,
+                          strokeWidth: 1.2,
+                          angle: 0,
+                          isOriginShifted: false)
+    }
+
+    func drawLabels(results: Results, renderer: Renderer) {
+        guard let plotLabel = self.plotLabel else { return }
+        if let xLocation = results.xLabelLocation {
+            renderer.drawText(text: plotLabel.xLabel,
+                              location: xLocation,
+                              textSize: plotLabel.labelSize,
+                              strokeWidth: 1.2,
+                              angle: 0,
+                              isOriginShifted: false)
+        }
+        if let yLocation = results.yLabelLocation {
+            renderer.drawText(text: plotLabel.yLabel,
+                              location: yLocation,
+                              textSize: plotLabel.labelSize,
+                              strokeWidth: 1.2,
+                              angle: 90,
+                              isOriginShifted: false)
+        }
+    }
+    
+    func drawBorder(results: Results, renderer: Renderer) {
+        guard let borderRect = results.plotBorderRect else { return }
+        renderer.drawRect(borderRect,
+                          strokeWidth: plotBorder.borderThickness,
+                          strokeColor: Color.black, isOriginShifted: false)
+    }
+    
+    func drawGrid(results: Results, renderer: Renderer) {
+        if (enableGrid) {
+            for index in 0..<results.plotMarkers.xMarkers.count {
+                let p1 = Point(results.plotMarkers.xMarkers[index].x, 0)
+                let p2 = Point(results.plotMarkers.xMarkers[index].x, plotDimensions.graphHeight)
+                renderer.drawLine(startPoint: p1,
+                                  endPoint: p2,
+                                  strokeWidth: gridLineThickness,
+                                  strokeColor: gridColor,
+                                  isDashed: false,
+                                  isOriginShifted: true)
+            }
+            for index in 0..<results.plotMarkers.yMarkers.count {
+                let p1 = Point(0, results.plotMarkers.yMarkers[index].y)
+                let p2 = Point(plotDimensions.graphWidth, results.plotMarkers.yMarkers[index].y)
+                renderer.drawLine(startPoint: p1,
+                                  endPoint: p2,
+                                  strokeWidth: gridLineThickness,
+                                  strokeColor: gridColor,
+                                  isDashed: false,
+                                  isOriginShifted: true)
+            }
+        }
+    }
+
+    func drawMarkers(results: Results, renderer: Renderer) {
+        for index in 0..<results.plotMarkers.xMarkers.count {
+            let p1 = Point(results.plotMarkers.xMarkers[index].x, -6)
+            let p2 = Point(results.plotMarkers.xMarkers[index].x, 0)
+            renderer.drawLine(startPoint: p1,
+                              endPoint: p2,
+                              strokeWidth: plotBorder.borderThickness,
+                              strokeColor: Color.black,
+                              isDashed: false,
+                              isOriginShifted: true)
+            renderer.drawText(text: results.plotMarkers.xMarkersText[index],
+                              location: results.plotMarkers.xMarkersTextLocation[index],
+                              textSize: markerTextSize,
+                              strokeWidth: 0.7,
+                              angle: 0,
+                              isOriginShifted: true)
+        }
+
+        for index in 0..<results.plotMarkers.yMarkers.count {
+            let p1 = Point(-6, results.plotMarkers.yMarkers[index].y)
+            let p2 = Point(0, results.plotMarkers.yMarkers[index].y)
+            renderer.drawLine(startPoint: p1,
+                              endPoint: p2,
+                              strokeWidth: plotBorder.borderThickness,
+                              strokeColor: Color.black,
+                              isDashed: false,
+                              isOriginShifted: true)
+            renderer.drawText(text: results.plotMarkers.yMarkersText[index],
+                              location: results.plotMarkers.yMarkersTextLocation[index],
+                              textSize: markerTextSize,
+                              strokeWidth: 0.7,
+                              angle: 0,
+                              isOriginShifted: true)
+        }
+    }
+    
+    func drawLegend(_ legendSeries: [(String, Color)], results: Results, renderer: Renderer) {
+        
+        guard let legendRect = results.legendRect else { return }
+        renderer.drawSolidRectWithBorder(legendRect,
+                                         strokeWidth: plotBorder.borderThickness,
+                                         fillColor: .transluscentWhite,
+                                         borderColor: .black,
+                                         isOriginShifted: false)
+        
+        for i in 0..<legendSeries.count {
+            let seriesIcon = Rect(
+                origin: Point(legendRect.origin.x + plotLegend.legendTextSize,
+                              legendRect.maxY - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize),
+                size: Size(width: plotLegend.legendTextSize, height: -plotLegend.legendTextSize)
+            )
+            renderer.drawSolidRect(seriesIcon,
+                                   fillColor: legendSeries[i].1,
+                                   hatchPattern: .none,
+                                   isOriginShifted: false)
+            let p = Point(seriesIcon.maxX + plotLegend.legendTextSize, seriesIcon.minY)
+            renderer.drawText(text: legendSeries[i].0,
+                              location: p,
+                              textSize: plotLegend.legendTextSize,
+                              strokeWidth: 1.2,
+                              angle: 0,
+                              isOriginShifted: false)
+        }
+        
+    }
+}
+
 // class defining a barGraph and all it's logic
 public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
 
@@ -8,29 +238,56 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
     public var xOffset: Float = 0
     public var yOffset: Float = 0
 
-    public var plotTitle: PlotTitle? = nil
-    public var plotLabel: PlotLabel? = nil
-    public var plotLegend: PlotLegend = PlotLegend()
-    public var plotBorder: PlotBorder = PlotBorder()
-    public var plotDimensions: PlotDimensions {
-        didSet {
-            calcBorderAndLegend()
-        }
+    var layout: GraphLayout
+    
+    public var plotTitle: PlotTitle? {
+        get { layout.plotTitle }
+        set { layout.plotTitle = newValue }
     }
+    public var plotLabel: PlotLabel? {
+        get { layout.plotLabel }
+        set { layout.plotLabel = newValue }
+    }
+    public var plotLegend: PlotLegend {
+        get { layout.plotLegend }
+        set { layout.plotLegend = newValue }
+    }
+//    public var plotBorder: PlotBorder {
+//        get { layout.plotBorder }
+//        set { layout.plotBorder = newValue }
+//    }
+    public var plotDimensions: PlotDimensions {
+        get { layout.plotDimensions }
+        set { layout.plotDimensions = newValue }
+    }
+    public var enableGrid: Bool {
+        get { layout.enableGrid }
+        set { layout.enableGrid = newValue }
+    }
+    public var gridColor: Color {
+        get { layout.gridColor }
+        set { layout.gridColor = newValue }
+    }
+    public var gridLineThickness: Float {
+        get { layout.gridLineThickness }
+        set { layout.gridLineThickness = newValue }
+    }
+    public var markerTextSize: Float {
+        get { layout.markerTextSize }
+        set { layout.markerTextSize = newValue }
+    }
+
+    
     public enum GraphOrientation {
         case vertical
         case horizontal
     }
     public var graphOrientation: GraphOrientation = .vertical
     public var space: Int = 20
-    public var enableGrid = true
-    public var gridColor: Color = .gray
-    public var gridLineThickness: Float = 0.5
-    public var markerTextSize: Float = 12
-
+    
     var scaleY: Float = 1
     var scaleX: Float = 1
-    var plotMarkers: PlotMarkers = PlotMarkers()
+
     var series = Series<T,U>()
     var stackSeries = [Series<T,U>]()
     var barWidth : Int = 0
@@ -39,8 +296,8 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
     public init(width: Float = 1000,
                 height: Float = 660,
                 enableGrid: Bool = false){
-        plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
-        self.enableGrid = enableGrid
+        layout = GraphLayout(plotDimensions: PlotDimensions(frameWidth: width, frameHeight: height))
+        layout.enableGrid = enableGrid
     }
     public func addSeries(_ s: Series<T,U>){
         series = s
@@ -103,35 +360,9 @@ extension BarGraph {
 
     // call functions to draw the graph
     public func drawGraphAndOutput(fileName name: String = "swift_plot_bar_graph", renderer: Renderer){
-        renderer.xOffset = xOffset
-        renderer.yOffset = yOffset
         renderer.plotDimensions = plotDimensions
-        calcBorderAndLegend()
-        calcLabelLocations(renderer: renderer)
-        calcMarkerLocAndScalePts(renderer: renderer)
-        drawGrid(renderer: renderer)
-        drawBorder(renderer: renderer)
-        drawMarkers(renderer: renderer)
-        drawPlots(renderer: renderer)
-        drawTitle(renderer: renderer)
-        drawLabels(renderer: renderer)
-        drawLegends(renderer: renderer)
+        drawGraph(renderer: renderer)
         saveImage(fileName: name, renderer: renderer)
-    }
-
-    public func drawGraph(renderer: Renderer){
-        renderer.xOffset = xOffset
-        renderer.yOffset = yOffset
-        calcBorderAndLegend()
-        calcLabelLocations(renderer: renderer)
-        calcMarkerLocAndScalePts(renderer: renderer)
-        drawGrid(renderer: renderer)
-        drawBorder(renderer: renderer)
-        drawMarkers(renderer: renderer)
-        drawPlots(renderer: renderer)
-        drawTitle(renderer: renderer)
-        drawLabels(renderer: renderer)
-        drawLegends(renderer: renderer)
     }
 
     public func drawGraphOutput(fileName name: String = "swift_plot_line_graph",
@@ -139,47 +370,26 @@ extension BarGraph {
         renderer.plotDimensions = plotDimensions
         renderer.drawOutput(fileName: name)
     }
+    
+    public func drawGraph(renderer: Renderer){
+        renderer.xOffset = xOffset
+        renderer.yOffset = yOffset
+        
+        var legendSeries = stackSeries.map { ($0.label, $0.color) }
+        legendSeries.insert((series.label, series.color), at: 0)
+        layout.legendInfo = legendSeries
+        
+        let results = layout.layout(
+            renderer: renderer,
+            calculateMarkers: { calcMarkerLocAndScalePts(markers: &$0, renderer: renderer )}
+        )
+        layout.drawBackground(results: results, renderer: renderer)
+          drawPlots(markers: results.plotMarkers, renderer: renderer)
+        layout.drawForeground(results: results, renderer: renderer)
+    }
 
     // functions implementing plotting logic
-    func calcLabelLocations(renderer: Renderer){
-        if (plotLabel != nil) {
-            let xWidth   : Float = renderer.getTextWidth(text: plotLabel!.xLabel,
-                                                         textSize: plotLabel!.labelSize)
-            let yWidth    : Float = renderer.getTextWidth(text: plotLabel!.yLabel,
-                                                          textSize: plotLabel!.labelSize)
-            plotLabel!.xLabelLocation = Point(
-                plotBorder.rect.midX - xWidth * 0.5,
-                plotBorder.rect.minY - plotLabel!.labelSize - 0.05 * plotDimensions.graphHeight
-            )
-            plotLabel!.yLabelLocation = Point(
-                plotBorder.rect.origin.x - plotLabel!.labelSize - 0.05 * plotDimensions.graphWidth,
-                plotBorder.rect.midY - yWidth
-            )
-        }
-        if (plotTitle != nil) {
-          let titleWidth: Float = renderer.getTextWidth(text: plotTitle!.title,
-                                                        textSize: plotTitle!.titleSize)
-          plotTitle!.titleLocation = Point(
-            plotBorder.rect.midX - titleWidth * 0.5,
-            plotBorder.rect.maxY + plotTitle!.titleSize * 0.5
-          )
-        }
-    }
-    
-    func calcBorderAndLegend() {
-        plotBorder.rect.origin.x = plotDimensions.subWidth*0.1
-        plotBorder.rect.origin.y = plotDimensions.subHeight*0.9
-        plotBorder.rect.size.width = plotDimensions.subWidth*0.8
-        plotBorder.rect.size.height = plotDimensions.subHeight * -0.8
-        plotBorder.rect = plotBorder.rect.normalized
-        
-        plotLegend.legendTopLeft = Point(plotBorder.rect.minX + Float(20),
-                                         plotBorder.rect.maxY - Float(20))
-    }
-
-    func calcMarkerLocAndScalePts(renderer: Renderer){
-
-        plotMarkers.markerTextSize = markerTextSize
+    func calcMarkerLocAndScalePts(markers: inout PlotMarkers, renderer: Renderer) {
 
         var maximumY: U = U(0)
         var minimumY: U = U(0)
@@ -196,13 +406,6 @@ extension BarGraph {
             maximumX = maxY(points: series.values)
             minimumX = minY(points: series.values)
         }
-
-        plotMarkers.xMarkers = [Point]()
-        plotMarkers.yMarkers = [Point]()
-        plotMarkers.xMarkersTextLocation = [Point]()
-        plotMarkers.yMarkersTextLocation = [Point]()
-        plotMarkers.xMarkersText = [String]()
-        plotMarkers.xMarkersText = [String]()
 
         if (graphOrientation == .vertical) {
             for s in stackSeries {
@@ -253,34 +456,34 @@ extension BarGraph {
                     continue
                 }
                 let p = Point(0, yM)
-                plotMarkers.yMarkers.append(p)
+                markers.yMarkers.append(p)
                 let text_p = Point(-(renderer.getTextWidth(text: "\(ceil(scaleY*(yM-origin.y)))",
-                                                           textSize: plotMarkers.markerTextSize)+8), yM - 4)
-                plotMarkers.yMarkersTextLocation.append(text_p)
-                plotMarkers.yMarkersText.append("\(round(scaleY*(yM-origin.y)))")
+                                                           textSize: layout.markerTextSize)+8), yM - 4)
+                markers.yMarkersTextLocation.append(text_p)
+                markers.yMarkersText.append("\(round(scaleY*(yM-origin.y)))")
                 yM = yM + inc1
             }
             yM = origin.y - inc1
             while yM>0.0 {
                 let p = Point(0, yM)
-                plotMarkers.yMarkers.append(p)
+                markers.yMarkers.append(p)
                 let text_p = Point(-(renderer.getTextWidth(text: "\(floor(scaleY*(yM-origin.y)))",
-                                                           textSize: plotMarkers.markerTextSize)+8), yM - 4)
-                plotMarkers.yMarkersTextLocation.append(text_p)
-                plotMarkers.yMarkersText.append("\(round(scaleY*(yM-origin.y)))")
+                                                           textSize: layout.markerTextSize)+8), yM - 4)
+                markers.yMarkersTextLocation.append(text_p)
+                markers.yMarkersText.append("\(round(scaleY*(yM-origin.y)))")
                 yM = yM - inc1
             }
 
             for i in 0..<series.count {
                 let p = Point(Float(i*barWidth) + Float(barWidth)*Float(0.5), 0)
-                plotMarkers.xMarkers.append(p)
+                markers.xMarkers.append(p)
                 let bW: Int = barWidth*(i+1)
                 let textWidth: Float = renderer.getTextWidth(text: "\(series[i].x)",
-                                                             textSize: plotMarkers.markerTextSize)
+                                                             textSize: layout.markerTextSize)
                 let text_p = Point(Float(bW) - textWidth*Float(0.5) - Float(barWidth)*Float(0.5),
-                                                                     -2.0*plotMarkers.markerTextSize)
-                plotMarkers.xMarkersTextLocation.append(text_p)
-                plotMarkers.xMarkersText.append("\(series[i].x)")
+                                                                     -2.0*layout.markerTextSize)
+                markers.xMarkersTextLocation.append(text_p)
+                markers.xMarkersText.append("\(series[i].x)")
             }
 
             // scale points to be plotted according to plot size
@@ -352,37 +555,37 @@ extension BarGraph {
                     continue
                 }
                 let p = Point(xM, 0)
-                plotMarkers.xMarkers.append(p)
+                markers.xMarkers.append(p)
                 let text_p = Point(xM - (renderer.getTextWidth(text: "\(floor(scaleX*(xM-origin.x)))",
-                                                               textSize: plotMarkers.markerTextSize)*Float(0.5)) + 8,
+                                                               textSize: layout.markerTextSize)*Float(0.5)) + 8,
                                    -20)
-                plotMarkers.xMarkersTextLocation.append(text_p)
-                plotMarkers.xMarkersText.append("\(ceil(scaleX*(xM-origin.x)))")
+                markers.xMarkersTextLocation.append(text_p)
+                markers.xMarkersText.append("\(ceil(scaleX*(xM-origin.x)))")
                 xM = xM + inc1
             }
             xM = origin.x - inc1
             while xM>0.0 {
                 let p = Point(xM, 0)
-                plotMarkers.xMarkers.append(p)
+                markers.xMarkers.append(p)
                 let text_p = Point(xM - (renderer.getTextWidth(text: "\(floor(scaleX*(xM-origin.x)))",
-                                                               textSize: plotMarkers.markerTextSize)*Float(0.5)) + 8,
+                                                               textSize: layout.markerTextSize)*Float(0.5)) + 8,
                                    -20)
-                plotMarkers.xMarkersTextLocation.append(text_p)
-                plotMarkers.xMarkersText.append("\(floor(scaleX*(xM-origin.x)))")
+                markers.xMarkersTextLocation.append(text_p)
+                markers.xMarkersText.append("\(floor(scaleX*(xM-origin.x)))")
                 xM = xM - inc1
             }
 
             for i in 0..<series.count {
                 let p = Point(0, Float(i*barWidth) + Float(barWidth)*Float(0.5))
-                plotMarkers.yMarkers.append(p)
+                markers.yMarkers.append(p)
                 let bW: Int = barWidth*(i+1)
-                let textWidth: Float = renderer.getTextWidth(text: "\(series[i].x)", textSize: plotMarkers.markerTextSize)
+                let textWidth: Float = renderer.getTextWidth(text: "\(series[i].x)", textSize: layout.markerTextSize)
                 let text_p = Point(-1.2*textWidth,
                                    Float(bW)
-                                   - plotMarkers.markerTextSize/2
+                                   - layout.markerTextSize/2
                                    - Float(barWidth)*Float(0.5))
-                plotMarkers.yMarkersTextLocation.append(text_p)
-                plotMarkers.yMarkersText.append("\(series[i].x)")
+                markers.yMarkersTextLocation.append(text_p)
+                markers.yMarkersText.append("\(series[i].x)")
             }
 
             // scale points to be plotted according to plot size
@@ -406,82 +609,14 @@ extension BarGraph {
     }
 
     //functions to draw the plot
-    func drawBorder(renderer: Renderer){
-        renderer.drawRect(plotBorder.rect,
-                          strokeWidth: plotBorder.borderThickness,
-                          strokeColor: Color.black, isOriginShifted: false)
-    }
-
-    func drawGrid(renderer: Renderer) {
-        if (enableGrid) {
-            for index in 0..<plotMarkers.xMarkers.count {
-                let p1 = Point(plotMarkers.xMarkers[index].x, 0)
-                let p2 = Point(plotMarkers.xMarkers[index].x, plotDimensions.graphHeight)
-                renderer.drawLine(startPoint: p1,
-                                  endPoint: p2,
-                                  strokeWidth: gridLineThickness,
-                                  strokeColor: gridColor,
-                                  isDashed: false,
-                                  isOriginShifted: true)
-            }
-            for index in 0..<plotMarkers.yMarkers.count {
-                let p1 = Point(0, plotMarkers.yMarkers[index].y)
-                let p2 = Point(plotDimensions.graphWidth, plotMarkers.yMarkers[index].y)
-                renderer.drawLine(startPoint: p1,
-                                  endPoint: p2,
-                                  strokeWidth: gridLineThickness,
-                                  strokeColor: gridColor,
-                                  isDashed: false,
-                                  isOriginShifted: true)
-            }
-        }
-    }
-
-    func drawMarkers(renderer: Renderer) {
-        for index in 0..<plotMarkers.xMarkers.count {
-            let p1 = Point(plotMarkers.xMarkers[index].x, -6)
-            let p2 = Point(plotMarkers.xMarkers[index].x, 0)
-            renderer.drawLine(startPoint: p1,
-                              endPoint: p2,
-                              strokeWidth: plotBorder.borderThickness,
-                              strokeColor: Color.black,
-                              isDashed: false,
-                              isOriginShifted: true)
-            renderer.drawText(text: plotMarkers.xMarkersText[index],
-                              location: plotMarkers.xMarkersTextLocation[index],
-                              textSize: plotMarkers.markerTextSize,
-                              strokeWidth: 0.7,
-                              angle: 0,
-                              isOriginShifted: true)
-        }
-
-        for index in 0..<plotMarkers.yMarkers.count {
-            let p1 = Point(-6, plotMarkers.yMarkers[index].y)
-            let p2 = Point(0, plotMarkers.yMarkers[index].y)
-            renderer.drawLine(startPoint: p1,
-                              endPoint: p2,
-                              strokeWidth: plotBorder.borderThickness,
-                              strokeColor: Color.black,
-                              isDashed: false,
-                              isOriginShifted: true)
-            renderer.drawText(text: plotMarkers.yMarkersText[index],
-                              location: plotMarkers.yMarkersTextLocation[index],
-                              textSize: plotMarkers.markerTextSize,
-                              strokeWidth: 0.7,
-                              angle: 0,
-                              isOriginShifted: true)
-        }
-
-    }
-
-    func drawPlots(renderer: Renderer) {
+    func drawPlots(markers: PlotMarkers, renderer: Renderer) {
         if (graphOrientation == .vertical) {
             for index in 0..<series.count {
                 var currentHeightPositive: Float = 0
                 var currentHeightNegative: Float = 0
                 var rect = Rect(
                     origin: Point(
-                        plotMarkers.xMarkers[index].x-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5),
+                        markers.xMarkers[index].x-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5),
                         origin.y),
                     size: Size(
                         width: Float(barWidth - space),
@@ -521,7 +656,7 @@ extension BarGraph {
                 var currentWidthPositive: Float = 0
                 var currentWidthNegative: Float = 0
                 var rect = Rect(
-                    origin: Point(origin.x, plotMarkers.yMarkers[index].y-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5)),
+                    origin: Point(origin.x, markers.yMarkers[index].y-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5)),
                     size: Size(
                         width: Float(series.scaledValues[index].y) - origin.x,
                         height: Float(barWidth - space))
@@ -555,78 +690,6 @@ extension BarGraph {
                 }
             }
         }
-
-    }
-
-    func drawTitle(renderer: Renderer) {
-        guard let plotTitle = self.plotTitle else { return }
-        renderer.drawText(text: plotTitle.title,
-                          location: plotTitle.titleLocation,
-                          textSize: plotTitle.titleSize,
-                          strokeWidth: 1.2,
-                          angle: 0,
-                          isOriginShifted: false)
-    }
-
-    func drawLabels(renderer: Renderer) {
-        guard let plotLabel = self.plotLabel else { return }
-        renderer.drawText(text: plotLabel.xLabel,
-                          location: plotLabel.xLabelLocation,
-                          textSize: plotLabel.labelSize,
-                          strokeWidth: 1.2,
-                          angle: 0,
-                          isOriginShifted: false)
-        renderer.drawText(text: plotLabel.yLabel,
-                          location: plotLabel.yLabelLocation,
-                          textSize: plotLabel.labelSize,
-                          strokeWidth: 1.2,
-                          angle: 90,
-                          isOriginShifted: false)
-    }
-
-    func drawLegends(renderer: Renderer) {
-        var maxWidth: Float = 0
-        var legendSeries = stackSeries
-        legendSeries.insert(series, at: 0)
-        for s in legendSeries {
-        	let w = renderer.getTextWidth(text: s.label,
-                                        textSize: plotLegend.legendTextSize)
-        	if (w > maxWidth) {
-        		maxWidth = w
-        	}
-        }
-        plotLegend.legendWidth  = maxWidth + 3.5*plotLegend.legendTextSize
-        plotLegend.legendHeight = (Float(stackSeries.count + 1)*2.0 + 1.0)*plotLegend.legendTextSize
-
-        let legendRect = Rect(
-            origin: plotLegend.legendTopLeft,
-            size: Size(width: plotLegend.legendWidth, height: -plotLegend.legendHeight)
-        ).normalized
-        renderer.drawSolidRectWithBorder(legendRect,
-                                         strokeWidth: plotBorder.borderThickness,
-                                         fillColor: .transluscentWhite,
-                                         borderColor: .black,
-                                         isOriginShifted: false)
-
-        for i in 0..<legendSeries.count {
-        	let seriesIcon = Rect(
-                origin: Point(legendRect.origin.x + plotLegend.legendTextSize,
-                              legendRect.maxY - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize),
-                size: Size(width: plotLegend.legendTextSize, height: -plotLegend.legendTextSize)
-            )
-            renderer.drawSolidRect(seriesIcon,
-                                   fillColor: legendSeries[i].color,
-                                   hatchPattern: .none,
-                                   isOriginShifted: false)
-        	let p = Point(seriesIcon.maxX + plotLegend.legendTextSize, seriesIcon.minY)
-        	renderer.drawText(text: legendSeries[i].label,
-                            location: p,
-                            textSize: plotLegend.legendTextSize,
-                            strokeWidth: 1.2,
-                            angle: 0,
-                            isOriginShifted: false)
-        }
-
     }
 
     func saveImage(fileName name: String, renderer: Renderer) {
