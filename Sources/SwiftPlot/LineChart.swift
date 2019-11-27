@@ -1,7 +1,7 @@
 import Foundation
 
 // class defining a lineGraph and all its logic
-public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot, HasGraphLayout {
+public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     let MAX_DIV: Float = 50
 
@@ -120,27 +120,14 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot, HasGraphLay
 }
 
 // extension containing drawing logic
-extension LineGraph{
+extension LineGraph: HasGraphLayout {
 
-    // call functions to draw the graph
-    public func drawGraphAndOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer){
-        renderer.plotDimensions = plotDimensions
-        drawGraph(renderer: renderer)
-        saveImage(fileName: name, renderer: renderer)
-    }
-    
     public var legendLabels: [(String, LegendIcon)] {
         var allSeries: [Series] = primaryAxis.series
         if (secondaryAxis != nil) {
             allSeries = allSeries + secondaryAxis!.series
         }
         return allSeries.map { ($0.label, .square($0.color)) }
-    }
-
-
-    public func drawGraphOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer){
-        renderer.plotDimensions = plotDimensions
-        renderer.drawOutput(fileName: name)
     }
 
     // functions implementing plotting logic
@@ -498,9 +485,5 @@ extension LineGraph{
                                        isDashed: true)
             }
         }
-    }
-
-    func saveImage(fileName name: String, renderer: Renderer) {
-        renderer.drawOutput(fileName: name)
     }
 }

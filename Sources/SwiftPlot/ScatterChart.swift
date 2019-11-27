@@ -1,7 +1,7 @@
 import Foundation
 
 // class defining a lineGraph and all its logic
-public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot, HasGraphLayout {
+public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     let MAX_DIV: Float = 50
 
@@ -119,24 +119,12 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot, HasGraphL
 }
 
 // extension containing drawing logic
-extension ScatterPlot{
+extension ScatterPlot: HasGraphLayout {
 
-    // call functions to draw the graph
-    public func drawGraphAndOutput(fileName name: String = "swift_plot_scatter_plot", renderer: Renderer){
-        renderer.plotDimensions = plotDimensions
-        drawGraph(renderer: renderer)
-        saveImage(fileName: name, renderer: renderer)
-    }
-    
     public var legendLabels: [(String, LegendIcon)] {
         return series.map {
             ($0.label, .shape($0.scatterPlotSeriesOptions.scatterPattern, $0.startColor ?? $0.color))
         }
-    }
-
-    public func drawGraphOutput(fileName name: String = "swift_plot_scatter_plot", renderer: Renderer){
-        renderer.plotDimensions = plotDimensions
-        renderer.drawOutput(fileName: name)
     }
 
     // functions implementing plotting logic
@@ -490,10 +478,6 @@ extension ScatterPlot{
                       }
             }
         }
-    }
-    
-    func saveImage(fileName name: String, renderer: Renderer) {
-        renderer.drawOutput(fileName: name)
     }
 }
 

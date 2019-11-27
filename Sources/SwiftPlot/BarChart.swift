@@ -1,7 +1,7 @@
 import Foundation
 
 // class defining a barGraph and all it's logic
-public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot, HasGraphLayout {
+public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
 
     let MAX_DIV: Float = 50
 
@@ -94,20 +94,7 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot, Has
 }
 
 // extension containing drawing logic
-extension BarGraph {
-
-    // call functions to draw the graph
-    public func drawGraphAndOutput(fileName name: String = "swift_plot_bar_graph", renderer: Renderer){
-        renderer.plotDimensions = plotDimensions
-        drawGraph(renderer: renderer)
-        saveImage(fileName: name, renderer: renderer)
-    }
-
-    public func drawGraphOutput(fileName name: String = "swift_plot_line_graph",
-                                renderer: Renderer){
-        renderer.plotDimensions = plotDimensions
-        renderer.drawOutput(fileName: name)
-    }
+extension BarGraph: HasGraphLayout {
     
     public var legendLabels: [(String, LegendIcon)] {
         var legendSeries = stackSeries.map { ($0.label, LegendIcon.square($0.color)) }
@@ -418,9 +405,4 @@ extension BarGraph {
             }
         }
     }
-
-    func saveImage(fileName name: String, renderer: Renderer) {
-        renderer.drawOutput(fileName: name)
-    }
-
 }

@@ -1,7 +1,7 @@
 import Foundation
 
 // class defining a barGraph and all it's logic
-public class Histogram<T:FloatConvertible>: Plot, HasGraphLayout {
+public class Histogram<T:FloatConvertible>: Plot {
 
     let MAX_DIV: Float = 50
 
@@ -136,24 +136,12 @@ public class Histogram<T:FloatConvertible>: Plot, HasGraphLayout {
 }
 
 // extension containing drawing logic
-extension Histogram {
+extension Histogram: HasGraphLayout {
 
-    // call functions to draw the graph
-    public func drawGraphAndOutput(fileName name: String = "swift_plot_histogram", renderer: Renderer){
-        renderer.plotDimensions = plotDimensions
-        drawGraph(renderer: renderer)
-        saveImage(fileName: name, renderer: renderer)
-    }
-    
     public var legendLabels: [(String, LegendIcon)] {
         var legendSeries = histogramStackSeries.map { ($0.label, LegendIcon.square($0.color)) }
         legendSeries.insert((histogramSeries.label, .square(histogramSeries.color)), at: 0)
         return legendSeries
-    }
-
-    public func drawGraphOutput(fileName name: String = "swift_plot_histogram", renderer: Renderer){
-        renderer.plotDimensions = plotDimensions
-        renderer.drawOutput(fileName: name)
     }
 
     // functions implementing plotting logic
@@ -419,9 +407,4 @@ extension Histogram {
             }
         }
     }
-
-    func saveImage(fileName name: String, renderer: Renderer) {
-        renderer.drawOutput(fileName: name)
-    }
-
 }
