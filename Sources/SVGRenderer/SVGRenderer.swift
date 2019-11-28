@@ -48,151 +48,125 @@ public class SVGRenderer: Renderer{
         image = image + "\n" + font
         LCARS_CHAR_SIZE_ARRAY = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 26, 46, 63, 42, 105, 45, 20, 25, 25, 47, 39, 21, 34, 26, 36, 36, 28, 36, 36, 36, 36, 36, 36, 36, 36, 27, 27, 36, 35, 36, 35, 65, 42, 43, 42, 44, 35, 34, 43, 46, 25, 39, 40, 31, 59, 47, 43, 41, 43, 44, 39, 28, 44, 43, 65, 37, 39, 34, 37, 42, 37, 50, 37, 32, 43, 43, 39, 43, 40, 30, 42, 45, 23, 25, 39, 23, 67, 45, 41, 43, 42, 30, 40, 28, 45, 33, 52, 33, 36, 31, 39, 26, 39, 55]
     }
+    
+    func convertToSVGCoordinates(_ rect: Rect) -> Rect {
+        // Convert to SVG coordinate system (0,0 at top-left).
+        var rect = rect.normalized
+        rect.origin = Point(rect.origin.x + xOffset, rect.maxY - yOffset)
+        return rect
+    }
 
-    public func drawRect(topLeftPoint p1: Point,
-                         topRightPoint p2: Point,
-                         bottomRightPoint p3: Point,
-                         bottomLeftPoint p4: Point,
+    public func drawRect(_ rect: Rect,
                          strokeWidth thickness: Float,
                          strokeColor: Color = Color.black,
                          isOriginShifted: Bool) {
-        let w = abs(p2.x - p1.x)
-        let h = abs(p2.y - p3.y)
-        var y = max(p1.y,p2.y,p3.y,p4.y) - yOffset
-        var x = p1.x + xOffset
+        var rect = convertToSVGCoordinates(rect)
         if (isOriginShifted) {
-            y = y + (0.1*plotDimensions.subHeight)
-            y = plotDimensions.subHeight - y
-            x = x + (0.1*plotDimensions.subWidth)
+            rect.origin.y += (0.1*plotDimensions.subHeight)
+            rect.origin.y = plotDimensions.subHeight - rect.origin.y
+            rect.origin.x += (0.1*plotDimensions.subWidth)
         }
         else {
-            y = plotDimensions.subHeight - y
+            rect.origin.y = plotDimensions.subHeight - rect.origin.y
         }
-        let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(255,255,255);stroke-width:\(thickness);stroke:rgb(0,0,0);opacity:1;fill-opacity:0;\" />"
-        image = image + "\n" + rect
+        let rectStr = "<rect x=\"\(rect.origin.x)\" y=\"\(rect.origin.y)\" width=\"\(rect.size.width)\" height=\"\(rect.size.height)\" style=\"fill:rgb(255,255,255);stroke-width:\(thickness);stroke:rgb(0,0,0);opacity:1;fill-opacity:0;\" />"
+        image = image + "\n" + rectStr
     }
 
-    public func drawSolidRect(topLeftPoint p1: Point,
-                              topRightPoint p2: Point,
-                              bottomRightPoint p3: Point,
-                              bottomLeftPoint p4: Point,
+    public func drawSolidRect(_ rect: Rect,
                               fillColor: Color = Color.white,
                               hatchPattern: BarGraphSeriesOptions.Hatching,
                               isOriginShifted: Bool) {
+        var rect = convertToSVGCoordinates(rect)
         if (isOriginShifted) {
-            let w = abs(p2.x - p1.x)
-            let h = abs(p2.y - p3.y)
-            var y = max(p1.y,p2.y,p3.y,p4.y) + (0.1*plotDimensions.subHeight) - yOffset
-            y = plotDimensions.subHeight - y
-            let x = min(p1.x, p2.x, p3.x, p4.x) + xOffset + (0.1*plotDimensions.subWidth)
-            let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0);opacity:\(fillColor.a)\" />"
-            image = image + "\n" + rect
-            drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
+            rect.origin.y += (0.1*plotDimensions.subHeight) - yOffset
+            rect.origin.x += xOffset + (0.1*plotDimensions.subWidth)
+            rect.origin.y = plotDimensions.subHeight - rect.origin.y
         }
         else {
-            let w: Float = abs(p2.x - p1.x)
-            let h: Float = abs(p2.y - p3.y)
-            var y = max(p1.y,p2.y,p3.y,p4.y) - yOffset
-            y = plotDimensions.subHeight - y
-            let x = p1.x + xOffset
-            let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0);opacity:\(fillColor.a)\" />"
-            image = image + "\n" + rect
-            drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
+            rect.origin.y = plotDimensions.subHeight - rect.origin.y
         }
+        let rectStr = "<rect x=\"\(rect.origin.x)\" y=\"\(rect.origin.y)\" width=\"\(rect.size.width)\" height=\"\(rect.size.height)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0);opacity:\(fillColor.a)\" />"
+        image = image + "\n" + rectStr
+        drawHatchingRect(rect, hatchPattern: hatchPattern)
     }
 
-    func drawHatchingRect(x: Float,
-                          y: Float,
-                          width w: Float,
-                          height h: Float,
+    func drawHatchingRect(_ rect: Rect,
                           hatchPattern: BarGraphSeriesOptions.Hatching) {
-        switch (hatchPattern.rawValue) {
-        case 0:
-            break
-        case 1:
+        let patternName: String
+        switch (hatchPattern) {
+        case .none:
+            return
+        case .forwardSlash:
             if (!hatchingIncluded[hatchPattern.rawValue]) {
                 image = image + forwardSlashHatch;
                 hatchingIncluded[hatchPattern.rawValue] = true
             }
-            let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#forwardSlashHatch);opacity:\(1)\" />"
-            image = image + rect
-        case 2:
+            patternName = "url(#forwardSlashHatch)"
+        case .backwardSlash:
             if (!hatchingIncluded[hatchPattern.rawValue]) {
                 image = image + backwardSlashHatch;
                 hatchingIncluded[hatchPattern.rawValue] = true
             }
-            let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#backwardSlashHatch);opacity:\(1)\" />"
-            image = image + rect
-        case 3:
+            patternName = "url(#backwardSlashHatch)"
+        case .hollowCircle:
             if (!hatchingIncluded[hatchPattern.rawValue]) {
                 image = image + hollowCircleHatch;
                 hatchingIncluded[hatchPattern.rawValue] = true
             }
-            let hollowCircle: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#hollowCircleHatch);opacity:\(1)\" />"
-            image = image + hollowCircle
-        case 4:
+            patternName = "url(#hollowCircleHatch)"
+        case .filledCircle:
             if (!hatchingIncluded[hatchPattern.rawValue]) {
                 image = image + filledCircleHatch;
                 hatchingIncluded[hatchPattern.rawValue] = true
             }
-            let filledCircle: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#filledCircleHatch);opacity:\(1)\" />"
-            image = image + filledCircle
-        case 5:
+            patternName = "url(#filledCircleHatch)"
+        case .vertical:
             if (!hatchingIncluded[hatchPattern.rawValue]) {
                 image = image + verticalHatch;
                 hatchingIncluded[hatchPattern.rawValue] = true
             }
-            let verticalLine: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#verticalHatch);opacity:\(1)\" />"
-            image = image + verticalLine
-        case 6:
+            patternName = "url(#verticalHatch)"
+        case .horizontal:
             if (!hatchingIncluded[hatchPattern.rawValue]) {
                 image = image + horizontalHatch;
                 hatchingIncluded[hatchPattern.rawValue] = true
             }
-            let horizontalLine: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#horizontalHatch);opacity:\(1)\" />"
-            image = image + horizontalLine
-        case 7:
+            patternName = "url(#horizontalHatch)"
+        case .grid:
             if (!hatchingIncluded[hatchPattern.rawValue]) {
                 image = image + gridHatch;
                 hatchingIncluded[hatchPattern.rawValue] = true
             }
-            let grid: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#gridHatch);opacity:\(1)\" />"
-            image = image + grid
-        case 8:
+            patternName = "url(#gridHatch)"
+        case .cross:
             if (!hatchingIncluded[hatchPattern.rawValue]) {
                 image = image + crossHatch;
                 hatchingIncluded[hatchPattern.rawValue] = true
             }
-            let cross: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:url(#crossHatch);opacity:\(1)\" />"
-            image = image + cross
-        default:
-            break
+            patternName = "url(#crossHatch)"
         }
+        let rectStr = "<rect x=\"\(rect.origin.x)\" y=\"\(rect.origin.y)\" width=\"\(rect.size.width)\" height=\"\(rect.size.height)\" style=\"fill:\(patternName);opacity:\(1)\" />"
+        image = image + rectStr
     }
 
-    public func drawSolidRectWithBorder(topLeftPoint p1: Point,
-                                        topRightPoint p2: Point,
-                                        bottomRightPoint p3: Point,
-                                        bottomLeftPoint p4: Point,
+    public func drawSolidRectWithBorder(_ rect: Rect,
                                         strokeWidth thickness: Float,
                                         fillColor: Color = Color.white,
                                         borderColor: Color = Color.black,
                                         isOriginShifted: Bool) {
-        let w: Float = abs(p2.x - p1.x)
-        let h: Float = abs(p2.y - p3.y)
-        var y = max(p1.y,p2.y,p3.y,p4.y) - yOffset
-        var x = p1.x + xOffset
+        var rect = convertToSVGCoordinates(rect)
         if (isOriginShifted) {
-            y = y + (0.1*plotDimensions.subHeight)
-            y = plotDimensions.subHeight - y
-            x = x + (0.1*plotDimensions.subWidth)
+            rect.origin.y += (0.1*plotDimensions.subHeight)
+            rect.origin.y = plotDimensions.subHeight - rect.origin.y
+            rect.origin.x += (0.1*plotDimensions.subWidth)
         }
         else {
-            y = plotDimensions.subHeight - y
+            rect.origin.y = plotDimensions.subHeight - rect.origin.y
         }
 
-        let rect: String = "<rect x=\"\(x)\" y=\"\(y)\" width=\"\(w)\" height=\"\(h)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:\(thickness);stroke:rgb(\(borderColor.r*255.0),\(borderColor.g*255.0),\(borderColor.b*255.0));opacity:\(fillColor.a)\" />"
-        image = image + "\n" + rect
+        let rectStr = "<rect x=\"\(rect.origin.x)\" y=\"\(rect.origin.y)\" width=\"\(rect.size.width)\" height=\"\(rect.size.height)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:\(thickness);stroke:rgb(\(borderColor.r*255.0),\(borderColor.g*255.0),\(borderColor.b*255.0));opacity:\(fillColor.a)\" />"
+        image = image + "\n" + rectStr
     }
 
     public func drawSolidCircle(center c: Point,

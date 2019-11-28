@@ -15,17 +15,8 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
     public var plotLegend: PlotLegend = PlotLegend()
     public var plotBorder: PlotBorder = PlotBorder()
     public var plotDimensions: PlotDimensions {
-        willSet{
-            plotBorder.topLeft       = Point(newValue.subWidth*0.1,
-                                             newValue.subHeight*0.9)
-            plotBorder.topRight      = Point(newValue.subWidth*0.9,
-                                             newValue.subHeight*0.9)
-            plotBorder.bottomLeft    = Point(newValue.subWidth*0.1,
-                                             newValue.subHeight*0.1)
-            plotBorder.bottomRight   = Point(newValue.subWidth*0.9,
-                                             newValue.subHeight*0.1)
-            plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + Float(20),
-                                             plotBorder.topLeft.y - Float(20))
+        didSet {
+            calcBorderAndLegend()
         }
     }
     // public var plotLineThickness: Float = 3
@@ -142,16 +133,7 @@ extension ScatterPlot{
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
         renderer.plotDimensions = plotDimensions
-        plotBorder.topLeft       = Point(plotDimensions.subWidth*0.1,
-                                         plotDimensions.subHeight*0.9)
-        plotBorder.topRight      = Point(plotDimensions.subWidth*0.9,
-                                         plotDimensions.subHeight*0.9)
-        plotBorder.bottomLeft    = Point(plotDimensions.subWidth*0.1,
-                                         plotDimensions.subHeight*0.1)
-        plotBorder.bottomRight   = Point(plotDimensions.subWidth*0.9,
-                                         plotDimensions.subHeight*0.1)
-        plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + Float(20),
-                                         plotBorder.topLeft.y - Float(20))
+        calcBorderAndLegend()
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
         drawGrid(renderer: renderer)
@@ -167,16 +149,7 @@ extension ScatterPlot{
     public func drawGraph(renderer: Renderer){
         renderer.xOffset = xOffset
         renderer.yOffset = yOffset
-        plotBorder.topLeft       = Point(plotDimensions.subWidth*0.1,
-                                         plotDimensions.subHeight*0.9)
-        plotBorder.topRight      = Point(plotDimensions.subWidth*0.9,
-                                         plotDimensions.subHeight*0.9)
-        plotBorder.bottomLeft    = Point(plotDimensions.subWidth*0.1,
-                                         plotDimensions.subHeight*0.1)
-        plotBorder.bottomRight   = Point(plotDimensions.subWidth*0.9,
-                                         plotDimensions.subHeight*0.1)
-        plotLegend.legendTopLeft = Point(plotBorder.topLeft.x + Float(20),
-                                         plotBorder.topLeft.y - Float(20))
+        calcBorderAndLegend()
         calcLabelLocations(renderer: renderer)
         calcMarkerLocAndScalePts(renderer: renderer)
         drawGrid(renderer: renderer)
@@ -200,16 +173,33 @@ extension ScatterPlot{
                                                       textSize: plotLabel!.labelSize)
             let yWidth: Float = renderer.getTextWidth(text: plotLabel!.yLabel,
                                                       textSize: plotLabel!.labelSize)
-            plotLabel!.xLabelLocation = Point(((plotBorder.bottomRight.x + plotBorder.bottomLeft.x)*Float(0.5)) - xWidth*Float(0.5),
-                                              plotBorder.bottomLeft.y - plotLabel!.labelSize - 0.05*plotDimensions.graphHeight)
-            plotLabel!.yLabelLocation = Point((plotBorder.bottomLeft.x - plotLabel!.labelSize - 0.05*plotDimensions.graphWidth),
-                                              ((plotBorder.bottomLeft.y + plotBorder.topLeft.y)*Float(0.5) - yWidth))
+            plotLabel!.xLabelLocation = Point(
+                plotBorder.rect.midX - xWidth * 0.5,
+                plotBorder.rect.minY - plotLabel!.labelSize - 0.05 * plotDimensions.graphHeight
+            )
+            plotLabel!.yLabelLocation = Point(
+                plotBorder.rect.origin.x - plotLabel!.labelSize - 0.05 * plotDimensions.graphWidth,
+                plotBorder.rect.midY - yWidth
+            )
         }
         if (plotTitle != nil) {
           let titleWidth: Float = renderer.getTextWidth(text: plotTitle!.title, textSize: plotTitle!.titleSize)
-          plotTitle!.titleLocation = Point(((plotBorder.topRight.x + plotBorder.topLeft.x)*Float(0.5)) - titleWidth*Float(0.5),
-                                           plotBorder.topLeft.y + plotTitle!.titleSize*Float(0.5))
+          plotTitle!.titleLocation = Point(
+            plotBorder.rect.midX - titleWidth * 0.5,
+            plotBorder.rect.maxY + plotTitle!.titleSize * 0.5
+          )
         }
+    }
+    
+    func calcBorderAndLegend() {
+        plotBorder.rect.origin.x = plotDimensions.subWidth*0.1
+        plotBorder.rect.origin.y = plotDimensions.subHeight*0.9
+        plotBorder.rect.size.width = plotDimensions.subWidth*0.8
+        plotBorder.rect.size.height = plotDimensions.subHeight * -0.8
+        plotBorder.rect = plotBorder.rect.normalized
+        
+        plotLegend.legendTopLeft = Point(plotBorder.rect.minX + Float(20),
+                                         plotBorder.rect.maxY - Float(20))
     }
 
     func calcMarkerLocAndScalePts(renderer: Renderer){
@@ -418,10 +408,7 @@ extension ScatterPlot{
 
     //functions to draw the plot
     func drawBorder(renderer: Renderer){
-        renderer.drawRect(topLeftPoint: plotBorder.topLeft,
-                          topRightPoint: plotBorder.topRight,
-                          bottomRightPoint: plotBorder.bottomRight,
-                          bottomLeftPoint: plotBorder.bottomLeft,
+        renderer.drawRect(plotBorder.rect,
                           strokeWidth: plotBorder.borderThickness,
                           strokeColor: Color.black,
                           isOriginShifted: false)
@@ -516,18 +503,9 @@ extension ScatterPlot{
                                          endColor: s.endColor!,
                                          Float(s.scaledValues[index].y-s.minY!)*seriesYRangeInverse)
                       }
-                      let tL = Point(p.x-scatterPatternSize*Float(0.5),
-                                     p.y+scatterPatternSize*Float(0.5))
-                      let tR = Point(p.x+scatterPatternSize*Float(0.5),
-                                     p.y+scatterPatternSize*Float(0.5))
-                      let bR = Point(p.x+scatterPatternSize*Float(0.5),
-                                     p.y-scatterPatternSize*Float(0.5))
-                      let bL = Point(p.x-scatterPatternSize*Float(0.5),
-                                     p.y-scatterPatternSize*Float(0.5))
-                      renderer.drawSolidRect(topLeftPoint: tL,
-                                             topRightPoint: tR,
-                                             bottomRightPoint: bR,
-                                             bottomLeftPoint: bL,
+                    let rect = Rect(size: Size(width: scatterPatternSize, height: scatterPatternSize),
+                                    centeredOn: p)
+                      renderer.drawSolidRect(rect,
                                              fillColor: s.color,
                                              hatchPattern: .none,
                                              isOriginShifted: true)
@@ -692,19 +670,11 @@ extension ScatterPlot{
         plotLegend.legendWidth  = maxWidth + 3.5*plotLegend.legendTextSize
         plotLegend.legendHeight = (Float(series.count)*2.0 + 1.0)*plotLegend.legendTextSize
 
-        let p1 = Point(plotLegend.legendTopLeft.x,
-                       plotLegend.legendTopLeft.y)
-        let p2 = Point(plotLegend.legendTopLeft.x + plotLegend.legendWidth,
-                       plotLegend.legendTopLeft.y)
-        let p3 = Point(plotLegend.legendTopLeft.x + plotLegend.legendWidth,
-                       plotLegend.legendTopLeft.y - plotLegend.legendHeight)
-        let p4 = Point(plotLegend.legendTopLeft.x,
-                       plotLegend.legendTopLeft.y - plotLegend.legendHeight)
-
-        renderer.drawSolidRectWithBorder(topLeftPoint: p1,
-                                         topRightPoint: p2,
-                                         bottomRightPoint: p3,
-                                         bottomLeftPoint: p4,
+        let legendRect = Rect(
+            origin: plotLegend.legendTopLeft,
+            size: Size(width: plotLegend.legendWidth, height: -plotLegend.legendHeight)
+        ).normalized
+        renderer.drawSolidRectWithBorder(legendRect,
                                          strokeWidth: plotBorder.borderThickness,
                                          fillColor: Color.transluscentWhite,
                                          borderColor: Color.black,
@@ -729,10 +699,11 @@ extension ScatterPlot{
                                              fillColor: series[i].color,
                                              isOriginShifted: false)
                 case .square:
-                    renderer.drawSolidRect(topLeftPoint: tL,
-                                           topRightPoint: tR,
-                                           bottomRightPoint: bR,
-                                           bottomLeftPoint: bL,
+                    let rect = Rect(
+                        origin: bL,
+                        size: Size(width: plotLegend.legendTextSize, height: plotLegend.legendTextSize)
+                    )
+                    renderer.drawSolidRect(rect,
                                            fillColor: series[i].color,
                                            hatchPattern: .none,
                                            isOriginShifted: false)

@@ -55,69 +55,45 @@ public class QuartzRenderer: Renderer {
         context.fill(rect)
     }
 
-    public func drawRect(topLeftPoint p1: Point,
-                         topRightPoint p2: Point,
-                         bottomRightPoint p3: Point,
-                         bottomLeftPoint p4: Point,
+    public func drawRect(_ rect: Rect,
                          strokeWidth thickness: Float,
                          strokeColor: Color = Color.black,
                          isOriginShifted: Bool) {
-        let w = abs(p2.x - p1.x)
-        let h = abs(p2.y - p3.y)
-        var y = min(p1.y,p2.y,p3.y,p4.y) + yOffset
-        var x = p1.x + xOffset
+        var rect = rect.normalized
+        rect.origin.x += xOffset
+        rect.origin.y += yOffset
         if (isOriginShifted) {
-            y = y + (0.1*plotDimensions.subHeight)
-            x = x + (0.1*plotDimensions.subWidth)
+            rect.origin.y += (0.1*plotDimensions.subHeight)
+            rect.origin.x += (0.1*plotDimensions.subWidth)
         }
-        let rect = CGRect(x: Double(x),
-                          y: Double(y),
-                          width: Double(w),
-                          height: Double(h))
         context.setStrokeColor(strokeColor.cgColor)
         context.setLineWidth(CGFloat(thickness))
-        context.stroke(rect)
+        context.stroke(CGRect(rect))
     }
 
-    public func drawSolidRect(topLeftPoint p1: Point,
-                              topRightPoint p2: Point,
-                              bottomRightPoint p3: Point,
-                              bottomLeftPoint p4: Point,
+    public func drawSolidRect(_ rect: Rect,
                               fillColor: Color = Color.white,
                               hatchPattern: BarGraphSeriesOptions.Hatching,
                               isOriginShifted: Bool) {
+        var rect = rect.normalized
         if (isOriginShifted) {
-            let w = abs(p2.x - p1.x)
-            let h = abs(p2.y - p3.y)
-            let y = min(p1.y,p2.y,p3.y,p4.y) + (0.1*plotDimensions.subHeight) + yOffset
-            let x = min(p1.x, p2.x, p3.x, p4.x) + xOffset + (0.1*plotDimensions.subWidth)
-            let rect = CGRect(x: Double(x),
-                              y: Double(y),
-                              width: Double(w),
-                              height: Double(h))
+            rect.origin.y += (0.1*plotDimensions.subHeight) + yOffset
+            rect.origin.x += (0.1*plotDimensions.subWidth) + xOffset
             context.setFillColor(fillColor.cgColor)
-            context.fill(rect)
-            drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
+            context.fill(CGRect(rect))
+            drawHatchingRect(rect, hatchPattern: hatchPattern)
         }
         else {
-            let w: Float = abs(p2.x - p1.x)
-            let h: Float = abs(p2.y - p3.y)
-            let y = min(p1.y,p2.y,p3.y,p4.y) + yOffset
-            let x = p1.x + xOffset
-            let rect = CGRect(x: Double(x),
-                              y: Double(y),
-                              width: Double(w),
-                              height: Double(h))
+            rect.origin.y += yOffset
+            rect.origin.x += xOffset
             context.setFillColor(fillColor.cgColor)
-            context.fill(rect)
-            drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
+            context.fill(CGRect(rect))
+            drawHatchingRect(rect, hatchPattern: hatchPattern)
         }
     }
     
-    func drawHatchingRect(x: Float,
-                          y: Float,
-                          width w: Float,
-                          height h: Float,
+    // Note: we assume this rect has already been offset-shifted.
+    func drawHatchingRect(_ rect: Rect,
                           hatchPattern: BarGraphSeriesOptions.Hatching) {
         switch (hatchPattern) {
         case .none:
@@ -147,10 +123,7 @@ public class QuartzRenderer: Renderer {
             context.setFillColorSpace(patternSpace)
             var alpha : CGFloat = 1.0
             context.setFillPattern(pattern!, colorComponents: &alpha)
-            context.fill(CGRect(x: Double(x + xOffset),
-                                y: Double(y + yOffset),
-                                width: Double(w),
-                                height: Double(h)))
+            context.fill(CGRect(rect))
         case .backwardSlash:
             let drawPattern: CGPatternDrawPatternCallback = { _, context in
                 let line = CGMutablePath()
@@ -176,10 +149,7 @@ public class QuartzRenderer: Renderer {
             context.setFillColorSpace(patternSpace)
             var alpha : CGFloat = 1.0
             context.setFillPattern(pattern!, colorComponents: &alpha)
-            context.fill(CGRect(x: Double(x + xOffset),
-                                y: Double(y + yOffset),
-                                width: Double(w),
-                                height: Double(h)))
+            context.fill(CGRect(rect))
 
         case .hollowCircle:
             let drawPattern: CGPatternDrawPatternCallback = { _, context in
@@ -206,10 +176,8 @@ public class QuartzRenderer: Renderer {
             context.setFillColorSpace(patternSpace)
             var alpha : CGFloat = 1.0
             context.setFillPattern(pattern!, colorComponents: &alpha)
-            context.fill(CGRect(x: Double(x + xOffset),
-                                y: Double(y + yOffset),
-                                width: Double(w),
-                                height: Double(h)))
+            context.fill(CGRect(rect))
+            
         case .filledCircle:
             let drawPattern: CGPatternDrawPatternCallback = { _, context in
                 context.addArc(
@@ -234,10 +202,7 @@ public class QuartzRenderer: Renderer {
             context.setFillColorSpace(patternSpace)
             var alpha : CGFloat = 1.0
             context.setFillPattern(pattern!, colorComponents: &alpha)
-            context.fill(CGRect(x: Double(x + xOffset),
-                                y: Double(y + yOffset),
-                                width: Double(w),
-                                height: Double(h)))
+            context.fill(CGRect(rect))
 
         case .vertical:
             let drawPattern: CGPatternDrawPatternCallback = { _, context in
@@ -264,10 +229,8 @@ public class QuartzRenderer: Renderer {
             context.setFillColorSpace(patternSpace)
             var alpha : CGFloat = 1.0
             context.setFillPattern(pattern!, colorComponents: &alpha)
-            context.fill(CGRect(x: Double(x + xOffset),
-                                y: Double(y + yOffset),
-                                width: Double(w),
-                                height: Double(h)))
+            context.fill(CGRect(rect))
+            
         case .horizontal:
             let drawPattern: CGPatternDrawPatternCallback = { _, context in
                 let line = CGMutablePath()
@@ -293,10 +256,8 @@ public class QuartzRenderer: Renderer {
             context.setFillColorSpace(patternSpace)
             var alpha : CGFloat = 1.0
             context.setFillPattern(pattern!, colorComponents: &alpha)
-            context.fill(CGRect(x: Double(x + xOffset),
-                                y: Double(y + yOffset),
-                                width: Double(w),
-                                height: Double(h)))
+            context.fill(CGRect(rect))
+            
         case .grid:
             let drawPattern: CGPatternDrawPatternCallback = { _, context in
                 let line = CGMutablePath()
@@ -324,10 +285,8 @@ public class QuartzRenderer: Renderer {
             context.setFillColorSpace(patternSpace)
             var alpha : CGFloat = 1.0
             context.setFillPattern(pattern!, colorComponents: &alpha)
-            context.fill(CGRect(x: Double(x + xOffset),
-                                y: Double(y + yOffset),
-                                width: Double(w),
-                                height: Double(h)))
+            context.fill(CGRect(rect))
+            
         case .cross:
             let drawPattern: CGPatternDrawPatternCallback = { _, context in
                 let line = CGMutablePath()
@@ -355,39 +314,28 @@ public class QuartzRenderer: Renderer {
             context.setFillColorSpace(patternSpace)
             var alpha : CGFloat = 1.0
             context.setFillPattern(pattern!, colorComponents: &alpha)
-            context.fill(CGRect(x: Double(x + xOffset),
-                                y: Double(y + yOffset),
-                                width: Double(w),
-                                height: Double(h)))
+            context.fill(CGRect(rect))
         }
     }
 
-    public func drawSolidRectWithBorder(topLeftPoint p1: Point,
-                                        topRightPoint p2: Point,
-                                        bottomRightPoint p3: Point,
-                                        bottomLeftPoint p4: Point,
+    public func drawSolidRectWithBorder(_ rect: Rect,
                                         strokeWidth thickness: Float,
                                         fillColor: Color = Color.white,
                                         borderColor: Color = Color.black,
                                         isOriginShifted: Bool) {
-        let w: Float = abs(p2.x - p1.x)
-        let h: Float = abs(p2.y - p3.y)
-        var y = min(p1.y,p2.y,p3.y,p4.y) + yOffset
-        var x = p1.x + xOffset
+        var rect = rect.normalized
+        rect.origin.x += xOffset
+        rect.origin.y += yOffset
         if (isOriginShifted) {
-            y = y + (0.1*plotDimensions.subHeight)
-            x = x + (0.1*plotDimensions.subWidth)
+            rect.origin.y += (0.1*plotDimensions.subHeight)
+            rect.origin.x += (0.1*plotDimensions.subWidth)
         }
 
-        let rect = CGRect(x: Double(x),
-                          y: Double(y),
-                          width: Double(w),
-                          height: Double(h))
         context.setFillColor(fillColor.cgColor)
-        context.fill(rect)
+        context.fill(CGRect(rect))
         context.setStrokeColor(borderColor.cgColor)
         context.setLineWidth(CGFloat(thickness))
-        context.stroke(rect)
+        context.stroke(CGRect(rect))
     }
 
     public func drawSolidCircle(center c: Point,
@@ -569,6 +517,26 @@ public class QuartzRenderer: Renderer {
             image.writePng(to: destinationURL)
             #endif
         }
+    }
+}
+
+// - Helpers
+
+extension CGPoint {
+    init(_ swiftplotPoint: SwiftPlot.Point) {
+        self.init(x: CGFloat(swiftplotPoint.x), y: CGFloat(swiftplotPoint.y))
+    }
+}
+
+extension CGSize {
+    init(_ swiftplotSize: SwiftPlot.Size) {
+        self.init(width: CGFloat(swiftplotSize.width), height: CGFloat(swiftplotSize.height))
+    }
+}
+
+extension CGRect {
+    init(_ swiftplotRect: SwiftPlot.Rect) {
+        self.init(origin: CGPoint(swiftplotRect.origin), size: CGSize(swiftplotRect.size))
     }
 }
 
