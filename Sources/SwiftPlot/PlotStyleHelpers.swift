@@ -6,6 +6,11 @@ public struct PlotBorder {
     public init() {}
 }
 
+public struct Grid {
+    public var color = Color.gray
+    public var thickness: Float = 0.5
+}
+
 public struct PlotTitle {
     public var title = "TITLE"
     public var color = Color.black

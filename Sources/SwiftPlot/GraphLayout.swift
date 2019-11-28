@@ -18,12 +18,11 @@ public struct GraphLayout {
     var plotLabel: PlotLabel? = nil
     var plotLegend = PlotLegend()
     var plotBorder = PlotBorder()
+    var grid = Grid()
     var legendLabels: [(String, LegendIcon)] = []
     
     var enablePrimaryAxisGrid = true
     var enableSecondaryAxisGrid = true
-    var gridColor = Color.gray
-    var gridLineThickness: Float = 0.5
     var markerTextSize: Float = 12
     
     struct Results {
@@ -159,8 +158,8 @@ public struct GraphLayout {
             let p2 = Point(results.primaryAxisPlotMarkers.xMarkers[index].x, plotDimensions.graphHeight)
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
-                              strokeWidth: gridLineThickness,
-                              strokeColor: gridColor,
+                              strokeWidth: grid.thickness,
+                              strokeColor: grid.color,
                               isDashed: false,
                               isOriginShifted: true)
         }
@@ -171,8 +170,8 @@ public struct GraphLayout {
                 let p2 = Point(plotDimensions.graphWidth, results.primaryAxisPlotMarkers.yMarkers[index].y)
                 renderer.drawLine(startPoint: p1,
                                   endPoint: p2,
-                                  strokeWidth: gridLineThickness,
-                                  strokeColor: gridColor,
+                                  strokeWidth: grid.thickness,
+                                  strokeColor: grid.color,
                                   isDashed: false,
                                   isOriginShifted: true)
             }
@@ -184,8 +183,8 @@ public struct GraphLayout {
                     let p2 = Point(plotDimensions.graphWidth, secondaryAxisMarkers.yMarkers[index].y)
                     renderer.drawLine(startPoint: p1,
                                       endPoint: p2,
-                                      strokeWidth: gridLineThickness,
-                                      strokeColor: gridColor,
+                                      strokeWidth: grid.thickness,
+                                      strokeColor: grid.color,
                                       isDashed: false,
                                       isOriginShifted: true)
                 }
@@ -305,6 +304,12 @@ public protocol HasGraphLayout: AnyObject {
 }
 
 extension HasGraphLayout {
+    
+    public var plotDimensions: PlotDimensions {
+        get { layout.plotDimensions }
+        set { layout.plotDimensions = newValue }
+    }
+    
     public var plotTitle: PlotTitle? {
         get { layout.plotTitle }
         set { layout.plotTitle = newValue }
@@ -321,18 +326,11 @@ extension HasGraphLayout {
         get { layout.plotBorder }
         set { layout.plotBorder = newValue }
     }
-    public var plotDimensions: PlotDimensions {
-        get { layout.plotDimensions }
-        set { layout.plotDimensions = newValue }
+    public var grid: Grid {
+        get { layout.grid }
+        set { layout.grid = newValue }
     }
-    public var gridColor: Color {
-        get { layout.gridColor }
-        set { layout.gridColor = newValue }
-    }
-    public var gridLineThickness: Float {
-        get { layout.gridLineThickness }
-        set { layout.gridLineThickness = newValue }
-    }
+
     public var markerTextSize: Float {
         get { layout.markerTextSize }
         set { layout.markerTextSize = newValue }
