@@ -117,6 +117,7 @@ public struct GraphLayout {
         renderer.drawText(text: plotTitle.title,
                           location: location,
                           textSize: plotTitle.size,
+                          color: plotTitle.color,
                           strokeWidth: 1.2,
                           angle: 0,
                           isOriginShifted: false)
@@ -128,6 +129,7 @@ public struct GraphLayout {
             renderer.drawText(text: plotLabel.xLabel,
                               location: xLocation,
                               textSize: plotLabel.size,
+                              color: plotLabel.color,
                               strokeWidth: 1.2,
                               angle: 0,
                               isOriginShifted: false)
@@ -136,6 +138,7 @@ public struct GraphLayout {
             renderer.drawText(text: plotLabel.yLabel,
                               location: yLocation,
                               textSize: plotLabel.size,
+                              color: plotLabel.color,
                               strokeWidth: 1.2,
                               angle: 90,
                               isOriginShifted: false)
@@ -203,6 +206,7 @@ public struct GraphLayout {
             renderer.drawText(text: results.primaryAxisPlotMarkers.xMarkersText[index],
                               location: results.primaryAxisPlotMarkers.xMarkersTextLocation[index],
                               textSize: markerTextSize,
+                              color: plotBorder.color,
                               strokeWidth: 0.7,
                               angle: 0,
                               isOriginShifted: true)
@@ -220,6 +224,7 @@ public struct GraphLayout {
             renderer.drawText(text: results.primaryAxisPlotMarkers.yMarkersText[index],
                               location: results.primaryAxisPlotMarkers.yMarkersTextLocation[index],
                               textSize: markerTextSize,
+                              color: plotBorder.color,
                               strokeWidth: 0.7,
                               angle: 0,
                               isOriginShifted: true)
@@ -239,7 +244,8 @@ public struct GraphLayout {
                                   isOriginShifted: true)
                 renderer.drawText(text: secondaryAxisMarkers.yMarkersText[index],
                                   location: secondaryAxisMarkers.yMarkersTextLocation[index],
-                                  textSize: secondaryAxisMarkers.markerTextSize,
+                                  textSize: markerTextSize,
+                                  color: plotBorder.color,
                                   strokeWidth: 0.7,
                                   angle: 0,
                                   isOriginShifted: true)
@@ -277,6 +283,7 @@ public struct GraphLayout {
             renderer.drawText(text: entries[i].0,
                               location: p,
                               textSize: plotLegend.textSize,
+                              color: plotLegend.textColor,
                               strokeWidth: 1.2,
                               angle: 0,
                               isOriginShifted: false)

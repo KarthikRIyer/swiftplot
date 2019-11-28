@@ -92,17 +92,19 @@ public protocol Renderer: AnyObject{
     *params: text s: String,
     *        location p: Point,
     *        textSize size: Float,
+    *        color: Color,
     *        strokeWidth thickness: Float,
     *        angle: Float,
     *        isOriginShifted: Bool
     *description: Draws specified text with specified size,
-    *             rotated at the specified angle. The color is always black.
+    *             rotated at the specified angle.
     *             This function can operate in both coordinate systems with and
     *             without shifted origin. This is decided by the boolean parameter isOriginShifted.
     */
     func drawText(text s: String,
                   location p: Point,
                   textSize size: Float,
+                  color: Color,
                   strokeWidth thickness: Float,
                   angle: Float,
                   isOriginShifted: Bool)
