@@ -1,63 +1,58 @@
 import Foundation
-#if os(macOS)
-import AppKit
-#elseif os(iOS)
-import UIKit
-#endif
 import SwiftPlot
 
+#if canImport(CoreGraphics)
+import CoreGraphics
+
+#if canImport(AppKit)
+import AppKit
+#elseif canImport(UIKit)
+import UIKit
+#endif
+
+@available(tvOS 13, watchOS 13, *)
 public class QuartzRenderer: Renderer {
-    let colorSpace = CGColorSpaceCreateDeviceRGB()
-    let bitmapInfo = CGImageAlphaInfo.premultipliedFirst.rawValue
+    static let colorSpace = CGColorSpaceCreateDeviceRGB()
+    static let bitmapInfo = CGImageAlphaInfo.premultipliedFirst.rawValue
+    
     var context: CGContext
     var fontPath = ""
-    var initialized = false
-
     public var xOffset: Float = 0
     public var yOffset: Float = 0
+    
     public var plotDimensions: PlotDimensions {
-        willSet{
-            if (initialized) {
-                context = CGContext(data: nil,
-                                    width: Int(plotDimensions.frameWidth),
-                                    height: Int(newValue.frameHeight),
-                                    bitsPerComponent: 8,
-                                    bytesPerRow: 0,
-                                    space: colorSpace,
-                                    bitmapInfo: bitmapInfo)!
-                let rect = CGRect(x: 0,
-                                  y: 0,
-                                  width: Int(newValue.frameWidth),
-                                  height: Int(newValue.frameHeight))
-                context.setFillColor(CGColor(red: 1,
-                                             green: 1,
-                                             blue: 1,
-                                             alpha: 1))
-                context.fill(rect)
-            }
+        didSet {
+            context = CGContext(data: nil,
+                                width: Int(plotDimensions.frameWidth),
+                                height: Int(plotDimensions.frameHeight),
+                                bitsPerComponent: 8,
+                                bytesPerRow: 0,
+                                space: Self.colorSpace,
+                                bitmapInfo: Self.bitmapInfo)!
+            let rect = CGRect(x: 0,
+                              y: 0,
+                              width: Int(plotDimensions.frameWidth),
+                              height: Int(plotDimensions.frameHeight))
+            context.setFillColor(Color.white.cgColor)
+            context.fill(rect)
         }
     }
 
-    public init(width w: Float = 1000, height h: Float = 660, fontPath: String = ""){
-        initialized = false
+    public init(width w: Float = 1000, height h: Float = 660, fontPath: String = "") {
         plotDimensions = PlotDimensions(frameWidth: w, frameHeight: h)
         context = CGContext(data: nil,
                             width: Int(plotDimensions.frameWidth),
                             height: Int(plotDimensions.frameHeight),
                             bitsPerComponent: 8,
                             bytesPerRow: 0,
-                            space: colorSpace,
-                            bitmapInfo: bitmapInfo)!
+                            space: Self.colorSpace,
+                            bitmapInfo: Self.bitmapInfo)!
         let rect = CGRect(x: 0,
                           y: 0,
                           width: Int(plotDimensions.frameWidth),
                           height: Int(plotDimensions.frameHeight))
-        context.setFillColor(CGColor(red: 1,
-                                     green: 1,
-                                     blue: 1,
-                                     alpha: 1))
+        context.setFillColor(Color.white.cgColor)
         context.fill(rect)
-        initialized = true
     }
 
     public func drawRect(topLeftPoint p1: Point,
@@ -79,10 +74,7 @@ public class QuartzRenderer: Renderer {
                           y: Double(y),
                           width: Double(w),
                           height: Double(h))
-        context.setStrokeColor(CGColor(red: CGFloat(strokeColor.r),
-                                       green: CGFloat(strokeColor.g),
-                                       blue: CGFloat(strokeColor.b),
-                                       alpha: CGFloat(strokeColor.a)))
+        context.setStrokeColor(strokeColor.cgColor)
         context.setLineWidth(CGFloat(thickness))
         context.stroke(rect)
     }
@@ -103,10 +95,7 @@ public class QuartzRenderer: Renderer {
                               y: Double(y),
                               width: Double(w),
                               height: Double(h))
-            context.setFillColor(CGColor(red: CGFloat(fillColor.r),
-                                         green: CGFloat(fillColor.g),
-                                         blue: CGFloat(fillColor.b),
-                                         alpha: CGFloat(fillColor.a)))
+            context.setFillColor(fillColor.cgColor)
             context.fill(rect)
             drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
         }
@@ -119,10 +108,7 @@ public class QuartzRenderer: Renderer {
                               y: Double(y),
                               width: Double(w),
                               height: Double(h))
-            context.setFillColor(CGColor(red: CGFloat(fillColor.r),
-                                         green: CGFloat(fillColor.g),
-                                         blue: CGFloat(fillColor.b),
-                                         alpha: CGFloat(fillColor.a)))
+            context.setFillColor(fillColor.cgColor)
             context.fill(rect)
             drawHatchingRect(x: x, y: y, width: w, height: h, hatchPattern: hatchPattern)
         }
@@ -133,10 +119,10 @@ public class QuartzRenderer: Renderer {
                           width w: Float,
                           height h: Float,
                           hatchPattern: BarGraphSeriesOptions.Hatching) {
-        switch (hatchPattern.rawValue) {
-        case 0:
+        switch (hatchPattern) {
+        case .none:
             break
-        case 1:
+        case .forwardSlash:
             let drawPattern: CGPatternDrawPatternCallback = { _, context in
                 let line = CGMutablePath()
                 line.move(to: CGPoint(x: Double(0), y: Double(0)))
@@ -165,7 +151,7 @@ public class QuartzRenderer: Renderer {
                                 y: Double(y + yOffset),
                                 width: Double(w),
                                 height: Double(h)))
-        case 2:
+        case .backwardSlash:
             let drawPattern: CGPatternDrawPatternCallback = { _, context in
                 let line = CGMutablePath()
                 line.move(to: CGPoint(x: Double(10), y: Double(0)))
@@ -195,7 +181,7 @@ public class QuartzRenderer: Renderer {
                                 width: Double(w),
                                 height: Double(h)))
 
-        case 3:
+        case .hollowCircle:
             let drawPattern: CGPatternDrawPatternCallback = { _, context in
                 context.addArc(
                     center: CGPoint(x: 0, y: 0), radius: 4.0,
@@ -224,7 +210,7 @@ public class QuartzRenderer: Renderer {
                                 y: Double(y + yOffset),
                                 width: Double(w),
                                 height: Double(h)))
-        case 4:
+        case .filledCircle:
             let drawPattern: CGPatternDrawPatternCallback = { _, context in
                 context.addArc(
                     center: CGPoint(x: 0, y: 0), radius: 4.0,
@@ -253,7 +239,7 @@ public class QuartzRenderer: Renderer {
                                 width: Double(w),
                                 height: Double(h)))
 
-        case 5:
+        case .vertical:
             let drawPattern: CGPatternDrawPatternCallback = { _, context in
                 let line = CGMutablePath()
                 line.move(to: CGPoint(x: Double(5), y: Double(0)))
@@ -282,7 +268,7 @@ public class QuartzRenderer: Renderer {
                                 y: Double(y + yOffset),
                                 width: Double(w),
                                 height: Double(h)))
-        case 6:
+        case .horizontal:
             let drawPattern: CGPatternDrawPatternCallback = { _, context in
                 let line = CGMutablePath()
                 line.move(to: CGPoint(x: Double(0), y: Double(5)))
@@ -311,7 +297,7 @@ public class QuartzRenderer: Renderer {
                                 y: Double(y + yOffset),
                                 width: Double(w),
                                 height: Double(h)))
-        case 7:
+        case .grid:
             let drawPattern: CGPatternDrawPatternCallback = { _, context in
                 let line = CGMutablePath()
                 line.move(to: CGPoint(x: Double(0), y: Double(5)))
@@ -342,7 +328,7 @@ public class QuartzRenderer: Renderer {
                                 y: Double(y + yOffset),
                                 width: Double(w),
                                 height: Double(h)))
-        case 8:
+        case .cross:
             let drawPattern: CGPatternDrawPatternCallback = { _, context in
                 let line = CGMutablePath()
                 line.move(to: CGPoint(x: Double(0), y: Double(0)))
@@ -373,8 +359,6 @@ public class QuartzRenderer: Renderer {
                                 y: Double(y + yOffset),
                                 width: Double(w),
                                 height: Double(h)))
-        default:
-            break
         }
     }
 
@@ -399,15 +383,9 @@ public class QuartzRenderer: Renderer {
                           y: Double(y),
                           width: Double(w),
                           height: Double(h))
-        context.setFillColor(CGColor(red: CGFloat(fillColor.r),
-                                     green: CGFloat(fillColor.g),
-                                     blue: CGFloat(fillColor.b),
-                                     alpha: CGFloat(fillColor.a)))
+        context.setFillColor(fillColor.cgColor)
         context.fill(rect)
-        context.setStrokeColor(CGColor(red: CGFloat(borderColor.r),
-                                       green: CGFloat(borderColor.g),
-                                       blue: CGFloat(borderColor.b),
-                                       alpha: CGFloat(borderColor.a)))
+        context.setStrokeColor(borderColor.cgColor)
         context.setLineWidth(CGFloat(thickness))
         context.stroke(rect)
     }
@@ -427,10 +405,7 @@ public class QuartzRenderer: Renderer {
                                y: Double(y-r),
                                width: Double(2.0*r),
                                height: Double(2.0*r))
-        context.setFillColor(CGColor(red: CGFloat(fillColor.r),
-                                     green: CGFloat(fillColor.g),
-                                     blue: CGFloat(fillColor.b),
-                                     alpha: CGFloat(fillColor.a)))
+        context.setFillColor(fillColor.cgColor)
         context.addEllipse(in: rectBound)
         context.drawPath(using: .fill)
     }
@@ -459,10 +434,7 @@ public class QuartzRenderer: Renderer {
         trianglePath.addLine(to: CGPoint(x: Double(x2), y: Double(y2)))
         trianglePath.addLine(to: CGPoint(x: Double(x3), y: Double(y3)))
         trianglePath.closeSubpath()
-        context.setFillColor(CGColor(red: CGFloat(fillColor.r),
-                                     green: CGFloat(fillColor.g),
-                                     blue: CGFloat(fillColor.b),
-                                     alpha: CGFloat(fillColor.a)))
+        context.setFillColor(fillColor.cgColor)
         context.addPath(trianglePath)
         context.fillPath()
     }
@@ -486,10 +458,7 @@ public class QuartzRenderer: Renderer {
             }
         }
         polygonPath.closeSubpath()
-        context.setFillColor(CGColor(red: CGFloat(fillColor.r),
-                                     green: CGFloat(fillColor.g),
-                                     blue: CGFloat(fillColor.b),
-                                     alpha: CGFloat(fillColor.a)))
+        context.setFillColor(fillColor.cgColor)
         context.addPath(polygonPath)
         context.fillPath()
     }
@@ -511,10 +480,7 @@ public class QuartzRenderer: Renderer {
             line.move(to: CGPoint(x: Double(p1.x + xOffset), y: Double(p1.y + yOffset)))
             line.addLine(to: CGPoint(x: Double(p2.x + xOffset), y: Double(p2.y + yOffset)))
         }
-        context.setStrokeColor(CGColor(red: CGFloat(strokeColor.r),
-                                       green: CGFloat(strokeColor.g),
-                                       blue: CGFloat(strokeColor.b),
-                                       alpha: CGFloat(strokeColor.a)))
+        context.setStrokeColor(strokeColor.cgColor)
         context.setLineWidth(CGFloat(thickness))
         context.addPath(line)
         if(isDashed) {
@@ -551,7 +517,7 @@ public class QuartzRenderer: Renderer {
             x1 = x1 + 0.1*plotDimensions.subWidth
             y1 = y1 + 0.1*plotDimensions.subHeight
         }
-        #if os(macOS)
+        #if canImport(AppKit)
         let font = NSFont.systemFont(ofSize: CGFloat(size))
         let attr = [NSAttributedString.Key.font:font,NSAttributedString.Key.foregroundColor:NSColor.black] as CFDictionary
         let cfstring:CFString = s as NSString
@@ -561,7 +527,7 @@ public class QuartzRenderer: Renderer {
         context.setTextDrawingMode(.fill)
         context.textPosition = CGPoint(x: Double(x1), y: Double(y1))
         CTLineDraw(line, context)
-        #elseif os(iOS)
+        #elseif canImport(UIKit)
         let font = UIFont.systemFont(ofSize: CGFloat(size))
         let attr = [NSAttributedString.Key.font:font,NSAttributedString.Key.foregroundColor:UIColor.black] as CFDictionary
         let cfstring:CFString = s as NSString
@@ -576,14 +542,17 @@ public class QuartzRenderer: Renderer {
 
     public func getTextWidth(text: String,
                              textSize s: Float) -> Float {
-        #if os(macOS)
+        var attributes: [NSAttributedString.Key: Any] = [:]
+        #if canImport(AppKit)
         let font = NSFont.systemFont(ofSize: CGFloat(s))
         context.setFont(CTFontCopyGraphicsFont(font, nil))
-        #elseif os(iOS)
+        attributes = [.font: font]
+        #elseif canImport(UIKit)
         let font = UIFont.systemFont(ofSize: CGFloat(s))
         context.setFont(CTFontCopyGraphicsFont(font, nil))
+        attributes = [.font: font]
         #endif
-        let string = NSAttributedString(string: "\(text)", attributes: [NSAttributedString.Key.font: font])
+        let string = NSAttributedString(string: "\(text)", attributes: attributes)
         let size = string.size()
         return Float(size.width)
     }
@@ -592,10 +561,10 @@ public class QuartzRenderer: Renderer {
         if !name.isEmpty {
             let fileName = name + ".png"
             let destinationURL = URL(fileURLWithPath: fileName)
-            #if os(macOS)
+            #if canImport(AppKit)
             let image = NSImage(cgImage: context.makeImage()!, size: NSZeroSize)
             image.writePng(to: destinationURL)
-            #elseif os(iOS)
+            #elseif canImport(UIKit)
             let image: UIImage = UIImage.init(cgImage: context.makeImage()!)
             image.writePng(to: destinationURL)
             #endif
@@ -603,15 +572,29 @@ public class QuartzRenderer: Renderer {
     }
 }
 
-#if os(macOS)
+#if canImport(AppKit)
 extension NSImage {
     var pngData: Data? {
         guard let tiffRepresentation = tiffRepresentation, let bitmapImage = NSBitmapImageRep(data: tiffRepresentation) else { return nil }
         return bitmapImage.representation(using: .png, properties: [:])
     }
     func writePng(to url: URL, options: Data.WritingOptions = .atomic) -> Bool {
+        guard let data = pngData else { return false } // TODO: throw an error.
         do {
-            try pngData?.write(to: url, options: options)
+            try data.write(to: url, options: options)
+            return true
+        } catch {
+            print(error)
+            return false
+        }
+    }
+}
+#elseif canImport(UIKit)
+extension UIImage {
+    func writePng(to url: URL, options: Data.WritingOptions = .atomic) -> Bool {
+        guard let data = pngData() else { return false } // TODO: throw an error.
+        do {
+            try data.write(to: url, options: options)
             return true
         } catch {
             print(error)
@@ -621,21 +604,4 @@ extension NSImage {
 }
 #endif
 
-#if os(iOS)
-extension UIImage {
-    var pngData: Data? {
-        guard let data = UIImagePNGRepresentation(image) else { return nil }
-        return data
-    }
-    
-    func writePng(to url: URL, options: Data.WritingOptions = .atomic) -> Bool {
-        do {
-            try pngData?.write(to: url, options: options)
-            return true
-        } catch {
-            print(error)
-            return false
-        }
-    }
-}
-#endif
+#endif // canImport(CoreGraphics)

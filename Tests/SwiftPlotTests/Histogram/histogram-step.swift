@@ -1,21 +1,18 @@
 import SwiftPlot
-import AGGRenderer
 import SVGRenderer
+#if canImport(AGGRenderer)
+import AGGRenderer
+#endif
 #if canImport(QuartzRenderer)
 import QuartzRenderer
 #endif
 
+@available(tvOS 13, watchOS 13, *)
 extension HistogramTests {
   
   func testHistogramStep() {
     
     let fileName = "_22_histogram_step"
-    
-    let agg_renderer = AGGRenderer()
-    let svg_renderer = SVGRenderer()
-    #if canImport(QuartzRenderer)
-    let quartz_renderer = QuartzRenderer()
-    #endif
     
     let histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
     histogram.addSeries(data: histogram_step_values,
@@ -26,11 +23,16 @@ extension HistogramTests {
     histogram.plotTitle = PlotTitle("HISTOGRAM STEP")
     histogram.plotLabel = PlotLabel(xLabel: "X", yLabel: "Frequency")
     
-    histogram.drawGraphAndOutput(fileName: self.aggOutputDirectory+fileName,
-                                 renderer: agg_renderer)
+    let svg_renderer = SVGRenderer()
     histogram.drawGraphAndOutput(fileName: self.svgOutputDirectory+fileName,
                                  renderer: svg_renderer)
+    #if canImport(AGGRenderer)
+    let agg_renderer = AGGRenderer()
+    histogram.drawGraphAndOutput(fileName: self.aggOutputDirectory+fileName,
+                                 renderer: agg_renderer)
+    #endif
     #if canImport(QuartzRenderer)
+    let quartz_renderer = QuartzRenderer()
     histogram.drawGraphAndOutput(fileName: self.coreGraphicsOutputDirectory+fileName,
                                  renderer: quartz_renderer)
     #endif
