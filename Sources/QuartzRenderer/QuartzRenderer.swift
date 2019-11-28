@@ -443,6 +443,7 @@ public class QuartzRenderer: Renderer {
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
+        guard !p.isEmpty else { return }
         for i in 0..<p.count-1 {
             drawLine(startPoint: p[i],
                      endPoint: p[i+1],
