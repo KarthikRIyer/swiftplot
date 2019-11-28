@@ -476,19 +476,27 @@ public class QuartzRenderer: Renderer {
         let line = CTLineCreateWithAttributedString(text!)
         context.setLineWidth(1)
         context.setTextDrawingMode(.fill)
-        context.textPosition = CGPoint(x: Double(x1), y: Double(y1))
+        context.saveGState()
+        context.translateBy(x: CGFloat(x1), y: CGFloat(y1))
+        context.rotate(by: CGFloat(angle) * .pi / 180)
+        context.textPosition = .zero
         CTLineDraw(line, context)
+        context.restoreGState()
         #elseif canImport(UIKit)
         let font = UIFont.systemFont(ofSize: CGFloat(size))
         let attr = [NSAttributedString.Key.font:font,
-                    .foregroundColor: UIColor(cgColor: color.cgColor) ?? .black] as CFDictionary
+                    .foregroundColor: UIColor(cgColor: color.cgColor)] as CFDictionary
         let cfstring:CFString = s as NSString
         let text = CFAttributedStringCreate(nil, cfstring, attr)
         let line = CTLineCreateWithAttributedString(text!)
         context.setLineWidth(1)
         context.setTextDrawingMode(.fill)
-        context.textPosition = CGPoint(x: Double(x1), y: Double(y1))
+        context.saveGState()
+        context.translateBy(x: CGFloat(x1), y: CGFloat(y1))
+        context.rotate(by: CGFloat(angle) * .pi / 180)
+        context.textPosition = .zero
         CTLineDraw(line, context)
+        context.restoreGState()
         #endif
     }
 
