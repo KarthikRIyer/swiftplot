@@ -16,44 +16,44 @@
 <line x1="100.0" y1="208.18231" x2="900.0" y2="208.18231" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
 <line x1="100.0" y1="145.49878" x2="900.0" y2="145.49878" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
 <line x1="100.0" y1="82.81525" x2="900.0" y2="82.81525" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
-<rect x="100.0" y="66.0" width="800.0" height="528.0" style="fill:rgb(255,255,255);stroke-width:2.0;stroke:rgb(0,0,0);opacity:1;fill-opacity:0;" />
+<rect x="100.0" y="66.0" width="800.0" height="528.0" style="fill:rgb(255,255,255);stroke-width:2.0;stroke:rgb(0.0,0.0,0.0);opacity:1;fill-opacity:0;" />
 <line x1="113.29854" y1="600.0" x2="113.29854" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="99.91854" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,99.91854,614.0)">0.0</text>
+<text font-size="12.0" font-family="Roboto" x="99.91854" y="614.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,99.91854,614.0)">0.0</text>
 <line x1="267.78705" y1="600.0" x2="267.78705" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="250.56705" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,250.56705,614.0)">100.0</text>
+<text font-size="12.0" font-family="Roboto" x="250.56705" y="614.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,250.56705,614.0)">100.0</text>
 <line x1="422.27557" y1="600.0" x2="422.27557" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="404.57556" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,404.57556,614.0)">200.0</text>
+<text font-size="12.0" font-family="Roboto" x="404.57556" y="614.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,404.57556,614.0)">200.0</text>
 <line x1="576.7641" y1="600.0" x2="576.7641" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="559.0641" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,559.0641,614.0)">300.0</text>
+<text font-size="12.0" font-family="Roboto" x="559.0641" y="614.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,559.0641,614.0)">300.0</text>
 <line x1="731.2526" y1="600.0" x2="731.2526" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="713.5526" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,713.5526,614.0)">400.0</text>
+<text font-size="12.0" font-family="Roboto" x="713.5526" y="614.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,713.5526,614.0)">400.0</text>
 <line x1="885.74115" y1="600.0" x2="885.74115" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="868.04114" y="614.0" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,868.04114,614.0)">500.0</text>
+<text font-size="12.0" font-family="Roboto" x="868.04114" y="614.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,868.04114,614.0)">500.0</text>
 <line x1="94.0" y1="584.28357" x2="100.0" y2="584.28357" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="55.24" y="588.28357" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,55.24,588.28357)">0.0</text>
+<text font-size="12.0" font-family="Roboto" x="55.24" y="588.28357" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,55.24,588.28357)">0.0</text>
 <line x1="94.0" y1="521.6" x2="100.0" y2="521.6" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="47.56" y="525.6" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,47.56,525.6)">100.0</text>
+<text font-size="12.0" font-family="Roboto" x="47.56" y="525.6" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,47.56,525.6)">100.0</text>
 <line x1="94.0" y1="458.91644" x2="100.0" y2="458.91644" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="46.6" y="462.91644" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,46.6,462.91644)">200.0</text>
+<text font-size="12.0" font-family="Roboto" x="46.6" y="462.91644" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,46.6,462.91644)">200.0</text>
 <line x1="94.0" y1="396.2329" x2="100.0" y2="396.2329" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="46.6" y="400.2329" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,46.6,400.2329)">300.0</text>
+<text font-size="12.0" font-family="Roboto" x="46.6" y="400.2329" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,46.6,400.2329)">300.0</text>
 <line x1="94.0" y1="333.54938" x2="100.0" y2="333.54938" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="46.6" y="337.54938" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,46.6,337.54938)">400.0</text>
+<text font-size="12.0" font-family="Roboto" x="46.6" y="337.54938" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,46.6,337.54938)">400.0</text>
 <line x1="94.0" y1="270.86584" x2="100.0" y2="270.86584" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="46.6" y="274.86584" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,46.6,274.86584)">500.0</text>
+<text font-size="12.0" font-family="Roboto" x="46.6" y="274.86584" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,46.6,274.86584)">500.0</text>
 <line x1="94.0" y1="208.18231" x2="100.0" y2="208.18231" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="46.6" y="212.18231" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,46.6,212.18231)">600.0</text>
+<text font-size="12.0" font-family="Roboto" x="46.6" y="212.18231" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,46.6,212.18231)">600.0</text>
 <line x1="94.0" y1="145.49878" x2="100.0" y2="145.49878" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="46.6" y="149.49878" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,46.6,149.49878)">700.0</text>
+<text font-size="12.0" font-family="Roboto" x="46.6" y="149.49878" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,46.6,149.49878)">700.0</text>
 <line x1="94.0" y1="82.81525" x2="100.0" y2="82.81525" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="46.6" y="86.81525" stroke="#000000" stroke-width="0.175" transform="rotate(-0.0,46.6,86.81525)">800.0</text>
-<line x1="128.74739" y1="578.0152" x2="267.78705" y2="509.0633" style="stroke:rgb(206.04001,206.04001,235.11);stroke-width:3.0;opacity:1.0;stroke-linecap:round" />
-<line x1="267.78705" y1="509.0633" x2="519.60333" y2="270.8658" style="stroke:rgb(206.04001,206.04001,235.11);stroke-width:3.0;opacity:1.0;stroke-linecap:round" />
-<line x1="519.60333" y1="270.8658" x2="868.7474" y2="82.815186" style="stroke:rgb(206.04001,206.04001,235.11);stroke-width:3.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="20.0" font-family="Roboto" x="442.1" y="56.0" stroke="#000000" stroke-width="0.3" transform="rotate(-0.0,442.1,56.0)">SINGLE SERIES</text>
-<text font-size="15.0" font-family="Roboto" x="471.45" y="635.4" stroke="#000000" stroke-width="0.3" transform="rotate(-0.0,471.45,635.4)">X-AXIS</text>
-<text font-size="15.0" font-family="Roboto" x="45.0" y="387.4" stroke="#000000" stroke-width="0.3" transform="rotate(-90.0,45.0,387.4)">Y-AXIS</text>
+<text font-size="12.0" font-family="Roboto" x="46.6" y="86.81525" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,46.6,86.81525)">800.0</text>
+<line x1="128.74739" y1="578.0152" x2="267.78705" y2="509.0633" style="stroke:rgb(134.89499,206.04001,235.11);stroke-width:3.0;opacity:1.0;stroke-linecap:round" />
+<line x1="267.78705" y1="509.0633" x2="519.60333" y2="270.8658" style="stroke:rgb(134.89499,206.04001,235.11);stroke-width:3.0;opacity:1.0;stroke-linecap:round" />
+<line x1="519.60333" y1="270.8658" x2="868.7474" y2="82.815186" style="stroke:rgb(134.89499,206.04001,235.11);stroke-width:3.0;opacity:1.0;stroke-linecap:round" />
+<text font-size="20.0" font-family="Roboto" x="442.1" y="56.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3" transform="rotate(-0.0,442.1,56.0)">SINGLE SERIES</text>
+<text font-size="15.0" font-family="Roboto" x="471.45" y="635.4" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3" transform="rotate(-0.0,471.45,635.4)">X-AXIS</text>
+<text font-size="15.0" font-family="Roboto" x="45.0" y="387.4" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3" transform="rotate(-90.0,45.0,387.4)">Y-AXIS</text>
 <rect x="120.0" y="86.0" width="77.8" height="30.0" style="fill:rgb(255.0,255.0,255.0);stroke-width:2.0;stroke:rgb(0.0,0.0,0.0);opacity:0.7" />
-<rect x="130.0" y="96.0" width="10.0" height="10.0" style="fill:rgb(206.04001,206.04001,235.11);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
-<text font-size="10.0" font-family="Roboto" x="150.0" y="106.0" stroke="#000000" stroke-width="0.3" transform="rotate(-0.0,150.0,106.0)">Plot 1</text>
+<rect x="130.0" y="96.0" width="10.0" height="10.0" style="fill:rgb(134.89499,206.04001,235.11);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<text font-size="10.0" font-family="Roboto" x="150.0" y="106.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3" transform="rotate(-0.0,150.0,106.0)">Plot 1</text>
 </svg>
