@@ -125,7 +125,7 @@ extension ScatterPlot: HasGraphLayout {
     }
 
     // functions implementing plotting logic
-    public func calculateScaleAndMarkerLocations(primaryMarkers: inout PlotMarkers, secondaryMarkers: inout PlotMarkers?, renderer: Renderer) {
+    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, renderer: Renderer) {
         
         var maximumX: T = maxX(points: series[0].values)
         var maximumY: U = maxY(points: series[0].values)
@@ -250,13 +250,8 @@ extension ScatterPlot: HasGraphLayout {
                 xM = xM+inc2
                 continue
             }
-            let p = Point(xM, 0)
-            primaryMarkers.xMarkers.append(p)
-            let text_p = Point(xM - (renderer.getTextWidth(text: "\(floor(scaleX*(xM-origin.x)))",
-                                                           textSize: layout.markerTextSize)/2.0) + 8,
-                               -20)
-            primaryMarkers.xMarkersTextLocation.append(text_p)
-            primaryMarkers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
+            markers.xMarkers.append(xM)
+            markers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
             xM = xM + inc2
         }
 
@@ -266,13 +261,8 @@ extension ScatterPlot: HasGraphLayout {
                 xM = xM - inc2
                 continue
             }
-            let p = Point(xM, 0)
-            primaryMarkers.xMarkers.append(p)
-            let text_p = Point(xM - (renderer.getTextWidth(text: "\(ceil(scaleX*(xM-origin.x)))",
-                                                           textSize: layout.markerTextSize)/2.0) + 8,
-                               -20)
-            primaryMarkers.xMarkersTextLocation.append(text_p)
-            primaryMarkers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
+            markers.xMarkers.append(xM)
+            markers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
             xM = xM - inc2
         }
 
@@ -282,24 +272,14 @@ extension ScatterPlot: HasGraphLayout {
                 yM = yM + inc1
                 continue
             }
-            let p = Point(0, yM)
-            primaryMarkers.yMarkers.append(p)
-            let text_p = Point(-(renderer.getTextWidth(text: "\(ceil(scaleY*(yM-origin.y)))",
-                                                       textSize: layout.markerTextSize)+8),
-                               yM - 4)
-            primaryMarkers.yMarkersTextLocation.append(text_p)
-            primaryMarkers.yMarkersText.append("\(ceilToN(scaleY*(yM-origin.y), yIncRound))")
+            markers.yMarkers.append(yM)
+            markers.yMarkersText.append("\(ceilToN(scaleY*(yM-origin.y), yIncRound))")
             yM = yM + inc1
         }
         yM = origin.y - inc1
         while yM>0.0 {
-            let p = Point(0, yM)
-            primaryMarkers.yMarkers.append(p)
-            let text_p = Point(-(renderer.getTextWidth(text: "\(floor(scaleY*(yM-origin.y)))",
-                                                       textSize: layout.markerTextSize)+8),
-                               yM - 4)
-            primaryMarkers.yMarkersTextLocation.append(text_p)
-            primaryMarkers.yMarkersText.append("\(floorToN(scaleY*(yM-origin.y), xIncRound))")
+            markers.yMarkers.append(yM)
+            markers.yMarkersText.append("\(floorToN(scaleY*(yM-origin.y), xIncRound))")
             yM = yM - inc1
         }
 
@@ -321,7 +301,7 @@ extension ScatterPlot: HasGraphLayout {
     }
 
     //functions to draw the plot
-    public func drawData(primaryMarkers: PlotMarkers, renderer: Renderer) {
+    public func drawData(markers: PlotMarkers, renderer: Renderer) {
         for seriesIndex in 0..<series.count {
             var s = series[seriesIndex]
             s.maxY = maxY(points: s.scaledValues)

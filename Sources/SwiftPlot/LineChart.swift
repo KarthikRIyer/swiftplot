@@ -129,8 +129,7 @@ extension LineGraph: HasGraphLayout {
     }
 
     // functions implementing plotting logic
-    public func calculateScaleAndMarkerLocations(primaryMarkers: inout PlotMarkers, secondaryMarkers: inout PlotMarkers?,
-                                  renderer: Renderer){
+    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, renderer: Renderer) {
 
         var maximumXPrimary: T = maxX(points: primaryAxis.series[0].values)
         var maximumYPrimary: U = maxY(points: primaryAxis.series[0].values)
@@ -165,7 +164,6 @@ extension LineGraph: HasGraphLayout {
         var minimumYSecondary = U(0)
 
         if secondaryAxis != nil {
-            secondaryMarkers = PlotMarkers()
 
             maximumXSecondary = maxX(points: secondaryAxis!.series[0].values)
             maximumYSecondary = maxY(points: secondaryAxis!.series[0].values)
@@ -314,13 +312,8 @@ extension LineGraph: HasGraphLayout {
                 xM = xM+inc2Primary
                 continue
             }
-            let p = Point(xM, 0)
-            primaryMarkers.xMarkers.append(p)
-            let text_p = Point(xM - (renderer.getTextWidth(text: "\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))",
-                                                           textSize: layout.markerTextSize)/2.0) + 5,
-                               -20)
-            primaryMarkers.xMarkersTextLocation.append(text_p)
-            primaryMarkers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
+            markers.xMarkers.append(xM)
+            markers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
             xM = xM + inc2Primary
         }
 
@@ -330,13 +323,8 @@ extension LineGraph: HasGraphLayout {
                 xM = xM - inc2Primary
                 continue
             }
-            let p = Point(xM, 0)
-            primaryMarkers.xMarkers.append(p)
-            let text_p = Point(xM - (renderer.getTextWidth(text: "\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))",
-                                                           textSize: layout.markerTextSize)/2.0) + 5,
-                               -20)
-            primaryMarkers.xMarkersTextLocation.append(text_p)
-            primaryMarkers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
+            markers.xMarkers.append(xM)
+            markers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
             xM = xM - inc2Primary
         }
 
@@ -346,24 +334,14 @@ extension LineGraph: HasGraphLayout {
                 yM = yM + inc1Primary
                 continue
             }
-            let p = Point(0, yM)
-            primaryMarkers.yMarkers.append(p)
-            let text_p = Point(-(renderer.getTextWidth(text: "\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))",
-                                                       textSize: layout.markerTextSize)+8),
-                               yM - 4)
-            primaryMarkers.yMarkersTextLocation.append(text_p)
-            primaryMarkers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
+            markers.yMarkers.append(yM)
+            markers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
             yM = yM + inc1Primary
         }
         yM = originPrimary.y - inc1Primary
         while yM>0.0 {
-            let p = Point(0, yM)
-            primaryMarkers.yMarkers.append(p)
-            let text_p = Point(-(renderer.getTextWidth(text: "\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))",
-                                                       textSize: layout.markerTextSize)+8),
-                               yM - 4)
-            primaryMarkers.yMarkersTextLocation.append(text_p)
-            primaryMarkers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
+            markers.yMarkers.append(yM)
+            markers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
             yM = yM - inc1Primary
         }
 
@@ -420,24 +398,14 @@ extension LineGraph: HasGraphLayout {
                     yM = yM + inc1Secondary
                     continue
                 }
-                let p = Point(0, yM)
-                secondaryMarkers!.yMarkers.append(p)
-                let text_p = Point(plotDimensions.graphWidth + (renderer.getTextWidth(text: "\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))",
-                                                                                      textSize: layout.markerTextSize)*Float(0.5) - 8),
-                                   yM - 4)
-                secondaryMarkers!.yMarkersTextLocation.append(text_p)
-                secondaryMarkers!.yMarkersText.append("\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))")
+                markers.y2Markers.append(yM)
+                markers.y2MarkersText.append("\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))")
                 yM = yM + inc1Secondary
             }
             yM = originSecondary!.y - inc1Secondary
             while yM>0.0 {
-                let p = Point(0, yM)
-                secondaryMarkers!.yMarkers.append(p)
-                let text_p = Point(plotDimensions.graphWidth + (renderer.getTextWidth(text: "\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))",
-                                                                                      textSize: layout.markerTextSize)*Float(0.5) - 8),
-                                   yM - 4)
-                secondaryMarkers!.yMarkersTextLocation.append(text_p)
-                secondaryMarkers!.yMarkersText.append("\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))")
+                markers.y2Markers.append(yM)
+                markers.y2MarkersText.append("\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))")
                 yM = yM - inc1Secondary
             }
 
@@ -460,7 +428,7 @@ extension LineGraph: HasGraphLayout {
     }
 
     //functions to draw the plot
-    public func drawData(primaryMarkers: PlotMarkers, renderer: Renderer) {
+    public func drawData(markers: PlotMarkers, renderer: Renderer) {
         for s in primaryAxis.series {
             var points = [Point]()
             for p in s.scaledValues {

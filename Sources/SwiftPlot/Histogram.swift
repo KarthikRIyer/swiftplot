@@ -144,7 +144,7 @@ extension Histogram: HasGraphLayout {
     }
 
     // functions implementing plotting logic
-    public func calculateScaleAndMarkerLocations(primaryMarkers: inout PlotMarkers, secondaryMarkers: inout PlotMarkers?, renderer: Renderer) {
+    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, renderer: Renderer) {
         
         var maximumY = Float(histogramSeries.maximumFrequency)
         let minimumY = Float(0)
@@ -238,11 +238,8 @@ extension Histogram: HasGraphLayout {
                 yM = yM + inc1
                 continue
             }
-            let p: Point = Point(0, yM)
-            primaryMarkers.yMarkers.append(p)
-            let text_p: Point = Point(-(renderer.getTextWidth(text: "\(roundToN(scaleY*(yM-origin.y), yIncRound))", textSize: layout.markerTextSize)+8), yM - 4)
-            primaryMarkers.yMarkersTextLocation.append(text_p)
-            primaryMarkers.yMarkersText.append("\(roundToN(scaleY*(yM-origin.y), yIncRound))")
+            markers.yMarkers.append(yM)
+            markers.yMarkersText.append("\(roundToN(scaleY*(yM-origin.y), yIncRound))")
             yM = yM + inc1
         }
 
@@ -266,12 +263,8 @@ extension Histogram: HasGraphLayout {
         let scaleXInv = 1.0/scaleX
         let xIncrement = inc2*scaleX
         for i in stride(from: Float(minimumX), through: Float(maximumX), by: xIncrement)  {
-            let p: Point = Point((i-Float(minimumX))*scaleXInv + xM , 0)
-            primaryMarkers.xMarkers.append(p)
-            let textWidth: Float = renderer.getTextWidth(text: "\(i)", textSize: layout.markerTextSize)
-            let text_p: Point = Point((i - Float(minimumX))*scaleXInv - textWidth/Float(2), -2.0*layout.markerTextSize)
-            primaryMarkers.xMarkersTextLocation.append(text_p)
-            primaryMarkers.xMarkersText.append("\(i)")
+            markers.xMarkers.append((i-Float(minimumX))*scaleXInv + xM)
+            markers.xMarkersText.append("\(i)")
         }
 
         // scale points to be plotted according to plot size
@@ -290,7 +283,7 @@ extension Histogram: HasGraphLayout {
     }
 
     //functions to draw the plot
-    public func drawData(primaryMarkers: PlotMarkers, renderer: Renderer) {
+    public func drawData(markers: PlotMarkers, renderer: Renderer) {
         var xM = Float(xMargin)
         switch histogramSeries.histogramSeriesOptions.histogramType {
         case .bar:
