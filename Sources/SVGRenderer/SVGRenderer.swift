@@ -293,7 +293,7 @@ public class SVGRenderer: Renderer{
         image = image + "\n" + text
     }
 
-    public func getTextWidth(text: String, textSize size: Float) -> Float {
+    public func getTextLayoutSize(text: String, textSize size: Float) -> Size {
         var width: Float = 0
         let scaleFactor = size/100.0
 
@@ -302,7 +302,7 @@ public class SVGRenderer: Renderer{
             width = width + Float(LCARS_CHAR_SIZE_ARRAY![Int(text[index].ascii!)])
         }
 
-        return width*scaleFactor + 25
+        return Size(width: width*scaleFactor + 25, height: size)
     }
 
     public func drawOutput(fileName name: String) {

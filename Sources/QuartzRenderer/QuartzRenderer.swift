@@ -450,7 +450,7 @@ public class QuartzRenderer: Renderer {
                      strokeWidth: thickness,
                      strokeColor: strokeColor,
                      isDashed: isDashed,
-                     isOriginShifted: true)
+                     isOriginShifted: false)
         }
     }
 
@@ -500,8 +500,8 @@ public class QuartzRenderer: Renderer {
         #endif
     }
 
-    public func getTextWidth(text: String,
-                             textSize s: Float) -> Float {
+    public func getTextLayoutSize(text: String,
+                             textSize s: Float) -> Size {
         var attributes: [NSAttributedString.Key: Any] = [:]
         #if canImport(AppKit)
         let font = NSFont.systemFont(ofSize: CGFloat(s))
@@ -514,7 +514,7 @@ public class QuartzRenderer: Renderer {
         #endif
         let string = NSAttributedString(string: "\(text)", attributes: attributes)
         let size = string.size()
-        return Float(size.width)
+        return Size(width: Float(size.width), height: Float(size.height))
     }
 
     public func drawOutput(fileName name: String) {

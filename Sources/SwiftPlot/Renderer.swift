@@ -176,12 +176,19 @@ public protocol Renderer: AnyObject{
     *description: Returns the width of text that will be drawn in the final
     *             image by the respective renderer
     */
-    func getTextWidth(text: String, textSize size: Float) -> Float
+    func getTextLayoutSize(text: String, textSize size: Float) -> Size
 
     /*drawOutput()
     *params: fileName name: String
     *description: Saves the drawn image to disk
     */
     func drawOutput(fileName name: String)
+
+}
+
+extension Renderer {
+    func getTextWidth(text: String, textSize size: Float) -> Float {
+        return getTextLayoutSize(text: text, textSize: size).width
+    }
 
 }

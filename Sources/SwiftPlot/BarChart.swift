@@ -102,7 +102,7 @@ extension BarGraph: HasGraphLayout {
     }
     
     // functions implementing plotting logic
-    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, renderer: Renderer) {
+    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, rect: Rect, renderer: Renderer) {
     
         var maximumY: U = U(0)
         var minimumY: U = U(0)
@@ -110,12 +110,12 @@ extension BarGraph: HasGraphLayout {
         var minimumX: U = U(0)
 
         if (graphOrientation == .vertical) {
-            barWidth = Int(round(plotDimensions.graphWidth/Float(series.count)))
+            barWidth = Int(round(rect.size.width/Float(series.count)))
             maximumY = maxY(points: series.values)
             minimumY = minY(points: series.values)
         }
         else{
-            barWidth = Int(round(plotDimensions.graphHeight/Float(series.count)))
+            barWidth = Int(round(rect.size.height/Float(series.count)))
             maximumX = maxY(points: series.values)
             minimumX = minY(points: series.values)
         }
@@ -140,11 +140,11 @@ extension BarGraph: HasGraphLayout {
             }
             else{
                 origin = Point(0.0,
-                               (plotDimensions.graphHeight/Float(maximumY-minimumY))*Float(U(-1)*minimumY))
+                               (rect.size.height/Float(maximumY-minimumY))*Float(U(-1)*minimumY))
             }
 
-            let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)*Float(0.5) - 10.0;
-            scaleY = Float(maximumY - minimumY) / (plotDimensions.graphHeight - topScaleMargin);
+            let topScaleMargin: Float = (plotDimensions.subHeight - rect.size.height)*Float(0.5) - 10.0;
+            scaleY = Float(maximumY - minimumY) / (rect.size.height - topScaleMargin);
 
             let nD1: Int = max(getNumberOfDigits(Float(maximumY)), getNumberOfDigits(Float(minimumY)))
             var v1: Float
@@ -158,12 +158,12 @@ extension BarGraph: HasGraphLayout {
 
             let nY: Float = v1/scaleY
             var inc1: Float = nY
-            if(plotDimensions.graphHeight/nY > MAX_DIV){
-                inc1 = (plotDimensions.graphHeight/nY)*inc1/MAX_DIV
+            if(rect.size.height/nY > MAX_DIV){
+                inc1 = (rect.size.height/nY)*inc1/MAX_DIV
             }
 
             var yM = Float(origin.y)
-            while yM<=plotDimensions.graphHeight {
+            while yM<=rect.size.height {
                 if(yM+inc1<0.0 || yM<0.0){
                     yM = yM + inc1
                     continue
@@ -224,11 +224,11 @@ extension BarGraph: HasGraphLayout {
                 minimumX = U(0)
             }
             else{
-                origin = Point((plotDimensions.graphWidth/Float(maximumX-minimumX))*Float(U(-1)*minimumX), 0.0)
+                origin = Point((rect.size.width/Float(maximumX-minimumX))*Float(U(-1)*minimumX), 0.0)
             }
 
-            let rightScaleMargin: Float = (plotDimensions.subWidth - plotDimensions.graphWidth)*Float(0.5) - 10.0
-            scaleX = Float(maximumX - minimumX) / (plotDimensions.graphWidth - rightScaleMargin)
+            let rightScaleMargin: Float = (plotDimensions.subWidth - rect.size.width)*Float(0.5) - 10.0
+            scaleX = Float(maximumX - minimumX) / (rect.size.width - rightScaleMargin)
 
             let nD1: Int = max(getNumberOfDigits(Float(maximumX)), getNumberOfDigits(Float(minimumX)))
             var v1: Float
@@ -242,12 +242,12 @@ extension BarGraph: HasGraphLayout {
 
             let nX: Float = v1/scaleX
             var inc1: Float = nX
-            if(plotDimensions.graphWidth/nX > MAX_DIV){
-                inc1 = (plotDimensions.graphWidth/nX)*inc1/MAX_DIV
+            if(rect.size.width/nX > MAX_DIV){
+                inc1 = (rect.size.width/nX)*inc1/MAX_DIV
             }
 
             var xM = origin.x
-            while xM<=plotDimensions.graphWidth {
+            while xM<=rect.size.width {
                 if(xM+inc1<0.0 || xM<0.0){
                     xM = xM + inc1
                     continue
@@ -311,7 +311,7 @@ extension BarGraph: HasGraphLayout {
                 renderer.drawSolidRect(rect,
                                        fillColor: series.color,
                                        hatchPattern: series.barGraphSeriesOptions.hatchPattern,
-                                       isOriginShifted: true)
+                                       isOriginShifted: false)
                 for s in stackSeries {
                     let stackValue = Float(s.scaledValues[index].y)
                     if (stackValue - origin.y >= 0) {
@@ -327,7 +327,7 @@ extension BarGraph: HasGraphLayout {
                     renderer.drawSolidRect(rect,
                                            fillColor: s.color,
                                            hatchPattern: s.barGraphSeriesOptions.hatchPattern,
-                                           isOriginShifted: true)
+                                           isOriginShifted: false)
                 }
             }
         }
@@ -350,7 +350,7 @@ extension BarGraph: HasGraphLayout {
                 renderer.drawSolidRect(rect,
                                        fillColor: series.color,
                                        hatchPattern: series.barGraphSeriesOptions.hatchPattern,
-                                       isOriginShifted: true)
+                                       isOriginShifted: false)
                 for s in stackSeries {
                     let stackValue = Float(s.scaledValues[index].y)
                     if (stackValue - origin.x >= 0) {
@@ -366,7 +366,7 @@ extension BarGraph: HasGraphLayout {
                     renderer.drawSolidRect(rect,
                                            fillColor: s.color,
                                            hatchPattern: s.barGraphSeriesOptions.hatchPattern,
-                                           isOriginShifted: true)
+                                           isOriginShifted: false)
                 }
             }
         }

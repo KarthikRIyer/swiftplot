@@ -38,8 +38,8 @@ void draw_text(const char *s, float x, float y, float size, float r, float g, fl
   CPPAGGRenderer::draw_text(s, x, y, size, r, g, b, a, thickness, angle, is_origin_shifted, object);
 }
 
-float get_text_width(const char *s, float size, const void *object){
-  return CPPAGGRenderer::get_text_width(s, size, object);
+void get_text_size(const char *s, float size, float* outW, float* outH, const void *object){
+  return CPPAGGRenderer::get_text_size(s, size, outW, outH, object);
 }
 
 void save_image(const char *s, const void *object){

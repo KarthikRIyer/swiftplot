@@ -144,7 +144,7 @@ extension Histogram: HasGraphLayout {
     }
 
     // functions implementing plotting logic
-    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, renderer: Renderer) {
+    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, rect: Rect, renderer: Renderer) {
         
         var maximumY = Float(histogramSeries.maximumFrequency)
         let minimumY = Float(0)
@@ -180,13 +180,13 @@ extension Histogram: HasGraphLayout {
             }
         }
 
-        barWidth = round((plotDimensions.graphWidth - Float(2.0*xMargin))/Float(histogramSeries.bins))
+        barWidth = round((rect.size.width - Float(2.0*xMargin))/Float(histogramSeries.bins))
 
-        origin = Point((plotDimensions.graphWidth-(2.0*xMargin))/Float(maximumX-minimumX)*Float(T(-1)*minimumX), 0.0)
+        origin = Point((rect.size.width-(2.0*xMargin))/Float(maximumX-minimumX)*Float(T(-1)*minimumX), 0.0)
 
-        let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)*Float(0.5) - 10.0
-        scaleY = Float(maximumY - minimumY) / (plotDimensions.graphHeight - topScaleMargin)
-        scaleX = Float(maximumX - minimumX) / (plotDimensions.graphWidth-Float(2.0*xMargin))
+        let topScaleMargin: Float = (plotDimensions.subHeight - rect.size.height)*Float(0.5) - 10.0
+        scaleY = Float(maximumY - minimumY) / (rect.size.height - topScaleMargin)
+        scaleX = Float(maximumX - minimumX) / (rect.size.width-Float(2.0*xMargin))
 
         var inc1: Float = -1
         var yIncRound: Int = 1
@@ -227,13 +227,13 @@ extension Histogram: HasGraphLayout {
         if(inc1 == -1) {
             let nY: Float = v1/scaleY
             inc1 = nY
-            if(plotDimensions.graphHeight/nY > MAX_DIV){
-                inc1 = (plotDimensions.graphHeight/nY)*inc1/MAX_DIV
+            if(rect.size.height/nY > MAX_DIV){
+                inc1 = (rect.size.height/nY)*inc1/MAX_DIV
             }
         }
 
         var yM: Float = origin.y
-        while yM<=plotDimensions.graphHeight {
+        while yM<=rect.size.height {
             if(yM+inc1<0.0 || yM<0.0){
                 yM = yM + inc1
                 continue
@@ -256,8 +256,8 @@ extension Histogram: HasGraphLayout {
 
         let nX: Float = v2/scaleX
         var inc2: Float = nX
-        if(plotDimensions.graphWidth/nX > MAX_DIV){
-            inc2 = (plotDimensions.graphHeight/nX)*inc1/MAX_DIV
+        if(rect.size.width/nX > MAX_DIV){
+            inc2 = (rect.size.height/nX)*inc1/MAX_DIV
         }
         let xM: Float = xMargin
         let scaleXInv = 1.0/scaleX

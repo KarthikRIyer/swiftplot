@@ -125,7 +125,7 @@ extension ScatterPlot: HasGraphLayout {
     }
 
     // functions implementing plotting logic
-    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, renderer: Renderer) {
+    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, rect: Rect, renderer: Renderer) {
         
         var maximumX: T = maxX(points: series[0].values)
         var maximumY: U = maxY(points: series[0].values)
@@ -153,13 +153,13 @@ extension ScatterPlot: HasGraphLayout {
             }
         }
 
-        let origin = Point((plotDimensions.graphWidth/Float(maximumX-minimumX))*Float(T(-1)*minimumX),
-                           (plotDimensions.graphHeight/Float(maximumY-minimumY))*Float(U(-1)*minimumY))
+        let origin = Point((rect.size.width/Float(maximumX-minimumX))*Float(T(-1)*minimumX),
+                           (rect.size.height/Float(maximumY-minimumY))*Float(U(-1)*minimumY))
 
-        let rightScaleMargin: Float = (plotDimensions.subWidth - plotDimensions.graphWidth)*Float(0.5) - 10.0;
-        let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)*Float(0.5) - 10.0;
-        scaleX = Float(maximumX - minimumX) / (plotDimensions.graphWidth - rightScaleMargin);
-        scaleY = Float(maximumY - minimumY) / (plotDimensions.graphHeight - topScaleMargin);
+        let rightScaleMargin: Float = (plotDimensions.subWidth - rect.size.width)*Float(0.5) - 10.0;
+        let topScaleMargin: Float = (plotDimensions.subHeight - rect.size.height)*Float(0.5) - 10.0;
+        scaleX = Float(maximumX - minimumX) / (rect.size.width - rightScaleMargin);
+        scaleY = Float(maximumY - minimumY) / (rect.size.height - topScaleMargin);
 
         var inc1: Float = -1
         var inc2: Float = -1
@@ -219,8 +219,8 @@ extension ScatterPlot: HasGraphLayout {
         if(inc1 == -1) {
             let nY: Float = v1/scaleY
             inc1 = nY
-            if(plotDimensions.graphHeight/nY > MAX_DIV){
-                inc1 = (plotDimensions.graphHeight/nY)*inc1/MAX_DIV
+            if(rect.size.height/nY > MAX_DIV){
+                inc1 = (rect.size.height/nY)*inc1/MAX_DIV
             }
         }
 
@@ -237,15 +237,15 @@ extension ScatterPlot: HasGraphLayout {
         if(inc2 == -1) {
             let nX: Float = v2/scaleX
             inc2 = nX
-            var noXD: Float = plotDimensions.graphWidth/nX
+            var noXD: Float = rect.size.width/nX
             if(noXD > MAX_DIV){
-                inc2 = (plotDimensions.graphWidth/nX)*inc2/MAX_DIV
+                inc2 = (rect.size.width/nX)*inc2/MAX_DIV
                 noXD = MAX_DIV
             }
         }
 
         var xM = Float(origin.x)
-        while xM<=plotDimensions.graphWidth {
+        while xM<=rect.size.width {
             if(xM+inc2<0.0 || xM<0.0) {
                 xM = xM+inc2
                 continue
@@ -257,7 +257,7 @@ extension ScatterPlot: HasGraphLayout {
 
         xM = origin.x - inc2
         while xM>0.0 {
-            if (xM > plotDimensions.graphWidth) {
+            if (xM > rect.size.width) {
                 xM = xM - inc2
                 continue
             }
@@ -267,7 +267,7 @@ extension ScatterPlot: HasGraphLayout {
         }
 
         var yM = origin.y
-        while yM<=plotDimensions.graphHeight {
+        while yM<=rect.size.height {
             if(yM+inc1<0.0 || yM<0.0){
                 yM = yM + inc1
                 continue
@@ -293,7 +293,7 @@ extension ScatterPlot: HasGraphLayout {
             for j in 0..<series[i].count {
                 let scaledPair = Pair<T,U>(((series[i])[j].x)*T(scaleXInv) + T(origin.x),
                                            ((series[i])[j].y)*U(scaleYInv) + U(origin.y))
-                if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= plotDimensions.graphWidth && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= plotDimensions.graphHeight) {
+                if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= rect.size.width && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= rect.size.height) {
                     series[i].scaledValues.append(scaledPair)
                 }
             }

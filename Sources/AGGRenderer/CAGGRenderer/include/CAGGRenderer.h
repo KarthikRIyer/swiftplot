@@ -21,7 +21,7 @@ void draw_plot_lines(const float *x, const float *y, int size, float thickness, 
 
 void draw_text(const char *s, float x, float y, float size, float r, float g, float b, float a, float thickness, float angle, bool is_origin_shifted, const void *object);
 
-float get_text_width(const char *s, float size, const void *object);
+void get_text_size(const char *s, float size, float* outW, float* outH, const void *object);
 
 void save_image(const char *s, const void *object);
 

@@ -258,8 +258,10 @@ public class AGGRenderer: Renderer{
                   agg_object)
     }
 
-    public func getTextWidth(text: String, textSize size: Float) -> Float {
-        return get_text_width(text, size, agg_object)
+    public func getTextLayoutSize(text: String, textSize size: Float) -> Size {
+        var width: Float = 0, height: Float = 0
+        get_text_size(text, size, &width, &height, agg_object)
+        return Size(width: width, height: height)
     }
 
     public func drawOutput(fileName name: String) {
