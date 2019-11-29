@@ -320,8 +320,8 @@ public class QuartzRenderer: Renderer {
     public func drawSolidCircle(center c: Point,
                                 radius r: Float,
                                 fillColor: Color) {
-        var x = c.x + xOffset;
-        var y = c.y + yOffset;
+        let x = c.x + xOffset;
+        let y = c.y + yOffset;
         let rectBound = CGRect(x: Double(x-r),
                                y: Double(y-r),
                                width: Double(2.0*r),
@@ -335,12 +335,12 @@ public class QuartzRenderer: Renderer {
                                   point2: Point,
                                   point3: Point,
                                   fillColor: Color) {
-        var x1 = point1.x + xOffset
-        var x2 = point2.x + xOffset
-        var x3 = point3.x + xOffset
-        var y1 = point1.y + yOffset
-        var y2 = point2.y + yOffset
-        var y3 = point3.y + yOffset
+        let x1 = point1.x + xOffset
+        let x2 = point2.x + xOffset
+        let x3 = point3.x + xOffset
+        let y1 = point1.y + yOffset
+        let y2 = point2.y + yOffset
+        let y3 = point3.y + yOffset
         let trianglePath = CGMutablePath()
         trianglePath.move(to: CGPoint(x: Double(x1), y: Double(y1)))
         trianglePath.addLine(to: CGPoint(x: Double(x2), y: Double(y2)))
@@ -454,6 +454,10 @@ public class QuartzRenderer: Renderer {
         let size = string.size()
         return Size(width: Float(size.width), height: Float(size.height))
     }
+    
+    enum WritePNGError: Error {
+        case imageCouldNotBeRendered
+    }
 
     public func drawOutput(fileName name: String) throws {
         if !name.isEmpty {
@@ -491,20 +495,20 @@ extension CGRect {
 }
 
 #if canImport(AppKit)
-extension NSImage {
+fileprivate extension NSImage {
     var pngData: Data? {
         guard let tiffRepresentation = tiffRepresentation, let bitmapImage = NSBitmapImageRep(data: tiffRepresentation) else { return nil }
         return bitmapImage.representation(using: .png, properties: [:])
     }
     func writePng(to url: URL, options: Data.WritingOptions = .atomic) throws {
-        guard let data = pngData else { return } // TODO: throw an error.
+        guard let data = pngData else { throw QuartzRenderer.WritePNGError.imageCouldNotBeRendered }
         try data.write(to: url, options: options)
     }
 }
 #elseif canImport(UIKit)
-extension UIImage {
+fileprivate extension UIImage {
     func writePng(to url: URL, options: Data.WritingOptions = .atomic) throws {
-        guard let data = pngData() else { return } // TODO: throw an error.
+        guard let data = pngData() else { throw QuartzRenderer.WritePNGError.imageCouldNotBeRendered }
         try data.write(to: url, options: options)
     }
 }
