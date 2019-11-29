@@ -1,48 +1,54 @@
 <svg height="660.0" width="1000.0" version="4.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">
 <rect width="100%" height="100%" fill="white"/>
 <defs><style>@import url("https://fonts.googleapis.com/css?family=Roboto");</style></defs>
-<line x1="200.0" y1="594.0" x2="200.0" y2="66.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
-<line x1="400.0" y1="594.0" x2="400.0" y2="66.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
-<line x1="600.0" y1="594.0" x2="600.0" y2="66.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
-<line x1="800.0" y1="594.0" x2="800.0" y2="66.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
-<line x1="100.0" y1="506.0" x2="900.0" y2="506.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
-<line x1="100.0" y1="427.33334" x2="900.0" y2="427.33334" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
-<line x1="100.0" y1="348.6667" x2="900.0" y2="348.6667" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
-<line x1="100.0" y1="270.00003" x2="900.0" y2="270.00003" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
-<line x1="100.0" y1="191.33337" x2="900.0" y2="191.33337" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
-<line x1="100.0" y1="112.66675" x2="900.0" y2="112.66675" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
-<line x1="100.0" y1="584.6667" x2="900.0" y2="584.6667" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
-<rect x="100.0" y="66.0" width="800.0" height="528.0" style="fill:rgb(255,255,255);stroke-width:2.0;stroke:rgb(0.0,0.0,0.0);opacity:1;fill-opacity:0;" />
-<line x1="200.0" y1="600.0" x2="200.0" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="178.86" y="618.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,178.86,618.0)">2008</text>
-<line x1="400.0" y1="600.0" x2="400.0" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="378.86" y="618.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,378.86,618.0)">2009</text>
-<line x1="600.0" y1="600.0" x2="600.0" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="579.34" y="618.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,579.34,618.0)">2010</text>
-<line x1="800.0" y1="600.0" x2="800.0" y2="594.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="779.82" y="618.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,779.82,618.0)">2011</text>
-<line x1="94.0" y1="506.0" x2="100.0" y2="506.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="55.24" y="510.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,55.24,510.0)">0.0</text>
-<line x1="94.0" y1="427.33334" x2="100.0" y2="427.33334" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="47.56" y="431.33334" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,47.56,431.33334)">100.0</text>
-<line x1="94.0" y1="348.6667" x2="100.0" y2="348.6667" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="46.6" y="352.6667" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,46.6,352.6667)">200.0</text>
-<line x1="94.0" y1="270.00003" x2="100.0" y2="270.00003" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="46.6" y="274.00003" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,46.6,274.00003)">300.0</text>
-<line x1="94.0" y1="191.33337" x2="100.0" y2="191.33337" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="46.6" y="195.33337" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,46.6,195.33337)">400.0</text>
-<line x1="94.0" y1="112.66675" x2="100.0" y2="112.66675" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="46.6" y="116.66672" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,46.6,116.66672)">500.0</text>
-<line x1="94.0" y1="584.6667" x2="100.0" y2="584.6667" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
-<text font-size="12.0" font-family="Roboto" x="43.480003" y="588.6667" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175" transform="rotate(-0.0,43.480003,588.6667)">-100.0</text>
-<rect x="110.0" y="254.26666" width="180.0" height="251.73334" style="fill:rgb(255.0,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" /><defs><pattern id="filledCircleHatch" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="3" stroke="black" stroke-width="1"/></pattern></defs><rect x="110.0" y="254.26666" width="180.0" height="251.73334" style="fill:url(#filledCircleHatch);opacity:1" />
-<rect x="310.0" y="506.0" width="180.0" height="78.666664" style="fill:rgb(255.0,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" /><rect x="310.0" y="506.0" width="180.0" height="78.666664" style="fill:url(#filledCircleHatch);opacity:1" />
-<rect x="510.0" y="175.6" width="180.0" height="330.4" style="fill:rgb(255.0,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" /><rect x="510.0" y="175.6" width="180.0" height="330.4" style="fill:url(#filledCircleHatch);opacity:1" />
-<rect x="710.0" y="112.66669" width="180.0" height="393.3333" style="fill:rgb(255.0,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" /><rect x="710.0" y="112.66669" width="180.0" height="393.3333" style="fill:url(#filledCircleHatch);opacity:1" />
-<text font-size="20.0" font-family="Roboto" x="422.7" y="56.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3" transform="rotate(-0.0,422.7,56.0)">HATCHED BAR CHART</text>
-<text font-size="15.0" font-family="Roboto" x="471.45" y="635.4" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3" transform="rotate(-0.0,471.45,635.4)">X-AXIS</text>
-<text font-size="15.0" font-family="Roboto" x="45.0" y="387.4" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3" transform="rotate(-90.0,45.0,387.4)">Y-AXIS</text>
-<rect x="120.0" y="86.0" width="77.8" height="30.0" style="fill:rgb(255.0,255.0,255.0);stroke-width:2.0;stroke:rgb(0.0,0.0,0.0);opacity:0.7" />
-<rect x="130.0" y="96.0" width="10.0" height="10.0" style="fill:rgb(255.0,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
-<text font-size="10.0" font-family="Roboto" x="150.0" y="106.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3" transform="rotate(-0.0,150.0,106.0)">Plot 1</text>
+<rect x="0.0" y="0.0" width="1000.0" height="660.0" style="fill:rgb(255.0,255.0,255.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<line x1="194.5" y1="589.0" x2="194.5" y2="50.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="409.5" y1="589.0" x2="409.5" y2="50.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="624.5" y1="589.0" x2="624.5" y2="50.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="839.5" y1="589.0" x2="839.5" y2="50.0" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="87.0" y1="499.1667" x2="948.0" y2="499.1667" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="87.0" y1="418.31668" x2="948.0" y2="418.31668" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="87.0" y1="337.46667" x2="948.0" y2="337.46667" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="87.0" y1="256.61667" x2="948.0" y2="256.61667" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="87.0" y1="175.76666" x2="948.0" y2="175.76666" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="87.0" y1="94.916626" x2="948.0" y2="94.916626" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<line x1="87.0" y1="580.01666" x2="948.0" y2="580.01666" style="stroke:rgb(127.5,127.5,127.5);stroke-width:0.5;opacity:1.0;stroke-linecap:round" />
+<rect x="87.0" y="50.0" width="861.0" height="539.0" style="fill:rgb(255,255,255);stroke-width:2.0;stroke:rgb(0.0,0.0,0.0);opacity:1;fill-opacity:0;" />
+<line x1="194.5" y1="595.0" x2="194.5" y2="589.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text font-size="12.0" font-family="Roboto" x="173.36" y="613.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,173.36,613.0)">2008</text>
+<line x1="409.5" y1="595.0" x2="409.5" y2="589.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text font-size="12.0" font-family="Roboto" x="388.36" y="613.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,388.36,613.0)">2009</text>
+<line x1="624.5" y1="595.0" x2="624.5" y2="589.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text font-size="12.0" font-family="Roboto" x="603.84" y="613.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,603.84,613.0)">2010</text>
+<line x1="839.5" y1="595.0" x2="839.5" y2="589.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text font-size="12.0" font-family="Roboto" x="819.32" y="613.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,819.32,613.0)">2011</text>
+<line x1="81.0" y1="499.1667" x2="87.0" y2="499.1667" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text font-size="12.0" font-family="Roboto" x="42.24" y="503.1667" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,42.24,503.1667)">0.0</text>
+<line x1="81.0" y1="418.31668" x2="87.0" y2="418.31668" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text font-size="12.0" font-family="Roboto" x="39.0" y="422.31668" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,39.0,422.31668)">100.0</text>
+<line x1="81.0" y1="337.46667" x2="87.0" y2="337.46667" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text font-size="12.0" font-family="Roboto" x="39.0" y="341.46667" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,39.0,341.46667)">200.0</text>
+<line x1="81.0" y1="256.61667" x2="87.0" y2="256.61667" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text font-size="12.0" font-family="Roboto" x="39.0" y="260.61667" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,39.0,260.61667)">300.0</text>
+<line x1="81.0" y1="175.76666" x2="87.0" y2="175.76666" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text font-size="12.0" font-family="Roboto" x="39.0" y="179.76666" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,39.0,179.76666)">400.0</text>
+<line x1="81.0" y1="94.916626" x2="87.0" y2="94.916626" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text font-size="12.0" font-family="Roboto" x="39.0" y="98.916626" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,39.0,98.916626)">500.0</text>
+<line x1="81.0" y1="580.01666" x2="87.0" y2="580.01666" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:round" />
+<text font-size="12.0" font-family="Roboto" x="39.0" y="584.01666" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,39.0,584.01666)">-100.0</text>
+<rect x="97.0" y="240.44666" width="195.0" height="258.72003" style="fill:rgb(255.0,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<defs><pattern id="filledCircleHatch" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="3" stroke="black" stroke-width="1"/></pattern></defs>
+<rect x="97.0" y="240.44666" width="195.0" height="258.72003" style="fill:url(#filledCircleHatch);opacity:1" />
+<rect x="312.0" y="499.16666" width="195.0" height="80.85" style="fill:rgb(255.0,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<rect x="312.0" y="499.16666" width="195.0" height="80.85" style="fill:url(#filledCircleHatch);opacity:1" />
+<rect x="527.0" y="159.59668" width="195.0" height="339.57" style="fill:rgb(255.0,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<rect x="527.0" y="159.59668" width="195.0" height="339.57" style="fill:url(#filledCircleHatch);opacity:1" />
+<rect x="742.0" y="94.91669" width="195.0" height="404.25" style="fill:rgb(255.0,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<rect x="742.0" y="94.91669" width="195.0" height="404.25" style="fill:url(#filledCircleHatch);opacity:1" />
+<text font-size="20.0" font-family="Roboto" x="440.2" y="34.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,440.2,34.0)">HATCHED BAR CHART</text>
+<text font-size="15.0" font-family="Roboto" x="488.95" y="650.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,488.95,650.0)">X-AXIS</text>
+<text font-size="15.0" font-family="Roboto" x="25.0" y="348.2" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-90.0,25.0,348.2)">Y-AXIS</text>
+<rect x="107.0" y="70.0" width="77.8" height="30.0" style="fill:rgb(255.0,255.0,255.0);stroke-width:2.0;stroke:rgb(0.0,0.0,0.0);opacity:0.7" />
+<rect x="117.0" y="80.0" width="10.0" height="10.0" style="fill:rgb(255.0,164.985,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<text font-size="10.0" font-family="Roboto" x="137.0" y="90.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,137.0,90.0)">Plot 1</text>
 </svg>
