@@ -57,15 +57,10 @@ public class QuartzRenderer: Renderer {
 
     public func drawRect(_ rect: Rect,
                          strokeWidth thickness: Float,
-                         strokeColor: Color = Color.black,
-                         isOriginShifted: Bool) {
+                         strokeColor: Color = Color.black) {
         var rect = rect.normalized
         rect.origin.x += xOffset
         rect.origin.y += yOffset
-        if (isOriginShifted) {
-            rect.origin.y += (0.1*plotDimensions.subHeight)
-            rect.origin.x += (0.1*plotDimensions.subWidth)
-        }
         context.setStrokeColor(strokeColor.cgColor)
         context.setLineWidth(CGFloat(thickness))
         context.stroke(CGRect(rect))
@@ -73,23 +68,13 @@ public class QuartzRenderer: Renderer {
 
     public func drawSolidRect(_ rect: Rect,
                               fillColor: Color = Color.white,
-                              hatchPattern: BarGraphSeriesOptions.Hatching,
-                              isOriginShifted: Bool) {
+                              hatchPattern: BarGraphSeriesOptions.Hatching) {
         var rect = rect.normalized
-        if (isOriginShifted) {
-            rect.origin.y += (0.1*plotDimensions.subHeight) + yOffset
-            rect.origin.x += (0.1*plotDimensions.subWidth) + xOffset
-            context.setFillColor(fillColor.cgColor)
-            context.fill(CGRect(rect))
-            drawHatchingRect(rect, hatchPattern: hatchPattern)
-        }
-        else {
-            rect.origin.y += yOffset
-            rect.origin.x += xOffset
-            context.setFillColor(fillColor.cgColor)
-            context.fill(CGRect(rect))
-            drawHatchingRect(rect, hatchPattern: hatchPattern)
-        }
+        rect.origin.y += yOffset
+        rect.origin.x += xOffset
+        context.setFillColor(fillColor.cgColor)
+        context.fill(CGRect(rect))
+        drawHatchingRect(rect, hatchPattern: hatchPattern)
     }
     
     // Note: we assume this rect has already been offset-shifted.
@@ -321,16 +306,10 @@ public class QuartzRenderer: Renderer {
     public func drawSolidRectWithBorder(_ rect: Rect,
                                         strokeWidth thickness: Float,
                                         fillColor: Color = Color.white,
-                                        borderColor: Color = Color.black,
-                                        isOriginShifted: Bool) {
+                                        borderColor: Color = Color.black) {
         var rect = rect.normalized
         rect.origin.x += xOffset
         rect.origin.y += yOffset
-        if (isOriginShifted) {
-            rect.origin.y += (0.1*plotDimensions.subHeight)
-            rect.origin.x += (0.1*plotDimensions.subWidth)
-        }
-
         context.setFillColor(fillColor.cgColor)
         context.fill(CGRect(rect))
         context.setStrokeColor(borderColor.cgColor)
@@ -340,15 +319,9 @@ public class QuartzRenderer: Renderer {
 
     public func drawSolidCircle(center c: Point,
                                 radius r: Float,
-                                fillColor: Color,
-                                isOriginShifted: Bool) {
+                                fillColor: Color) {
         var x = c.x + xOffset;
         var y = c.y + yOffset;
-        if (isOriginShifted) {
-            x = x + 0.1*plotDimensions.subWidth
-            y = y + 0.1*plotDimensions.subHeight
-        }
-
         let rectBound = CGRect(x: Double(x-r),
                                y: Double(y-r),
                                width: Double(2.0*r),
@@ -361,22 +334,13 @@ public class QuartzRenderer: Renderer {
     public func drawSolidTriangle(point1: Point,
                                   point2: Point,
                                   point3: Point,
-                                  fillColor: Color,
-                                  isOriginShifted: Bool) {
+                                  fillColor: Color) {
         var x1 = point1.x + xOffset
         var x2 = point2.x + xOffset
         var x3 = point3.x + xOffset
         var y1 = point1.y + yOffset
         var y2 = point2.y + yOffset
         var y3 = point3.y + yOffset
-        if (isOriginShifted) {
-            x1 = x1 + 0.1*plotDimensions.subWidth
-            x2 = x2 + 0.1*plotDimensions.subWidth
-            x3 = x3 + 0.1*plotDimensions.subWidth
-            y1 = y1 + 0.1*plotDimensions.subHeight
-            y2 = y2 + 0.1*plotDimensions.subHeight
-            y3 = y3 + 0.1*plotDimensions.subHeight
-        }
         let trianglePath = CGMutablePath()
         trianglePath.move(to: CGPoint(x: Double(x1), y: Double(y1)))
         trianglePath.addLine(to: CGPoint(x: Double(x2), y: Double(y2)))
@@ -388,22 +352,11 @@ public class QuartzRenderer: Renderer {
     }
 
     public func drawSolidPolygon(points: [Point],
-                                 fillColor: Color,
-                                 isOriginShifted: Bool) {
+                                 fillColor: Color) {
         let polygonPath = CGMutablePath()
-        if (isOriginShifted) {
-            polygonPath.move(to: CGPoint(x: Double(points[0].x + 0.1*plotDimensions.subWidth + xOffset), y: Double(points[0].y + 0.1*plotDimensions.subHeight + yOffset)))
-        }
-        else {
-            polygonPath.move(to: CGPoint(x: Double(points[0].x + xOffset), y: Double(points[0].y + yOffset)))
-        }
+        polygonPath.move(to: CGPoint(x: Double(points[0].x + xOffset), y: Double(points[0].y + yOffset)))
         for index in 1..<points.count {
-            if (isOriginShifted) {
-                polygonPath.addLine(to: CGPoint(x: Double(points[index].x + 0.1*plotDimensions.subWidth + xOffset), y: Double(points[index].y + 0.1*plotDimensions.subHeight + yOffset)))
-            }
-            else {
-                polygonPath.addLine(to: CGPoint(x: Double(points[index].x + xOffset), y: Double(points[index].y + yOffset)))
-            }
+            polygonPath.addLine(to: CGPoint(x: Double(points[index].x + xOffset), y: Double(points[index].y + yOffset)))
         }
         polygonPath.closeSubpath()
         context.setFillColor(fillColor.cgColor)
@@ -415,19 +368,10 @@ public class QuartzRenderer: Renderer {
                          endPoint p2: Point,
                          strokeWidth thickness: Float,
                          strokeColor: Color = Color.black,
-                         isDashed: Bool,
-                         isOriginShifted: Bool) {
+                         isDashed: Bool) {
         let line = CGMutablePath()
-        if (isOriginShifted) {
-            line.move(to: CGPoint(x: Double(p1.x + 0.1*plotDimensions.subWidth + xOffset),
-                                  y: Double(p1.y + 0.1*plotDimensions.subHeight + yOffset)))
-            line.addLine(to: CGPoint(x: Double(p2.x + 0.1*plotDimensions.subWidth + xOffset),
-                                     y: Double(p2.y + 0.1*plotDimensions.subHeight + yOffset)))
-        }
-        else {
-            line.move(to: CGPoint(x: Double(p1.x + xOffset), y: Double(p1.y + yOffset)))
-            line.addLine(to: CGPoint(x: Double(p2.x + xOffset), y: Double(p2.y + yOffset)))
-        }
+        line.move(to: CGPoint(x: Double(p1.x + xOffset), y: Double(p1.y + yOffset)))
+        line.addLine(to: CGPoint(x: Double(p2.x + xOffset), y: Double(p2.y + yOffset)))
         context.setStrokeColor(strokeColor.cgColor)
         context.setLineWidth(CGFloat(thickness))
         context.addPath(line)
@@ -449,8 +393,7 @@ public class QuartzRenderer: Renderer {
                      endPoint: p[i+1],
                      strokeWidth: thickness,
                      strokeColor: strokeColor,
-                     isDashed: isDashed,
-                     isOriginShifted: false)
+                     isDashed: isDashed)
         }
     }
 
@@ -459,14 +402,9 @@ public class QuartzRenderer: Renderer {
                          textSize size: Float,
                          color: Color,
                          strokeWidth thickness: Float,
-                         angle: Float,
-                         isOriginShifted: Bool){
-        var x1 = p.x + xOffset
-        var y1 = p.y + yOffset
-        if (isOriginShifted) {
-            x1 = x1 + 0.1*plotDimensions.subWidth
-            y1 = y1 + 0.1*plotDimensions.subHeight
-        }
+                         angle: Float){
+        let x1 = p.x + xOffset
+        let y1 = p.y + yOffset
         #if canImport(AppKit)
         let font = NSFont.systemFont(ofSize: CGFloat(size))
         let attr = [NSAttributedString.Key.font : font,

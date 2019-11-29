@@ -45,8 +45,7 @@ public class AGGRenderer: Renderer{
 
     public func drawRect(_ rect: Rect,
                          strokeWidth thickness: Float,
-                         strokeColor: Color = Color.black,
-                         isOriginShifted: Bool) {
+                         strokeColor: Color = Color.black) {
         var x = [Float]()
         var y = [Float]()
         let pts = getPoints(from: rect)
@@ -65,14 +64,12 @@ public class AGGRenderer: Renderer{
                   strokeColor.g,
                   strokeColor.b,
                   strokeColor.a,
-                  isOriginShifted,
                   agg_object)
     }
 
     public func drawSolidRect(_ rect: Rect,
                               fillColor: Color = Color.white,
-                              hatchPattern: BarGraphSeriesOptions.Hatching,
-                              isOriginShifted: Bool) {
+                              hatchPattern: BarGraphSeriesOptions.Hatching) {
         var x = [Float]()
         var y = [Float]()
         let pts = getPoints(from: rect)
@@ -91,15 +88,13 @@ public class AGGRenderer: Renderer{
                         fillColor.b,
                         fillColor.a,
                         Int32(hatchPattern.rawValue),
-                        isOriginShifted,
                         agg_object)
     }
 
     public func drawSolidRectWithBorder(_ rect: Rect,
                                         strokeWidth thickness: Float,
                                         fillColor: Color = Color.white,
-                                        borderColor: Color = Color.black,
-                                        isOriginShifted: Bool) {
+                                        borderColor: Color = Color.black) {
         var x = [Float]()
         var y = [Float]()
 
@@ -120,7 +115,6 @@ public class AGGRenderer: Renderer{
                         fillColor.b,
                         fillColor.a,
                         0,
-                        isOriginShifted,
                         agg_object)
         draw_rect(x,
                   y,
@@ -129,52 +123,46 @@ public class AGGRenderer: Renderer{
                   borderColor.g,
                   borderColor.b,
                   borderColor.a,
-                  isOriginShifted,
                   agg_object)
     }
 
     public func drawSolidCircle(center c: Point,
                                 radius r: Float,
-                                fillColor: Color,
-                                isOriginShifted: Bool) {
-      draw_solid_circle(c.x,
-                        c.y,
+                                fillColor: Color) {
+      draw_solid_circle(c.x + xOffset,
+                        c.y + yOffset,
                         r,
                         fillColor.r,
                         fillColor.g,
                         fillColor.b,
                         fillColor.a,
-                        isOriginShifted,
                         agg_object)
     }
 
     public func drawSolidTriangle(point1: Point,
                                   point2: Point,
                                   point3: Point,
-                                  fillColor: Color,
-                                  isOriginShifted: Bool) {
-      draw_solid_triangle(point1.x,
-                          point2.x,
-                          point3.x,
-                          point1.y,
-                          point2.y,
-                          point3.y,
+                                  fillColor: Color) {
+      draw_solid_triangle(point1.x + xOffset,
+                          point2.x + xOffset,
+                          point3.x + xOffset,
+                          point1.y + yOffset,
+                          point2.y + yOffset,
+                          point3.y + yOffset,
                           fillColor.r,
                           fillColor.g,
                           fillColor.b,
                           fillColor.a,
-                          isOriginShifted,
                           agg_object);
     }
 
     public func drawSolidPolygon(points: [Point],
-                                 fillColor: Color,
-                                 isOriginShifted: Bool) {
+                                 fillColor: Color) {
         var x = [Float]()
         var y = [Float]()
         for index in 0..<points.count {
-            x.append(points[index].x)
-            y.append(points[index].y)
+            x.append(points[index].x + xOffset)
+            y.append(points[index].y + yOffset)
         }
         draw_solid_polygon(x,
                            y,
@@ -183,7 +171,6 @@ public class AGGRenderer: Renderer{
                            fillColor.g,
                            fillColor.b,
                            fillColor.a,
-                           isOriginShifted,
                            agg_object)
     }
 
@@ -191,8 +178,7 @@ public class AGGRenderer: Renderer{
                          endPoint p2: Point,
                          strokeWidth thickness: Float,
                          strokeColor: Color = Color.black,
-                         isDashed: Bool,
-                         isOriginShifted: Bool) {
+                         isDashed: Bool) {
         var x = [Float]()
         var y = [Float]()
 
@@ -209,7 +195,6 @@ public class AGGRenderer: Renderer{
                   strokeColor.b,
                   strokeColor.a,
                   isDashed,
-                  isOriginShifted,
                   agg_object)
     }
 
@@ -242,8 +227,7 @@ public class AGGRenderer: Renderer{
                          textSize size: Float,
                          color: Color,
                          strokeWidth thickness: Float,
-                         angle: Float,
-                         isOriginShifted: Bool){
+                         angle: Float){
         draw_text(s,
                   p.x + xOffset,
                   p.y + yOffset,
@@ -254,7 +238,6 @@ public class AGGRenderer: Renderer{
                   color.a,
                   thickness,
                   angle,
-                  isOriginShifted,
                   agg_object)
     }
 

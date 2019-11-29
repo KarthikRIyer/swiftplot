@@ -1,6 +1,6 @@
 public protocol Plot {
 
-    var plotDimensions: PlotDimensions { get set }
+    var plotSize: Size { get set }
     
     var legendLabels: [(String, LegendIcon)] { get }
     
@@ -14,14 +14,14 @@ extension Plot {
     
     // call functions to draw the graph
     public func drawGraphAndOutput(fileName name: String = "swiftplot_graph", renderer: Renderer){
-        renderer.plotDimensions = plotDimensions
+        renderer.plotDimensions = PlotDimensions(frameWidth: plotSize.width, frameHeight: plotSize.height)
         drawGraph(renderer: renderer)
         saveImage(fileName: name, renderer: renderer)
     }
 
     public func drawGraphOutput(fileName name: String = "swiftplot_graph",
                                 renderer: Renderer){
-        renderer.plotDimensions = plotDimensions
+        renderer.plotDimensions = PlotDimensions(frameWidth: plotSize.width, frameHeight: plotSize.height)
         renderer.drawOutput(fileName: name)
     }
     

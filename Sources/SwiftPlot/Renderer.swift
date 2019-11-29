@@ -35,8 +35,7 @@ public protocol Renderer: AnyObject{
     */
     func drawRect(_ rect: Rect,
                   strokeWidth thickness: Float,
-                  strokeColor: Color,
-                  isOriginShifted: Bool)
+                  strokeColor: Color)
 
     /*drawSolidRect()
     *params: topLeftPoint p1: Point,
@@ -53,8 +52,7 @@ public protocol Renderer: AnyObject{
     */
     func drawSolidRect(_ rect: Rect,
                        fillColor: Color,
-                       hatchPattern: BarGraphSeriesOptions.Hatching,
-                       isOriginShifted: Bool)
+                       hatchPattern: BarGraphSeriesOptions.Hatching)
 
     /*drawLine()
     *params: startPoint p1: Point,
@@ -73,8 +71,7 @@ public protocol Renderer: AnyObject{
     func drawLine(startPoint p1: Point,
                   endPoint p2: Point,
                   strokeWidth thickness: Float,
-                  strokeColor: Color, isDashed: Bool,
-                  isOriginShifted: Bool)
+                  strokeColor: Color, isDashed: Bool)
 
     /*drawPlotLines()
     *params: points p: [Point],
@@ -106,8 +103,7 @@ public protocol Renderer: AnyObject{
                   textSize size: Float,
                   color: Color,
                   strokeWidth thickness: Float,
-                  angle: Float,
-                  isOriginShifted: Bool)
+                  angle: Float)
 
     /*drawSolidRectWithBorder()
     *params: topLeftPoint p1: Point,
@@ -123,8 +119,7 @@ public protocol Renderer: AnyObject{
     */
     func drawSolidRectWithBorder(_ rect: Rect,
                                  strokeWidth thickness: Float, fillColor: Color,
-                                 borderColor: Color,
-                                 isOriginShifted: Bool)
+                                 borderColor: Color)
 
     /*drawSolidCircle()
     *params: center c: Point,
@@ -138,8 +133,7 @@ public protocol Renderer: AnyObject{
     */
     func drawSolidCircle(center c: Point,
                          radius r: Float,
-                         fillColor: Color,
-                         isOriginShifted: Bool)
+                         fillColor: Color)
 
     /*drawSolidTriangle()
     *params: point1: Point,
@@ -155,8 +149,7 @@ public protocol Renderer: AnyObject{
     func drawSolidTriangle(point1: Point,
                            point2: Point,
                            point3: Point,
-                           fillColor: Color,
-                           isOriginShifted: Bool)
+                           fillColor: Color)
 
     /*drawSolidPolygon()
     *params: points: [Point],
@@ -168,8 +161,7 @@ public protocol Renderer: AnyObject{
     *             This is decided by the boolean parameter isOriginShifted.
     */
     func drawSolidPolygon(points: [Point],
-                          fillColor: Color,
-                          isOriginShifted: Bool)
+                          fillColor: Color)
 
     /*getTextWidth()
     *params: text: String, textSize size: Float

@@ -7,10 +7,10 @@ public enum LegendIcon {
 
 public struct GraphLayout {
     // Inputs.
-    var plotDimensions: PlotDimensions
+    var plotSize: Size
     
-    init(plotDimensions: PlotDimensions) {
-        self.plotDimensions = plotDimensions
+    init(size: Size) {
+        self.plotSize = size
     }
     
     var plotTitle: PlotTitle? = nil
@@ -23,6 +23,8 @@ public struct GraphLayout {
     var enablePrimaryAxisGrid = true
     var enableSecondaryAxisGrid = true
     var markerTextSize: Float = 12
+    /// The amount of (horizontal) space to reserve for markers on the Y-axis.
+    var yMarkerMaxWidth: Float = 40
     
     struct Results {
         var plotBorderRect: Rect?
@@ -39,61 +41,80 @@ public struct GraphLayout {
         var legendRect: Rect?
     }
     
-//    public var graphWidth: Float { plotDimensions.subWidth * 0.8 }
-//    public var graphHeight: Float { plotDimensions.subHeight * 0.8 }
-
-    
     // Layout.
         
-    func layout(renderer: Renderer, calculateMarkers: (inout PlotMarkers, Rect)->Void) -> Results {
+    func layout(renderer: Renderer, calculateMarkers: (inout PlotMarkers, Size)->Void) -> Results {
         var results = Results()
         calcLabelLocations(renderer: renderer, results: &results)
-        calcBorder(results: &results)
+        calcBorder(results: &results, renderer: renderer)
+        recenterLabels(&results)
 
-        calculateMarkers(&results.plotMarkers, results.plotBorderRect!)
+        calculateMarkers(&results.plotMarkers, results.plotBorderRect!.size)
         
         calcMarkerTextLocations(renderer: renderer, results: &results)
         calcLegend(legendLabels, renderer: renderer, results: &results)
         return results
     }
     
-    func calcBorder(results: inout Results) {
+    static let xLabelPadding: Float = 10
+    static let yLabelPadding: Float = 10
+    static let titleLabelPadding: Float = 14
+    
+    func calcBorder(results: inout Results, renderer: Renderer) {
         var borderRect = Rect(
             origin: zeroPoint,
-            size: Size(width: plotDimensions.subWidth, height: plotDimensions.subHeight)
+            size: self.plotSize
         )
         if let xLabel = results.xLabelLocation {
-            borderRect.clampingShift(dy: xLabel.maxY + 10)
+            borderRect.clampingShift(dy: xLabel.maxY + Self.xLabelPadding)
         }
         if let yLabel = results.yLabelLocation {
-            borderRect.clampingShift(dx: yLabel.origin.x + 10)
+            borderRect.clampingShift(dx: yLabel.origin.x + Self.yLabelPadding)
         }
+        // TODO: Y2 axis label.
         if let titleLabel = results.titleLocation {
-            borderRect.size.height = titleLabel.origin.y - borderRect.origin.y - 10
+            borderRect.size.height = titleLabel.origin.y - borderRect.origin.y - Self.titleLabelPadding
         }
         borderRect.contract(by: plotBorder.thickness)
-        // Approximate space for the markers :S
-        borderRect.contract(by: markerTextSize)
-        borderRect.size.height += markerTextSize // no markers on the top.
+        // Give space for the markers.
+        borderRect.clampingShift(dy: 2 * markerTextSize) // X markers
+        // TODO: Better space calculation for Y/Y2 markers.
+        borderRect.clampingShift(dx: yMarkerMaxWidth + 10) // Y markers
+        borderRect.size.width -= yMarkerMaxWidth + 10 // Y2 markers
 
         results.plotBorderRect = borderRect
+    }
+    
+    func recenterLabels(_ results: inout Results) {
+        if var xLabel = results.xLabelLocation {
+            xLabel.origin.x = results.plotBorderRect!.midX - xLabel.width/2
+            results.xLabelLocation = xLabel
+        }
+        if var titleLabel = results.titleLocation {
+            titleLabel.origin.x = results.plotBorderRect!.midX - titleLabel.width/2
+            results.titleLocation = titleLabel
+        }
+        if var yLabel = results.yLabelLocation {
+            yLabel.origin.y = results.plotBorderRect!.midY - yLabel.height/2
+            results.yLabelLocation = yLabel
+        }
     }
 
     func calcLabelLocations(renderer: Renderer, results: inout Results) {
         if let plotLabel = plotLabel {
             let xLabelSize = renderer.getTextLayoutSize(text: plotLabel.xLabel, textSize: plotLabel.size)
             let yLabelSize = renderer.getTextLayoutSize(text: plotLabel.yLabel, textSize: plotLabel.size)
-            results.xLabelLocation = Rect(origin: Point(plotDimensions.subWidth/2 - xLabelSize.width/2, 10),
+            results.xLabelLocation = Rect(origin: Point(plotSize.width/2 - xLabelSize.width/2, Self.xLabelPadding),
                                           size: xLabelSize)
-            results.yLabelLocation = Rect(origin: Point(10 + xLabelSize.height,
-                                                        plotDimensions.subHeight/2 - yLabelSize.width/2),
+            results.yLabelLocation = Rect(origin: Point(Self.yLabelPadding + xLabelSize.height,
+                                                        plotSize.height/2 - yLabelSize.width/2),
                                           size: yLabelSize)
         }
         if let plotTitle = plotTitle {
           let titleSize = renderer.getTextLayoutSize(text: plotTitle.title, textSize: plotTitle.size)
           results.titleLocation = Rect(origin: Point(
-            plotDimensions.subWidth/2 - titleSize.width/2,
-            plotDimensions.subHeight  - titleSize.height - 10
+            plotSize.width/2 - titleSize.width/2,
+            plotSize.height  - titleSize.height - Self.titleLabelPadding
           ), size: titleSize)
         }
     }
@@ -102,26 +123,19 @@ public struct GraphLayout {
         
         for i in 0..<results.plotMarkers.xMarkers.count {
             let textWidth = renderer.getTextWidth(text: results.plotMarkers.xMarkersText[i], textSize: markerTextSize)
-            let text_p = Point(
-                results.plotMarkers.xMarkers[i] - (textWidth/2),
-                -2.0 * markerTextSize
-            )
+            let text_p = Point(results.plotMarkers.xMarkers[i] - (textWidth/2), -2.0 * markerTextSize)
             results.xMarkersTextLocation.append(text_p)
         }
         
         for i in 0..<results.plotMarkers.yMarkers.count {
-            let text_p = Point(
-                -(renderer.getTextWidth(text: results.plotMarkers.yMarkersText[i], textSize: markerTextSize)+8),
-                results.plotMarkers.yMarkers[i] - 4
-            )
+            var textWidth = renderer.getTextWidth(text: results.plotMarkers.yMarkersText[i], textSize: markerTextSize)
+            textWidth = min(textWidth, yMarkerMaxWidth)
+            let text_p = Point(-textWidth - 8, results.plotMarkers.yMarkers[i] - 4)
             results.yMarkersTextLocation.append(text_p)
         }
         
         for i in 0..<results.plotMarkers.y2Markers.count {
-            let text_p = Point(
-                results.plotBorderRect!.width + 8,
-                results.plotMarkers.y2Markers[i] - 4
-            )
+            let text_p = Point(results.plotBorderRect!.width + 8, results.plotMarkers.y2Markers[i] - 4)
             results.y2MarkersTextLocation.append(text_p)
         }
     }
@@ -164,8 +178,7 @@ public struct GraphLayout {
                           textSize: plotTitle.size,
                           color: plotTitle.color,
                           strokeWidth: 1.2,
-                          angle: 0,
-                          isOriginShifted: false)
+                          angle: 0)
     }
 
     func drawLabels(results: Results, renderer: Renderer) {
@@ -176,8 +189,7 @@ public struct GraphLayout {
                               textSize: plotLabel.size,
                               color: plotLabel.color,
                               strokeWidth: 1.2,
-                              angle: 0,
-                              isOriginShifted: false)
+                              angle: 0)
         }
         if let yLocation = results.yLabelLocation {
             renderer.drawText(text: plotLabel.yLabel,
@@ -185,8 +197,7 @@ public struct GraphLayout {
                               textSize: plotLabel.size,
                               color: plotLabel.color,
                               strokeWidth: 1.2,
-                              angle: 90,
-                              isOriginShifted: false)
+                              angle: 90)
         }
     }
     
@@ -194,7 +205,7 @@ public struct GraphLayout {
         guard let borderRect = results.plotBorderRect else { return }
         renderer.drawRect(borderRect,
                           strokeWidth: plotBorder.thickness,
-                          strokeColor: plotBorder.color, isOriginShifted: false)
+                          strokeColor: plotBorder.color)
     }
     
     func drawGrid(results: Results, renderer: Renderer) {
@@ -208,8 +219,7 @@ public struct GraphLayout {
                               endPoint: p2,
                               strokeWidth: grid.thickness,
                               strokeColor: grid.color,
-                              isDashed: false,
-                              isOriginShifted: false)
+                              isDashed: false)
         }
     
         if (enablePrimaryAxisGrid) {
@@ -220,8 +230,7 @@ public struct GraphLayout {
                                   endPoint: p2,
                                   strokeWidth: grid.thickness,
                                   strokeColor: grid.color,
-                                  isDashed: false,
-                                  isOriginShifted: false)
+                                  isDashed: false)
             }
         }
         if (enableSecondaryAxisGrid) {
@@ -232,8 +241,7 @@ public struct GraphLayout {
                                   endPoint: p2,
                                   strokeWidth: grid.thickness,
                                   strokeColor: grid.color,
-                                  isDashed: false,
-                                  isOriginShifted: false)
+                                  isDashed: false)
             }
         }
     }
@@ -247,15 +255,13 @@ public struct GraphLayout {
                               endPoint: p2,
                               strokeWidth: plotBorder.thickness,
                               strokeColor: plotBorder.color,
-                              isDashed: false,
-                              isOriginShifted: false)
+                              isDashed: false)
             renderer.drawText(text: results.plotMarkers.xMarkersText[index],
                               location: results.xMarkersTextLocation[index] + rect.origin,
                               textSize: markerTextSize,
                               color: plotBorder.color,
                               strokeWidth: 0.7,
-                              angle: 0,
-                              isOriginShifted: false)
+                              angle: 0)
         }
 
         for index in 0..<results.plotMarkers.yMarkers.count {
@@ -265,15 +271,13 @@ public struct GraphLayout {
                               endPoint: p2,
                               strokeWidth: plotBorder.thickness,
                               strokeColor: plotBorder.color,
-                              isDashed: false,
-                              isOriginShifted: false)
+                              isDashed: false)
             renderer.drawText(text: results.plotMarkers.yMarkersText[index],
                               location: results.yMarkersTextLocation[index]  + rect.origin,
                               textSize: markerTextSize,
                               color: plotBorder.color,
                               strokeWidth: 0.7,
-                              angle: 0,
-                              isOriginShifted: false)
+                              angle: 0)
         }
         
         if !results.plotMarkers.y2Markers.isEmpty {
@@ -286,15 +290,13 @@ public struct GraphLayout {
                                   endPoint: p2,
                                   strokeWidth: plotBorder.thickness,
                                   strokeColor: plotBorder.color,
-                                  isDashed: false,
-                                  isOriginShifted: false)
+                                  isDashed: false)
                 renderer.drawText(text: results.plotMarkers.y2MarkersText[index],
                                   location: results.y2MarkersTextLocation[index]  + rect.origin,
                                   textSize: markerTextSize,
                                   color: plotBorder.color,
                                   strokeWidth: 0.7,
-                                  angle: 0,
-                                  isOriginShifted: false)
+                                  angle: 0)
             }
         }
     }
@@ -305,8 +307,7 @@ public struct GraphLayout {
         renderer.drawSolidRectWithBorder(legendRect,
                                          strokeWidth: plotLegend.borderThickness,
                                          fillColor: plotLegend.backgroundColor,
-                                         borderColor: plotLegend.borderColor,
-                                         isOriginShifted: false)
+                                         borderColor: plotLegend.borderColor)
         
         for i in 0..<entries.count {
             let seriesIcon = Rect(
@@ -318,8 +319,7 @@ public struct GraphLayout {
             case .square(let color):
                 renderer.drawSolidRect(seriesIcon,
                                        fillColor: color,
-                                       hatchPattern: .none,
-                                       isOriginShifted: false)
+                                       hatchPattern: .none)
             case .shape(let shape, let color):
                 shape.draw(in: seriesIcon,
                            color: color,
@@ -331,8 +331,7 @@ public struct GraphLayout {
                               textSize: plotLegend.textSize,
                               color: plotLegend.textColor,
                               strokeWidth: 1.2,
-                              angle: 0,
-                              isOriginShifted: false)
+                              angle: 0)
         }
     }
 }
@@ -343,16 +342,16 @@ public protocol HasGraphLayout: AnyObject {
     
     var legendLabels: [(String, LegendIcon)] { get }
     
-    func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, rect: Rect, renderer: Renderer)
+    func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, size: Size, renderer: Renderer)
     
-    func drawData(markers: PlotMarkers, renderer: Renderer)
+    func drawData(markers: PlotMarkers, size: Size, renderer: Renderer)
 }
 
 extension HasGraphLayout {
     
-    public var plotDimensions: PlotDimensions {
-        get { layout.plotDimensions }
-        set { layout.plotDimensions = newValue }
+    public var plotSize: Size {
+        get { layout.plotSize }
+        set { layout.plotSize = newValue }
     }
     
     public var plotTitle: PlotTitle? {
@@ -386,15 +385,15 @@ extension Plot where Self: HasGraphLayout {
     
     public func drawGraph(renderer: Renderer) {
         layout.legendLabels = self.legendLabels
-        let results = layout.layout(renderer: renderer, calculateMarkers: { markers, rect in
+        let results = layout.layout(renderer: renderer, calculateMarkers: { markers, size in
             calculateScaleAndMarkerLocations(
                 markers: &markers,
-                rect: rect,
+                size: size,
                 renderer: renderer)
         })
         layout.drawBackground(results: results, renderer: renderer)
         renderer.withOffset(results.plotBorderRect!.origin) { renderer in
-            drawData(markers: results.plotMarkers, renderer: renderer)
+            drawData(markers: results.plotMarkers, size: results.plotBorderRect!.size, renderer: renderer)
         }
         layout.drawForeground(results: results, renderer: renderer)
     }

@@ -22,7 +22,7 @@ public class Histogram<T:FloatConvertible>: Plot {
                 height: Float = 660,
                 isNormalized: Bool = false,
                 enableGrid: Bool = false){
-        self.layout = GraphLayout(plotDimensions: PlotDimensions(frameWidth: width, frameHeight: height))
+        self.layout = GraphLayout(size: Size(width: width, height: height))
         self.isNormalized = isNormalized
         self.enableGrid = enableGrid
     }
@@ -141,7 +141,7 @@ extension Histogram: HasGraphLayout {
     }
 
     // functions implementing plotting logic
-    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, rect: Rect, renderer: Renderer) {
+    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, size: Size, renderer: Renderer) {
         
         var maximumY = Float(histogramSeries.maximumFrequency)
         let minimumY = Float(0)
@@ -177,13 +177,13 @@ extension Histogram: HasGraphLayout {
             }
         }
 
-        barWidth = round((rect.size.width - Float(2.0*xMargin))/Float(histogramSeries.bins))
+        barWidth = round((size.width - Float(2.0*xMargin))/Float(histogramSeries.bins))
 
-        origin = Point((rect.size.width-(2.0*xMargin))/Float(maximumX-minimumX)*Float(T(-1)*minimumX), 0.0)
+        origin = Point((size.width-(2.0*xMargin))/Float(maximumX-minimumX)*Float(T(-1)*minimumX), 0.0)
 
-        let topScaleMargin: Float = (plotDimensions.subHeight - rect.size.height)*Float(0.5) - 10.0
-        scaleY = Float(maximumY - minimumY) / (rect.size.height - topScaleMargin)
-        scaleX = Float(maximumX - minimumX) / (rect.size.width-Float(2.0*xMargin))
+        let topScaleMargin: Float = size.height * 0.10
+        scaleY = Float(maximumY - minimumY) / (size.height - topScaleMargin)
+        scaleX = Float(maximumX - minimumX) / (size.width-Float(2.0*xMargin))
 
         var inc1: Float = -1
         var yIncRound: Int = 1
@@ -224,13 +224,13 @@ extension Histogram: HasGraphLayout {
         if(inc1 == -1) {
             let nY: Float = v1/scaleY
             inc1 = nY
-            if(rect.size.height/nY > MAX_DIV){
-                inc1 = (rect.size.height/nY)*inc1/MAX_DIV
+            if(size.height/nY > MAX_DIV){
+                inc1 = (size.height/nY)*inc1/MAX_DIV
             }
         }
 
         var yM: Float = origin.y
-        while yM<=rect.size.height {
+        while yM<=size.height {
             if(yM+inc1<0.0 || yM<0.0){
                 yM = yM + inc1
                 continue
@@ -253,8 +253,8 @@ extension Histogram: HasGraphLayout {
 
         let nX: Float = v2/scaleX
         var inc2: Float = nX
-        if(rect.size.width/nX > MAX_DIV){
-            inc2 = (rect.size.height/nX)*inc1/MAX_DIV
+        if(size.width/nX > MAX_DIV){
+            inc2 = (size.height/nX)*inc1/MAX_DIV
         }
         let xM: Float = xMargin
         let scaleXInv = 1.0/scaleX
@@ -280,7 +280,7 @@ extension Histogram: HasGraphLayout {
     }
 
     //functions to draw the plot
-    public func drawData(markers: PlotMarkers, renderer: Renderer) {
+    public func drawData(markers: PlotMarkers, size: Size, renderer: Renderer) {
         var xM = Float(xMargin)
         switch histogramSeries.histogramSeriesOptions.histogramType {
         case .bar:
@@ -292,16 +292,14 @@ extension Histogram: HasGraphLayout {
                 )
                 renderer.drawSolidRect(rect,
                                        fillColor: histogramSeries.color,
-                                       hatchPattern: .none,
-                                       isOriginShifted: true)
+                                       hatchPattern: .none)
 
                 for series in histogramStackSeries {
                     rect.origin.y = currentHeight
                     rect.size.height = series.scaledBinFrequency[i]
                     renderer.drawSolidRect(rect,
                                            fillColor: series.color,
-                                           hatchPattern: .none,
-                                           isOriginShifted: true)
+                                           hatchPattern: .none)
                     currentHeight += series.scaledBinFrequency[i]
                 }
                 xM+=barWidth
@@ -314,8 +312,7 @@ extension Histogram: HasGraphLayout {
                               endPoint: firstTopLeft,
                               strokeWidth: strokeWidth,
                               strokeColor: histogramSeries.color,
-                              isDashed: false,
-                              isOriginShifted: true)
+                              isDashed: false)
             for series in histogramStackSeries {
                 firstBottomLeft = Point(firstBottomLeft.x, firstHeight)
                 firstTopLeft = Point(firstTopLeft.x, firstHeight + series.scaledBinFrequency[0])
@@ -323,8 +320,7 @@ extension Histogram: HasGraphLayout {
                                   endPoint: firstTopLeft,
                                   strokeWidth: strokeWidth,
                                   strokeColor: series.color,
-                                  isDashed: false,
-                                  isOriginShifted: true)
+                                  isDashed: false)
                 firstHeight += series.scaledBinFrequency[0]
             }
             for i in 0..<histogramSeries.bins {
@@ -335,16 +331,14 @@ extension Histogram: HasGraphLayout {
                                   endPoint: topRight,
                                   strokeWidth: strokeWidth,
                                   strokeColor: histogramSeries.color,
-                                  isDashed: false,
-                                  isOriginShifted: true)
+                                  isDashed: false)
                 if (i != histogramSeries.bins-1) {
                     let nextTopLeft = Point(topRight.x, histogramSeries.scaledBinFrequency[i+1])
                     renderer.drawLine(startPoint: topRight,
                                       endPoint: nextTopLeft,
                                       strokeWidth: strokeWidth,
                                       strokeColor: histogramSeries.color,
-                                      isDashed: false,
-                                      isOriginShifted: true)
+                                      isDashed: false)
                 }
                 for series in histogramStackSeries {
                     topLeft = Point(topLeft.x, currentHeight + series.scaledBinFrequency[i])
@@ -354,8 +348,7 @@ extension Histogram: HasGraphLayout {
                                           endPoint: topRight,
                                           strokeWidth: strokeWidth,
                                           strokeColor: series.color,
-                                          isDashed: false,
-                                          isOriginShifted: true)
+                                          isDashed: false)
                         if (i != histogramSeries.bins-1) {
                             var nextHeight = histogramSeries.scaledBinFrequency[i+1]
                             for k in histogramStackSeries {
@@ -366,8 +359,7 @@ extension Histogram: HasGraphLayout {
                                               endPoint: nextTopLeft,
                                               strokeWidth: strokeWidth,
                                               strokeColor: series.color,
-                                              isDashed: false,
-                                              isOriginShifted: true)
+                                              isDashed: false)
                         }
                     }
                     currentHeight += series.scaledBinFrequency[i]
@@ -381,8 +373,7 @@ extension Histogram: HasGraphLayout {
                               endPoint: lastTopRight,
                               strokeWidth: strokeWidth,
                               strokeColor: histogramSeries.color,
-                              isDashed: false,
-                              isOriginShifted: true)
+                              isDashed: false)
             for series in histogramStackSeries {
                 lastBottomRight = Point(lastBottomRight.x, lastHeight)
                 lastTopRight = Point(lastTopRight.x, lastHeight + series.scaledBinFrequency[series.scaledBinFrequency.count-1])
@@ -390,8 +381,7 @@ extension Histogram: HasGraphLayout {
                                   endPoint: lastTopRight,
                                   strokeWidth: strokeWidth,
                                   strokeColor: series.color,
-                                  isDashed: false,
-                                  isOriginShifted: true)
+                                  isDashed: false)
                 lastHeight += series.scaledBinFrequency[series.scaledBinFrequency.count-1]
             }
         }

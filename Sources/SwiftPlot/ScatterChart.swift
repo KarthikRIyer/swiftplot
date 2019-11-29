@@ -28,7 +28,7 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
     public init(width: Float = 1000,
                 height: Float = 660,
                 enableGrid: Bool = false){
-        layout = GraphLayout(plotDimensions: PlotDimensions(frameWidth: width, frameHeight: height))
+        layout = GraphLayout(size: Size(width: width, height: height))
         self.enableGrid = enableGrid
     }
     
@@ -122,7 +122,7 @@ extension ScatterPlot: HasGraphLayout {
     }
 
     // functions implementing plotting logic
-    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, rect: Rect, renderer: Renderer) {
+    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, size: Size, renderer: Renderer) {
         
         var maximumX: T = maxX(points: series[0].values)
         var maximumY: U = maxY(points: series[0].values)
@@ -150,13 +150,13 @@ extension ScatterPlot: HasGraphLayout {
             }
         }
 
-        let origin = Point((rect.size.width/Float(maximumX-minimumX))*Float(T(-1)*minimumX),
-                           (rect.size.height/Float(maximumY-minimumY))*Float(U(-1)*minimumY))
+        let origin = Point((size.width/Float(maximumX-minimumX))*Float(T(-1)*minimumX),
+                           (size.height/Float(maximumY-minimumY))*Float(U(-1)*minimumY))
 
-        let rightScaleMargin: Float = (plotDimensions.subWidth - rect.size.width)*Float(0.5) - 10.0;
-        let topScaleMargin: Float = (plotDimensions.subHeight - rect.size.height)*Float(0.5) - 10.0;
-        scaleX = Float(maximumX - minimumX) / (rect.size.width - rightScaleMargin);
-        scaleY = Float(maximumY - minimumY) / (rect.size.height - topScaleMargin);
+        let rightScaleMargin: Float = size.width * 0.2
+        let topScaleMargin: Float = size.height * 0.2
+        scaleX = Float(maximumX - minimumX) / (size.width - rightScaleMargin);
+        scaleY = Float(maximumY - minimumY) / (size.height - topScaleMargin);
 
         var inc1: Float = -1
         var inc2: Float = -1
@@ -216,8 +216,8 @@ extension ScatterPlot: HasGraphLayout {
         if(inc1 == -1) {
             let nY: Float = v1/scaleY
             inc1 = nY
-            if(rect.size.height/nY > MAX_DIV){
-                inc1 = (rect.size.height/nY)*inc1/MAX_DIV
+            if(size.height/nY > MAX_DIV){
+                inc1 = (size.height/nY)*inc1/MAX_DIV
             }
         }
 
@@ -234,15 +234,15 @@ extension ScatterPlot: HasGraphLayout {
         if(inc2 == -1) {
             let nX: Float = v2/scaleX
             inc2 = nX
-            var noXD: Float = rect.size.width/nX
+            var noXD: Float = size.width/nX
             if(noXD > MAX_DIV){
-                inc2 = (rect.size.width/nX)*inc2/MAX_DIV
+                inc2 = (size.width/nX)*inc2/MAX_DIV
                 noXD = MAX_DIV
             }
         }
 
         var xM = Float(origin.x)
-        while xM<=rect.size.width {
+        while xM<=size.width {
             if(xM+inc2<0.0 || xM<0.0) {
                 xM = xM+inc2
                 continue
@@ -254,7 +254,7 @@ extension ScatterPlot: HasGraphLayout {
 
         xM = origin.x - inc2
         while xM>0.0 {
-            if (xM > rect.size.width) {
+            if (xM > size.width) {
                 xM = xM - inc2
                 continue
             }
@@ -264,7 +264,7 @@ extension ScatterPlot: HasGraphLayout {
         }
 
         var yM = origin.y
-        while yM<=rect.size.height {
+        while yM<=size.height {
             if(yM+inc1<0.0 || yM<0.0){
                 yM = yM + inc1
                 continue
@@ -290,7 +290,7 @@ extension ScatterPlot: HasGraphLayout {
             for j in 0..<series[i].count {
                 let scaledPair = Pair<T,U>(((series[i])[j].x)*T(scaleXInv) + T(origin.x),
                                            ((series[i])[j].y)*U(scaleYInv) + U(origin.y))
-                if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= rect.size.width && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= rect.size.height) {
+                if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= size.width && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= size.height) {
                     series[i].scaledValues.append(scaledPair)
                 }
             }
@@ -298,7 +298,7 @@ extension ScatterPlot: HasGraphLayout {
     }
 
     //functions to draw the plot
-    public func drawData(markers: PlotMarkers, renderer: Renderer) {
+    public func drawData(markers: PlotMarkers, size: Size, renderer: Renderer) {
         for seriesIndex in 0..<series.count {
             var s = series[seriesIndex]
             s.maxY = maxY(points: s.scaledValues)
@@ -315,8 +315,7 @@ extension ScatterPlot: HasGraphLayout {
                         }
                         renderer.drawSolidCircle(center: p,
                                                  radius: scatterPatternSize*Float(0.5),
-                                                 fillColor: s.color,
-                                                 isOriginShifted: true)
+                                                 fillColor: s.color)
                     }
                 case .square:
                   for index in 0..<s.scaledValues.count {
@@ -330,8 +329,7 @@ extension ScatterPlot: HasGraphLayout {
                                     centeredOn: p)
                       renderer.drawSolidRect(rect,
                                              fillColor: s.color,
-                                             hatchPattern: .none,
-                                             isOriginShifted: true)
+                                             hatchPattern: .none)
                   }
                 case .triangle:
                     let r = scatterPatternSize/sqrt3
@@ -351,8 +349,7 @@ extension ScatterPlot: HasGraphLayout {
                         renderer.drawSolidTriangle(point1: p1,
                                                    point2: p2,
                                                    point3: p3,
-                                                   fillColor: s.color,
-                                                   isOriginShifted: true)
+                                                   fillColor: s.color)
                     }
                 case .diamond:
                     for index in 0..<s.scaledValues.count {
@@ -376,8 +373,7 @@ extension ScatterPlot: HasGraphLayout {
                         bR = rotatePoint(point: bR, center: p, angleDegrees: 45.0)
                         let diamondPoints: [Point] = [tL, tR, bR, bL]
                         renderer.drawSolidPolygon(points: diamondPoints,
-                                                  fillColor: s.color,
-                                                  isOriginShifted: true)
+                                                  fillColor: s.color)
                     }
                   case .hexagon:
                       for index in 0..<s.scaledValues.count {
@@ -397,8 +393,7 @@ extension ScatterPlot: HasGraphLayout {
                               hexagonPoints.append(hexagonPoint)
                           }
                           renderer.drawSolidPolygon(points: hexagonPoints,
-                                                    fillColor: s.color,
-                                                    isOriginShifted: true)
+                                                    fillColor: s.color)
                       }
                   case .pentagon:
                       for index in 0..<s.scaledValues.count {
@@ -418,8 +413,7 @@ extension ScatterPlot: HasGraphLayout {
                               pentagonPoints.append(pentagonPoint)
                           }
                           renderer.drawSolidPolygon(points: pentagonPoints,
-                                                    fillColor: s.color,
-                                                    isOriginShifted: true)
+                                                    fillColor: s.color)
                       }
                   case .star:
                       for index in 0..<s.scaledValues.count {
@@ -447,8 +441,7 @@ extension ScatterPlot: HasGraphLayout {
                               starPoints.append(starInnerPoint)
                           }
                           renderer.drawSolidPolygon(points: starPoints,
-                                                    fillColor: s.color,
-                                                    isOriginShifted: true)
+                                                    fillColor: s.color)
                       }
             }
         }
@@ -471,13 +464,11 @@ extension ScatterPlotSeriesOptions.ScatterPattern {
                           (tL.y+bR.y)*Float(0.5))
             renderer.drawSolidCircle(center: c,
                                      radius: (tR.x-tL.x)*Float(0.5),
-                                     fillColor: color,
-                                     isOriginShifted: false)
+                                     fillColor: color)
         case .square:
             renderer.drawSolidRect(rect,
                                    fillColor: color,
-                                   hatchPattern: .none,
-                                   isOriginShifted: false)
+                                   hatchPattern: .none)
         case .triangle:
             let c = Point((tL.x+bR.x)*Float(0.5),
                           (tL.y+bR.y)*Float(0.5))
@@ -491,8 +482,7 @@ extension ScatterPlotSeriesOptions.ScatterPattern {
             renderer.drawSolidTriangle(point1: p1,
                                        point2: p2,
                                        point3: p3,
-                                       fillColor: color,
-                                       isOriginShifted: false)
+                                       fillColor: color)
         case .diamond:
             let c = Point((tL.x+bR.x)*Float(0.5),
                           (tL.y+bR.y)*Float(0.5))
@@ -502,8 +492,7 @@ extension ScatterPlotSeriesOptions.ScatterPattern {
             let p4 = rotatePoint(point: bL, center: c, angleDegrees: 45.0)
             let diamondPoints: [Point] = [p1, p2, p3, p4]
             renderer.drawSolidPolygon(points: diamondPoints,
-                                      fillColor: color,
-                                      isOriginShifted: false)
+                                      fillColor: color)
         case .hexagon:
             let c = Point((tL.x+bR.x)*Float(0.5),
                           (tL.y+bR.y)*Float(0.5))
@@ -517,8 +506,7 @@ extension ScatterPlotSeriesOptions.ScatterPattern {
                 hexagonPoints.append(hexagonPoint)
             }
             renderer.drawSolidPolygon(points: hexagonPoints,
-                                      fillColor: color,
-                                      isOriginShifted: false)
+                                      fillColor: color)
         case .pentagon:
             let c = Point((tL.x+bR.x)*Float(0.5),
                           (tL.y+bR.y)*Float(0.5))
@@ -532,8 +520,7 @@ extension ScatterPlotSeriesOptions.ScatterPattern {
                 pentagonPoints.append(pentagonPoint)
             }
             renderer.drawSolidPolygon(points: pentagonPoints,
-                                      fillColor: color,
-                                      isOriginShifted: false)
+                                      fillColor: color)
         case .star:
             let c = Point((tL.x+bR.x)*Float(0.5),
                           (tL.y+bR.y)*Float(0.5))
@@ -555,8 +542,7 @@ extension ScatterPlotSeriesOptions.ScatterPattern {
                 starPoints.append(starInnerPoint)
             }
             renderer.drawSolidPolygon(points: starPoints,
-                                      fillColor: color,
-                                      isOriginShifted: false)
+                                      fillColor: color)
         }
     }
 }

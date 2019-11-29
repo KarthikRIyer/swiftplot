@@ -70,12 +70,12 @@ public class SubPlot{
         calculateSubPlotParams(numberOfPlots: plots.count)
         renderer.plotDimensions = plotDimensions
         for index in 0..<plots.count {
-            var plot: Plot = plots[index]
             let j: Int = index%numberOfColumns
             let i: Int = Int(index/numberOfColumns)
             renderer.xOffset = Float(j)*xOffset
             renderer.yOffset = Float(i)*yOffset
-            plot.plotDimensions = plotDimensions
+            var plot: Plot = plots[index]
+            plot.plotSize = Size(width: plotDimensions.subWidth, height: plotDimensions.subHeight)
             plot.drawGraph(renderer: renderer)
         }
         renderer.drawOutput(fileName: fileName)
