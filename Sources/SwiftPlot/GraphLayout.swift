@@ -12,9 +12,10 @@ public struct GraphLayout {
     init(size: Size) {
         self.plotSize = size
     }
-    
-    var plotTitle: PlotTitle? = nil
-    var plotLabel: PlotLabel? = nil
+    var backgroundColor: Color = .white
+    var plotBackgroundColor: Color?
+    var plotTitle = PlotTitle()
+    var plotLabel  = PlotLabel()
     var plotLegend = PlotLegend()
     var plotBorder = PlotBorder()
     var grid = Grid()
@@ -31,6 +32,7 @@ public struct GraphLayout {
         
         var xLabelLocation: Rect?
         var yLabelLocation: Rect?
+        var y2LabelLocation: Rect?
         var titleLocation: Rect?
         
         var plotMarkers = PlotMarkers()
@@ -71,7 +73,9 @@ public struct GraphLayout {
         if let yLabel = results.yLabelLocation {
             borderRect.clampingShift(dx: yLabel.origin.x + Self.yLabelPadding)
         }
-        // TODO: Y2 axis label.
+        if let y2Label = results.y2LabelLocation {
+            borderRect.size.width -= plotSize.width - (y2Label.origin.x - Self.yLabelPadding)
+        }
         if let titleLabel = results.titleLocation {
             borderRect.size.height = titleLabel.origin.y - borderRect.origin.y - Self.titleLabelPadding
         }
@@ -86,6 +90,8 @@ public struct GraphLayout {
     }
     
     func recenterLabels(_ results: inout Results) {
+        // TODO: Move recentering until after markers have been processed, so we can center within the empty space
+        // if there are no markers.
         if var xLabel = results.xLabelLocation {
             xLabel.origin.x = results.plotBorderRect!.midX - xLabel.width/2
             results.xLabelLocation = xLabel
@@ -95,22 +101,35 @@ public struct GraphLayout {
             results.titleLocation = titleLabel
         }
         if var yLabel = results.yLabelLocation {
-            yLabel.origin.y = results.plotBorderRect!.midY - yLabel.height/2
+            yLabel.origin.y = results.plotBorderRect!.midY - yLabel.width/2
             results.yLabelLocation = yLabel
+        }
+        if var y2Label = results.y2LabelLocation {
+            y2Label.origin.y = results.plotBorderRect!.midY - y2Label.width/2
+            results.y2LabelLocation = y2Label
         }
     }
 
     func calcLabelLocations(renderer: Renderer, results: inout Results) {
-        if let plotLabel = plotLabel {
+        if !plotLabel.xLabel.isEmpty {
             let xLabelSize = renderer.getTextLayoutSize(text: plotLabel.xLabel, textSize: plotLabel.size)
-            let yLabelSize = renderer.getTextLayoutSize(text: plotLabel.yLabel, textSize: plotLabel.size)
             results.xLabelLocation = Rect(origin: Point(plotSize.width/2 - xLabelSize.width/2, Self.xLabelPadding),
                                           size: xLabelSize)
-            results.yLabelLocation = Rect(origin: Point(Self.yLabelPadding + xLabelSize.height,
+        }
+        if !plotLabel.yLabel.isEmpty {
+            let yLabelSize = renderer.getTextLayoutSize(text: plotLabel.yLabel, textSize: plotLabel.size)
+            results.yLabelLocation = Rect(origin: Point(Self.yLabelPadding + yLabelSize.height,
                                                         plotSize.height/2 - yLabelSize.width/2),
                                           size: yLabelSize)
         }
-        if let plotTitle = plotTitle {
+        if !plotLabel.y2Label.isEmpty {
+            let y2LabelSize = renderer.getTextLayoutSize(text: plotLabel.y2Label, textSize: plotLabel.size)
+            results.y2LabelLocation = Rect(origin: Point(plotSize.width - y2LabelSize.height - Self.yLabelPadding,
+                                                         plotSize.height/2 - y2LabelSize.width/2),
+                                           size: y2LabelSize)
+        }
+        
+        if !plotTitle.title.isEmpty {
           let titleSize = renderer.getTextLayoutSize(text: plotTitle.title, textSize: plotTitle.size)
           results.titleLocation = Rect(origin: Point(
             plotSize.width/2 - titleSize.width/2,
@@ -160,6 +179,10 @@ public struct GraphLayout {
     // Drawing.
     
     func drawBackground(results: Results, renderer: Renderer) {
+        renderer.drawSolidRect(Rect(origin: zeroPoint, size: plotSize), fillColor: backgroundColor, hatchPattern: .none)
+        if let plotBackgroundColor = plotBackgroundColor {
+            renderer.drawSolidRect(results.plotBorderRect!, fillColor: plotBackgroundColor, hatchPattern: .none)
+        }
         drawGrid(results: results, renderer: renderer)
         drawBorder(results: results, renderer: renderer)
         drawMarkers(results: results, renderer: renderer)
@@ -172,17 +195,17 @@ public struct GraphLayout {
     }
     
     func drawTitle(results: Results, renderer: Renderer) {
-        guard let plotTitle = self.plotTitle, let location = results.titleLocation else { return }
-        renderer.drawText(text: plotTitle.title,
-                          location: location.origin,
-                          textSize: plotTitle.size,
-                          color: plotTitle.color,
-                          strokeWidth: 1.2,
-                          angle: 0)
+        if let titleLocation = results.titleLocation {
+            renderer.drawText(text: plotTitle.title,
+                              location: titleLocation.origin,
+                              textSize: plotTitle.size,
+                              color: plotTitle.color,
+                              strokeWidth: 1.2,
+                              angle: 0)
+        }
     }
 
     func drawLabels(results: Results, renderer: Renderer) {
-        guard let plotLabel = self.plotLabel else { return }
         if let xLocation = results.xLabelLocation {
             renderer.drawText(text: plotLabel.xLabel,
                               location: xLocation.origin,
@@ -194,6 +217,14 @@ public struct GraphLayout {
         if let yLocation = results.yLabelLocation {
             renderer.drawText(text: plotLabel.yLabel,
                               location: yLocation.origin,
+                              textSize: plotLabel.size,
+                              color: plotLabel.color,
+                              strokeWidth: 1.2,
+                              angle: 90)
+        }
+        if let y2Location = results.y2LabelLocation {
+            renderer.drawText(text: plotLabel.y2Label,
+                              location: y2Location.origin,
                               textSize: plotLabel.size,
                               color: plotLabel.color,
                               strokeWidth: 1.2,
@@ -354,11 +385,11 @@ extension HasGraphLayout {
         set { layout.plotSize = newValue }
     }
     
-    public var plotTitle: PlotTitle? {
+    public var plotTitle: PlotTitle {
         get { layout.plotTitle }
         set { layout.plotTitle = newValue }
     }
-    public var plotLabel: PlotLabel? {
+    public var plotLabel: PlotLabel {
         get { layout.plotLabel }
         set { layout.plotLabel = newValue }
     }
@@ -373,6 +404,14 @@ extension HasGraphLayout {
     public var grid: Grid {
         get { layout.grid }
         set { layout.grid = newValue }
+    }
+    public var backgroundColor: Color {
+        get { layout.backgroundColor }
+        set { layout.backgroundColor = newValue }
+    }
+    public var plotBackgroundColor: Color? {
+        get { layout.plotBackgroundColor }
+        set { layout.plotBackgroundColor = newValue }
     }
 
     public var markerTextSize: Float {

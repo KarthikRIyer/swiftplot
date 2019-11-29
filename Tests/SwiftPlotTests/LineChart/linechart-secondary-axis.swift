@@ -24,6 +24,7 @@ extension LineChartTests {
     lineGraph.addSeries(x, y, label: "Plot 2", color: .orange, axisType: .secondaryAxis)
     lineGraph.plotTitle = PlotTitle("SECONDARY AXIS")
     lineGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
+    lineGraph.plotLabel.y2Label = "Y2-AXIS"
     lineGraph.plotLineThickness = 3.0
     
     let svg_renderer = SVGRenderer()

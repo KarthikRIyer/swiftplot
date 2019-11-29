@@ -12,7 +12,7 @@ public struct Grid {
 }
 
 public struct PlotTitle {
-    public var title = "TITLE"
+    public var title = ""
     public var color = Color.black
     public var size: Float = 20
     public init(_ title: String = "TITLE") {
@@ -20,20 +20,16 @@ public struct PlotTitle {
     }
 }
 
-extension PlotTitle: ExpressibleByStringLiteral {
-    public init(stringLiteral value: String) {
-        self.init(value)
-    }
-}
-
-public struct PlotLabel{
-    public var xLabel = "X-Axis"
-    public var yLabel = "Y-Axis"
+public struct PlotLabel {
+    public var xLabel = ""
+    public var yLabel = ""
+    public var y2Label = ""
     public var color = Color.black
     public var size: Float = 15
-    public init(xLabel: String, yLabel: String, labelSize: Float = 15) {
+    public init(xLabel: String = "", yLabel: String = "", y2Label: String = "", labelSize: Float = 15) {
       self.xLabel = xLabel
       self.yLabel = yLabel
+      self.y2Label = y2Label
       self.size = labelSize
     }
 }

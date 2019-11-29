@@ -213,7 +213,7 @@ public class SVGRenderer: Renderer{
                          strokeWidth thickness: Float,
                          angle: Float){
         let p = convertToSVGCoordinates(p)
-        let text = #"<text font-size="\#(size)" font-family="\#(fontFamily)" x="\#(p.x)" y="\#(p.y)" style="stroke:\#(color.svgColorString);stroke-width:\#(thickness/4)" transform="rotate(\#(-angle),\#(p.x),\#(p.y))">\#(s)</text>"#
+        let text = #"<text font-size="\#(size)" font-family="\#(fontFamily)" x="\#(p.x)" y="\#(p.y)" style="stroke:\#(color.svgColorString);stroke-width:\#(thickness/4);fill:\#(color.svgColorString);" transform="rotate(\#(-angle),\#(p.x),\#(p.y))">\#(s)</text>"#
         image = image + "\n" + text
     }
 
