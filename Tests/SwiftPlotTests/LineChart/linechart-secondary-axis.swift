@@ -10,7 +10,7 @@ import QuartzRenderer
 @available(tvOS 13, watchOS 13, *)
 extension LineChartTests {
   
-  func testLineChartSecondaryAxis() {
+  func testLineChartSecondaryAxis() throws {
     
     let fileName = "_07_secondary_axis_line_chart"
     
@@ -28,17 +28,17 @@ extension LineChartTests {
     lineGraph.plotLineThickness = 3.0
     
     let svg_renderer = SVGRenderer()
-    lineGraph.drawGraphAndOutput(fileName: self.svgOutputDirectory+fileName,
-                                 renderer: svg_renderer)
+    try lineGraph.drawGraphAndOutput(fileName: self.svgOutputDirectory+fileName,
+                                     renderer: svg_renderer)
     #if canImport(AGGRenderer)
     let agg_renderer = AGGRenderer()
-    lineGraph.drawGraphAndOutput(fileName: self.aggOutputDirectory+fileName,
-                                 renderer: agg_renderer)
+    try lineGraph.drawGraphAndOutput(fileName: self.aggOutputDirectory+fileName,
+                                     renderer: agg_renderer)
     #endif
     #if canImport(QuartzRenderer)
     let quartz_renderer = QuartzRenderer()
-    lineGraph.drawGraphAndOutput(fileName: self.coreGraphicsOutputDirectory+fileName,
-                                 renderer: quartz_renderer)
+    try lineGraph.drawGraphAndOutput(fileName: self.coreGraphicsOutputDirectory+fileName,
+                                     renderer: quartz_renderer)
     #endif
   }
 }

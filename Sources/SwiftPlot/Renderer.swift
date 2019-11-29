@@ -174,7 +174,7 @@ public protocol Renderer: AnyObject{
     *params: fileName name: String
     *description: Saves the drawn image to disk
     */
-    func drawOutput(fileName name: String)
+    func drawOutput(fileName name: String) throws
 
 }
 

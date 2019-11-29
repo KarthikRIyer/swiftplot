@@ -455,16 +455,16 @@ public class QuartzRenderer: Renderer {
         return Size(width: Float(size.width), height: Float(size.height))
     }
 
-    public func drawOutput(fileName name: String) {
+    public func drawOutput(fileName name: String) throws {
         if !name.isEmpty {
             let fileName = name + ".png"
             let destinationURL = URL(fileURLWithPath: fileName)
             #if canImport(AppKit)
             let image = NSImage(cgImage: context.makeImage()!, size: NSZeroSize)
-            image.writePng(to: destinationURL)
+            try image.writePng(to: destinationURL)
             #elseif canImport(UIKit)
             let image: UIImage = UIImage.init(cgImage: context.makeImage()!)
-            image.writePng(to: destinationURL)
+            try image.writePng(to: destinationURL)
             #endif
         }
     }
@@ -496,28 +496,16 @@ extension NSImage {
         guard let tiffRepresentation = tiffRepresentation, let bitmapImage = NSBitmapImageRep(data: tiffRepresentation) else { return nil }
         return bitmapImage.representation(using: .png, properties: [:])
     }
-    func writePng(to url: URL, options: Data.WritingOptions = .atomic) -> Bool {
-        guard let data = pngData else { return false } // TODO: throw an error.
-        do {
-            try data.write(to: url, options: options)
-            return true
-        } catch {
-            print(error)
-            return false
-        }
+    func writePng(to url: URL, options: Data.WritingOptions = .atomic) throws {
+        guard let data = pngData else { return } // TODO: throw an error.
+        try data.write(to: url, options: options)
     }
 }
 #elseif canImport(UIKit)
 extension UIImage {
-    func writePng(to url: URL, options: Data.WritingOptions = .atomic) -> Bool {
-        guard let data = pngData() else { return false } // TODO: throw an error.
-        do {
-            try data.write(to: url, options: options)
-            return true
-        } catch {
-            print(error)
-            return false
-        }
+    func writePng(to url: URL, options: Data.WritingOptions = .atomic) throws {
+        guard let data = pngData() else { return } // TODO: throw an error.
+        try data.write(to: url, options: options)
     }
 }
 #endif

@@ -66,7 +66,7 @@ public class SubPlot{
                                         subHeight: subHeight)
     }
 
-    public func draw(plots: [Plot], renderer: Renderer, fileName: String = "subPlot_output") {
+    public func draw(plots: [Plot], renderer: Renderer, fileName: String = "subPlot_output") throws {
         calculateSubPlotParams(numberOfPlots: plots.count)
         renderer.plotDimensions = plotDimensions
         for index in 0..<plots.count {
@@ -78,7 +78,7 @@ public class SubPlot{
             plot.plotSize = Size(width: plotDimensions.subWidth, height: plotDimensions.subHeight)
             plot.drawGraph(renderer: renderer)
         }
-        renderer.drawOutput(fileName: fileName)
+        try renderer.drawOutput(fileName: fileName)
     }
 
 }

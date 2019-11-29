@@ -10,7 +10,7 @@ import QuartzRenderer
 @available(tvOS 13, watchOS 13, *)
 extension HistogramTests {
   
-  func testHistogramStep() {
+  func testHistogramStep() throws {
     
     let fileName = "_22_histogram_step"
     
@@ -24,17 +24,17 @@ extension HistogramTests {
     histogram.plotLabel = PlotLabel(xLabel: "X", yLabel: "Frequency")
     
     let svg_renderer = SVGRenderer()
-    histogram.drawGraphAndOutput(fileName: self.svgOutputDirectory+fileName,
-                                 renderer: svg_renderer)
+    try histogram.drawGraphAndOutput(fileName: self.svgOutputDirectory+fileName,
+                                     renderer: svg_renderer)
     #if canImport(AGGRenderer)
     let agg_renderer = AGGRenderer()
-    histogram.drawGraphAndOutput(fileName: self.aggOutputDirectory+fileName,
-                                 renderer: agg_renderer)
+    try histogram.drawGraphAndOutput(fileName: self.aggOutputDirectory+fileName,
+                                     renderer: agg_renderer)
     #endif
     #if canImport(QuartzRenderer)
     let quartz_renderer = QuartzRenderer()
-    histogram.drawGraphAndOutput(fileName: self.coreGraphicsOutputDirectory+fileName,
-                                 renderer: quartz_renderer)
+    try histogram.drawGraphAndOutput(fileName: self.coreGraphicsOutputDirectory+fileName,
+                                     renderer: quartz_renderer)
     #endif
   }
 }

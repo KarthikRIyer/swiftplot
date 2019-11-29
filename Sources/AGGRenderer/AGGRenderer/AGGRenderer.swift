@@ -246,9 +246,18 @@ public class AGGRenderer: Renderer{
         get_text_size(text, size, &width, &height, agg_object)
         return Size(width: width, height: height)
     }
+    
+    struct DrawOutputError: Error, CustomStringConvertible {
+        let errorCode: UInt32
+        let description: String
+    }
 
-    public func drawOutput(fileName name: String) {
-        save_image(name, agg_object)
+    public func drawOutput(fileName name: String) throws {
+        var errorDescPtr = UnsafePointer<Int8>(bitPattern: 0)
+        let err = save_image(name, &errorDescPtr, agg_object)
+        if err != 0, let errorDescPtr = errorDescPtr {
+            throw DrawOutputError(errorCode: err, description: String(cString: errorDescPtr))
+        }
     }
 
     public func base64Png() -> String{

@@ -229,18 +229,14 @@ public class SVGRenderer: Renderer{
         return Size(width: width*scaleFactor + 25, height: size)
     }
 
-    public func drawOutput(fileName name: String) {
-        savePlotImage(fileName: name)
+    public func drawOutput(fileName name: String) throws {
+        try savePlotImage(fileName: name)
     }
 
-    func savePlotImage(fileName name: String) {
+    func savePlotImage(fileName name: String) throws {
         image = image + "\n" + "</svg>"
         let url = URL(fileURLWithPath: "\(name).svg")
-        do {
-            try image.write(to: url, atomically: true, encoding: String.Encoding.utf8)
-        } catch {
-            print("Unable to save SVG image!")
-        }
+        try image.write(to: url, atomically: true, encoding: .utf8)
     }
 
 }

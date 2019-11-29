@@ -23,7 +23,7 @@ void draw_text(const char *s, float x, float y, float size, float r, float g, fl
 
 void get_text_size(const char *s, float size, float* outW, float* outH, const void *object);
 
-void save_image(const char *s, const void *object);
+unsigned save_image(const char *s, const char** errorDesc, const void *object);
 
 const unsigned char* get_png_buffer(const void *object);
 

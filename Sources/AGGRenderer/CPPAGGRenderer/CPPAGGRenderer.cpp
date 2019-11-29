@@ -57,13 +57,13 @@ namespace CPPAGGRenderer{
     saveBMP(buf, width, height, file_name);
   }
 
-  void write_png(std::vector<unsigned char>& image, unsigned width, unsigned height, const char* filename) {
+  unsigned write_png(std::vector<unsigned char>& image, unsigned width, unsigned height, const char* filename, const char** errorDesc) {
     //Encode the image
     LodePNGColorType colorType = LCT_RGB;
     unsigned error = lodepng::encode(filename, image, width, height, colorType);
-
-    //if there's an error, display it
-    if(error) std::cout << "encoder error " << error << ": "<< lodepng_error_text(error) << std::endl;
+    if(error && errorDesc)
+        *errorDesc = lodepng_error_text(error);
+      return error;
   }
 
   std::vector<unsigned char> write_png_memory(const unsigned char* buf, unsigned width, unsigned height){
@@ -467,12 +467,14 @@ namespace CPPAGGRenderer{
         *outH = y;
     }
 
-    void save_image(const char *s){
+    unsigned save_image(const char *s, const char** errorDesc){
       char* file_png = (char *) malloc(1 + strlen(s)+ strlen(".png") );
       strcpy(file_png, s);
       strcat(file_png, ".png");
       std::vector<unsigned char> image(buffer, buffer + (frame_width*frame_height*3));
-      write_png(image, frame_width, frame_height, file_png);
+      unsigned err = write_png(image, frame_width, frame_height, file_png, errorDesc);
+      free(file_png);
+      return err;
     }
 
     const unsigned char* getPngBuffer(){
@@ -543,9 +545,9 @@ namespace CPPAGGRenderer{
     plot -> get_text_size(s, size, outW, outH);
   }
 
-  void save_image(const char *s, const void *object){
+  unsigned save_image(const char *s, const char** errorDesc, const void *object){
     Plot *plot = (Plot *)object;
-    plot -> save_image(s);
+    return plot -> save_image(s, errorDesc);
   }
 
   const unsigned char* get_png_buffer(const void *object){

@@ -10,7 +10,7 @@ import QuartzRenderer
 @available(tvOS 13, watchOS 13, *)
 extension BarchartTests {
   
-  func testBarchartHatchedHorizontal() {
+  func testBarchartHatchedHorizontal() throws {
     
     let fileName = "_13_bar_chart_horizontal_hatched"
     
@@ -23,17 +23,17 @@ extension BarchartTests {
     barGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
     
     let svg_renderer = SVGRenderer()
-    barGraph.drawGraphAndOutput(fileName: self.svgOutputDirectory+fileName,
-                                renderer: svg_renderer)
+    try barGraph.drawGraphAndOutput(fileName: self.svgOutputDirectory+fileName,
+                                    renderer: svg_renderer)
     #if canImport(AGGRenderer)
     let agg_renderer = AGGRenderer()
-    barGraph.drawGraphAndOutput(fileName: self.aggOutputDirectory+fileName,
-                                renderer: agg_renderer)
+    try barGraph.drawGraphAndOutput(fileName: self.aggOutputDirectory+fileName,
+                                    renderer: agg_renderer)
     #endif
     #if canImport(QuartzRenderer)
     let quartz_renderer = QuartzRenderer()
-    barGraph.drawGraphAndOutput(fileName: self.coreGraphicsOutputDirectory+fileName,
-                                renderer: quartz_renderer)
+    try barGraph.drawGraphAndOutput(fileName: self.coreGraphicsOutputDirectory+fileName,
+                                    renderer: quartz_renderer)
     #endif
   }
 }

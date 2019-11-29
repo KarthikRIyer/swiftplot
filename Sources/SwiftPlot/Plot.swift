@@ -13,19 +13,19 @@ extension Plot {
     }
     
     // call functions to draw the graph
-    public func drawGraphAndOutput(fileName name: String = "swiftplot_graph", renderer: Renderer){
+    public func drawGraphAndOutput(fileName name: String = "swiftplot_graph", renderer: Renderer) throws {
         renderer.plotDimensions = PlotDimensions(frameWidth: plotSize.width, frameHeight: plotSize.height)
         drawGraph(renderer: renderer)
-        saveImage(fileName: name, renderer: renderer)
+        try saveImage(fileName: name, renderer: renderer)
     }
 
     public func drawGraphOutput(fileName name: String = "swiftplot_graph",
-                                renderer: Renderer){
+                                renderer: Renderer) throws {
         renderer.plotDimensions = PlotDimensions(frameWidth: plotSize.width, frameHeight: plotSize.height)
-        renderer.drawOutput(fileName: name)
+        try renderer.drawOutput(fileName: name)
     }
     
-    func saveImage(fileName name: String, renderer: Renderer) {
-        renderer.drawOutput(fileName: name)
+    func saveImage(fileName name: String, renderer: Renderer) throws {
+        try renderer.drawOutput(fileName: name)
     }
 }

@@ -1,4 +1,4 @@
-import SwiftPlot
+@testable import SwiftPlot
 import SVGRenderer
 #if canImport(AGGRenderer)
 import AGGRenderer
@@ -10,7 +10,7 @@ import QuartzRenderer
 @available(tvOS 13, watchOS 13, *)
 extension BarchartTests {
   
-  func testBarchart() {
+  func testBarchart() throws {
 
     let fileName = "_08_bar_chart"
 
@@ -23,16 +23,16 @@ extension BarchartTests {
     barGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
 
     let svg_renderer = SVGRenderer()
-    barGraph.drawGraphAndOutput(fileName: self.svgOutputDirectory+fileName,
-                                renderer: svg_renderer)
+    try barGraph.drawGraphAndOutput(fileName: self.svgOutputDirectory+fileName,
+                                    renderer: svg_renderer)
     #if canImport(AGGRenderer)
     let agg_renderer = AGGRenderer()
-    barGraph.drawGraphAndOutput(fileName: self.aggOutputDirectory+fileName,
-                                renderer: agg_renderer)
+    try barGraph.drawGraphAndOutput(fileName: self.aggOutputDirectory+fileName,
+                                    renderer: agg_renderer)
     #endif
     #if canImport(QuartzRenderer)
     let quartz_renderer = QuartzRenderer()
-    barGraph.drawGraphAndOutput(fileName: self.coreGraphicsOutputDirectory+fileName,
+    try barGraph.drawGraphAndOutput(fileName: self.coreGraphicsOutputDirectory+fileName,
                                 renderer: quartz_renderer)
     #endif
   }

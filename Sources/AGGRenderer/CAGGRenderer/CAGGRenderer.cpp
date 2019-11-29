@@ -42,8 +42,8 @@ void get_text_size(const char *s, float size, float* outW, float* outH, const vo
   return CPPAGGRenderer::get_text_size(s, size, outW, outH, object);
 }
 
-void save_image(const char *s, const void *object){
-  CPPAGGRenderer::save_image(s, object);
+unsigned save_image(const char *s, const char** errorDesc, const void *object){
+  return CPPAGGRenderer::save_image(s, errorDesc, object);
 }
 
 const unsigned char* get_png_buffer(const void *object){
