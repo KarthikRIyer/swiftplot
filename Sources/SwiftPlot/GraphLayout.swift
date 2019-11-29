@@ -385,8 +385,6 @@ extension HasGraphLayout {
 extension Plot where Self: HasGraphLayout {
     
     public func drawGraph(renderer: Renderer) {
-        renderer.xOffset = xOffset
-        renderer.yOffset = yOffset
         layout.legendLabels = self.legendLabels
         let results = layout.layout(renderer: renderer, calculateMarkers: { markers, rect in
             calculateScaleAndMarkerLocations(
@@ -395,12 +393,19 @@ extension Plot where Self: HasGraphLayout {
                 renderer: renderer)
         })
         layout.drawBackground(results: results, renderer: renderer)
-        renderer.xOffset = xOffset + results.plotBorderRect!.minX
-        renderer.yOffset = yOffset + results.plotBorderRect!.minY
-        drawData(markers: results.plotMarkers, renderer: renderer)
-        renderer.xOffset = xOffset
-        renderer.yOffset = yOffset
+        renderer.withOffset(results.plotBorderRect!.origin) { renderer in
+            drawData(markers: results.plotMarkers, renderer: renderer)
+        }
         layout.drawForeground(results: results, renderer: renderer)
     }
     
+}
+
+extension Renderer {
+    func withOffset(_ offset: Point, _ perform: (Renderer)->Void) {
+        let oldOffset = (self.xOffset, self.yOffset)
+        (self.xOffset, self.yOffset) = (oldOffset.0 + offset.x, oldOffset.1 + offset.y)
+        perform(self)
+        (self.xOffset, self.yOffset) = oldOffset
+    }
 }

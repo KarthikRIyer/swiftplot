@@ -7,9 +7,6 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     public var layout: GraphLayout
 
-    public var xOffset: Float = 0
-    public var yOffset: Float = 0
-    
     public var plotLineThickness: Float = 1.5
 
     var primaryAxis = Axis<T,U>()

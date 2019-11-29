@@ -8,9 +8,6 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
     let sqrt3: Float = sqrt(3)
 
     public var layout: GraphLayout
-
-    public var xOffset: Float = 0
-    public var yOffset: Float = 0
     
     // public var plotLineThickness: Float = 3
     public var scatterPatternSize: Float = 10

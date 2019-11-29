@@ -73,8 +73,8 @@ public class SubPlot{
             var plot: Plot = plots[index]
             let j: Int = index%numberOfColumns
             let i: Int = Int(index/numberOfColumns)
-            plot.xOffset = Float(j)*xOffset
-            plot.yOffset = Float(i)*yOffset
+            renderer.xOffset = Float(j)*xOffset
+            renderer.yOffset = Float(i)*yOffset
             plot.plotDimensions = plotDimensions
             plot.drawGraph(renderer: renderer)
         }

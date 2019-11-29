@@ -7,9 +7,6 @@ public class Histogram<T:FloatConvertible>: Plot {
 
     public var layout: GraphLayout
 
-    public var xOffset: Float = 0
-    public var yOffset: Float = 0
-        
     public var strokeWidth: Float = 2
     
     var histogramSeries = HistogramSeries<T>()

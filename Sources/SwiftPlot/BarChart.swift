@@ -6,9 +6,6 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
     let MAX_DIV: Float = 50
 
     public var layout: GraphLayout
-
-    public var xOffset: Float = 0
-    public var yOffset: Float = 0
     
     public enum GraphOrientation {
         case vertical
