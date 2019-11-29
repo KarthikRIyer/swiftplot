@@ -28,12 +28,20 @@ public struct GraphLayout {
     var yMarkerMaxWidth: Float = 40
     
     struct Results {
-        var plotBorderRect: Rect?
+        struct Sizes {
+            var xLabelSize: Size?
+            var yLabelSize: Size?
+            var y2LabelSize: Size?
+            var titleSize: Size?
+        }
         
-        var xLabelLocation: Rect?
-        var yLabelLocation: Rect?
-        var y2LabelLocation: Rect?
-        var titleLocation: Rect?
+        var plotBorderRect: Rect
+        var sizes: Sizes
+        
+        var xLabelLocation: Point?
+        var yLabelLocation: Point?
+        var y2LabelLocation: Point?
+        var titleLocation: Point?
         
         var plotMarkers = PlotMarkers()
         var xMarkersTextLocation = [Point]()
@@ -46,13 +54,17 @@ public struct GraphLayout {
     // Layout.
         
     func layout(renderer: Renderer, calculateMarkers: (inout PlotMarkers, Size)->Void) -> Results {
-        var results = Results()
-        calcLabelLocations(renderer: renderer, results: &results)
-        calcBorder(results: &results, renderer: renderer)
-        recenterLabels(&results)
-
-        calculateMarkers(&results.plotMarkers, results.plotBorderRect!.size)
-        
+        // 1. Measure the things outside of the plot's border (axis titles, plot title)
+        var sizes = Results.Sizes()
+        measureLabels(renderer: renderer, results: &sizes)
+        // 2. Calculate the plot's border
+        let borderRect = calcBorder(sizes: sizes, renderer: renderer)
+        // 3. Lay out the things outside of the plot's border (axis titles, plot title)
+        var results = Results(plotBorderRect: borderRect, sizes: sizes)
+        calcLabelLocations(&results)
+        // 4. Let the plot calculate its scale, calculate marker positions.
+        calculateMarkers(&results.plotMarkers, results.plotBorderRect.size)
+        // 5. Lay out remaining chrome.
         calcMarkerTextLocations(renderer: renderer, results: &results)
         calcLegend(legendLabels, renderer: renderer, results: &results)
         return results
@@ -62,79 +74,67 @@ public struct GraphLayout {
     static let yLabelPadding: Float = 10
     static let titleLabelPadding: Float = 14
     
-    func calcBorder(results: inout Results, renderer: Renderer) {
+    /// Measures the sizes of chrome elements outside the plot's borders (axis titles, plot title, etc).
+    func measureLabels(renderer: Renderer, results: inout Results.Sizes) {
+        if !plotLabel.xLabel.isEmpty {
+            results.xLabelSize = renderer.getTextLayoutSize(text: plotLabel.xLabel, textSize: plotLabel.size)
+        }
+        if !plotLabel.yLabel.isEmpty {
+            results.yLabelSize = renderer.getTextLayoutSize(text: plotLabel.yLabel, textSize: plotLabel.size)
+        }
+        if !plotLabel.y2Label.isEmpty {
+            results.y2LabelSize = renderer.getTextLayoutSize(text: plotLabel.y2Label, textSize: plotLabel.size)
+        }
+        if !plotTitle.title.isEmpty {
+            results.titleSize = renderer.getTextLayoutSize(text: plotTitle.title, textSize: plotTitle.size)
+        }
+    }
+    
+    /// Calculates the region of the plot which is used for displaying the plot's data (inside all of the chrome).
+    func calcBorder(sizes: Results.Sizes, renderer: Renderer) -> Rect {
         var borderRect = Rect(
             origin: zeroPoint,
             size: self.plotSize
         )
-        if let xLabel = results.xLabelLocation {
-            borderRect.clampingShift(dy: xLabel.maxY + Self.xLabelPadding)
+        if let xLabel = sizes.xLabelSize {
+            borderRect.clampingShift(dy: xLabel.height + 2 * Self.xLabelPadding)
         }
-        if let yLabel = results.yLabelLocation {
-            borderRect.clampingShift(dx: yLabel.origin.x + Self.yLabelPadding)
+        if let yLabel = sizes.yLabelSize {
+            borderRect.clampingShift(dx: yLabel.height + 2 * Self.yLabelPadding)
         }
-        if let y2Label = results.y2LabelLocation {
-            borderRect.size.width -= plotSize.width - (y2Label.origin.x - Self.yLabelPadding)
+        if let y2Label = sizes.y2LabelSize {
+            borderRect.size.width -= (y2Label.height + 2 * Self.yLabelPadding)
         }
-        if let titleLabel = results.titleLocation {
-            borderRect.size.height = titleLabel.origin.y - borderRect.origin.y - Self.titleLabelPadding
+        if let titleLabel = sizes.titleSize {
+            borderRect.size.height -= (titleLabel.height + 2 * Self.titleLabelPadding)
         }
         borderRect.contract(by: plotBorder.thickness)
         // Give space for the markers.
-        borderRect.clampingShift(dy: 2 * markerTextSize) // X markers
+        borderRect.clampingShift(dy: (2 * markerTextSize) + 10) // X markers
         // TODO: Better space calculation for Y/Y2 markers.
         borderRect.clampingShift(dx: yMarkerMaxWidth + 10) // Y markers
         borderRect.size.width -= yMarkerMaxWidth + 10 // Y2 markers
 
-        results.plotBorderRect = borderRect
+        return borderRect
     }
     
-    func recenterLabels(_ results: inout Results) {
-        // TODO: Move recentering until after markers have been processed, so we can center within the empty space
-        // if there are no markers.
-        if var xLabel = results.xLabelLocation {
-            xLabel.origin.x = results.plotBorderRect!.midX - xLabel.width/2
-            results.xLabelLocation = xLabel
+    /// Lays out the chrome elements outside the plot's borders (axis titles, plot title, etc).
+    func calcLabelLocations(_ results: inout Results) {
+        if let xLabelSize = results.sizes.xLabelSize {
+            results.xLabelLocation = Point(results.plotBorderRect.midX - xLabelSize.width/2,
+                                           Self.xLabelPadding)
         }
-        if var titleLabel = results.titleLocation {
-            titleLabel.origin.x = results.plotBorderRect!.midX - titleLabel.width/2
-            results.titleLocation = titleLabel
+        if let titleLabelSize = results.sizes.titleSize {
+            results.titleLocation = Point(results.plotBorderRect.midX - titleLabelSize.width/2,
+                                          plotSize.height  - titleLabelSize.height - Self.titleLabelPadding)
         }
-        if var yLabel = results.yLabelLocation {
-            yLabel.origin.y = results.plotBorderRect!.midY - yLabel.width/2
-            results.yLabelLocation = yLabel
+        if let yLabelSize = results.sizes.yLabelSize {
+            results.yLabelLocation = Point(Self.yLabelPadding + yLabelSize.height,
+                                           results.plotBorderRect.midY - yLabelSize.width/2)
         }
-        if var y2Label = results.y2LabelLocation {
-            y2Label.origin.y = results.plotBorderRect!.midY - y2Label.width/2
-            results.y2LabelLocation = y2Label
-        }
-    }
-
-    func calcLabelLocations(renderer: Renderer, results: inout Results) {
-        if !plotLabel.xLabel.isEmpty {
-            let xLabelSize = renderer.getTextLayoutSize(text: plotLabel.xLabel, textSize: plotLabel.size)
-            results.xLabelLocation = Rect(origin: Point(plotSize.width/2 - xLabelSize.width/2, Self.xLabelPadding),
-                                          size: xLabelSize)
-        }
-        if !plotLabel.yLabel.isEmpty {
-            let yLabelSize = renderer.getTextLayoutSize(text: plotLabel.yLabel, textSize: plotLabel.size)
-            results.yLabelLocation = Rect(origin: Point(Self.yLabelPadding + yLabelSize.height,
-                                                        plotSize.height/2 - yLabelSize.width/2),
-                                          size: yLabelSize)
-        }
-        if !plotLabel.y2Label.isEmpty {
-            let y2LabelSize = renderer.getTextLayoutSize(text: plotLabel.y2Label, textSize: plotLabel.size)
-            results.y2LabelLocation = Rect(origin: Point(plotSize.width - y2LabelSize.height - Self.yLabelPadding,
-                                                         plotSize.height/2 - y2LabelSize.width/2),
-                                           size: y2LabelSize)
-        }
-        
-        if !plotTitle.title.isEmpty {
-          let titleSize = renderer.getTextLayoutSize(text: plotTitle.title, textSize: plotTitle.size)
-          results.titleLocation = Rect(origin: Point(
-            plotSize.width/2 - titleSize.width/2,
-            plotSize.height  - titleSize.height - Self.titleLabelPadding
-          ), size: titleSize)
+        if let y2LabelSize = results.sizes.y2LabelSize {
+            results.y2LabelLocation = Point(plotSize.width - Self.yLabelPadding,
+                                            results.plotBorderRect.midY - y2LabelSize.width/2)
         }
     }
     
@@ -154,7 +154,7 @@ public struct GraphLayout {
         }
         
         for i in 0..<results.plotMarkers.y2Markers.count {
-            let text_p = Point(results.plotBorderRect!.width + 8, results.plotMarkers.y2Markers[i] - 4)
+            let text_p = Point(results.plotBorderRect.width + 8, results.plotMarkers.y2Markers[i] - 4)
             results.y2MarkersTextLocation.append(text_p)
         }
     }
@@ -168,8 +168,8 @@ public struct GraphLayout {
         let legendWidth  = maxWidth + 3.5 * plotLegend.textSize
         let legendHeight = (Float(labels.count)*2.0 + 1.0) * plotLegend.textSize
         
-        let legendTopLeft = Point(results.plotBorderRect!.minX + Float(20),
-                                  results.plotBorderRect!.maxY - Float(20))
+        let legendTopLeft = Point(results.plotBorderRect.minX + Float(20),
+                                  results.plotBorderRect.maxY - Float(20))
         results.legendRect = Rect(
             origin: legendTopLeft,
             size: Size(width: legendWidth, height: -legendHeight)
@@ -181,7 +181,7 @@ public struct GraphLayout {
     func drawBackground(results: Results, renderer: Renderer) {
         renderer.drawSolidRect(Rect(origin: zeroPoint, size: plotSize), fillColor: backgroundColor, hatchPattern: .none)
         if let plotBackgroundColor = plotBackgroundColor {
-            renderer.drawSolidRect(results.plotBorderRect!, fillColor: plotBackgroundColor, hatchPattern: .none)
+            renderer.drawSolidRect(results.plotBorderRect, fillColor: plotBackgroundColor, hatchPattern: .none)
         }
         drawGrid(results: results, renderer: renderer)
         drawBorder(results: results, renderer: renderer)
@@ -197,7 +197,7 @@ public struct GraphLayout {
     func drawTitle(results: Results, renderer: Renderer) {
         if let titleLocation = results.titleLocation {
             renderer.drawText(text: plotTitle.title,
-                              location: titleLocation.origin,
+                              location: titleLocation,
                               textSize: plotTitle.size,
                               color: plotTitle.color,
                               strokeWidth: 1.2,
@@ -208,7 +208,7 @@ public struct GraphLayout {
     func drawLabels(results: Results, renderer: Renderer) {
         if let xLocation = results.xLabelLocation {
             renderer.drawText(text: plotLabel.xLabel,
-                              location: xLocation.origin,
+                              location: xLocation,
                               textSize: plotLabel.size,
                               color: plotLabel.color,
                               strokeWidth: 1.2,
@@ -216,7 +216,7 @@ public struct GraphLayout {
         }
         if let yLocation = results.yLabelLocation {
             renderer.drawText(text: plotLabel.yLabel,
-                              location: yLocation.origin,
+                              location: yLocation,
                               textSize: plotLabel.size,
                               color: plotLabel.color,
                               strokeWidth: 1.2,
@@ -224,7 +224,7 @@ public struct GraphLayout {
         }
         if let y2Location = results.y2LabelLocation {
             renderer.drawText(text: plotLabel.y2Label,
-                              location: y2Location.origin,
+                              location: y2Location,
                               textSize: plotLabel.size,
                               color: plotLabel.color,
                               strokeWidth: 1.2,
@@ -233,16 +233,14 @@ public struct GraphLayout {
     }
     
     func drawBorder(results: Results, renderer: Renderer) {
-        guard let borderRect = results.plotBorderRect else { return }
-        renderer.drawRect(borderRect,
+        renderer.drawRect(results.plotBorderRect,
                           strokeWidth: plotBorder.thickness,
                           strokeColor: plotBorder.color)
     }
     
     func drawGrid(results: Results, renderer: Renderer) {
-        guard enablePrimaryAxisGrid || enablePrimaryAxisGrid,
-            let rect = results.plotBorderRect else { return }
-        
+        guard enablePrimaryAxisGrid || enablePrimaryAxisGrid else { return }
+        let rect = results.plotBorderRect
         for index in 0..<results.plotMarkers.xMarkers.count {
             let p1 = Point(results.plotMarkers.xMarkers[index] + rect.minX, rect.minY)
             let p2 = Point(results.plotMarkers.xMarkers[index] + rect.minX, rect.maxY)
@@ -278,7 +276,7 @@ public struct GraphLayout {
     }
 
     func drawMarkers(results: Results, renderer: Renderer) {
-        guard let rect = results.plotBorderRect else { return }
+        let rect = results.plotBorderRect
         for index in 0..<results.plotMarkers.xMarkers.count {
             let p1 = Point(results.plotMarkers.xMarkers[index], -6) + rect.origin
             let p2 = Point(results.plotMarkers.xMarkers[index], 0) + rect.origin
@@ -313,9 +311,9 @@ public struct GraphLayout {
         
         if !results.plotMarkers.y2Markers.isEmpty {
             for index in 0..<results.plotMarkers.y2Markers.count {
-                let p1 = Point(results.plotBorderRect!.width,
+                let p1 = Point(results.plotBorderRect.width,
                                (results.plotMarkers.y2Markers[index])) + rect.origin
-                let p2 = Point(results.plotBorderRect!.width + 6,
+                let p2 = Point(results.plotBorderRect.width + 6,
                                (results.plotMarkers.y2Markers[index])) + rect.origin
                 renderer.drawLine(startPoint: p1,
                                   endPoint: p2,
@@ -431,19 +429,10 @@ extension Plot where Self: HasGraphLayout {
                 renderer: renderer)
         })
         layout.drawBackground(results: results, renderer: renderer)
-        renderer.withOffset(results.plotBorderRect!.origin) { renderer in
-            drawData(markers: results.plotMarkers, size: results.plotBorderRect!.size, renderer: renderer)
+        renderer.withAdditionalOffset(results.plotBorderRect.origin) { renderer in
+            drawData(markers: results.plotMarkers, size: results.plotBorderRect.size, renderer: renderer)
         }
         layout.drawForeground(results: results, renderer: renderer)
     }
     
-}
-
-extension Renderer {
-    func withOffset(_ offset: Point, _ perform: (Renderer)->Void) {
-        let oldOffset = (self.xOffset, self.yOffset)
-        (self.xOffset, self.yOffset) = (oldOffset.0 + offset.x, oldOffset.1 + offset.y)
-        perform(self)
-        (self.xOffset, self.yOffset) = oldOffset
-    }
 }
