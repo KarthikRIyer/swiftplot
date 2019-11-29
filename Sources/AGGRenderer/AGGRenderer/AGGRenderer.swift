@@ -4,33 +4,19 @@ import SwiftPlot
 
 public class AGGRenderer: Renderer{
 
-    var initialized = false
-    public var xOffset: Float = 0
-    public var yOffset: Float = 0
-    public var plotDimensions: PlotDimensions {
+    public var offset = zeroPoint
+    public var imageSize: Size {
         willSet {
-            if (initialized) {
-                agg_object = initializePlot(newValue.frameWidth,
-                                            newValue.frameHeight,
-                                            newValue.subWidth,
-                                            newValue.subHeight,
-                                            fontPath)
-            }
+            agg_object = initializePlot(newValue.width, newValue.height, fontPath)
         }
     }
     var agg_object: UnsafeRawPointer
     var fontPath = ""
 
     public init(width w: Float = 1000, height h: Float = 660, fontPath: String = "") {
-        initialized = false
         self.fontPath = fontPath
-        plotDimensions = PlotDimensions(frameWidth: w, frameHeight: h)
-        agg_object = initializePlot(plotDimensions.frameWidth,
-                                    plotDimensions.frameHeight,
-                                    plotDimensions.subWidth,
-                                    plotDimensions.subHeight,
-                                    fontPath)
-        initialized = true
+        self.imageSize = Size(width: w, height: h)
+        self.agg_object = initializePlot(imageSize.width, imageSize.height, fontPath)
     }
     
     func getPoints(from rect: Rect) -> (tL: Point, tR: Point, bL: Point, bR: Point) {

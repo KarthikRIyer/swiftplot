@@ -1,6 +1,6 @@
 namespace CPPAGGRenderer{
 
-  const void * initializePlot(float w, float h, float subW, float subH, const char* fontPath);
+  const void * initializePlot(float w, float h, const char* fontPath);
 
   void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a, const void *object);
 

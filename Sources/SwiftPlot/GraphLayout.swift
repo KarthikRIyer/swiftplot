@@ -107,6 +107,9 @@ public struct GraphLayout {
         }
         if let titleLabel = sizes.titleSize {
             borderRect.size.height -= (titleLabel.height + 2 * Self.titleLabelPadding)
+        } else {
+            // Add a space to the top when there is no title.
+            borderRect.size.height -= Self.titleLabelPadding
         }
         borderRect.contract(by: plotBorder.thickness)
         // Give space for the markers.

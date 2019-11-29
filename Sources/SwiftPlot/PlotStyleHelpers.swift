@@ -15,7 +15,7 @@ public struct PlotTitle {
     public var title = ""
     public var color = Color.black
     public var size: Float = 20
-    public init(_ title: String = "TITLE") {
+    public init(_ title: String = "") {
       self.title = title
     }
 }

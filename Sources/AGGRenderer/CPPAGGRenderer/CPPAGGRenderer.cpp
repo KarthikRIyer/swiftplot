@@ -46,11 +46,6 @@ const Color blue_light(0.529,0.808,0.922,1.0);
 const Color white(1.0,1.0,1.0,1.0);
 const Color white_translucent(1.0,1.0,1.0,0.8);
 
-int frame_width = 1000;
-int frame_height = 660;
-int sub_width = 1000;
-int sub_height = 660;
-
 namespace CPPAGGRenderer{
 
   void write_bmp(const unsigned char* buf, unsigned width, unsigned height, const char* file_name){
@@ -100,21 +95,21 @@ namespace CPPAGGRenderer{
     string fontPath = "";
 
     unsigned char* buffer = NULL;
+    int frame_width = 1000;
+    int frame_height = 660;
 
     agg::int8u*           m_pattern;
     agg::rendering_buffer m_pattern_rbuf;
     renderer_base_pre rb_pre;
 
-    Plot(float width, float height, float subW, float subH, const char* fontPathPtr) :
+    Plot(float width, float height, const char* fontPathPtr) :
     m_feng(),
     m_fman(m_feng),
     m_curves(m_fman.path_adaptor()),
-    m_contour(m_curves)
+    m_contour(m_curves),
+    frame_width(width),
+    frame_height(height)
     {
-      frame_width = width;
-      frame_height = height;
-      sub_width = subW;
-      sub_height = subH;
       if (buffer != NULL) {
         delete[] buffer;
       }
@@ -493,9 +488,9 @@ namespace CPPAGGRenderer{
 
   };
 
-  const void * initializePlot(float w, float h, float subW, float subH, const char* fontPath){
-    Plot *plot = new Plot(w, h, subW, subH, fontPath);
-    memset(plot->buffer, 255, frame_width*frame_height*3);
+  const void * initializePlot(float w, float h, const char* fontPath){
+    Plot *plot = new Plot(w, h, fontPath);
+    memset(plot->buffer, 255, plot->frame_width*plot->frame_height*3);
     return (void *)plot;
   }
 

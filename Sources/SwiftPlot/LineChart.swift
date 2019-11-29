@@ -304,42 +304,46 @@ extension LineGraph: HasGraphLayout {
         }
 
         var xM = originPrimary.x
-        while xM<=size.width {
-            if(xM+inc2Primary<0.0 || xM<0.0) {
-                xM = xM+inc2Primary
-                continue
+        if size.width > 0 {
+            while xM<=size.width {
+                if(xM+inc2Primary<0.0 || xM<0.0) {
+                    xM = xM+inc2Primary
+                    continue
+                }
+                markers.xMarkers.append(xM)
+                markers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
+                xM = xM + inc2Primary
             }
-            markers.xMarkers.append(xM)
-            markers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
-            xM = xM + inc2Primary
-        }
 
-        xM = originPrimary.x - inc2Primary
-        while xM>0.0 {
-            if (xM > size.width) {
+            xM = originPrimary.x - inc2Primary
+            while xM>0.0 {
+                if (xM > size.width) {
+                    xM = xM - inc2Primary
+                    continue
+                }
+                markers.xMarkers.append(xM)
+                markers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
                 xM = xM - inc2Primary
-                continue
             }
-            markers.xMarkers.append(xM)
-            markers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
-            xM = xM - inc2Primary
         }
 
         var yM = originPrimary.y
-        while yM<=size.height {
-            if(yM+inc1Primary<0.0 || yM<0.0){
+        if size.height > 0 {
+            while yM<=size.height {
+                if(yM+inc1Primary<0.0 || yM<0.0){
+                    yM = yM + inc1Primary
+                    continue
+                }
+                markers.yMarkers.append(yM)
+                markers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
                 yM = yM + inc1Primary
-                continue
             }
-            markers.yMarkers.append(yM)
-            markers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
-            yM = yM + inc1Primary
-        }
-        yM = originPrimary.y - inc1Primary
-        while yM>0.0 {
-            markers.yMarkers.append(yM)
-            markers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
-            yM = yM - inc1Primary
+            yM = originPrimary.y - inc1Primary
+            while yM>0.0 {
+                markers.yMarkers.append(yM)
+                markers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
+                yM = yM - inc1Primary
+            }
         }
 
 
@@ -352,7 +356,7 @@ extension LineGraph: HasGraphLayout {
             for j in 0..<primaryAxis.series[i].count {
                 let scaledPair = Pair<T,U>(((primaryAxis.series[i])[j].x)*T(scaleXInvPrimary) + T(originPrimary.x),
                                            ((primaryAxis.series[i])[j].y)*U(scaleYInvPrimary) + U(originPrimary.y))
-                if (0...size.width).contains(Float(scaledPair.x)) && (0...size.height).contains(Float(scaledPair.y)) {
+                if Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= size.width && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= size.height {
                     primaryAxis.series[i].scaledValues.append(scaledPair)
                 }
             }

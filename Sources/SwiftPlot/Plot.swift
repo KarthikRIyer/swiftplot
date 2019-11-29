@@ -14,14 +14,14 @@ extension Plot {
     
     // call functions to draw the graph
     public func drawGraphAndOutput(fileName name: String = "swiftplot_graph", renderer: Renderer) throws {
-        renderer.plotDimensions = PlotDimensions(frameWidth: plotSize.width, frameHeight: plotSize.height)
+        renderer.imageSize = plotSize
         drawGraph(renderer: renderer)
         try saveImage(fileName: name, renderer: renderer)
     }
 
     public func drawGraphOutput(fileName name: String = "swiftplot_graph",
                                 renderer: Renderer) throws {
-        renderer.plotDimensions = PlotDimensions(frameWidth: plotSize.width, frameHeight: plotSize.height)
+        renderer.imageSize = plotSize
         try renderer.drawOutput(fileName: name)
     }
     
