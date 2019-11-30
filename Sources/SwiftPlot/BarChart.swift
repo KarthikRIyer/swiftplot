@@ -106,6 +106,7 @@ extension BarGraph: HasGraphLayout {
         var maximumX: U = U(0)
         var minimumX: U = U(0)
 
+        guard series.count > 0 else { return }
         if (graphOrientation == .vertical) {
             barWidth = Int(round(size.width/Float(series.count)))
             maximumY = maxY(points: series.values)
