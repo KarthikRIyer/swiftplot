@@ -185,11 +185,11 @@ extension Renderer {
         return getTextLayoutSize(text: text, textSize: size).width
     }
     
-    func withAdditionalOffset(_ offset: Point, _ perform: (Self)->Void) {
+    public func withAdditionalOffset(_ offset: Point, _ perform: (Self) throws -> Void) rethrows {
         let oldOffset = (self.xOffset, self.yOffset)
         self.xOffset += offset.x
         self.yOffset += offset.y
-        perform(self)
+        try perform(self)
         (self.xOffset, self.yOffset) = oldOffset
     }
 }

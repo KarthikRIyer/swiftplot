@@ -5,30 +5,24 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     let MAX_DIV: Float = 50
 
-    public var layout: GraphLayout
-
+    public var layout = GraphLayout()
+    
     public var plotLineThickness: Float = 1.5
 
     var primaryAxis = Axis<T,U>()
     var secondaryAxis: Axis<T,U>? = nil
 
     public convenience init(points : [Pair<T,U>],
-                width: Float = 1000,
-                height: Float = 660,
                 enablePrimaryAxisGrid: Bool = false,
                 enableSecondaryAxisGrid: Bool = false){
-        self.init(width: width, height: height,
-                  enablePrimaryAxisGrid: enablePrimaryAxisGrid, enableSecondaryAxisGrid: enableSecondaryAxisGrid)
+        self.init(enablePrimaryAxisGrid: enablePrimaryAxisGrid, enableSecondaryAxisGrid: enableSecondaryAxisGrid)
 
         let s = Series<T,U>(values: points,label: "Plot")
         primaryAxis.series.append(s)
     }
 
-    public init(width: Float = 1000,
-                height: Float = 660,
-                enablePrimaryAxisGrid: Bool = false,
+    public init(enablePrimaryAxisGrid: Bool = false,
                 enableSecondaryAxisGrid: Bool = false){
-        layout = GraphLayout(size: Size(width: width, height: height))
         self.enablePrimaryAxisGrid = enablePrimaryAxisGrid
         self.enableSecondaryAxisGrid = enableSecondaryAxisGrid
     }

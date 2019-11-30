@@ -1,31 +1,37 @@
-public protocol Plot {
 
-    var plotSize: Size { get set }
-    
-    var legendLabels: [(String, LegendIcon)] { get }
-    
-    func drawGraph(renderer: Renderer)
+/// An object which is able to draw itself in a Renderer.
+public protocol Plot {
+    /// Draws to the given renderer in-memory.
+    /// - parameters:
+    ///     - size: The overall size the plot has to lay out and draw in.
+    ///     - renderer: The renderer. The plot should draw between
+    ///       `(0...size.width)` on the X-axis and
+    ///       `(0...size.height)` on the Y-axis.
+    func drawGraph(size: Size, renderer: Renderer)
 }
 
 extension Plot {
-    public var legendLabels: [(String, LegendIcon)] {
-        return []
+   
+    /// Draws to the given renderer in-memory at a default size.
+    func drawGraph(renderer: Renderer) {
+        drawGraph(size: Size(width: 1000, height: 660),
+                  renderer: renderer)
     }
     
-    // call functions to draw the graph
-    public func drawGraphAndOutput(fileName name: String = "swiftplot_graph", renderer: Renderer) throws {
-        renderer.imageSize = plotSize
-        drawGraph(renderer: renderer)
-        try saveImage(fileName: name, renderer: renderer)
-    }
-
-    public func drawGraphOutput(fileName name: String = "swiftplot_graph",
-                                renderer: Renderer) throws {
-        renderer.imageSize = plotSize
+    /// Draws and saves the graph to the named file.
+    /// - note: This function changes the `imageSize` of the `Renderer` it is given.
+    public func drawGraphAndOutput(size: Size = Size(width: 1000, height: 660),
+                                   fileName name: String = "swiftplot_graph", renderer: Renderer) throws {
+        renderer.imageSize = size
+        drawGraph(size: size, renderer: renderer)
         try renderer.drawOutput(fileName: name)
     }
-    
-    func saveImage(fileName name: String, renderer: Renderer) throws {
+
+    /// Saves the already-drawn graph to the named file.
+    /// - note: This function changes the `imageSize` of the `Renderer` it is given.
+    public func drawGraphOutput(size: Size = Size(width: 1000, height: 660),
+                                fileName name: String = "swiftplot_graph", renderer: Renderer) throws {
+        renderer.imageSize = size
         try renderer.drawOutput(fileName: name)
     }
 }

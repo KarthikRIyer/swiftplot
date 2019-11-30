@@ -14,23 +14,27 @@ extension ScatterPlotTests {
 
     let fileName = "_20_scatter_plot"
  
-    let scatterPlot = ScatterPlot<Float,Float>(width: 1000, height: 1000, enableGrid: true)
+    let scatterPlot = ScatterPlot<Float,Float>(enableGrid: true)
     scatterPlot.addSeries(scatterplot_x, scatterplot_y, label: "Plot 1", startColor: .gold, endColor: .blue, scatterPattern: .circle)
     scatterPlot.addSeries(scatterplot_x, scatterplot_y1, label: "Plot 2", color: .green, scatterPattern: .star)
     scatterPlot.plotTitle = PlotTitle("SCATTER PLOT")
     scatterPlot.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
     
+    let imageSize = Size(width: 1000, height: 1000)
     let svg_renderer = SVGRenderer()
-    try scatterPlot.drawGraphAndOutput(fileName: self.svgOutputDirectory+fileName,
+    try scatterPlot.drawGraphAndOutput(size: imageSize,
+                                       fileName: self.svgOutputDirectory+fileName,
                                        renderer: svg_renderer)
     #if canImport(AGGRenderer)
     let agg_renderer = AGGRenderer()
-    try scatterPlot.drawGraphAndOutput(fileName: self.aggOutputDirectory+fileName,
+    try scatterPlot.drawGraphAndOutput(size: imageSize,
+                                       fileName: self.aggOutputDirectory+fileName,
                                        renderer: agg_renderer)
     #endif
     #if canImport(QuartzRenderer)
     let quartz_renderer = QuartzRenderer()
-    try scatterPlot.drawGraphAndOutput(fileName: self.coreGraphicsOutputDirectory+fileName,
+    try scatterPlot.drawGraphAndOutput(size: imageSize,
+                                       fileName: self.coreGraphicsOutputDirectory+fileName,
                                        renderer: quartz_renderer)
     #endif
   }

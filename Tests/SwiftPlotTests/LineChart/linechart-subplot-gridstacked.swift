@@ -17,7 +17,7 @@ extension LineChartTests {
     let x:[Float] = [0,100,263,489]
     let y:[Float] = [0,320,310,170]
     
-    let subPlot = SubPlot(stackPattern: .grid(rows: 2, columns: 2))
+    let subPlot = SubPlot(layout: .grid(rows: 2, columns: 2))
     
     let lineGraph1 = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
     lineGraph1.addSeries(x, y, label: "Plot 1", color: .lightBlue)

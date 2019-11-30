@@ -7,7 +7,7 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     let sqrt3: Float = sqrt(3)
 
-    public var layout: GraphLayout
+    public var layout = GraphLayout()
     
     // public var plotLineThickness: Float = 3
     public var scatterPatternSize: Float = 10
@@ -17,18 +17,13 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
     var scaleY: Float = 1
 
     public convenience init(points p: [Pair<T,U>],
-                            width: Float = 1000,
-                            height: Float = 660,
                             enableGrid: Bool = false){
-        self.init(width: width, height: height, enableGrid: enableGrid)
+        self.init(enableGrid: enableGrid)
         let s = Series<T,U>(values: p,label: "Plot")
         series.append(s)
     }
 
-    public init(width: Float = 1000,
-                height: Float = 660,
-                enableGrid: Bool = false){
-        layout = GraphLayout(size: Size(width: width, height: height))
+    public init(enableGrid: Bool = false){
         self.enableGrid = enableGrid
     }
     

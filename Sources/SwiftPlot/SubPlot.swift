@@ -6,17 +6,12 @@ public class SubPlot: Plot {
         case grid(rows: Int, columns: Int)
     }
     
-    public var plotSize: Size
-    public var plots: [Plot] = []
-    public var stackingPattern: StackPattern = .vertical
+    public var plots: [Plot]
+    public var layout: StackPattern
 
-    var plotDimensions: PlotDimensions = PlotDimensions()
-
-    public init(width: Float = 1000,
-                height: Float = 660,
-                stackPattern: StackPattern = .vertical) {
-        plotSize = Size(width: width, height: height)
-        stackingPattern = stackPattern
+    public init(layout: StackPattern = .vertical, plots: [Plot] = []) {
+        self.layout = layout
+        self.plots  = plots
     }
 
     struct LayoutPlan {
@@ -24,11 +19,11 @@ public class SubPlot: Plot {
         var plotLocations = [Point]()
     }
     
-    func calculateLayoutPlan() -> LayoutPlan {
+    func calculateLayoutPlan(plotSize: Size) -> LayoutPlan {
         var results = LayoutPlan()
         let offset: Point
         let columns: Int
-        switch stackingPattern {
+        switch layout {
         case .vertical:
             results.subplotSize = Size(width: plotSize.width, height: plotSize.height/Float(plots.count))
             columns = 1
@@ -53,13 +48,11 @@ public class SubPlot: Plot {
         return results
     }
     
-    public func drawGraph(renderer: Renderer) {
-        let layoutPlan = calculateLayoutPlan()
+    public func drawGraph(size: Size, renderer: Renderer) {
+        let layoutPlan = calculateLayoutPlan(plotSize: size)
         for index in 0..<plots.count {
             renderer.withAdditionalOffset(layoutPlan.plotLocations[index]) { renderer in
-                var plot: Plot = plots[index]
-                plot.plotSize = layoutPlan.subplotSize
-                plot.drawGraph(renderer: renderer)
+                plots[index].drawGraph(size: layoutPlan.subplotSize, renderer: renderer)
             }
         }
     }

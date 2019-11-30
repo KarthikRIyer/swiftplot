@@ -5,7 +5,7 @@ public class Histogram<T:FloatConvertible>: Plot {
 
     let MAX_DIV: Float = 50
 
-    public var layout: GraphLayout
+    public var layout = GraphLayout()
 
     public var strokeWidth: Float = 2
     
@@ -18,11 +18,8 @@ public class Histogram<T:FloatConvertible>: Plot {
     var xMargin: Float = 5
     var origin = zeroPoint
 
-    public init(width: Float = 1000,
-                height: Float = 660,
-                isNormalized: Bool = false,
+    public init(isNormalized: Bool = false,
                 enableGrid: Bool = false){
-        self.layout = GraphLayout(size: Size(width: width, height: height))
         self.isNormalized = isNormalized
         self.enableGrid = enableGrid
     }
