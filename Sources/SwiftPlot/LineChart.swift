@@ -89,25 +89,19 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
                             minX: T,
                             maxX: T,
                             numberOfSamples: Int = 400,
+                            clampY: ClosedRange<U>? = nil,
                             label: String,
                             color: Color = Color.lightBlue,
                             axisType: Axis<T,U>.Location = .primaryAxis) {
-        var x = [T]()
-        var y = [U]()
+        
         let step = Float(maxX - minX)/Float(numberOfSamples)
-        var r: Float = 0.0
-        for i in stride(from: Float(minX), through: Float(maxX), by: step) {
-            r = Float(function(T(i)))
-            if (r.isNaN || r.isInfinite) {
-                continue
+        let points = stride(from: Float(minX), through: Float(maxX), by: step).compactMap { i -> Pair<T,U>? in
+            let result = function(T(i))
+            guard Float(result).isFinite else { return nil }
+            if let clampY = clampY, !clampY.contains(result) {
+                return nil
             }
-            x.append(T(i))
-            y.append(clamp(U(r), minValue: U(-1.0/step), maxValue: U(1.0/step)))
-            // y.append(r)
-        }
-        var points = [Pair<T,U>]()
-        for i in 0..<x.count {
-            points.append(Pair<T,U>(x[i], y[i]))
+            return Pair(T(i), result)
         }
         let s = Series<T,U>(values: points, label: label, color: color)
         addSeries(s, axisType: axisType)

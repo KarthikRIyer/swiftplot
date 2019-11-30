@@ -23,6 +23,7 @@ extension LineChartTests {
                           minX: -5.0,
                           maxX: 5.0,
                           numberOfSamples: 400,
+                          clampY: -50...50,
                           label: "Function",
                           color: .orange)
     lineGraph.plotTitle = PlotTitle("FUNCTION")
