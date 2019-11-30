@@ -17,7 +17,7 @@ extension LineChartTests {
     let x:[Float] = [10,100,263,489]
     let y:[Float] = [10,120,500,800]
 
-    var plots = [Plot]()
+    let subPlot = SubPlot(stackPattern: .vertical)
     
     let lineGraph1 = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
     lineGraph1.addSeries(x, y, label: "Plot 1", color: .lightBlue)
@@ -31,25 +31,20 @@ extension LineChartTests {
     lineGraph2.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
     lineGraph2.plotLineThickness = 3.0
     
-    plots.append(lineGraph1)
-    plots.append(lineGraph2)
-    
-    let subPlot = SubPlot(numberOfPlots: 2, stackPattern: .verticallyStacked)
+    subPlot.plots = [lineGraph1, lineGraph2]
+
     let svg_renderer = SVGRenderer()
-    try subPlot.draw(plots: plots,
-                     renderer: svg_renderer,
-                     fileName: self.svgOutputDirectory+fileName)
+    try subPlot.drawGraphAndOutput(fileName: self.svgOutputDirectory+fileName,
+                                   renderer: svg_renderer)
     #if canImport(AGGRenderer)
     let agg_renderer = AGGRenderer()
-    try subPlot.draw(plots: plots,
-                     renderer: agg_renderer,
-                     fileName: self.aggOutputDirectory+fileName)
+    try subPlot.drawGraphAndOutput(fileName: self.aggOutputDirectory+fileName,
+                                   renderer: agg_renderer)
     #endif
     #if canImport(QuartzRenderer)
     let quartz_renderer = QuartzRenderer()
-    try subPlot.draw(plots: plots,
-                     renderer: quartz_renderer,
-                     fileName: self.coreGraphicsOutputDirectory+fileName)
+    try subPlot.drawGraphAndOutput(fileName: self.coreGraphicsOutputDirectory+fileName,
+                                   renderer: quartz_renderer)
     #endif
     
   }
