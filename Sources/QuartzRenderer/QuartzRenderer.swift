@@ -56,10 +56,6 @@ public class QuartzRenderer: Renderer {
                                  space: Self.colorSpace,
                                  bitmapInfo: Self.bitmapInfo)!
         self.isExternalContext = false
-        
-        let rect = CGRect(origin: .zero, size: CGSize(imageSize))
-        context.setFillColor(Color.white.cgColor)
-        context.fill(rect)
     }
     
     /// Creates a renderer with the given external context and dimensions..
@@ -67,10 +63,6 @@ public class QuartzRenderer: Renderer {
         self.imageSize = dimensions
         self.context = externalContext
         self.isExternalContext = true
-        
-        let rect = CGRect(origin: .zero, size: CGSize(imageSize))
-        context.setFillColor(Color.white.cgColor)
-        context.fill(rect)
     }
 
     public func drawRect(_ rect: Rect,

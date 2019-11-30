@@ -9,6 +9,7 @@ public struct Color {
         self.b = b
         self.a = a
     }
+    public static let transparent = Color(0, 0, 0, 0)
     public static let black: Color = Color(0.0, 0.0, 0.0, 1.0)
     public static let white: Color = Color(1.0, 1.0, 1.0, 1.0)
     public static let transluscentWhite: Color = Color(1.0, 1.0, 1.0, 0.7)
