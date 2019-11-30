@@ -443,6 +443,7 @@ public class QuartzRenderer: Renderer {
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
+        guard !p.isEmpty else { return }
         for i in 0..<p.count-1 {
             drawLine(startPoint: p[i],
                      endPoint: p[i+1],
@@ -456,6 +457,7 @@ public class QuartzRenderer: Renderer {
     public func drawText(text s: String,
                          location p: Point,
                          textSize size: Float,
+                         color: Color,
                          strokeWidth thickness: Float,
                          angle: Float,
                          isOriginShifted: Bool){
@@ -467,7 +469,8 @@ public class QuartzRenderer: Renderer {
         }
         #if canImport(AppKit)
         let font = NSFont.systemFont(ofSize: CGFloat(size))
-        let attr = [NSAttributedString.Key.font:font,NSAttributedString.Key.foregroundColor:NSColor.black] as CFDictionary
+        let attr = [NSAttributedString.Key.font : font,
+                    .foregroundColor: NSColor(cgColor: color.cgColor) ?? .black] as CFDictionary
         let cfstring:CFString = s as NSString
         let text = CFAttributedStringCreate(nil, cfstring, attr)
         let line = CTLineCreateWithAttributedString(text!)
@@ -477,7 +480,8 @@ public class QuartzRenderer: Renderer {
         CTLineDraw(line, context)
         #elseif canImport(UIKit)
         let font = UIFont.systemFont(ofSize: CGFloat(size))
-        let attr = [NSAttributedString.Key.font:font,NSAttributedString.Key.foregroundColor:UIColor.black] as CFDictionary
+        let attr = [NSAttributedString.Key.font:font,
+                    .foregroundColor: UIColor(cgColor: color.cgColor) ?? .black] as CFDictionary
         let cfstring:CFString = s as NSString
         let text = CFAttributedStringCreate(nil, cfstring, attr)
         let line = CTLineCreateWithAttributedString(text!)

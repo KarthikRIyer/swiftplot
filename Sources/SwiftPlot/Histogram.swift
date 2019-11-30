@@ -5,42 +5,36 @@ public class Histogram<T:FloatConvertible>: Plot {
 
     let MAX_DIV: Float = 50
 
+    public var layout: GraphLayout
+
     public var xOffset: Float = 0
     public var yOffset: Float = 0
-    
-    public var plotTitle: PlotTitle? = nil
-    public var plotLabel: PlotLabel? = nil
-    public var plotLegend: PlotLegend = PlotLegend()
-    public var plotBorder: PlotBorder = PlotBorder()
-    public var plotDimensions: PlotDimensions {
-        didSet {
-            calcBorderAndLegend()
-        }
-    }
+        
     public var strokeWidth: Float = 2
-    public var enableGrid = true
-    public var gridLineThickness: Float = 0.5
-    public var markerTextSize: Float = 12
-    public var gridColor: Color = .gray
-
-    var scaleY: Float = 1
-    var scaleX: Float = 1
-    var plotMarkers: PlotMarkers = PlotMarkers()
+    
     var histogramSeries = HistogramSeries<T>()
     var histogramStackSeries = [HistogramSeries<T>]()
+    var isNormalized = false
+    var scaleY: Float = 1
+    var scaleX: Float = 1
     var barWidth: Float = 0
     var xMargin: Float = 5
-    var isNormalized = false
     var origin = zeroPoint
 
     public init(width: Float = 1000,
                 height: Float = 660,
                 isNormalized: Bool = false,
                 enableGrid: Bool = false){
-        plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
+        self.layout = GraphLayout(plotDimensions: PlotDimensions(frameWidth: width, frameHeight: height))
         self.isNormalized = isNormalized
         self.enableGrid = enableGrid
     }
+    
+    public var enableGrid: Bool {
+        get { layout.enablePrimaryAxisGrid }
+        set { layout.enablePrimaryAxisGrid = newValue }
+    }
+    
     public func addSeries(_ s: HistogramSeries<T>){
         histogramSeries = s
     }
@@ -141,87 +135,17 @@ public class Histogram<T:FloatConvertible>: Plot {
 }
 
 // extension containing drawing logic
-extension Histogram {
+extension Histogram: HasGraphLayout {
 
-    // call functions to draw the graph
-    public func drawGraphAndOutput(fileName name: String = "swift_plot_histogram", renderer: Renderer){
-        renderer.xOffset = xOffset
-        renderer.yOffset = yOffset
-        renderer.plotDimensions = plotDimensions
-        calcBorderAndLegend()
-        calcLabelLocations(renderer: renderer)
-        calcMarkerLocAndScalePts(renderer: renderer)
-        drawGrid(renderer: renderer)
-        drawBorder(renderer: renderer)
-        drawMarkers(renderer: renderer)
-        drawPlots(renderer: renderer)
-        drawTitle(renderer: renderer)
-        drawLabels(renderer: renderer)
-        drawLegends(renderer: renderer)
-        saveImage(fileName: name, renderer: renderer)
-    }
-
-    public func drawGraph(renderer: Renderer){
-        renderer.xOffset = xOffset
-        renderer.yOffset = yOffset
-        calcBorderAndLegend()
-        calcLabelLocations(renderer: renderer)
-        calcMarkerLocAndScalePts(renderer: renderer)
-        drawGrid(renderer: renderer)
-        drawBorder(renderer: renderer)
-        drawMarkers(renderer: renderer)
-        drawPlots(renderer: renderer)
-        drawTitle(renderer: renderer)
-        drawLabels(renderer: renderer)
-        drawLegends(renderer: renderer)
-    }
-
-    public func drawGraphOutput(fileName name: String = "swift_plot_histogram", renderer: Renderer){
-        renderer.plotDimensions = plotDimensions
-        renderer.drawOutput(fileName: name)
+    public var legendLabels: [(String, LegendIcon)] {
+        var legendSeries = histogramStackSeries.map { ($0.label, LegendIcon.square($0.color)) }
+        legendSeries.insert((histogramSeries.label, .square(histogramSeries.color)), at: 0)
+        return legendSeries
     }
 
     // functions implementing plotting logic
-    func calcLabelLocations(renderer: Renderer){
-        if (plotLabel != nil) {
-            let xWidth: Float = renderer.getTextWidth(text: plotLabel!.xLabel,
-                                                      textSize: plotLabel!.labelSize)
-            let yWidth: Float = renderer.getTextWidth(text: plotLabel!.yLabel,
-                                                      textSize: plotLabel!.labelSize)
-            plotLabel!.xLabelLocation = Point(
-                plotBorder.rect.midX - xWidth * 0.5,
-                plotBorder.rect.minY - plotLabel!.labelSize - 0.05 * plotDimensions.graphHeight
-            )
-            plotLabel!.yLabelLocation = Point(
-                plotBorder.rect.origin.x - plotLabel!.labelSize - 0.05 * plotDimensions.graphWidth,
-                plotBorder.rect.midY - yWidth
-            )
-        }
-        if (plotTitle != nil) {
-            let titleWidth: Float = renderer.getTextWidth(text: plotTitle!.title,
-                                                          textSize: plotTitle!.titleSize)
-            plotTitle!.titleLocation = Point(
-              plotBorder.rect.midX - titleWidth * 0.5,
-              plotBorder.rect.maxY + plotTitle!.titleSize * 0.5
-            )
-        }
-    }
-    
-    func calcBorderAndLegend() {
-        plotBorder.rect.origin.x = plotDimensions.subWidth*0.1
-        plotBorder.rect.origin.y = plotDimensions.subHeight*0.9
-        plotBorder.rect.size.width = plotDimensions.subWidth*0.8
-        plotBorder.rect.size.height = plotDimensions.subHeight * -0.8
-        plotBorder.rect = plotBorder.rect.normalized
+    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, renderer: Renderer) {
         
-        plotLegend.legendTopLeft = Point(plotBorder.rect.minX + Float(20),
-                                         plotBorder.rect.maxY - Float(20))
-    }
-
-    func calcMarkerLocAndScalePts(renderer: Renderer){
-
-        plotMarkers.markerTextSize = markerTextSize
-
         var maximumY = Float(histogramSeries.maximumFrequency)
         let minimumY = Float(0)
         var maximumX: T = histogramSeries.maximumX!
@@ -257,13 +181,6 @@ extension Histogram {
         }
 
         barWidth = round((plotDimensions.graphWidth - Float(2.0*xMargin))/Float(histogramSeries.bins))
-
-        plotMarkers.xMarkers = [Point]()
-        plotMarkers.yMarkers = [Point]()
-        plotMarkers.xMarkersTextLocation = [Point]()
-        plotMarkers.yMarkersTextLocation = [Point]()
-        plotMarkers.xMarkersText = [String]()
-        plotMarkers.xMarkersText = [String]()
 
         origin = Point((plotDimensions.graphWidth-(2.0*xMargin))/Float(maximumX-minimumX)*Float(T(-1)*minimumX), 0.0)
 
@@ -321,11 +238,8 @@ extension Histogram {
                 yM = yM + inc1
                 continue
             }
-            let p: Point = Point(0, yM)
-            plotMarkers.yMarkers.append(p)
-            let text_p: Point = Point(-(renderer.getTextWidth(text: "\(roundToN(scaleY*(yM-origin.y), yIncRound))", textSize: plotMarkers.markerTextSize)+8), yM - 4)
-            plotMarkers.yMarkersTextLocation.append(text_p)
-            plotMarkers.yMarkersText.append("\(roundToN(scaleY*(yM-origin.y), yIncRound))")
+            markers.yMarkers.append(yM)
+            markers.yMarkersText.append("\(roundToN(scaleY*(yM-origin.y), yIncRound))")
             yM = yM + inc1
         }
 
@@ -349,12 +263,8 @@ extension Histogram {
         let scaleXInv = 1.0/scaleX
         let xIncrement = inc2*scaleX
         for i in stride(from: Float(minimumX), through: Float(maximumX), by: xIncrement)  {
-            let p: Point = Point((i-Float(minimumX))*scaleXInv + xM , 0)
-            plotMarkers.xMarkers.append(p)
-            let textWidth: Float = renderer.getTextWidth(text: "\(i)", textSize: plotMarkers.markerTextSize)
-            let text_p: Point = Point((i - Float(minimumX))*scaleXInv - textWidth/Float(2), -2.0*plotMarkers.markerTextSize)
-            plotMarkers.xMarkersTextLocation.append(text_p)
-            plotMarkers.xMarkersText.append("\(i)")
+            markers.xMarkers.append((i-Float(minimumX))*scaleXInv + xM)
+            markers.xMarkersText.append("\(i)")
         }
 
         // scale points to be plotted according to plot size
@@ -373,75 +283,7 @@ extension Histogram {
     }
 
     //functions to draw the plot
-    func drawBorder(renderer: Renderer){
-        renderer.drawRect(plotBorder.rect,
-                          strokeWidth: plotBorder.borderThickness,
-                          strokeColor: Color.black, isOriginShifted: false)
-    }
-
-    func drawGrid(renderer: Renderer) {
-        if (enableGrid) {
-            for index in 0..<plotMarkers.xMarkers.count {
-                let p1 = Point(plotMarkers.xMarkers[index].x, 0)
-                let p2 = Point(plotMarkers.xMarkers[index].x, plotDimensions.graphHeight)
-                renderer.drawLine(startPoint: p1,
-                                  endPoint: p2,
-                                  strokeWidth: gridLineThickness,
-                                  strokeColor: gridColor,
-                                  isDashed: false,
-                                  isOriginShifted: true)
-            }
-            for index in 0..<plotMarkers.yMarkers.count {
-                let p1 = Point(0, plotMarkers.yMarkers[index].y)
-                let p2 = Point(plotDimensions.graphWidth, plotMarkers.yMarkers[index].y)
-                renderer.drawLine(startPoint: p1,
-                                  endPoint: p2,
-                                  strokeWidth: gridLineThickness,
-                                  strokeColor: gridColor,
-                                  isDashed: false,
-                                  isOriginShifted: true)
-            }
-        }
-    }
-
-    func drawMarkers(renderer: Renderer) {
-        for index in 0..<plotMarkers.xMarkers.count {
-            let p1: Point = Point(plotMarkers.xMarkers[index].x, -6)
-            let p2: Point = Point(plotMarkers.xMarkers[index].x, 0)
-            renderer.drawLine(startPoint: p1,
-                              endPoint: p2,
-                              strokeWidth: plotBorder.borderThickness,
-                              strokeColor: Color.black,
-                              isDashed: false,
-                              isOriginShifted: true)
-            renderer.drawText(text: plotMarkers.xMarkersText[index],
-                              location: plotMarkers.xMarkersTextLocation[index],
-                              textSize: plotMarkers.markerTextSize,
-                              strokeWidth: 0.7,
-                              angle: 0,
-                              isOriginShifted: true)
-        }
-
-        for index in 0..<plotMarkers.yMarkers.count {
-            let p1: Point = Point(-6, plotMarkers.yMarkers[index].y)
-            let p2: Point = Point(0, plotMarkers.yMarkers[index].y)
-            renderer.drawLine(startPoint: p1,
-                              endPoint: p2,
-                              strokeWidth: plotBorder.borderThickness,
-                              strokeColor: Color.black,
-                              isDashed: false,
-                              isOriginShifted: true)
-            renderer.drawText(text: plotMarkers.yMarkersText[index],
-                              location: plotMarkers.yMarkersTextLocation[index],
-                              textSize: plotMarkers.markerTextSize,
-                              strokeWidth: 0.7,
-                              angle: 0,
-                              isOriginShifted: true)
-        }
-
-    }
-
-    func drawPlots(renderer: Renderer) {
+    public func drawData(markers: PlotMarkers, renderer: Renderer) {
         var xM = Float(xMargin)
         switch histogramSeries.histogramSeriesOptions.histogramType {
         case .bar:
@@ -557,79 +399,4 @@ extension Histogram {
             }
         }
     }
-
-    func drawTitle(renderer: Renderer) {
-        guard let plotTitle = self.plotTitle else { return }
-        renderer.drawText(text: plotTitle.title,
-                          location: plotTitle.titleLocation,
-                          textSize: plotTitle.titleSize,
-                          strokeWidth: 1.2,
-                          angle: 0,
-                          isOriginShifted: false)
-    }
-
-    func drawLabels(renderer: Renderer) {
-        guard let plotLabel = self.plotLabel else { return }
-        renderer.drawText(text: plotLabel.xLabel,
-                          location: plotLabel.xLabelLocation,
-                          textSize: plotLabel.labelSize,
-                          strokeWidth: 1.2,
-                          angle: 0,
-                          isOriginShifted: false)
-        renderer.drawText(text: plotLabel.yLabel,
-                          location: plotLabel.yLabelLocation,
-                          textSize: plotLabel.labelSize,
-                          strokeWidth: 1.2,
-                          angle: 90,
-                          isOriginShifted: false)
-    }
-
-    func drawLegends(renderer: Renderer) {
-        var maxWidth: Float = 0
-        var legendSeries = histogramStackSeries
-        legendSeries.insert(histogramSeries, at: 0)
-        for s in legendSeries {
-            let w = renderer.getTextWidth(text: s.label, textSize: plotLegend.legendTextSize)
-            if (w > maxWidth) {
-                maxWidth = w
-            }
-        }
-        plotLegend.legendWidth  = maxWidth + 3.5*plotLegend.legendTextSize
-        plotLegend.legendHeight = (Float(histogramStackSeries.count + 1)*2.0 + 1.0)*plotLegend.legendTextSize
-
-        let legendRect = Rect(
-            origin: plotLegend.legendTopLeft,
-            size: Size(width: plotLegend.legendWidth, height: -plotLegend.legendHeight)
-        ).normalized
-        renderer.drawSolidRectWithBorder(legendRect,
-                                         strokeWidth: plotBorder.borderThickness,
-                                         fillColor: Color.transluscentWhite,
-                                         borderColor: Color.black,
-                                         isOriginShifted: false)
-
-        for i in 0..<legendSeries.count {
-            let seriesIcon = Rect(
-                origin: Point(legendRect.origin.x + plotLegend.legendTextSize,
-                              legendRect.maxY - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize),
-                size: Size(width: plotLegend.legendTextSize, height: -plotLegend.legendTextSize)
-            )
-            renderer.drawSolidRect(seriesIcon,
-                                   fillColor: legendSeries[i].color,
-                                   hatchPattern: .none,
-                                   isOriginShifted: false)
-            let p: Point = Point(seriesIcon.maxX + plotLegend.legendTextSize, seriesIcon.minY)
-            renderer.drawText(text: legendSeries[i].label,
-                              location: p,
-                              textSize: plotLegend.legendTextSize,
-                              strokeWidth: 1.2,
-                              angle: 0,
-                              isOriginShifted: false)
-        }
-
-    }
-
-    func saveImage(fileName name: String, renderer: Renderer) {
-        renderer.drawOutput(fileName: name)
-    }
-
 }

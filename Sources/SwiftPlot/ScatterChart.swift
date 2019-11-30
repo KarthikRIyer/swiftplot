@@ -7,47 +7,37 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     let sqrt3: Float = sqrt(3)
 
+    public var layout: GraphLayout
+
     public var xOffset: Float = 0
     public var yOffset: Float = 0
-
-    public var plotTitle: PlotTitle? = nil
-    public var plotLabel: PlotLabel? = nil
-    public var plotLegend: PlotLegend = PlotLegend()
-    public var plotBorder: PlotBorder = PlotBorder()
-    public var plotDimensions: PlotDimensions {
-        didSet {
-            calcBorderAndLegend()
-        }
-    }
+    
     // public var plotLineThickness: Float = 3
     public var scatterPatternSize: Float = 10
-    public var markerTextSize: Float = 12
-    public var enableGrid = false
-    public var gridColor: Color = .gray
-    public var gridLineThickness: Float = 0.5
 
+    var series = [Series<T,U>]()
     var scaleX: Float = 1
     var scaleY: Float = 1
-    var plotMarkers: PlotMarkers = PlotMarkers()
-    var series = [Series<T,U>]()
 
-    public init(points p: [Pair<T,U>],
-                width: Float = 1000,
-                height: Float = 660,
-                enableGrid: Bool = false){
-        plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
-        plotDimensions.calculateGraphDimensions()
-
+    public convenience init(points p: [Pair<T,U>],
+                            width: Float = 1000,
+                            height: Float = 660,
+                            enableGrid: Bool = false){
+        self.init(width: width, height: height, enableGrid: enableGrid)
         let s = Series<T,U>(values: p,label: "Plot")
         series.append(s)
-        self.enableGrid = enableGrid
     }
 
     public init(width: Float = 1000,
                 height: Float = 660,
                 enableGrid: Bool = false){
-        plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
+        layout = GraphLayout(plotDimensions: PlotDimensions(frameWidth: width, frameHeight: height))
         self.enableGrid = enableGrid
+    }
+    
+    public var enableGrid: Bool {
+        get { layout.enablePrimaryAxisGrid }
+        set { layout.enablePrimaryAxisGrid = newValue }
     }
 
     // functions to add series
@@ -126,93 +116,17 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
 }
 
 // extension containing drawing logic
-extension ScatterPlot{
+extension ScatterPlot: HasGraphLayout {
 
-    // call functions to draw the graph
-    public func drawGraphAndOutput(fileName name: String = "swift_plot_scatter_plot", renderer: Renderer){
-        renderer.xOffset = xOffset
-        renderer.yOffset = yOffset
-        renderer.plotDimensions = plotDimensions
-        calcBorderAndLegend()
-        calcLabelLocations(renderer: renderer)
-        calcMarkerLocAndScalePts(renderer: renderer)
-        drawGrid(renderer: renderer)
-        drawBorder(renderer: renderer)
-        drawMarkers(renderer: renderer)
-        drawPlots(renderer: renderer)
-        drawTitle(renderer: renderer)
-        drawLabels(renderer: renderer)
-        drawLegends(renderer: renderer)
-        saveImage(fileName: name, renderer: renderer)
-    }
-
-    public func drawGraph(renderer: Renderer){
-        renderer.xOffset = xOffset
-        renderer.yOffset = yOffset
-        calcBorderAndLegend()
-        calcLabelLocations(renderer: renderer)
-        calcMarkerLocAndScalePts(renderer: renderer)
-        drawGrid(renderer: renderer)
-        drawBorder(renderer: renderer)
-        drawMarkers(renderer: renderer)
-        drawPlots(renderer: renderer)
-        drawTitle(renderer: renderer)
-        drawLabels(renderer: renderer)
-        drawLegends(renderer: renderer)
-    }
-
-    public func drawGraphOutput(fileName name: String = "swift_plot_scatter_plot", renderer: Renderer){
-        renderer.plotDimensions = plotDimensions
-        renderer.drawOutput(fileName: name)
+    public var legendLabels: [(String, LegendIcon)] {
+        return series.map {
+            ($0.label, .shape($0.scatterPlotSeriesOptions.scatterPattern, $0.startColor ?? $0.color))
+        }
     }
 
     // functions implementing plotting logic
-    func calcLabelLocations(renderer: Renderer){
-        if (plotLabel != nil) {
-            let xWidth: Float = renderer.getTextWidth(text: plotLabel!.xLabel,
-                                                      textSize: plotLabel!.labelSize)
-            let yWidth: Float = renderer.getTextWidth(text: plotLabel!.yLabel,
-                                                      textSize: plotLabel!.labelSize)
-            plotLabel!.xLabelLocation = Point(
-                plotBorder.rect.midX - xWidth * 0.5,
-                plotBorder.rect.minY - plotLabel!.labelSize - 0.05 * plotDimensions.graphHeight
-            )
-            plotLabel!.yLabelLocation = Point(
-                plotBorder.rect.origin.x - plotLabel!.labelSize - 0.05 * plotDimensions.graphWidth,
-                plotBorder.rect.midY - yWidth
-            )
-        }
-        if (plotTitle != nil) {
-          let titleWidth: Float = renderer.getTextWidth(text: plotTitle!.title, textSize: plotTitle!.titleSize)
-          plotTitle!.titleLocation = Point(
-            plotBorder.rect.midX - titleWidth * 0.5,
-            plotBorder.rect.maxY + plotTitle!.titleSize * 0.5
-          )
-        }
-    }
-    
-    func calcBorderAndLegend() {
-        plotBorder.rect.origin.x = plotDimensions.subWidth*0.1
-        plotBorder.rect.origin.y = plotDimensions.subHeight*0.9
-        plotBorder.rect.size.width = plotDimensions.subWidth*0.8
-        plotBorder.rect.size.height = plotDimensions.subHeight * -0.8
-        plotBorder.rect = plotBorder.rect.normalized
+    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, renderer: Renderer) {
         
-        plotLegend.legendTopLeft = Point(plotBorder.rect.minX + Float(20),
-                                         plotBorder.rect.maxY - Float(20))
-    }
-
-    func calcMarkerLocAndScalePts(renderer: Renderer){
-
-        plotMarkers.markerTextSize = markerTextSize
-
-        plotMarkers.xMarkers = [Point]()
-        plotMarkers.yMarkers = [Point]()
-        plotMarkers.xMarkersTextLocation = [Point]()
-        plotMarkers.yMarkersTextLocation = [Point]()
-        plotMarkers.xMarkersText = [String]()
-        plotMarkers.xMarkersText = [String]()
-
         var maximumX: T = maxX(points: series[0].values)
         var maximumY: U = maxY(points: series[0].values)
         var minimumX: T = minX(points: series[0].values)
@@ -336,13 +250,8 @@ extension ScatterPlot{
                 xM = xM+inc2
                 continue
             }
-            let p = Point(xM, 0)
-            plotMarkers.xMarkers.append(p)
-            let text_p = Point(xM - (renderer.getTextWidth(text: "\(floor(scaleX*(xM-origin.x)))",
-                                                           textSize: plotMarkers.markerTextSize)/2.0) + 8,
-                               -20)
-            plotMarkers.xMarkersTextLocation.append(text_p)
-            plotMarkers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
+            markers.xMarkers.append(xM)
+            markers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
             xM = xM + inc2
         }
 
@@ -352,13 +261,8 @@ extension ScatterPlot{
                 xM = xM - inc2
                 continue
             }
-            let p = Point(xM, 0)
-            plotMarkers.xMarkers.append(p)
-            let text_p = Point(xM - (renderer.getTextWidth(text: "\(ceil(scaleX*(xM-origin.x)))",
-                                                           textSize: plotMarkers.markerTextSize)/2.0) + 8,
-                               -20)
-            plotMarkers.xMarkersTextLocation.append(text_p)
-            plotMarkers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
+            markers.xMarkers.append(xM)
+            markers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
             xM = xM - inc2
         }
 
@@ -368,24 +272,14 @@ extension ScatterPlot{
                 yM = yM + inc1
                 continue
             }
-            let p = Point(0, yM)
-            plotMarkers.yMarkers.append(p)
-            let text_p = Point(-(renderer.getTextWidth(text: "\(ceil(scaleY*(yM-origin.y)))",
-                                                       textSize: plotMarkers.markerTextSize)+8),
-                               yM - 4)
-            plotMarkers.yMarkersTextLocation.append(text_p)
-            plotMarkers.yMarkersText.append("\(ceilToN(scaleY*(yM-origin.y), yIncRound))")
+            markers.yMarkers.append(yM)
+            markers.yMarkersText.append("\(ceilToN(scaleY*(yM-origin.y), yIncRound))")
             yM = yM + inc1
         }
         yM = origin.y - inc1
         while yM>0.0 {
-            let p = Point(0, yM)
-            plotMarkers.yMarkers.append(p)
-            let text_p = Point(-(renderer.getTextWidth(text: "\(floor(scaleY*(yM-origin.y)))",
-                                                       textSize: plotMarkers.markerTextSize)+8),
-                               yM - 4)
-            plotMarkers.yMarkersTextLocation.append(text_p)
-            plotMarkers.yMarkersText.append("\(floorToN(scaleY*(yM-origin.y), xIncRound))")
+            markers.yMarkers.append(yM)
+            markers.yMarkersText.append("\(floorToN(scaleY*(yM-origin.y), xIncRound))")
             yM = yM - inc1
         }
 
@@ -407,75 +301,7 @@ extension ScatterPlot{
     }
 
     //functions to draw the plot
-    func drawBorder(renderer: Renderer){
-        renderer.drawRect(plotBorder.rect,
-                          strokeWidth: plotBorder.borderThickness,
-                          strokeColor: Color.black,
-                          isOriginShifted: false)
-    }
-
-    func drawGrid(renderer: Renderer) {
-        if (enableGrid) {
-            for index in 0..<plotMarkers.xMarkers.count {
-                let p1 = Point(plotMarkers.xMarkers[index].x, 0)
-                let p2 = Point(plotMarkers.xMarkers[index].x, plotDimensions.graphHeight)
-                renderer.drawLine(startPoint: p1,
-                                  endPoint: p2,
-                                  strokeWidth: gridLineThickness,
-                                  strokeColor: gridColor,
-                                  isDashed: false,
-                                  isOriginShifted: true)
-            }
-            for index in 0..<plotMarkers.yMarkers.count {
-                let p1 = Point(0, plotMarkers.yMarkers[index].y)
-                let p2 = Point(plotDimensions.graphWidth, plotMarkers.yMarkers[index].y)
-                renderer.drawLine(startPoint: p1,
-                                  endPoint: p2,
-                                  strokeWidth: gridLineThickness,
-                                  strokeColor: gridColor,
-                                  isDashed: false,
-                                  isOriginShifted: true)
-            }
-        }
-    }
-
-    func drawMarkers(renderer: Renderer) {
-        for index in 0..<plotMarkers.xMarkers.count {
-            let p1 = Point(plotMarkers.xMarkers[index].x, -6)
-            let p2 = Point(plotMarkers.xMarkers[index].x, 0)
-            renderer.drawLine(startPoint: p1,
-                              endPoint: p2,
-                              strokeWidth: plotBorder.borderThickness,
-                              strokeColor: Color.black,
-                              isDashed: false,
-                              isOriginShifted: true)
-            renderer.drawText(text: plotMarkers.xMarkersText[index],
-                              location: plotMarkers.xMarkersTextLocation[index],
-                              textSize: plotMarkers.markerTextSize,
-                              strokeWidth: 0.7,
-                              angle: 0,
-                              isOriginShifted: true)
-        }
-
-        for index in 0..<plotMarkers.yMarkers.count {
-            let p1 = Point(-6, plotMarkers.yMarkers[index].y)
-            let p2 = Point(0, plotMarkers.yMarkers[index].y)
-            renderer.drawLine(startPoint: p1,
-                              endPoint: p2,
-                              strokeWidth: plotBorder.borderThickness,
-                              strokeColor: Color.black,
-                              isDashed: false,
-                              isOriginShifted: true)
-            renderer.drawText(text: plotMarkers.yMarkersText[index],
-                              location: plotMarkers.yMarkersTextLocation[index],
-                              textSize: plotMarkers.markerTextSize,
-                              strokeWidth: 0.7,
-                              angle: 0,
-                              isOriginShifted: true)
-        }
-    }
-
-    func drawPlots(renderer: Renderer) {
+    public func drawData(markers: PlotMarkers, renderer: Renderer) {
         for seriesIndex in 0..<series.count {
             var s = series[seriesIndex]
             s.maxY = maxY(points: s.scaledValues)
@@ -630,176 +456,110 @@ extension ScatterPlot{
             }
         }
     }
+}
 
-    func drawTitle(renderer: Renderer) {
-        guard let plotTitle = self.plotTitle else { return }
-        renderer.drawText(text: plotTitle.title,
-                          location: plotTitle.titleLocation,
-                          textSize: plotTitle.titleSize,
-                          strokeWidth: 1.2,
-                          angle: 0,
-                          isOriginShifted: false)
-    }
+extension ScatterPlotSeriesOptions.ScatterPattern {
+    
+    static let sqrt3: Float = sqrt(3)
 
-    func drawLabels(renderer: Renderer) {
-        guard let plotLabel = self.plotLabel else { return }
-        renderer.drawText(text: plotLabel.xLabel,
-                          location: plotLabel.xLabelLocation,
-                          textSize: plotLabel.labelSize,
-                          strokeWidth: 1.2,
-                          angle: 0,
-                          isOriginShifted: false)
-        renderer.drawText(text: plotLabel.yLabel,
-                          location: plotLabel.yLabelLocation,
-                          textSize: plotLabel.labelSize,
-                          strokeWidth: 1.2,
-                          angle: 90,
-                          isOriginShifted: false)
-    }
-
-    func drawLegends(renderer: Renderer) {
-        var maxWidth: Float = 0
-        for s in series {
-            let w = renderer.getTextWidth(text: s.label,
-                                          textSize: plotLegend.legendTextSize)
-            if (w > maxWidth) {
-                maxWidth = w
+    func draw(in rect: Rect, color: Color, renderer: Renderer) {
+        let tL = Point(rect.minX, rect.maxY)
+        let bR = Point(rect.maxX, rect.minY)
+        let tR = Point(bR.x, tL.y)
+        let bL = Point(tL.x, bR.y)
+        
+        switch self {
+        case .circle:
+            let c = Point((tL.x+bR.x)*Float(0.5),
+                          (tL.y+bR.y)*Float(0.5))
+            renderer.drawSolidCircle(center: c,
+                                     radius: (tR.x-tL.x)*Float(0.5),
+                                     fillColor: color,
+                                     isOriginShifted: false)
+        case .square:
+            renderer.drawSolidRect(rect,
+                                   fillColor: color,
+                                   hatchPattern: .none,
+                                   isOriginShifted: false)
+        case .triangle:
+            let c = Point((tL.x+bR.x)*Float(0.5),
+                          (tL.y+bR.y)*Float(0.5))
+            let r: Float = (tR.x-tL.x)*Float(0.5)
+            let p1 = Point(c.x + 0,
+                           c.y + r)
+            let p2 = Point(c.x + r*Self.sqrt3*Float(0.5),
+                           c.y - r*Float(0.5))
+            let p3 = Point(c.x - r*Self.sqrt3*Float(0.5),
+                           c.y - r*Float(0.5))
+            renderer.drawSolidTriangle(point1: p1,
+                                       point2: p2,
+                                       point3: p3,
+                                       fillColor: color,
+                                       isOriginShifted: false)
+        case .diamond:
+            let c = Point((tL.x+bR.x)*Float(0.5),
+                          (tL.y+bR.y)*Float(0.5))
+            let p1 = rotatePoint(point: tL, center: c, angleDegrees: 45.0)
+            let p2 = rotatePoint(point: tR, center: c, angleDegrees: 45.0)
+            let p3 = rotatePoint(point: bR, center: c, angleDegrees: 45.0)
+            let p4 = rotatePoint(point: bL, center: c, angleDegrees: 45.0)
+            let diamondPoints: [Point] = [p1, p2, p3, p4]
+            renderer.drawSolidPolygon(points: diamondPoints,
+                                      fillColor: color,
+                                      isOriginShifted: false)
+        case .hexagon:
+            let c = Point((tL.x+bR.x)*Float(0.5),
+                          (tL.y+bR.y)*Float(0.5))
+            var hexagonPoint = Point(c.x + 0.0,
+                                     c.y + (tL.y-bL.y)*Float(0.5))
+            var hexagonPoints: [Point] = [hexagonPoint]
+            for _ in 2...6 {
+                hexagonPoint = rotatePoint(point: hexagonPoint,
+                                           center: c,
+                                           angleDegrees: 60.0)
+                hexagonPoints.append(hexagonPoint)
             }
+            renderer.drawSolidPolygon(points: hexagonPoints,
+                                      fillColor: color,
+                                      isOriginShifted: false)
+        case .pentagon:
+            let c = Point((tL.x+bR.x)*Float(0.5),
+                          (tL.y+bR.y)*Float(0.5))
+            var pentagonPoint = Point(c.x + 0.0,
+                                      c.y + (tL.y-bL.y)*Float(0.5))
+            var pentagonPoints: [Point] = [pentagonPoint]
+            for _ in 2...6 {
+                pentagonPoint = rotatePoint(point: pentagonPoint,
+                                            center: c,
+                                            angleDegrees: 72.0)
+                pentagonPoints.append(pentagonPoint)
+            }
+            renderer.drawSolidPolygon(points: pentagonPoints,
+                                      fillColor: color,
+                                      isOriginShifted: false)
+        case .star:
+            let c = Point((tL.x+bR.x)*Float(0.5),
+                          (tL.y+bR.y)*Float(0.5))
+            var starOuterPoint = Point(c.x + 0.0,
+                                       c.y + (tL.y-bL.y)*Float(0.5))
+            var starInnerPoint = rotatePoint(point: Point(c.x + 0.0,
+                                                          c.y + (tL.y-bL.y)*Float(0.25)),
+                                             center: c,
+                                             angleDegrees: 36.0)
+            var starPoints: [Point] = [starOuterPoint, starInnerPoint]
+            for _ in 2...6 {
+                starOuterPoint = rotatePoint(point: starOuterPoint,
+                                             center: c,
+                                             angleDegrees: 72.0)
+                starInnerPoint = rotatePoint(point: starInnerPoint,
+                                             center: c,
+                                             angleDegrees: 72.0)
+                starPoints.append(starOuterPoint)
+                starPoints.append(starInnerPoint)
+            }
+            renderer.drawSolidPolygon(points: starPoints,
+                                      fillColor: color,
+                                      isOriginShifted: false)
         }
-
-        plotLegend.legendWidth  = maxWidth + 3.5*plotLegend.legendTextSize
-        plotLegend.legendHeight = (Float(series.count)*2.0 + 1.0)*plotLegend.legendTextSize
-
-        let legendRect = Rect(
-            origin: plotLegend.legendTopLeft,
-            size: Size(width: plotLegend.legendWidth, height: -plotLegend.legendHeight)
-        ).normalized
-        renderer.drawSolidRectWithBorder(legendRect,
-                                         strokeWidth: plotBorder.borderThickness,
-                                         fillColor: Color.transluscentWhite,
-                                         borderColor: Color.black,
-                                         isOriginShifted: false)
-
-        for i in 0..<series.count {
-            let tL = Point(plotLegend.legendTopLeft.x + plotLegend.legendTextSize,
-                           plotLegend.legendTopLeft.y - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize)
-            let bR = Point(tL.x + plotLegend.legendTextSize,
-                           tL.y - plotLegend.legendTextSize)
-            let tR = Point(bR.x, tL.y)
-            let bL = Point(tL.x, bR.y)
-            if (series[i].startColor != nil && series[i].endColor != nil) {
-                series[i].color = series[i].startColor!
-            }
-            switch series[i].scatterPlotSeriesOptions.scatterPattern {
-                case .circle:
-                    let c = Point((tL.x+bR.x)*Float(0.5),
-                                  (tL.y+bR.y)*Float(0.5))
-                    renderer.drawSolidCircle(center: c,
-                                             radius: (tR.x-tL.x)*Float(0.5),
-                                             fillColor: series[i].color,
-                                             isOriginShifted: false)
-                case .square:
-                    let rect = Rect(
-                        origin: bL,
-                        size: Size(width: plotLegend.legendTextSize, height: plotLegend.legendTextSize)
-                    )
-                    renderer.drawSolidRect(rect,
-                                           fillColor: series[i].color,
-                                           hatchPattern: .none,
-                                           isOriginShifted: false)
-                case .triangle:
-                    let c = Point((tL.x+bR.x)*Float(0.5),
-                                  (tL.y+bR.y)*Float(0.5))
-                    let r: Float = (tR.x-tL.x)*Float(0.5)
-                    let p1 = Point(c.x + 0,
-                                   c.y + r)
-                    let p2 = Point(c.x + r*sqrt3*Float(0.5),
-                                   c.y - r*Float(0.5))
-                    let p3 = Point(c.x - r*sqrt3*Float(0.5),
-                                   c.y - r*Float(0.5))
-                    renderer.drawSolidTriangle(point1: p1,
-                                               point2: p2,
-                                               point3: p3,
-                                               fillColor: series[i].color,
-                                               isOriginShifted: false)
-                case .diamond:
-                    let c = Point((tL.x+bR.x)*Float(0.5),
-                                  (tL.y+bR.y)*Float(0.5))
-                    let p1 = rotatePoint(point: tL, center: c, angleDegrees: 45.0)
-                    let p2 = rotatePoint(point: tR, center: c, angleDegrees: 45.0)
-                    let p3 = rotatePoint(point: bR, center: c, angleDegrees: 45.0)
-                    let p4 = rotatePoint(point: bL, center: c, angleDegrees: 45.0)
-                    let diamondPoints: [Point] = [p1, p2, p3, p4]
-                    renderer.drawSolidPolygon(points: diamondPoints,
-                                              fillColor: series[i].color,
-                                              isOriginShifted: false)
-                case .hexagon:
-                  let c = Point((tL.x+bR.x)*Float(0.5),
-                                (tL.y+bR.y)*Float(0.5))
-                  var hexagonPoint = Point(c.x + 0.0,
-                                           c.y + (tL.y-bL.y)*Float(0.5))
-                  var hexagonPoints: [Point] = [hexagonPoint]
-                  for _ in 2...6 {
-                      hexagonPoint = rotatePoint(point: hexagonPoint,
-                                                 center: c,
-                                                 angleDegrees: 60.0)
-                      hexagonPoints.append(hexagonPoint)
-                  }
-                  renderer.drawSolidPolygon(points: hexagonPoints,
-                                            fillColor: series[i].color,
-                                            isOriginShifted: false)
-                case .pentagon:
-                  let c = Point((tL.x+bR.x)*Float(0.5),
-                                (tL.y+bR.y)*Float(0.5))
-                  var pentagonPoint = Point(c.x + 0.0,
-                                            c.y + (tL.y-bL.y)*Float(0.5))
-                  var pentagonPoints: [Point] = [pentagonPoint]
-                  for _ in 2...6 {
-                      pentagonPoint = rotatePoint(point: pentagonPoint,
-                                                  center: c,
-                                                  angleDegrees: 72.0)
-                      pentagonPoints.append(pentagonPoint)
-                  }
-                  renderer.drawSolidPolygon(points: pentagonPoints,
-                                            fillColor: series[i].color,
-                                            isOriginShifted: false)
-                case .star:
-                  let c = Point((tL.x+bR.x)*Float(0.5),
-                                (tL.y+bR.y)*Float(0.5))
-                  var starOuterPoint = Point(c.x + 0.0,
-                                             c.y + (tL.y-bL.y)*Float(0.5))
-                  var starInnerPoint = rotatePoint(point: Point(c.x + 0.0,
-                                                                c.y + (tL.y-bL.y)*Float(0.25)),
-                                                   center: c,
-                                                   angleDegrees: 36.0)
-                  var starPoints: [Point] = [starOuterPoint, starInnerPoint]
-                  for _ in 2...6 {
-                      starOuterPoint = rotatePoint(point: starOuterPoint,
-                                                   center: c,
-                                                   angleDegrees: 72.0)
-                      starInnerPoint = rotatePoint(point: starInnerPoint,
-                                                   center: c,
-                                                   angleDegrees: 72.0)
-                      starPoints.append(starOuterPoint)
-                      starPoints.append(starInnerPoint)
-                  }
-                  renderer.drawSolidPolygon(points: starPoints,
-                                            fillColor: series[i].color,
-                                            isOriginShifted: false)
-            }
-            let p = Point(bR.x + plotLegend.legendTextSize,
-                          bR.y)
-            renderer.drawText(text: series[i].label,
-                              location: p,
-                              textSize: plotLegend.legendTextSize,
-                              strokeWidth: 1.2,
-                              angle: 0,
-                              isOriginShifted: false)
-        }
-
-    }
-
-    func saveImage(fileName name: String, renderer: Renderer) {
-        renderer.drawOutput(fileName: name)
     }
 }

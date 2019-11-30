@@ -419,13 +419,14 @@ namespace CPPAGGRenderer{
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
     }
 
-    void draw_text(const char *s, float x, float y, float size, float thickness, float angle, bool is_origin_shifted){
+    void draw_text(const char *s, float x, float y, float size, float r, float g, float b, float a, float thickness, float angle, bool is_origin_shifted){
       agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
       pixfmt pixf = pixfmt(rbuf);
       renderer_base rb = renderer_base(pixf);
       ren_aa = renderer_aa(rb);
       font_width = font_height = size;
       font_weight = thickness;
+      Color color(r, g, b, a);
       m_contour.width(-font_weight*font_height*0.05);
       if(m_feng.load_font(fontPath.c_str(), 0, gren)){
       // if(m_feng.load_font(0, gren, roboto, roboto_size)){
@@ -449,7 +450,7 @@ namespace CPPAGGRenderer{
               m_fman.add_kerning(&dx, &dy);
             }
             m_fman.init_embedded_adaptors(glyph, x, y);
-            ren_aa.color(black);
+            ren_aa.color(color);
             agg::render_scanlines(m_fman.gray8_adaptor(), m_fman.gray8_scanline(), ren_aa);
             x+=glyph->advance_x;
             y+=glyph->advance_y;
@@ -548,9 +549,9 @@ namespace CPPAGGRenderer{
     plot -> draw_plot_lines(x, y, size, thickness, r, g, b, a, isDashed);
   }
 
-  void draw_text(const char *s, float x, float y, float size, float thickness, float angle, bool is_origin_shifted, const void *object){
+  void draw_text(const char *s, float x, float y, float size, float r, float g, float b, float a, float thickness, float angle, bool is_origin_shifted, const void *object){
     Plot *plot = (Plot *)object;
-    plot -> draw_text(s, x, y, size, thickness, angle, is_origin_shifted);
+    plot -> draw_text(s, x, y, size, r, g, b, a, thickness, angle, is_origin_shifted);
   }
 
   float get_text_width(const char *s, float size, const void *object){

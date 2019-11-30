@@ -5,37 +5,23 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     let MAX_DIV: Float = 50
 
+    public var layout: GraphLayout
+
     public var xOffset: Float = 0
     public var yOffset: Float = 0
-
-    public var plotTitle: PlotTitle? = nil
-    public var plotLabel: PlotLabel? = nil
-    public var plotLegend: PlotLegend = PlotLegend()
-    public var plotBorder: PlotBorder = PlotBorder()
-    public var plotDimensions: PlotDimensions {
-        didSet {
-            calcBorderAndLegend()
-        }
-    }
+    
     public var plotLineThickness: Float = 1.5
-    public var gridLineThickness: Float = 0.5
-    public var markerTextSize: Float = 12
-    public var enablePrimaryAxisGrid = false
-    public var enableSecondaryAxisGrid = false
-    public var gridColor: Color = .gray
 
     var primaryAxis = Axis<T,U>()
     var secondaryAxis: Axis<T,U>? = nil
 
-    public init(points : [Pair<T,U>],
+    public convenience init(points : [Pair<T,U>],
                 width: Float = 1000,
                 height: Float = 660,
                 enablePrimaryAxisGrid: Bool = false,
                 enableSecondaryAxisGrid: Bool = false){
-        plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
-        plotDimensions.calculateGraphDimensions()
-        self.enablePrimaryAxisGrid = enablePrimaryAxisGrid
-        self.enableSecondaryAxisGrid = enableSecondaryAxisGrid
+        self.init(width: width, height: height,
+                  enablePrimaryAxisGrid: enablePrimaryAxisGrid, enableSecondaryAxisGrid: enableSecondaryAxisGrid)
 
         let s = Series<T,U>(values: points,label: "Plot")
         primaryAxis.series.append(s)
@@ -45,9 +31,19 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
                 height: Float = 660,
                 enablePrimaryAxisGrid: Bool = false,
                 enableSecondaryAxisGrid: Bool = false){
-        plotDimensions = PlotDimensions(frameWidth: width, frameHeight: height)
+        layout = GraphLayout(plotDimensions: PlotDimensions(frameWidth: width, frameHeight: height))
         self.enablePrimaryAxisGrid = enablePrimaryAxisGrid
         self.enableSecondaryAxisGrid = enableSecondaryAxisGrid
+    }
+    
+    public var enablePrimaryAxisGrid: Bool {
+        get { layout.enablePrimaryAxisGrid }
+        set { layout.enablePrimaryAxisGrid = newValue }
+    }
+    
+    public var enableSecondaryAxisGrid: Bool {
+        get { layout.enableSecondaryAxisGrid }
+        set { layout.enableSecondaryAxisGrid = newValue }
     }
 
     // functions to add series
@@ -122,92 +118,18 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
 }
 
 // extension containing drawing logic
-extension LineGraph{
+extension LineGraph: HasGraphLayout {
 
-    // call functions to draw the graph
-    public func drawGraphAndOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer){
-        renderer.xOffset = xOffset
-        renderer.yOffset = yOffset
-        renderer.plotDimensions = plotDimensions
-        calcBorderAndLegend()
-        calcLabelLocations(renderer: renderer)
-        calcMarkerLocAndScalePts(renderer: renderer)
-        drawGrid(renderer: renderer)
-        drawBorder(renderer: renderer)
-        drawMarkers(renderer: renderer)
-        drawPlots(renderer: renderer)
-        drawTitle(renderer: renderer)
-        drawLabels(renderer: renderer)
-        drawLegends(renderer: renderer)
-        saveImage(fileName: name, renderer: renderer)
-    }
-
-    public func drawGraph(renderer: Renderer){
-        renderer.xOffset = xOffset
-        renderer.yOffset = yOffset
-        calcBorderAndLegend()
-        calcLabelLocations(renderer: renderer)
-        calcMarkerLocAndScalePts(renderer: renderer)
-        drawGrid(renderer: renderer)
-        drawBorder(renderer: renderer)
-        drawMarkers(renderer: renderer)
-        drawPlots(renderer: renderer)
-        drawTitle(renderer: renderer)
-        drawLabels(renderer: renderer)
-        drawLegends(renderer: renderer)
-    }
-
-    public func drawGraphOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer){
-        renderer.plotDimensions = plotDimensions
-        renderer.drawOutput(fileName: name)
+    public var legendLabels: [(String, LegendIcon)] {
+        var allSeries: [Series] = primaryAxis.series
+        if (secondaryAxis != nil) {
+            allSeries = allSeries + secondaryAxis!.series
+        }
+        return allSeries.map { ($0.label, .square($0.color)) }
     }
 
     // functions implementing plotting logic
-    func calcLabelLocations(renderer: Renderer){
-        if (plotLabel != nil) {
-            let xWidth   : Float = renderer.getTextWidth(text: plotLabel!.xLabel,
-                                                         textSize: plotLabel!.labelSize)
-            let yWidth    : Float = renderer.getTextWidth(text: plotLabel!.yLabel,
-                                                          textSize: plotLabel!.labelSize)
-            plotLabel!.xLabelLocation = Point(
-                plotBorder.rect.midX - xWidth * 0.5,
-                plotBorder.rect.minY - plotLabel!.labelSize - 0.05 * plotDimensions.graphHeight
-            )
-            plotLabel!.yLabelLocation = Point(
-                plotBorder.rect.origin.x - plotLabel!.labelSize - 0.05 * plotDimensions.graphWidth,
-                plotBorder.rect.midY - yWidth
-            )
-        }
-        if (plotTitle != nil) {
-            let titleWidth: Float = renderer.getTextWidth(text: plotTitle!.title,
-                                                          textSize: plotTitle!.titleSize)
-            plotTitle!.titleLocation = Point(
-                plotBorder.rect.midX - titleWidth * 0.5,
-                plotBorder.rect.maxY + plotTitle!.titleSize * 0.5
-            )
-        }
-    }
-    
-    func calcBorderAndLegend() {
-        plotBorder.rect.origin.x = plotDimensions.subWidth*0.1
-        plotBorder.rect.origin.y = plotDimensions.subHeight*0.9
-        plotBorder.rect.size.width = plotDimensions.subWidth*0.8
-        plotBorder.rect.size.height = plotDimensions.subHeight * -0.8
-        plotBorder.rect = plotBorder.rect.normalized
-        
-        plotLegend.legendTopLeft = Point(plotBorder.rect.minX + Float(20),
-                                         plotBorder.rect.maxY - Float(20))
-    }
-
-    func calcMarkerLocAndScalePts(renderer: Renderer){
-
-        primaryAxis.plotMarkers.xMarkers = [Point]()
-        primaryAxis.plotMarkers.yMarkers = [Point]()
-        primaryAxis.plotMarkers.xMarkersTextLocation = [Point]()
-        primaryAxis.plotMarkers.yMarkersTextLocation = [Point]()
-        primaryAxis.plotMarkers.xMarkersText = [String]()
-        primaryAxis.plotMarkers.xMarkersText = [String]()
-        primaryAxis.plotMarkers.markerTextSize = markerTextSize
+    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, renderer: Renderer) {
 
         var maximumXPrimary: T = maxX(points: primaryAxis.series[0].values)
         var maximumYPrimary: U = maxY(points: primaryAxis.series[0].values)
@@ -242,13 +164,6 @@ extension LineGraph{
         var minimumYSecondary = U(0)
 
         if secondaryAxis != nil {
-            secondaryAxis!.plotMarkers.xMarkers = [Point]()
-            secondaryAxis!.plotMarkers.yMarkers = [Point]()
-            secondaryAxis!.plotMarkers.xMarkersTextLocation = [Point]()
-            secondaryAxis!.plotMarkers.yMarkersTextLocation = [Point]()
-            secondaryAxis!.plotMarkers.xMarkersText = [String]()
-            secondaryAxis!.plotMarkers.xMarkersText = [String]()
-            secondaryAxis!.plotMarkers.markerTextSize = markerTextSize
 
             maximumXSecondary = maxX(points: secondaryAxis!.series[0].values)
             maximumYSecondary = maxY(points: secondaryAxis!.series[0].values)
@@ -397,13 +312,8 @@ extension LineGraph{
                 xM = xM+inc2Primary
                 continue
             }
-            let p = Point(xM, 0)
-            primaryAxis.plotMarkers.xMarkers.append(p)
-            let text_p = Point(xM - (renderer.getTextWidth(text: "\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))",
-                                                           textSize: primaryAxis.plotMarkers.markerTextSize)/2.0) + 5,
-                               -20)
-            primaryAxis.plotMarkers.xMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
+            markers.xMarkers.append(xM)
+            markers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
             xM = xM + inc2Primary
         }
 
@@ -413,13 +323,8 @@ extension LineGraph{
                 xM = xM - inc2Primary
                 continue
             }
-            let p = Point(xM, 0)
-            primaryAxis.plotMarkers.xMarkers.append(p)
-            let text_p = Point(xM - (renderer.getTextWidth(text: "\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))",
-                                                           textSize: primaryAxis.plotMarkers.markerTextSize)/2.0) + 5,
-                               -20)
-            primaryAxis.plotMarkers.xMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
+            markers.xMarkers.append(xM)
+            markers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
             xM = xM - inc2Primary
         }
 
@@ -429,24 +334,14 @@ extension LineGraph{
                 yM = yM + inc1Primary
                 continue
             }
-            let p = Point(0, yM)
-            primaryAxis.plotMarkers.yMarkers.append(p)
-            let text_p = Point(-(renderer.getTextWidth(text: "\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))",
-                                                       textSize: primaryAxis.plotMarkers.markerTextSize)+8),
-                               yM - 4)
-            primaryAxis.plotMarkers.yMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
+            markers.yMarkers.append(yM)
+            markers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
             yM = yM + inc1Primary
         }
         yM = originPrimary.y - inc1Primary
         while yM>0.0 {
-            let p = Point(0, yM)
-            primaryAxis.plotMarkers.yMarkers.append(p)
-            let text_p = Point(-(renderer.getTextWidth(text: "\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))",
-                                                       textSize: primaryAxis.plotMarkers.markerTextSize)+8),
-                               yM - 4)
-            primaryAxis.plotMarkers.yMarkersTextLocation.append(text_p)
-            primaryAxis.plotMarkers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
+            markers.yMarkers.append(yM)
+            markers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
             yM = yM - inc1Primary
         }
 
@@ -503,24 +398,14 @@ extension LineGraph{
                     yM = yM + inc1Secondary
                     continue
                 }
-                let p = Point(0, yM)
-                secondaryAxis!.plotMarkers.yMarkers.append(p)
-                let text_p = Point(plotDimensions.graphWidth + (renderer.getTextWidth(text: "\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))",
-                                                                                      textSize: secondaryAxis!.plotMarkers.markerTextSize)*Float(0.5) - 8),
-                                   yM - 4)
-                secondaryAxis!.plotMarkers.yMarkersTextLocation.append(text_p)
-                secondaryAxis!.plotMarkers.yMarkersText.append("\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))")
+                markers.y2Markers.append(yM)
+                markers.y2MarkersText.append("\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))")
                 yM = yM + inc1Secondary
             }
             yM = originSecondary!.y - inc1Secondary
             while yM>0.0 {
-                let p = Point(0, yM)
-                secondaryAxis!.plotMarkers.yMarkers.append(p)
-                let text_p = Point(plotDimensions.graphWidth + (renderer.getTextWidth(text: "\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))",
-                                                                                      textSize: secondaryAxis!.plotMarkers.markerTextSize)*Float(0.5) - 8),
-                                   yM - 4)
-                secondaryAxis!.plotMarkers.yMarkersTextLocation.append(text_p)
-                secondaryAxis!.plotMarkers.yMarkersText.append("\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))")
+                markers.y2Markers.append(yM)
+                markers.y2MarkersText.append("\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))")
                 yM = yM - inc1Secondary
             }
 
@@ -543,113 +428,7 @@ extension LineGraph{
     }
 
     //functions to draw the plot
-    func drawBorder(renderer: Renderer){
-        renderer.drawRect(plotBorder.rect,
-                          strokeWidth: plotBorder.borderThickness,
-                          strokeColor: Color.black,
-                          isOriginShifted: false)
-    }
-
-    func drawGrid(renderer: Renderer) {
-        if (enablePrimaryAxisGrid || enableSecondaryAxisGrid) {
-            for index in 0..<primaryAxis.plotMarkers.xMarkers.count {
-                let p1 = Point(primaryAxis.plotMarkers.xMarkers[index].x, 0)
-                let p2 = Point(primaryAxis.plotMarkers.xMarkers[index].x, plotDimensions.graphHeight)
-                renderer.drawLine(startPoint: p1,
-                                  endPoint: p2,
-                                  strokeWidth: gridLineThickness,
-                                  strokeColor: gridColor,
-                                  isDashed: false,
-                                  isOriginShifted: true)
-            }
-        }
-        if (enablePrimaryAxisGrid) {
-            for index in 0..<primaryAxis.plotMarkers.yMarkers.count {
-                let p1 = Point(0, primaryAxis.plotMarkers.yMarkers[index].y)
-                let p2 = Point(plotDimensions.graphWidth, primaryAxis.plotMarkers.yMarkers[index].y)
-                renderer.drawLine(startPoint: p1,
-                                  endPoint: p2,
-                                  strokeWidth: gridLineThickness,
-                                  strokeColor: gridColor,
-                                  isDashed: false,
-                                  isOriginShifted: true)
-            }
-        }
-        if (enableSecondaryAxisGrid) {
-            if (secondaryAxis != nil) {
-                for index in 0..<secondaryAxis!.plotMarkers.yMarkers.count {
-                    let p1 = Point(0, secondaryAxis!.plotMarkers.yMarkers[index].y)
-                    let p2 = Point(plotDimensions.graphWidth, secondaryAxis!.plotMarkers.yMarkers[index].y)
-                    renderer.drawLine(startPoint: p1,
-                                      endPoint: p2,
-                                      strokeWidth: gridLineThickness,
-                                      strokeColor: gridColor,
-                                      isDashed: false,
-                                      isOriginShifted: true)
-                }
-            }
-        }
-    }
-
-    func drawMarkers(renderer: Renderer) {
-        for index in 0..<primaryAxis.plotMarkers.xMarkers.count {
-            let p1 = Point(primaryAxis.plotMarkers.xMarkers[index].x, -6)
-            let p2 = Point(primaryAxis.plotMarkers.xMarkers[index].x, 0)
-            renderer.drawLine(startPoint: p1,
-                              endPoint: p2,
-                              strokeWidth: plotBorder.borderThickness,
-                              strokeColor: Color.black,
-                              isDashed: false,
-                              isOriginShifted: true)
-            renderer.drawText(text: primaryAxis.plotMarkers.xMarkersText[index],
-                              location: primaryAxis.plotMarkers.xMarkersTextLocation[index],
-                              textSize: primaryAxis.plotMarkers.markerTextSize,
-                              strokeWidth: 0.7,
-                              angle: 0,
-                              isOriginShifted: true)
-        }
-
-        for index in 0..<primaryAxis.plotMarkers.yMarkers.count {
-            let p1 = Point(-6, primaryAxis.plotMarkers.yMarkers[index].y)
-            let p2 = Point(0, primaryAxis.plotMarkers.yMarkers[index].y)
-            renderer.drawLine(startPoint: p1,
-                              endPoint: p2,
-                              strokeWidth: plotBorder.borderThickness,
-                              strokeColor: Color.black,
-                              isDashed: false,
-                              isOriginShifted: true)
-            renderer.drawText(text: primaryAxis.plotMarkers.yMarkersText[index],
-                              location: primaryAxis.plotMarkers.yMarkersTextLocation[index],
-                              textSize: primaryAxis.plotMarkers.markerTextSize,
-                              strokeWidth: 0.7,
-                              angle: 0,
-                              isOriginShifted: true)
-        }
-
-        if (secondaryAxis != nil) {
-            for index in 0..<secondaryAxis!.plotMarkers.yMarkers.count {
-                let p1 = Point(plotDimensions.graphWidth,
-                              (secondaryAxis!.plotMarkers.yMarkers[index].y))
-                let p2 = Point(plotDimensions.graphWidth + 6,
-                              (secondaryAxis!.plotMarkers.yMarkers[index].y))
-                renderer.drawLine(startPoint: p1,
-                                  endPoint: p2,
-                                  strokeWidth: plotBorder.borderThickness,
-                                  strokeColor: Color.black,
-                                  isDashed: false,
-                                  isOriginShifted: true)
-                renderer.drawText(text: secondaryAxis!.plotMarkers.yMarkersText[index],
-                                  location: secondaryAxis!.plotMarkers.yMarkersTextLocation[index],
-                                  textSize: secondaryAxis!.plotMarkers.markerTextSize,
-                                  strokeWidth: 0.7,
-                                  angle: 0,
-                                  isOriginShifted: true)
-            }
-        }
-
-    }
-
-    func drawPlots(renderer: Renderer) {
+    public func drawData(markers: PlotMarkers, renderer: Renderer) {
         for s in primaryAxis.series {
             var points = [Point]()
             for p in s.scaledValues {
@@ -672,81 +451,5 @@ extension LineGraph{
                                        isDashed: true)
             }
         }
-    }
-
-    func drawTitle(renderer: Renderer) {
-        guard let plotTitle = self.plotTitle else { return }
-        renderer.drawText(text: plotTitle.title,
-                          location: plotTitle.titleLocation,
-                          textSize: plotTitle.titleSize,
-                          strokeWidth: 1.2,
-                          angle: 0,
-                          isOriginShifted: false)
-    }
-
-    func drawLabels(renderer: Renderer) {
-        guard let plotLabel = self.plotLabel else { return }
-        renderer.drawText(text: plotLabel.xLabel,
-                          location: plotLabel.xLabelLocation,
-                          textSize: plotLabel.labelSize,
-                          strokeWidth: 1.2,
-                          angle: 0,
-                          isOriginShifted: false)
-        renderer.drawText(text: plotLabel.yLabel,
-                          location: plotLabel.yLabelLocation,
-                          textSize: plotLabel.labelSize,
-                          strokeWidth: 1.2,
-                          angle: 90,
-                          isOriginShifted: false)
-    }
-
-    func drawLegends(renderer: Renderer) {
-        var maxWidth: Float = 0
-        var allSeries: [Series] = primaryAxis.series
-        if (secondaryAxis != nil) {
-            allSeries = allSeries + secondaryAxis!.series
-        }
-        for s in allSeries {
-            let w: Float = renderer.getTextWidth(text: s.label, textSize: plotLegend.legendTextSize)
-            if (w > maxWidth) {
-                maxWidth = w
-            }
-        }
-        plotLegend.legendWidth  = maxWidth + 3.5*plotLegend.legendTextSize
-        plotLegend.legendHeight = (Float(allSeries.count)*2.0 + 1.0)*plotLegend.legendTextSize
-
-        let legendRect = Rect(
-            origin: plotLegend.legendTopLeft,
-            size: Size(width: plotLegend.legendWidth, height: -plotLegend.legendHeight)
-        ).normalized
-        renderer.drawSolidRectWithBorder(legendRect,
-                                         strokeWidth: plotBorder.borderThickness,
-                                         fillColor: Color.transluscentWhite,
-                                         borderColor: Color.black,
-                                         isOriginShifted: false)
-
-        for i in 0..<allSeries.count {
-            let seriesIcon = Rect(
-                origin: Point(legendRect.origin.x + plotLegend.legendTextSize,
-                              legendRect.maxY - (2.0*Float(i) + 1.0)*plotLegend.legendTextSize),
-                size: Size(width: plotLegend.legendTextSize, height: -plotLegend.legendTextSize)
-            )
-            renderer.drawSolidRect(seriesIcon,
-                                   fillColor: allSeries[i].color,
-                                   hatchPattern: .none,
-                                   isOriginShifted: false)
-            let p = Point(seriesIcon.maxX + plotLegend.legendTextSize, seriesIcon.minY)
-            renderer.drawText(text: allSeries[i].label,
-                              location: p,
-                              textSize: plotLegend.legendTextSize,
-                              strokeWidth: 1.2,
-                              angle: 0,
-                              isOriginShifted: false)
-        }
-
-    }
-
-    func saveImage(fileName name: String, renderer: Renderer) {
-        renderer.drawOutput(fileName: name)
     }
 }

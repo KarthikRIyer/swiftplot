@@ -69,7 +69,7 @@ public class SVGRenderer: Renderer{
         else {
             rect.origin.y = plotDimensions.subHeight - rect.origin.y
         }
-        let rectStr = "<rect x=\"\(rect.origin.x)\" y=\"\(rect.origin.y)\" width=\"\(rect.size.width)\" height=\"\(rect.size.height)\" style=\"fill:rgb(255,255,255);stroke-width:\(thickness);stroke:rgb(0,0,0);opacity:1;fill-opacity:0;\" />"
+        let rectStr = "<rect x=\"\(rect.origin.x)\" y=\"\(rect.origin.y)\" width=\"\(rect.size.width)\" height=\"\(rect.size.height)\" style=\"fill:rgb(255,255,255);stroke-width:\(thickness);stroke:\(strokeColor.svgColorString);opacity:1;fill-opacity:0;\" />"
         image = image + "\n" + rectStr
     }
 
@@ -86,7 +86,7 @@ public class SVGRenderer: Renderer{
         else {
             rect.origin.y = plotDimensions.subHeight - rect.origin.y
         }
-        let rectStr = "<rect x=\"\(rect.origin.x)\" y=\"\(rect.origin.y)\" width=\"\(rect.size.width)\" height=\"\(rect.size.height)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:0;stroke:rgb(0,0,0);opacity:\(fillColor.a)\" />"
+        let rectStr = "<rect x=\"\(rect.origin.x)\" y=\"\(rect.origin.y)\" width=\"\(rect.size.width)\" height=\"\(rect.size.height)\" style=\"fill:\(fillColor.svgColorString);stroke-width:0;stroke:rgb(0,0,0);opacity:\(fillColor.a)\" />"
         image = image + "\n" + rectStr
         drawHatchingRect(rect, hatchPattern: hatchPattern)
     }
@@ -165,7 +165,7 @@ public class SVGRenderer: Renderer{
             rect.origin.y = plotDimensions.subHeight - rect.origin.y
         }
 
-        let rectStr = "<rect x=\"\(rect.origin.x)\" y=\"\(rect.origin.y)\" width=\"\(rect.size.width)\" height=\"\(rect.size.height)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));stroke-width:\(thickness);stroke:rgb(\(borderColor.r*255.0),\(borderColor.g*255.0),\(borderColor.b*255.0));opacity:\(fillColor.a)\" />"
+        let rectStr = "<rect x=\"\(rect.origin.x)\" y=\"\(rect.origin.y)\" width=\"\(rect.size.width)\" height=\"\(rect.size.height)\" style=\"fill:\(fillColor.svgColorString);stroke-width:\(thickness);stroke:\(borderColor.svgColorString);opacity:\(fillColor.a)\" />"
         image = image + "\n" + rectStr
     }
 
@@ -180,7 +180,7 @@ public class SVGRenderer: Renderer{
             y = y + 0.1*plotDimensions.subHeight
         }
         y = plotDimensions.subHeight - y
-        let circle: String = "<circle cx=\"\(x)\" cy=\"\(y)\" r=\"\(r)\"  style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));opacity:\(fillColor.a)\" />"
+        let circle: String = "<circle cx=\"\(x)\" cy=\"\(y)\" r=\"\(r)\"  style=\"fill:\(fillColor.svgColorString);opacity:\(fillColor.a)\" />"
         image = image + "\n" + circle
     }
 
@@ -206,7 +206,7 @@ public class SVGRenderer: Renderer{
         y1 = plotDimensions.subHeight - y1
         y2 = plotDimensions.subHeight - y2
         y3 = plotDimensions.subHeight - y3
-        let triangle = "<polygon points=\"\(x1),\(y1) \(x2),\(y2) \(x3),\(y3)\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));opacity:\(fillColor.a)\" />"
+        let triangle = "<polygon points=\"\(x1),\(y1) \(x2),\(y2) \(x3),\(y3)\" style=\"fill:\(fillColor.svgColorString);opacity:\(fillColor.a)\" />"
         image = image + "\n" + triangle
     }
 
@@ -234,7 +234,7 @@ public class SVGRenderer: Renderer{
         for index in 0..<pts.count {
             pointsString = pointsString + "\(pts[index].x),\(pts[index].y) "
         }
-        let polygon = "<polygon points=\"" + pointsString + "\" style=\"fill:rgb(\(fillColor.r*255.0),\(fillColor.g*255.0),\(fillColor.b*255.0));opacity:\(fillColor.a)\" />"
+        let polygon = "<polygon points=\"" + pointsString + "\" style=\"fill:\(fillColor.svgColorString);opacity:\(fillColor.a)\" />"
         image = image + "\n" + polygon
     }
 
@@ -258,10 +258,10 @@ public class SVGRenderer: Renderer{
         y1 = plotDimensions.subHeight - y1
         var line : String
         if (isDashed) {
-            line = "<line x1=\"\(x0 + xOffset)\" y1=\"\(y0 + yOffset)\" x2=\"\(x1 + xOffset)\" y2=\"\(y1 + yOffset)\" style=\"stroke:rgb(\(strokeColor.r*255.0),\(strokeColor.g*255.0),\(strokeColor.b*255.0));stroke-width:\(thickness);opacity:\(strokeColor.a);stroke-linecap:round;stroke-dasharray:4 1\" />"
+            line = "<line x1=\"\(x0 + xOffset)\" y1=\"\(y0 + yOffset)\" x2=\"\(x1 + xOffset)\" y2=\"\(y1 + yOffset)\" style=\"stroke:\(strokeColor.svgColorString);stroke-width:\(thickness);opacity:\(strokeColor.a);stroke-linecap:round;stroke-dasharray:4 1\" />"
         }
         else {
-            line = "<line x1=\"\(x0 + xOffset)\" y1=\"\(y0 + yOffset)\" x2=\"\(x1 + xOffset)\" y2=\"\(y1 + yOffset)\" style=\"stroke:rgb(\(strokeColor.r*255.0),\(strokeColor.g*255.0),\(strokeColor.b*255.0));stroke-width:\(thickness);opacity:\(strokeColor.a);stroke-linecap:round\" />"
+            line = "<line x1=\"\(x0 + xOffset)\" y1=\"\(y0 + yOffset)\" x2=\"\(x1 + xOffset)\" y2=\"\(y1 + yOffset)\" style=\"stroke:\(strokeColor.svgColorString);stroke-width:\(thickness);opacity:\(strokeColor.a);stroke-linecap:round\" />"
         }
         image = image + "\n" + line
     }
@@ -270,6 +270,7 @@ public class SVGRenderer: Renderer{
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
+        guard !p.isEmpty else { return }
         for i in 0..<p.count-1 {
             drawLine(startPoint: p[i], endPoint: p[i+1], strokeWidth: thickness, strokeColor: strokeColor, isDashed: isDashed, isOriginShifted: true)
         }
@@ -278,6 +279,7 @@ public class SVGRenderer: Renderer{
     public func drawText(text s: String,
                          location p: Point,
                          textSize size: Float,
+                         color: Color,
                          strokeWidth thickness: Float,
                          angle: Float,
                          isOriginShifted: Bool){
@@ -287,7 +289,7 @@ public class SVGRenderer: Renderer{
             x1 = x1 + 0.1*plotDimensions.subWidth
             y1 = y1 - 0.1*plotDimensions.subHeight
         }
-        let text = "<text font-size=\"\(size)\" font-family=\""+"\(fontFamily)"+"\" x=\"\(x1 + xOffset)\" y=\"\(y1 + yOffset)\" stroke=\"#000000\" stroke-width=\"\(thickness/4)\" transform=\"rotate(\(-angle),\(x1+xOffset),\(y1 + yOffset))\">\(s)</text>"
+        let text = #"<text font-size="\#(size)" font-family="\#(fontFamily)" x="\#(x1 + xOffset)" y="\#(y1 + yOffset)" style="stroke:\#(color.svgColorString);stroke-width:\#(thickness/4)" transform="rotate(\#(-angle),\#(x1+xOffset),\#(y1 + yOffset))">\#(s)</text>"#
         image = image + "\n" + text
     }
 
@@ -317,4 +319,10 @@ public class SVGRenderer: Renderer{
         }
     }
 
+}
+
+extension Color {
+    var svgColorString: String {
+        return "rgb(\(r*255.0),\(g*255.0),\(b*255.0))"
+    }
 }

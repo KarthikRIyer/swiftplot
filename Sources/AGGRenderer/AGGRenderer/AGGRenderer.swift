@@ -240,6 +240,7 @@ public class AGGRenderer: Renderer{
     public func drawText(text s: String,
                          location p: Point,
                          textSize size: Float,
+                         color: Color,
                          strokeWidth thickness: Float,
                          angle: Float,
                          isOriginShifted: Bool){
@@ -247,6 +248,10 @@ public class AGGRenderer: Renderer{
                   p.x + xOffset,
                   p.y + yOffset,
                   size,
+                  color.r,
+                  color.g,
+                  color.b,
+                  color.a,
                   thickness,
                   angle,
                   isOriginShifted,
