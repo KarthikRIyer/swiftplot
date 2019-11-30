@@ -10,7 +10,7 @@ import QuartzRenderer
 @available(tvOS 13, watchOS 13, *)
 extension ScatterPlotTests {
   
-  func testScatterPlot() {
+  func testScatterPlot() throws {
 
     let fileName = "_20_scatter_plot"
  
@@ -21,17 +21,17 @@ extension ScatterPlotTests {
     scatterPlot.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
     
     let svg_renderer = SVGRenderer()
-    scatterPlot.drawGraphAndOutput(fileName: self.svgOutputDirectory+fileName,
-                                   renderer: svg_renderer)
+    try scatterPlot.drawGraphAndOutput(fileName: self.svgOutputDirectory+fileName,
+                                       renderer: svg_renderer)
     #if canImport(AGGRenderer)
     let agg_renderer = AGGRenderer()
-    scatterPlot.drawGraphAndOutput(fileName: self.aggOutputDirectory+fileName,
-                                   renderer: agg_renderer)
+    try scatterPlot.drawGraphAndOutput(fileName: self.aggOutputDirectory+fileName,
+                                       renderer: agg_renderer)
     #endif
     #if canImport(QuartzRenderer)
     let quartz_renderer = QuartzRenderer()
-    scatterPlot.drawGraphAndOutput(fileName: self.coreGraphicsOutputDirectory+fileName,
-                                   renderer: quartz_renderer)
+    try scatterPlot.drawGraphAndOutput(fileName: self.coreGraphicsOutputDirectory+fileName,
+                                       renderer: quartz_renderer)
     #endif
   }
 }

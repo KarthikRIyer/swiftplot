@@ -7,9 +7,6 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     public var layout: GraphLayout
 
-    public var xOffset: Float = 0
-    public var yOffset: Float = 0
-    
     public var plotLineThickness: Float = 1.5
 
     var primaryAxis = Axis<T,U>()
@@ -31,7 +28,7 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
                 height: Float = 660,
                 enablePrimaryAxisGrid: Bool = false,
                 enableSecondaryAxisGrid: Bool = false){
-        layout = GraphLayout(plotDimensions: PlotDimensions(frameWidth: width, frameHeight: height))
+        layout = GraphLayout(size: Size(width: width, height: height))
         self.enablePrimaryAxisGrid = enablePrimaryAxisGrid
         self.enableSecondaryAxisGrid = enableSecondaryAxisGrid
     }
@@ -129,7 +126,7 @@ extension LineGraph: HasGraphLayout {
     }
 
     // functions implementing plotting logic
-    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, renderer: Renderer) {
+    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, size: Size, renderer: Renderer) {
 
         var maximumXPrimary: T = maxX(points: primaryAxis.series[0].values)
         var maximumYPrimary: U = maxY(points: primaryAxis.series[0].values)
@@ -193,10 +190,10 @@ extension LineGraph: HasGraphLayout {
             minimumXPrimary = min(minimumXPrimary, minimumXSecondary)
         }
 
-        let rightScaleMargin: Float = (plotDimensions.subWidth - plotDimensions.graphWidth)*Float(0.2) - 10.0;
-        let topScaleMargin: Float = (plotDimensions.subHeight - plotDimensions.graphHeight)*Float(0.2) - 10.0;
-        var originPrimaryX: Float = (plotDimensions.graphWidth/Float(maximumXPrimary-minimumXPrimary))*Float(T(-1)*minimumXPrimary)
-        var originPrimaryY: Float = (plotDimensions.graphHeight/Float(maximumYPrimary-minimumYPrimary))*Float(U(-1)*minimumYPrimary)
+        let rightScaleMargin: Float = size.width * 0.05
+        let topScaleMargin: Float = size.height * 0.05
+        var originPrimaryX: Float = (size.width/Float(maximumXPrimary-minimumXPrimary))*Float(T(-1)*minimumXPrimary)
+        var originPrimaryY: Float = (size.height/Float(maximumYPrimary-minimumYPrimary))*Float(U(-1)*minimumYPrimary)
         if(minimumXPrimary >= T(0)) {
             originPrimaryX+=rightScaleMargin
         }
@@ -204,13 +201,13 @@ extension LineGraph: HasGraphLayout {
             originPrimaryY+=topScaleMargin
         }
         let originPrimary = Point(originPrimaryX, originPrimaryY)
-        primaryAxis.scaleX = Float(maximumXPrimary - minimumXPrimary) / (plotDimensions.graphWidth - 2*rightScaleMargin);
-        primaryAxis.scaleY = Float(maximumYPrimary - minimumYPrimary) / (plotDimensions.graphHeight - 2*topScaleMargin);
+        primaryAxis.scaleX = Float(maximumXPrimary - minimumXPrimary) / (size.width - 2*rightScaleMargin);
+        primaryAxis.scaleY = Float(maximumYPrimary - minimumYPrimary) / (size.height - 2*topScaleMargin);
 
         var originSecondary: Point? = nil
         if (secondaryAxis != nil) {
-            var originSecondaryX: Float = (plotDimensions.graphWidth/Float(maximumXSecondary-minimumXSecondary))*Float(T(-1)*minimumXSecondary)
-            var originSecondaryY: Float = (plotDimensions.graphHeight/Float(maximumYSecondary-minimumYSecondary))*Float(U(-1)*minimumYSecondary)
+            var originSecondaryX: Float = (size.width/Float(maximumXSecondary-minimumXSecondary))*Float(T(-1)*minimumXSecondary)
+            var originSecondaryY: Float = (size.height/Float(maximumYSecondary-minimumYSecondary))*Float(U(-1)*minimumYSecondary)
             if(minimumXSecondary >= T(0)) {
                 originSecondaryX+=rightScaleMargin
             }
@@ -218,8 +215,8 @@ extension LineGraph: HasGraphLayout {
                 originSecondaryY+=topScaleMargin
             }
             originSecondary = Point(originSecondaryX, originSecondaryY)
-            secondaryAxis!.scaleX = Float(maximumXSecondary - minimumXSecondary) / (plotDimensions.graphWidth - 2*rightScaleMargin);
-            secondaryAxis!.scaleY = Float(maximumYSecondary - minimumYSecondary) / (plotDimensions.graphHeight - 2*topScaleMargin);
+            secondaryAxis!.scaleX = Float(maximumXSecondary - minimumXSecondary) / (size.width - 2*rightScaleMargin);
+            secondaryAxis!.scaleY = Float(maximumYSecondary - minimumYSecondary) / (size.height - 2*topScaleMargin);
         }
 
         //calculations for primary axis
@@ -281,8 +278,8 @@ extension LineGraph: HasGraphLayout {
         var nY: Float = v1/primaryAxis.scaleY
         if(inc1Primary == -1) {
             inc1Primary = nY
-            if(plotDimensions.graphHeight/nY > MAX_DIV){
-                inc1Primary = (plotDimensions.graphHeight/nY)*inc1Primary/MAX_DIV
+            if(size.height/nY > MAX_DIV){
+                inc1Primary = (size.height/nY)*inc1Primary/MAX_DIV
             }
         }
 
@@ -299,15 +296,15 @@ extension LineGraph: HasGraphLayout {
         let nX: Float = v2/primaryAxis.scaleX
         if(inc2Primary == -1) {
             inc2Primary = nX
-            var noXD: Float = plotDimensions.graphWidth/nX
+            var noXD: Float = size.width/nX
             if(noXD > MAX_DIV){
-                inc2Primary = (plotDimensions.graphWidth/nX)*inc2Primary/MAX_DIV
+                inc2Primary = (size.width/nX)*inc2Primary/MAX_DIV
                 noXD = MAX_DIV
             }
         }
 
         var xM = originPrimary.x
-        while xM<=plotDimensions.graphWidth {
+        while xM<=size.width {
             if(xM+inc2Primary<0.0 || xM<0.0) {
                 xM = xM+inc2Primary
                 continue
@@ -319,7 +316,7 @@ extension LineGraph: HasGraphLayout {
 
         xM = originPrimary.x - inc2Primary
         while xM>0.0 {
-            if (xM > plotDimensions.graphWidth) {
+            if (xM > size.width) {
                 xM = xM - inc2Primary
                 continue
             }
@@ -329,7 +326,7 @@ extension LineGraph: HasGraphLayout {
         }
 
         var yM = originPrimary.y
-        while yM<=plotDimensions.graphHeight {
+        while yM<=size.height {
             if(yM+inc1Primary<0.0 || yM<0.0){
                 yM = yM + inc1Primary
                 continue
@@ -355,7 +352,7 @@ extension LineGraph: HasGraphLayout {
             for j in 0..<primaryAxis.series[i].count {
                 let scaledPair = Pair<T,U>(((primaryAxis.series[i])[j].x)*T(scaleXInvPrimary) + T(originPrimary.x),
                                            ((primaryAxis.series[i])[j].y)*U(scaleYInvPrimary) + U(originPrimary.y))
-                if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= plotDimensions.graphWidth && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= plotDimensions.graphHeight) {
+                if (0...size.width).contains(Float(scaledPair.x)) && (0...size.height).contains(Float(scaledPair.y)) {
                     primaryAxis.series[i].scaledValues.append(scaledPair)
                 }
             }
@@ -387,13 +384,13 @@ extension LineGraph: HasGraphLayout {
             nY = v1/secondaryAxis!.scaleY
             if(inc1Secondary == -1) {
                 inc1Secondary = nY
-                if(plotDimensions.graphHeight/nY > MAX_DIV){
-                    inc1Secondary = (plotDimensions.graphHeight/nY)*inc1Secondary/MAX_DIV
+                if(size.height/nY > MAX_DIV){
+                    inc1Secondary = (size.height/nY)*inc1Secondary/MAX_DIV
                 }
             }
             yM = originSecondary!.y
 
-            while yM<=plotDimensions.graphHeight {
+            while yM<=size.height {
                 if(yM+inc1Secondary<0.0 || yM<0.0){
                     yM = yM + inc1Secondary
                     continue
@@ -419,7 +416,7 @@ extension LineGraph: HasGraphLayout {
                 for j in 0..<secondaryAxis!.series[i].count {
                     let scaledPair = Pair<T,U>(((secondaryAxis!.series[i])[j].x)*T(scaleXInvPrimary) + T(originPrimary.x),
                                                ((secondaryAxis!.series[i])[j].y)*U(scaleYInvSecondary) + U(originSecondary!.y))
-                    if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= plotDimensions.graphWidth && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= plotDimensions.graphHeight) {
+                    if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= size.width && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= size.height) {
                         secondaryAxis!.series[i].scaledValues.append(scaledPair)
                     }
                 }
@@ -428,7 +425,7 @@ extension LineGraph: HasGraphLayout {
     }
 
     //functions to draw the plot
-    public func drawData(markers: PlotMarkers, renderer: Renderer) {
+    public func drawData(markers: PlotMarkers, size: Size, renderer: Renderer) {
         for s in primaryAxis.series {
             var points = [Point]()
             for p in s.scaledValues {

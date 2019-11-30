@@ -66,19 +66,19 @@ public class SubPlot{
                                         subHeight: subHeight)
     }
 
-    public func draw(plots: [Plot], renderer: Renderer, fileName: String = "subPlot_output") {
+    public func draw(plots: [Plot], renderer: Renderer, fileName: String = "subPlot_output") throws {
         calculateSubPlotParams(numberOfPlots: plots.count)
         renderer.plotDimensions = plotDimensions
         for index in 0..<plots.count {
-            var plot: Plot = plots[index]
             let j: Int = index%numberOfColumns
             let i: Int = Int(index/numberOfColumns)
-            plot.xOffset = Float(j)*xOffset
-            plot.yOffset = Float(i)*yOffset
-            plot.plotDimensions = plotDimensions
+            renderer.xOffset = Float(j)*xOffset
+            renderer.yOffset = Float(i)*yOffset
+            var plot: Plot = plots[index]
+            plot.plotSize = Size(width: plotDimensions.subWidth, height: plotDimensions.subHeight)
             plot.drawGraph(renderer: renderer)
         }
-        renderer.drawOutput(fileName: fileName)
+        try renderer.drawOutput(fileName: fileName)
     }
 
 }

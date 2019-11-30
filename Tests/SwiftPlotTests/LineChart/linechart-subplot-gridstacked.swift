@@ -10,7 +10,7 @@ import QuartzRenderer
 @available(tvOS 13, watchOS 13, *)
 extension LineChartTests {
   
-  func testLineChartSubplotGridStacked() {
+  func testLineChartSubplotGridStacked() throws {
     
     let fileName = "_05_sub_plot_grid_stacked_line_chart"
     
@@ -50,20 +50,20 @@ extension LineChartTests {
     
     let subPlot = SubPlot(numberOfPlots: 4, numberOfRows: 2, numberOfColumns: 2, stackPattern: .gridStacked)
     let svg_renderer = SVGRenderer()
-    subPlot.draw(plots: plots,
-                 renderer: svg_renderer,
-                 fileName: self.svgOutputDirectory+fileName)
+    try subPlot.draw(plots: plots,
+                     renderer: svg_renderer,
+                     fileName: self.svgOutputDirectory+fileName)
     #if canImport(AGGRenderer)
     let agg_renderer = AGGRenderer()
-    subPlot.draw(plots: plots,
-                 renderer: agg_renderer,
-                 fileName: self.aggOutputDirectory+fileName)
+    try subPlot.draw(plots: plots,
+                     renderer: agg_renderer,
+                     fileName: self.aggOutputDirectory+fileName)
     #endif
     #if canImport(QuartzRenderer)
     let quartz_renderer = QuartzRenderer()
-    subPlot.draw(plots: plots,
-                 renderer: quartz_renderer,
-                 fileName: self.coreGraphicsOutputDirectory+fileName)
+    try subPlot.draw(plots: plots,
+                     renderer: quartz_renderer,
+                     fileName: self.coreGraphicsOutputDirectory+fileName)
     #endif
   }
 }

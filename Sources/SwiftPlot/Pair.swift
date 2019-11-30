@@ -12,6 +12,10 @@ public struct Pair<T,U> {
 public typealias Point = Pair<Float,Float>
 public let zeroPoint = Point(0.0, 0.0)
 
+public func + (lhs: Point, rhs: Point) -> Point {
+    return Point(lhs.x + rhs.x, lhs.y + rhs.y)
+}
+
 public struct Size {
     public var width: Float
     public var height: Float
@@ -73,10 +77,32 @@ extension Rect {
         return norm.origin.y + norm.size.height
     }
     
+    public var width: Float {
+        return size.width
+    }
+    
+    public var height: Float {
+        return size.height
+    }
+    
     public init(size: Size, centeredOn center: Point) {
         self = Rect(
             origin: Point(center.x - size.width/2, center.y - size.height/2),
             size: size
         )
+    }
+    
+    mutating func contract(by distance: Float) {
+        origin.x += distance
+        origin.y += distance
+        size.width -= 2 * distance
+        size.height -= 2 * distance
+    }
+    
+    mutating func clampingShift(dx: Float = 0, dy: Float = 0) {
+        origin.x += dx
+        origin.y += dy
+        size.width -= dx
+        size.height -= dy
     }
 }

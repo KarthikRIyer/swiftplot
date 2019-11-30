@@ -1,7 +1,6 @@
 public protocol Plot {
-    var xOffset: Float { get set }
-    var yOffset: Float { get set }
-    var plotDimensions: PlotDimensions { get set }
+
+    var plotSize: Size { get set }
     
     var legendLabels: [(String, LegendIcon)] { get }
     
@@ -14,19 +13,19 @@ extension Plot {
     }
     
     // call functions to draw the graph
-    public func drawGraphAndOutput(fileName name: String = "swiftplot_graph", renderer: Renderer){
-        renderer.plotDimensions = plotDimensions
+    public func drawGraphAndOutput(fileName name: String = "swiftplot_graph", renderer: Renderer) throws {
+        renderer.plotDimensions = PlotDimensions(frameWidth: plotSize.width, frameHeight: plotSize.height)
         drawGraph(renderer: renderer)
-        saveImage(fileName: name, renderer: renderer)
+        try saveImage(fileName: name, renderer: renderer)
     }
 
     public func drawGraphOutput(fileName name: String = "swiftplot_graph",
-                                renderer: Renderer){
-        renderer.plotDimensions = plotDimensions
-        renderer.drawOutput(fileName: name)
+                                renderer: Renderer) throws {
+        renderer.plotDimensions = PlotDimensions(frameWidth: plotSize.width, frameHeight: plotSize.height)
+        try renderer.drawOutput(fileName: name)
     }
     
-    func saveImage(fileName name: String, renderer: Renderer) {
-        renderer.drawOutput(fileName: name)
+    func saveImage(fileName name: String, renderer: Renderer) throws {
+        try renderer.drawOutput(fileName: name)
     }
 }

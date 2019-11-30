@@ -57,13 +57,13 @@ namespace CPPAGGRenderer{
     saveBMP(buf, width, height, file_name);
   }
 
-  void write_png(std::vector<unsigned char>& image, unsigned width, unsigned height, const char* filename) {
+  unsigned write_png(std::vector<unsigned char>& image, unsigned width, unsigned height, const char* filename, const char** errorDesc) {
     //Encode the image
     LodePNGColorType colorType = LCT_RGB;
     unsigned error = lodepng::encode(filename, image, width, height, colorType);
-
-    //if there's an error, display it
-    if(error) std::cout << "encoder error " << error << ": "<< lodepng_error_text(error) << std::endl;
+    if(error && errorDesc)
+        *errorDesc = lodepng_error_text(error);
+      return error;
   }
 
   std::vector<unsigned char> write_png_memory(const unsigned char* buf, unsigned width, unsigned height){
@@ -221,7 +221,7 @@ namespace CPPAGGRenderer{
       agg::render_scanlines(m_ras, m_sl_p8, rs_pattern);
     }
 
-    void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern, bool is_origin_shifted){
+    void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern){
       agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
       pixfmt pixf = pixfmt(rbuf);
       renderer_base rb = renderer_base(pixf);
@@ -236,9 +236,6 @@ namespace CPPAGGRenderer{
       rect_path.close_polygon();
       agg::trans_affine matrix;
       matrix *= agg::trans_affine_translation(0, 0);
-      if (is_origin_shifted) {
-        matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
-      }
       agg::conv_transform<agg::path_storage, agg::trans_affine> trans(rect_path, matrix);
       if (hatch_pattern == 0) {
         Color c(r, g, b, a);
@@ -263,7 +260,7 @@ namespace CPPAGGRenderer{
       }
     }
 
-    void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_origin_shifted){
+    void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a){
       agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
       pixfmt pixf = pixfmt(rbuf);
       renderer_base rb = renderer_base(pixf);
@@ -277,9 +274,6 @@ namespace CPPAGGRenderer{
       agg::conv_stroke<agg::path_storage> rect_path_line(rect_path);
       agg::trans_affine matrix;
       matrix *= agg::trans_affine_translation(0, 0);
-      if (is_origin_shifted) {
-        matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
-      }
       agg::conv_transform<agg::path_storage, agg::trans_affine> trans(rect_path, matrix);
       agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>> curve(trans);
       agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>> stroke(curve);
@@ -290,7 +284,7 @@ namespace CPPAGGRenderer{
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
     }
 
-    void draw_solid_circle(float cx, float cy, float radius, float r, float g, float b, float a, bool is_origin_shifted) {
+    void draw_solid_circle(float cx, float cy, float radius, float r, float g, float b, float a) {
       agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
       pixfmt pixf = pixfmt(rbuf);
       renderer_base rb = renderer_base(pixf);
@@ -299,16 +293,13 @@ namespace CPPAGGRenderer{
       Color c(r, g, b, a);
       agg::trans_affine matrix;
       matrix *= agg::trans_affine_translation(0, 0);
-      if (is_origin_shifted) {
-        matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
-      }
       agg::conv_transform<agg::ellipse, agg::trans_affine> trans(circle, matrix);
       m_ras.add_path(trans);
       ren_aa.color(c);
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
     }
 
-    void draw_solid_triangle(float x1, float x2, float x3, float y1, float y2, float y3, float r, float g, float b, float a, bool is_origin_shifted) {
+    void draw_solid_triangle(float x1, float x2, float x3, float y1, float y2, float y3, float r, float g, float b, float a) {
       agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
       pixfmt pixf = pixfmt(rbuf);
       renderer_base rb = renderer_base(pixf);
@@ -320,9 +311,6 @@ namespace CPPAGGRenderer{
       tri_path.close_polygon();
       agg::trans_affine matrix;
       matrix *= agg::trans_affine_translation(0, 0);
-      if (is_origin_shifted) {
-        matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
-      }
       agg::conv_transform<agg::path_storage, agg::trans_affine> trans(tri_path, matrix);
       m_ras.add_path(trans);
       Color c(r, g, b, a);
@@ -330,7 +318,7 @@ namespace CPPAGGRenderer{
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
     }
 
-    void draw_solid_polygon(const float* x, const float* y, int count, float r, float g, float b, float a, bool is_origin_shifted) {
+    void draw_solid_polygon(const float* x, const float* y, int count, float r, float g, float b, float a) {
       agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
       pixfmt pixf = pixfmt(rbuf);
       renderer_base rb = renderer_base(pixf);
@@ -343,9 +331,6 @@ namespace CPPAGGRenderer{
       poly_path.close_polygon();
       agg::trans_affine matrix;
       matrix *= agg::trans_affine_translation(0, 0);
-      if (is_origin_shifted) {
-        matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
-      }
       agg::conv_transform<agg::path_storage, agg::trans_affine> trans(poly_path, matrix);
       m_ras.add_path(trans);
       Color c(r, g, b, a);
@@ -353,7 +338,7 @@ namespace CPPAGGRenderer{
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
     }
 
-    void draw_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_dashed, bool is_origin_shifted){
+    void draw_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_dashed){
       agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
       pixfmt pixf = pixfmt(rbuf);
       renderer_base rb = renderer_base(pixf);
@@ -364,9 +349,6 @@ namespace CPPAGGRenderer{
 
       agg::trans_affine matrix;
       matrix *= agg::trans_affine_translation(0, 0);
-      if (is_origin_shifted) {
-        matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
-      }
       agg::conv_transform<agg::path_storage, agg::trans_affine> trans(rect_path, matrix);
       agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>> curve(trans);
       agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>> stroke(curve);
@@ -397,7 +379,6 @@ namespace CPPAGGRenderer{
         rect_path.line_to(*(x+i),*(y+i));
       }
       agg::trans_affine matrix;
-      matrix *= agg::trans_affine_translation(sub_width*0.1f, sub_height*0.1f);
       agg::conv_transform<agg::path_storage, agg::trans_affine> trans(rect_path, matrix);
       agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>> curve(trans);
       agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>> stroke(curve);
@@ -419,7 +400,7 @@ namespace CPPAGGRenderer{
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
     }
 
-    void draw_text(const char *s, float x, float y, float size, float r, float g, float b, float a, float thickness, float angle, bool is_origin_shifted){
+    void draw_text(const char *s, float x, float y, float size, float r, float g, float b, float a, float thickness, float angle){
       agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
       pixfmt pixf = pixfmt(rbuf);
       renderer_base rb = renderer_base(pixf);
@@ -434,10 +415,6 @@ namespace CPPAGGRenderer{
         m_feng.height(font_height);
         m_feng.width(font_width);
         m_feng.flip_y(false);
-        if (is_origin_shifted) {
-          x+=(sub_width*0.1f);
-          y+=(sub_height*0.1f);
-        }
         agg::trans_affine matrix;
         matrix *= agg::trans_affine_rotation(agg::deg2rad(angle));
         m_feng.transform(matrix);
@@ -460,10 +437,11 @@ namespace CPPAGGRenderer{
       }
     }
 
-    float get_text_width(const char *s, float size){
+    void get_text_size(const char *s, float size, float* outW, float* outH){
       font_width = font_height = size;
       m_contour.width(-font_weight*font_height*0.05);
-      float x = 0;
+        float x = 0;
+        float y = 0;
       // set rotation of font engine to zero before calculating text width
       agg::trans_affine matrix;
       matrix *= agg::trans_affine_rotation(agg::deg2rad(0));
@@ -477,19 +455,26 @@ namespace CPPAGGRenderer{
           const agg::glyph_cache* glyph = m_fman.glyph(*s);
           if(glyph){
             x+=glyph->advance_x;
+            float height = glyph->bounds.y2 - glyph->bounds.y1;
+            y = max(y, height);
           }
           ++s;
         }
       }
-      return x;
+        if (outW)
+            *outW = x;
+        if (outH)
+        *outH = y;
     }
 
-    void save_image(const char *s){
+    unsigned save_image(const char *s, const char** errorDesc){
       char* file_png = (char *) malloc(1 + strlen(s)+ strlen(".png") );
       strcpy(file_png, s);
       strcat(file_png, ".png");
       std::vector<unsigned char> image(buffer, buffer + (frame_width*frame_height*3));
-      write_png(image, frame_width, frame_height, file_png);
+      unsigned err = write_png(image, frame_width, frame_height, file_png, errorDesc);
+      free(file_png);
+      return err;
     }
 
     const unsigned char* getPngBuffer(){
@@ -514,34 +499,35 @@ namespace CPPAGGRenderer{
     return (void *)plot;
   }
 
-  void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_origin_shifted, const void *object){
+  void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a,
+                 const void *object){
     Plot *plot = (Plot *)object;
-    plot -> draw_rect(x, y, thickness, r, g, b, a, is_origin_shifted);
+    plot -> draw_rect(x, y, thickness, r, g, b, a);
   }
 
-  void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern, bool is_origin_shifted, const void *object){
+  void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern, const void *object){
     Plot *plot = (Plot *)object;
-    plot -> draw_solid_rect(x, y, r, g, b, a, hatch_pattern, is_origin_shifted);
+    plot -> draw_solid_rect(x, y, r, g, b, a, hatch_pattern);
   }
 
-  void draw_solid_circle(float cx, float cy, float radius, float r, float g, float b, float a, bool is_origin_shifted, const void *object){
+  void draw_solid_circle(float cx, float cy, float radius, float r, float g, float b, float a, const void *object){
     Plot *plot = (Plot *)object;
-    plot -> draw_solid_circle(cx, cy, radius, r, g, b, a, is_origin_shifted);
+    plot -> draw_solid_circle(cx, cy, radius, r, g, b, a);
   }
 
-  void draw_solid_triangle(float x1, float x2, float x3, float y1, float y2, float y3, float r, float g, float b, float a, bool is_origin_shifted, const void *object){
+  void draw_solid_triangle(float x1, float x2, float x3, float y1, float y2, float y3, float r, float g, float b, float a, const void *object){
     Plot *plot = (Plot *)object;
-    plot -> draw_solid_triangle(x1, x2, x3, y1, y2, y3, r, g, b, a, is_origin_shifted);
+    plot -> draw_solid_triangle(x1, x2, x3, y1, y2, y3, r, g, b, a);
   }
 
-  void draw_solid_polygon(const float* x, const float* y, int count, float r, float g, float b, float a, bool is_origin_shifted, const void *object){
+  void draw_solid_polygon(const float* x, const float* y, int count, float r, float g, float b, float a, const void *object){
     Plot *plot = (Plot *)object;
-    plot -> draw_solid_polygon(x, y, count, r, g, b, a, is_origin_shifted);
+    plot -> draw_solid_polygon(x, y, count, r, g, b, a);
   }
 
-  void draw_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_dashed, bool is_origin_shifted, const void *object){
+  void draw_line(const float *x, const float *y, float thickness, float r, float g, float b, float a, bool is_dashed, const void *object){
     Plot *plot = (Plot *)object;
-    plot -> draw_line(x, y, thickness, r, g, b, a, is_dashed, is_origin_shifted);
+    plot -> draw_line(x, y, thickness, r, g, b, a, is_dashed);
   }
 
   void draw_plot_lines(const float *x, const float *y, int size, float thickness, float r, float g, float b, float a, bool isDashed, const void *object){
@@ -549,19 +535,19 @@ namespace CPPAGGRenderer{
     plot -> draw_plot_lines(x, y, size, thickness, r, g, b, a, isDashed);
   }
 
-  void draw_text(const char *s, float x, float y, float size, float r, float g, float b, float a, float thickness, float angle, bool is_origin_shifted, const void *object){
+  void draw_text(const char *s, float x, float y, float size, float r, float g, float b, float a, float thickness, float angle, const void *object){
     Plot *plot = (Plot *)object;
-    plot -> draw_text(s, x, y, size, r, g, b, a, thickness, angle, is_origin_shifted);
+    plot -> draw_text(s, x, y, size, r, g, b, a, thickness, angle);
   }
 
-  float get_text_width(const char *s, float size, const void *object){
+  void get_text_size(const char *s, float size, float* outW, float* outH, const void *object){
     Plot *plot = (Plot *)object;
-    return plot -> get_text_width(s, size);
+    plot -> get_text_size(s, size, outW, outH);
   }
 
-  void save_image(const char *s, const void *object){
+  unsigned save_image(const char *s, const char** errorDesc, const void *object){
     Plot *plot = (Plot *)object;
-    plot -> save_image(s);
+    return plot -> save_image(s, errorDesc);
   }
 
   const unsigned char* get_png_buffer(const void *object){
