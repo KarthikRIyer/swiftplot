@@ -115,7 +115,7 @@ extension LineGraph: HasGraphLayout {
 
     // functions implementing plotting logic
     public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, size: Size, renderer: Renderer) {
-
+        guard !primaryAxis.series.isEmpty, !primaryAxis.series[0].values.isEmpty else { return }
         var maximumXPrimary: T = maxX(points: primaryAxis.series[0].values)
         var maximumYPrimary: U = maxY(points: primaryAxis.series[0].values)
         var minimumXPrimary: T = minX(points: primaryAxis.series[0].values)
