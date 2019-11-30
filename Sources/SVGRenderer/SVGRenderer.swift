@@ -180,7 +180,7 @@ public class SVGRenderer: Renderer{
             y = y + 0.1*plotDimensions.subHeight
         }
         y = plotDimensions.subHeight - y
-        let circle: String = "<circle cx=\"\(x)\" cy=\"\(y)\" r=\"\(r)\"  style=\"fill:(\(fillColor.svgColorString);opacity:\(fillColor.a)\" />"
+        let circle: String = "<circle cx=\"\(x)\" cy=\"\(y)\" r=\"\(r)\"  style=\"fill:\(fillColor.svgColorString);opacity:\(fillColor.a)\" />"
         image = image + "\n" + circle
     }
 
