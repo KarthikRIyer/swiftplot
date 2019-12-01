@@ -45,6 +45,8 @@ let platformProducts: [Product] =  [
   .library(name: "AGGRenderer", targets: ["AGGRenderer"]),
 ]
 
+// Building for iOS/tvOS/watchOS:
+// Change the condition below to "!os(macOS)".
 #elseif os(macOS)
 
 let platformTargets: [Target] = [
@@ -93,13 +95,7 @@ let platformProducts: [Product] =  [
   .library(name: "QuartzRenderer", targets: ["QuartzRenderer"])
 ]
 
-#elseif os(iOS) || os(tvOS) || os(watchOS)
-
-// Note: This isn't the correct way to do this, because
-// "#if os(...)" depends on the build OS, not the target OS.
-// But SwiftPM doesn't have platform-specific targets, so to make this work
-// on iOS/tvOS/watchOS, you have to comment out the AGG-related things on the macOS
-// configuration until it looks like this:
+#elseif os(iOS) || os(tvOS) || os(watchOS) || os(macOS)
 
 let platformTargets: [Target] = [
     .target(name: "SwiftPlot"),
