@@ -11,6 +11,9 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     var primaryAxis = Axis<T,U>()
     var secondaryAxis: Axis<T,U>? = nil
+    
+    var primaryAxis_series_scaledValues = [[Pair<T, U>]]()
+    var secondaryAxis_series_scaledValues = [[Pair<T, U>]]()
 
     public convenience init(points : [Pair<T,U>],
                 enablePrimaryAxisGrid: Bool = false,
@@ -339,13 +342,14 @@ extension LineGraph: HasGraphLayout {
         // scale points to be plotted according to plot size
         let scaleXInvPrimary: Float = 1.0/primaryAxis.scaleX;
         let scaleYInvPrimary: Float = 1.0/primaryAxis.scaleY
+        primaryAxis_series_scaledValues = []
         for i in 0..<primaryAxis.series.count {
-            primaryAxis.series[i].scaledValues.removeAll();
+            primaryAxis_series_scaledValues.append([])
             for j in 0..<primaryAxis.series[i].count {
                 let scaledPair = Pair<T,U>(((primaryAxis.series[i])[j].x)*T(scaleXInvPrimary) + T(originPrimary.x),
                                            ((primaryAxis.series[i])[j].y)*U(scaleYInvPrimary) + U(originPrimary.y))
                 if Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= size.width && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= size.height {
-                    primaryAxis.series[i].scaledValues.append(scaledPair)
+                    primaryAxis_series_scaledValues[i].append(scaledPair)
                 }
             }
         }
@@ -401,15 +405,16 @@ extension LineGraph: HasGraphLayout {
 
 
             // scale points to be plotted according to plot size
+            secondaryAxis_series_scaledValues = []
             let scaleYInvSecondary: Float = 1.0/secondaryAxis!.scaleY
             for i in 0..<secondaryAxis!.series.count {
                 // let pairs = secondaryAxis!.series[i].pairs
-                secondaryAxis!.series[i].scaledValues.removeAll();
+                secondaryAxis_series_scaledValues.append([])
                 for j in 0..<secondaryAxis!.series[i].count {
                     let scaledPair = Pair<T,U>(((secondaryAxis!.series[i])[j].x)*T(scaleXInvPrimary) + T(originPrimary.x),
                                                ((secondaryAxis!.series[i])[j].y)*U(scaleYInvSecondary) + U(originSecondary!.y))
                     if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= size.width && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= size.height) {
-                        secondaryAxis!.series[i].scaledValues.append(scaledPair)
+                        secondaryAxis_series_scaledValues[i].append(scaledPair)
                     }
                 }
             }
@@ -418,22 +423,20 @@ extension LineGraph: HasGraphLayout {
 
     //functions to draw the plot
     public func drawData(markers: PlotMarkers, size: Size, renderer: Renderer) {
-        for s in primaryAxis.series {
-            var points = [Point]()
-            for p in s.scaledValues {
-                points.append(Point(Float(p.x),Float(p.y)))
-            }
+        for i in 0..<primaryAxis.series.count {
+            let s = primaryAxis.series[i]
+            let scaledValues = primaryAxis_series_scaledValues[i]
+            let points: [Point] = scaledValues.map { Point(Float($0.x), Float($0.y)) }
             renderer.drawPlotLines(points: points,
                                    strokeWidth: plotLineThickness,
                                    strokeColor: s.color,
                                    isDashed: false)
         }
-        if (secondaryAxis != nil) {
-            for s in secondaryAxis!.series {
-                var points = [Point]()
-                for p in s.scaledValues {
-                    points.append(Point(Float(p.x),Float(p.y)))
-                }
+        if let secondaryAxis = secondaryAxis {
+            for i in 0..<secondaryAxis.series.count {
+                let s = secondaryAxis.series[i]
+                let scaledValues = secondaryAxis_series_scaledValues[i]
+                let points: [Point] = scaledValues.map { Point(Float($0.x), Float($0.y)) }
                 renderer.drawPlotLines(points: points,
                                        strokeWidth: plotLineThickness,
                                        strokeColor: s.color,

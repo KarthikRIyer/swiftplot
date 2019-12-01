@@ -16,6 +16,10 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
     
     var series = Series<T,U>()
     var stackSeries = [Series<T,U>]()
+    
+    public var series_scaledValues = [Pair<T,U>]()
+    public var stackSeries_scaledValues = [[Pair<T,U>]]()
+
     var scaleY: Float = 1
     var scaleX: Float = 1
     var barWidth : Int = 0
@@ -174,18 +178,19 @@ extension BarGraph: HasGraphLayout {
 
             // scale points to be plotted according to plot size
             let scaleYInv: Float = 1.0/scaleY
-            series.scaledValues.removeAll();
+            series_scaledValues.removeAll();
             for j in 0..<series.count {
                 let scaledPair = Pair<T,U>(series[j].x,
                                            series[j].y*U(scaleYInv) + U(origin.y))
-                series.scaledValues.append(scaledPair)
+                series_scaledValues.append(scaledPair)
             }
+            stackSeries_scaledValues.removeAll()
             for index in 0..<stackSeries.count {
-                stackSeries[index].scaledValues.removeAll()
+                stackSeries_scaledValues.append([])
                 for j in 0..<(stackSeries[index]).count {
                     let scaledPair = Pair<T,U>((stackSeries[index])[j].x,
                                                ((stackSeries[index])[j].y)*U(scaleYInv)+U(origin.y))
-                    stackSeries[index].scaledValues.append(scaledPair)
+                    stackSeries_scaledValues[index].append(scaledPair)
                 }
             }
         }
@@ -258,18 +263,19 @@ extension BarGraph: HasGraphLayout {
 
             // scale points to be plotted according to plot size
             let scaleXInv: Float = 1.0/scaleX
-            series.scaledValues.removeAll();
+            series_scaledValues.removeAll();
             for j in 0..<series.count {
                 let scaledPair = Pair<T,U>(series[j].x,
                                            series[j].y*U(scaleXInv)+U(origin.x))
-                series.scaledValues.append(scaledPair)
+                series_scaledValues.append(scaledPair)
             }
+            stackSeries_scaledValues.removeAll()
             for index in 0..<stackSeries.count {
-                stackSeries[index].scaledValues.removeAll()
+                stackSeries_scaledValues.append([])
                 for j in 0..<(stackSeries[index]).count {
                     let scaledPair = Pair<T,U>((stackSeries[index])[j].x,
                                                 (stackSeries[index])[j].y*U(scaleXInv)+U(origin.x))
-                    stackSeries[index].scaledValues.append(scaledPair)
+                    stackSeries_scaledValues[index].append(scaledPair)
                 }
             }
         }
@@ -288,7 +294,7 @@ extension BarGraph: HasGraphLayout {
                         origin.y),
                     size: Size(
                         width: Float(barWidth - space),
-                        height: Float(series.scaledValues[index].y) - origin.y)
+                        height: Float(series_scaledValues[index].y) - origin.y)
                 )
                 if (rect.size.height >= 0) {
                     currentHeightPositive = rect.size.height
@@ -299,8 +305,8 @@ extension BarGraph: HasGraphLayout {
                 renderer.drawSolidRect(rect,
                                        fillColor: series.color,
                                        hatchPattern: series.barGraphSeriesOptions.hatchPattern)
-                for s in stackSeries {
-                    let stackValue = Float(s.scaledValues[index].y)
+                for i in 0..<stackSeries.count {
+                    let stackValue = Float(stackSeries_scaledValues[i][index].y)
                     if (stackValue - origin.y >= 0) {
                         rect.origin.y = origin.y + currentHeightPositive
                         rect.size.height = stackValue - origin.y
@@ -312,8 +318,8 @@ extension BarGraph: HasGraphLayout {
                         currentHeightNegative += stackValue
                     }
                     renderer.drawSolidRect(rect,
-                                           fillColor: s.color,
-                                           hatchPattern: s.barGraphSeriesOptions.hatchPattern)
+                                           fillColor: stackSeries[i].color,
+                                           hatchPattern: stackSeries[i].barGraphSeriesOptions.hatchPattern)
                 }
             }
         }
@@ -324,7 +330,7 @@ extension BarGraph: HasGraphLayout {
                 var rect = Rect(
                     origin: Point(origin.x, markers.yMarkers[index]-Float(barWidth)*Float(0.5)+Float(space)*Float(0.5)),
                     size: Size(
-                        width: Float(series.scaledValues[index].y) - origin.x,
+                        width: Float(series_scaledValues[index].y) - origin.x,
                         height: Float(barWidth - space))
                 )
                 if (rect.size.width >= 0) {
@@ -336,8 +342,8 @@ extension BarGraph: HasGraphLayout {
                 renderer.drawSolidRect(rect,
                                        fillColor: series.color,
                                        hatchPattern: series.barGraphSeriesOptions.hatchPattern)
-                for s in stackSeries {
-                    let stackValue = Float(s.scaledValues[index].y)
+                for i in 0..<stackSeries.count {
+                    let stackValue = Float(stackSeries_scaledValues[i][index].y)
                     if (stackValue - origin.x >= 0) {
                         rect.origin.x = origin.x + currentWidthPositive
                         rect.size.width = stackValue - origin.x
@@ -349,8 +355,8 @@ extension BarGraph: HasGraphLayout {
                         currentWidthNegative += stackValue
                     }
                     renderer.drawSolidRect(rect,
-                                           fillColor: s.color,
-                                           hatchPattern: s.barGraphSeriesOptions.hatchPattern)
+                                           fillColor: stackSeries[i].color,
+                                           hatchPattern: stackSeries[i].barGraphSeriesOptions.hatchPattern)
                 }
             }
         }

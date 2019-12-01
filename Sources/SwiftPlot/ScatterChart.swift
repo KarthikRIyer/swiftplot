@@ -13,6 +13,7 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
     public var scatterPatternSize: Float = 10
 
     var series = [Series<T,U>]()
+    var series_scaledValues = [[Pair<T,U>]]()
     var scaleX: Float = 1
     var scaleY: Float = 1
 
@@ -280,13 +281,14 @@ extension ScatterPlot: HasGraphLayout {
         // scale points to be plotted according to plot size
         let scaleXInv: Float = 1.0/scaleX;
         let scaleYInv: Float = 1.0/scaleY
+        series_scaledValues = []
         for i in 0..<series.count {
-            series[i].scaledValues.removeAll();
+            series_scaledValues.append([])
             for j in 0..<series[i].count {
                 let scaledPair = Pair<T,U>(((series[i])[j].x)*T(scaleXInv) + T(origin.x),
                                            ((series[i])[j].y)*U(scaleYInv) + U(origin.y))
                 if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= size.width && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= size.height) {
-                    series[i].scaledValues.append(scaledPair)
+                    series_scaledValues[i].append(scaledPair)
                 }
             }
         }
@@ -296,148 +298,107 @@ extension ScatterPlot: HasGraphLayout {
     public func drawData(markers: PlotMarkers, size: Size, renderer: Renderer) {
         for seriesIndex in 0..<series.count {
             var s = series[seriesIndex]
-            s.maxY = maxY(points: s.scaledValues)
-            s.minY = minY(points: s.scaledValues)
+            let scaledValues = series_scaledValues[seriesIndex]
+            s.maxY = maxY(points: scaledValues)
+            s.minY = minY(points: scaledValues)
             let seriesYRangeInverse: Float = 1.0/Float(s.maxY!-s.minY!)
-            switch s.scatterPlotSeriesOptions.scatterPattern {
+
+            for value in scaledValues {
+                let p = Point(Float(value.x),Float(value.y))
+                var color: Color
+                if let startColor = s.startColor, let endColor = s.endColor {
+                    color = lerp(startColor: startColor,
+                                 endColor: endColor,
+                                 Float(value.y-s.minY!)*seriesYRangeInverse)
+                } else {
+                    color = s.color
+                }
+                switch s.scatterPlotSeriesOptions.scatterPattern {
                 case .circle:
-                    for index in 0..<s.scaledValues.count {
-                        let p = Point(Float(s.scaledValues[index].x),Float(s.scaledValues[index].y))
-                        if (s.startColor != nil && s.endColor != nil) {
-                            s.color = lerp(startColor: s.startColor!,
-                                           endColor: s.endColor!,
-                                           Float(s.scaledValues[index].y-s.minY!)*seriesYRangeInverse)
-                        }
                         renderer.drawSolidCircle(center: p,
                                                  radius: scatterPatternSize*Float(0.5),
-                                                 fillColor: s.color)
-                    }
+                                                 fillColor: color)
                 case .square:
-                  for index in 0..<s.scaledValues.count {
-                      let p = Point(Float(s.scaledValues[index].x),Float(s.scaledValues[index].y))
-                      if (s.startColor != nil && s.endColor != nil) {
-                          s.color = lerp(startColor: s.startColor!,
-                                         endColor: s.endColor!,
-                                         Float(s.scaledValues[index].y-s.minY!)*seriesYRangeInverse)
-                      }
                     let rect = Rect(size: Size(width: scatterPatternSize, height: scatterPatternSize),
                                     centeredOn: p)
-                      renderer.drawSolidRect(rect,
-                                             fillColor: s.color,
-                                             hatchPattern: .none)
-                  }
+                    renderer.drawSolidRect(rect,
+                                           fillColor: color,
+                                           hatchPattern: .none)
                 case .triangle:
                     let r = scatterPatternSize/sqrt3
-                    for index in 0..<s.scaledValues.count {
-                        let p = Point(Float(s.scaledValues[index].x),Float(s.scaledValues[index].y))
-                        if (s.startColor != nil && s.endColor != nil) {
-                            s.color = lerp(startColor: s.startColor!,
-                                           endColor: s.endColor!,
-                                           Float(s.scaledValues[index].y-s.minY!)*seriesYRangeInverse)
-                        }
-                        let p1 = Point(p.x + 0,
-                                       p.y + r)
-                        let p2 = Point(p.x + r*sqrt3/Float(2),
-                                       p.y - r*Float(0.5))
-                        let p3 = Point(p.x - r*sqrt3/Float(2),
-                                       p.y - r*Float(0.5))
-                        renderer.drawSolidTriangle(point1: p1,
-                                                   point2: p2,
-                                                   point3: p3,
-                                                   fillColor: s.color)
-                    }
+                    let p = Point(Float(value.x),Float(value.y))
+                    let p1 = Point(p.x + 0,
+                                   p.y + r)
+                    let p2 = Point(p.x + r*sqrt3/Float(2),
+                                   p.y - r*Float(0.5))
+                    let p3 = Point(p.x - r*sqrt3/Float(2),
+                                   p.y - r*Float(0.5))
+                    renderer.drawSolidTriangle(point1: p1,
+                                               point2: p2,
+                                               point3: p3,
+                                               fillColor: color)
                 case .diamond:
-                    for index in 0..<s.scaledValues.count {
-                        let p = Point(Float(s.scaledValues[index].x),Float(s.scaledValues[index].y))
-                        if (s.startColor != nil && s.endColor != nil) {
-                            s.color = lerp(startColor: s.startColor!,
-                                           endColor: s.endColor!,
-                                           Float(s.scaledValues[index].y-s.minY!)*seriesYRangeInverse)
-                        }
-                        var tL = Point(p.x-scatterPatternSize*Float(0.5),
-                                       p.y+scatterPatternSize*Float(0.5))
-                        var tR = Point(p.x+scatterPatternSize*Float(0.5),
-                                       p.y+scatterPatternSize*Float(0.5))
-                        var bR = Point(p.x+scatterPatternSize*Float(0.5),
-                                       p.y-scatterPatternSize*Float(0.5))
-                        var bL = Point(p.x-scatterPatternSize*Float(0.5),
-                                       p.y-scatterPatternSize*Float(0.5))
-                        tL = rotatePoint(point: tL, center: p, angleDegrees: 45.0)
-                        tR = rotatePoint(point: tR, center: p, angleDegrees: 45.0)
-                        bL = rotatePoint(point: bL, center: p, angleDegrees: 45.0)
-                        bR = rotatePoint(point: bR, center: p, angleDegrees: 45.0)
-                        let diamondPoints: [Point] = [tL, tR, bR, bL]
-                        renderer.drawSolidPolygon(points: diamondPoints,
-                                                  fillColor: s.color)
+                    var tL = Point(p.x-scatterPatternSize*Float(0.5),
+                                   p.y+scatterPatternSize*Float(0.5))
+                    var tR = Point(p.x+scatterPatternSize*Float(0.5),
+                                   p.y+scatterPatternSize*Float(0.5))
+                    var bR = Point(p.x+scatterPatternSize*Float(0.5),
+                                   p.y-scatterPatternSize*Float(0.5))
+                    var bL = Point(p.x-scatterPatternSize*Float(0.5),
+                                   p.y-scatterPatternSize*Float(0.5))
+                    tL = rotatePoint(point: tL, center: p, angleDegrees: 45.0)
+                    tR = rotatePoint(point: tR, center: p, angleDegrees: 45.0)
+                    bL = rotatePoint(point: bL, center: p, angleDegrees: 45.0)
+                    bR = rotatePoint(point: bR, center: p, angleDegrees: 45.0)
+                    let diamondPoints: [Point] = [tL, tR, bR, bL]
+                    renderer.drawSolidPolygon(points: diamondPoints,
+                                              fillColor: color)
+                case .hexagon:
+                    var hexagonPoint = Point(p.x + 0.0,
+                                             p.y + scatterPatternSize*Float(0.5))
+                    var hexagonPoints: [Point] = [hexagonPoint]
+                    for _ in 2...6 {
+                        hexagonPoint = rotatePoint(point: hexagonPoint,
+                                                   center: p,
+                                                   angleDegrees: 60.0)
+                        hexagonPoints.append(hexagonPoint)
                     }
-                  case .hexagon:
-                      for index in 0..<s.scaledValues.count {
-                          let p = Point(Float(s.scaledValues[index].x),Float(s.scaledValues[index].y))
-                          if (s.startColor != nil && s.endColor != nil) {
-                              s.color = lerp(startColor: s.startColor!,
-                                             endColor: s.endColor!,
-                                             Float(s.scaledValues[index].y-s.minY!)*seriesYRangeInverse)
-                          }
-                          var hexagonPoint = Point(p.x + 0.0,
-                                                   p.y + scatterPatternSize*Float(0.5))
-                          var hexagonPoints: [Point] = [hexagonPoint]
-                          for _ in 2...6 {
-                              hexagonPoint = rotatePoint(point: hexagonPoint,
-                                                         center: p,
-                                                         angleDegrees: 60.0)
-                              hexagonPoints.append(hexagonPoint)
-                          }
-                          renderer.drawSolidPolygon(points: hexagonPoints,
-                                                    fillColor: s.color)
-                      }
-                  case .pentagon:
-                      for index in 0..<s.scaledValues.count {
-                          let p = Point(Float(s.scaledValues[index].x),Float(s.scaledValues[index].y))
-                          if (s.startColor != nil && s.endColor != nil) {
-                              s.color = lerp(startColor: s.startColor!,
-                                             endColor: s.endColor!,
-                                             Float(s.scaledValues[index].y-s.minY!)*seriesYRangeInverse)
-                          }
-                          var pentagonPoint = Point(p.x + 0.0,
-                                                    p.y + scatterPatternSize*Float(0.5))
-                          var pentagonPoints: [Point] = [pentagonPoint]
-                          for _ in 2...6 {
-                              pentagonPoint = rotatePoint(point: pentagonPoint,
-                                                          center: p,
-                                                          angleDegrees: 72.0)
-                              pentagonPoints.append(pentagonPoint)
-                          }
-                          renderer.drawSolidPolygon(points: pentagonPoints,
-                                                    fillColor: s.color)
-                      }
-                  case .star:
-                      for index in 0..<s.scaledValues.count {
-                          let p = Point(Float(s.scaledValues[index].x),Float(s.scaledValues[index].y))
-                          if (s.startColor != nil && s.endColor != nil) {
-                              s.color = lerp(startColor: s.startColor!,
-                                             endColor: s.endColor!,
-                                             Float(s.scaledValues[index].y-s.minY!)*seriesYRangeInverse)
-                          }
-                          var starOuterPoint = Point(p.x + 0.0,
-                                                     p.y + scatterPatternSize*Float(0.5))
-                          var starInnerPoint = rotatePoint(point: Point(p.x + 0.0,
-                                                                        p.y + scatterPatternSize*Float(0.25)),
-                                                           center: p,
-                                                           angleDegrees: 36.0)
-                          var starPoints: [Point] = [starOuterPoint, starInnerPoint]
-                          for _ in 2...6 {
-                              starInnerPoint = rotatePoint(point: starInnerPoint,
-                                                           center: p,
-                                                           angleDegrees: 72.0)
-                              starOuterPoint = rotatePoint(point: starOuterPoint,
-                                                           center: p,
-                                                           angleDegrees: 72.0)
-                              starPoints.append(starOuterPoint)
-                              starPoints.append(starInnerPoint)
-                          }
-                          renderer.drawSolidPolygon(points: starPoints,
-                                                    fillColor: s.color)
-                      }
+                    renderer.drawSolidPolygon(points: hexagonPoints,
+                                              fillColor: color)
+                case .pentagon:
+                    var pentagonPoint = Point(p.x + 0.0,
+                                              p.y + scatterPatternSize*Float(0.5))
+                    var pentagonPoints: [Point] = [pentagonPoint]
+                    for _ in 2...6 {
+                        pentagonPoint = rotatePoint(point: pentagonPoint,
+                                                    center: p,
+                                                    angleDegrees: 72.0)
+                        pentagonPoints.append(pentagonPoint)
+                    }
+                    renderer.drawSolidPolygon(points: pentagonPoints,
+                                              fillColor: color)
+
+                case .star:
+                    var starOuterPoint = Point(p.x + 0.0,
+                                               p.y + scatterPatternSize*Float(0.5))
+                    var starInnerPoint = rotatePoint(point: Point(p.x + 0.0,
+                                                                  p.y + scatterPatternSize*Float(0.25)),
+                                                     center: p,
+                                                     angleDegrees: 36.0)
+                    var starPoints: [Point] = [starOuterPoint, starInnerPoint]
+                    for _ in 2...6 {
+                        starInnerPoint = rotatePoint(point: starInnerPoint,
+                                                     center: p,
+                                                     angleDegrees: 72.0)
+                        starOuterPoint = rotatePoint(point: starOuterPoint,
+                                                     center: p,
+                                                     angleDegrees: 72.0)
+                        starPoints.append(starOuterPoint)
+                        starPoints.append(starInnerPoint)
+                    }
+                    renderer.drawSolidPolygon(points: starPoints,
+                                              fillColor: color)
+                }
             }
         }
     }
