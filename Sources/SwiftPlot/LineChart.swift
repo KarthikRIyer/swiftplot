@@ -12,30 +12,23 @@ public struct LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
     // Linegraph layout properties.
     public var plotLineThickness: Float = 1.5
     
-    public init(points : [Pair<T,U>],
-                enablePrimaryAxisGrid: Bool = false,
-                enableSecondaryAxisGrid: Bool = false){
-        self.init(enablePrimaryAxisGrid: enablePrimaryAxisGrid, enableSecondaryAxisGrid: enableSecondaryAxisGrid)
-
-        let s = Series<T,U>(values: points,label: "Plot")
-        primaryAxis.series.append(s)
-    }
-
     public init(enablePrimaryAxisGrid: Bool = false,
                 enableSecondaryAxisGrid: Bool = false){
         self.enablePrimaryAxisGrid = enablePrimaryAxisGrid
         self.enableSecondaryAxisGrid = enableSecondaryAxisGrid
     }
     
-    public var enablePrimaryAxisGrid: Bool {
-        get { layout.enablePrimaryAxisGrid }
-        set { layout.enablePrimaryAxisGrid = newValue }
+    public init(points : [Pair<T,U>],
+                enablePrimaryAxisGrid: Bool = false,
+                enableSecondaryAxisGrid: Bool = false){
+        self.init(enablePrimaryAxisGrid: enablePrimaryAxisGrid, enableSecondaryAxisGrid: enableSecondaryAxisGrid)
+        primaryAxis.series.append(Series(values: points, label: "Plot"))
     }
-    
-    public var enableSecondaryAxisGrid: Bool {
-        get { layout.enableSecondaryAxisGrid }
-        set { layout.enableSecondaryAxisGrid = newValue }
-    }
+}
+
+// Setting data.
+
+extension LineGraph {
 
     // functions to add series
     public mutating func addSeries(_ s: Series<T,U>,
@@ -102,7 +95,23 @@ public struct LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
     }
 }
 
-// extension containing drawing logic
+// Layout properties.
+
+extension LineGraph {
+    
+    public var enablePrimaryAxisGrid: Bool {
+        get { layout.enablePrimaryAxisGrid }
+        set { layout.enablePrimaryAxisGrid = newValue }
+    }
+    
+    public var enableSecondaryAxisGrid: Bool {
+        get { layout.enableSecondaryAxisGrid }
+        set { layout.enableSecondaryAxisGrid = newValue }
+    }
+}
+
+// Layout and drawing of data.
+
 extension LineGraph: HasGraphLayout {
 
     public var legendLabels: [(String, LegendIcon)] {
