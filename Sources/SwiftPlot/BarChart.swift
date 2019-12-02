@@ -1,12 +1,15 @@
 import Foundation
 
+fileprivate let MAX_DIV: Float = 50
+
 // class defining a barGraph and all it's logic
 public struct BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
 
-    let MAX_DIV: Float = 50
-
     public var layout = GraphLayout()
-    
+    // Data.
+    var series = Series<T,U>()
+    var stackSeries = [Series<T,U>]()
+    // BarGraph layout properties.
     public enum GraphOrientation {
         case vertical
         case horizontal
@@ -14,38 +17,29 @@ public struct BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
     public var graphOrientation: GraphOrientation = .vertical
     public var space: Int = 20
     
-    var series = Series<T,U>()
-    var stackSeries = [Series<T,U>]()
-    
     public init(enableGrid: Bool = false){
         self.enableGrid = enableGrid
     }
-    
-    public var enableGrid: Bool {
-        get { layout.enablePrimaryAxisGrid }
-        set { layout.enablePrimaryAxisGrid = newValue }
-    }
-    
+}
+
+// Setting data.
+
+extension BarGraph {
+
     public mutating func addSeries(_ s: Series<T,U>){
         series = s
     }
+    
     public mutating func addStackSeries(_ s: Series<T,U>) {
-        if (series.count != 0 && series.count == s.count) {
-            stackSeries.append(s)
-        }
-        else {
-            print("Stack point count does not match the Series point count.")
-        }
+        precondition(series.count != 0 && series.count == s.count,
+                     "Stack point count does not match the Series point count.")
+        stackSeries.append(s)
     }
     public mutating func addStackSeries(_ x: [U],
                                label: String,
                                color: Color = .lightBlue,
                                hatchPattern: BarGraphSeriesOptions.Hatching = .none) {
-        var values = [Pair<T,U>]()
-        for i in 0..<x.count {
-            values.append(Pair<T,U>(series.values[i].x, x[i]))
-        }
-        let s = Series<T,U>(values: values,
+        let s = Series<T,U>(values: (0..<x.count).map { i in Pair(series.values[i].x, x[i]) },
                             label: label,
                             color: color,
                             hatchPattern: hatchPattern)
@@ -75,7 +69,18 @@ public struct BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
     }
 }
 
-// extension containing drawing logic
+// Layout properties.
+
+extension BarGraph {
+    
+    public var enableGrid: Bool {
+        get { layout.enablePrimaryAxisGrid }
+        set { layout.enablePrimaryAxisGrid = newValue }
+    }
+}
+
+// Layout and drawing of data.
+
 extension BarGraph: HasGraphLayout {
     
     public var legendLabels: [(String, LegendIcon)] {
