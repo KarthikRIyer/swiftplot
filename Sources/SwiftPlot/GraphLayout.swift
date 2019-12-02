@@ -14,7 +14,6 @@ public struct GraphLayout {
     var plotLegend = PlotLegend()
     var plotBorder = PlotBorder()
     var grid = Grid()
-    var legendLabels: [(String, LegendIcon)] = []
     var annotations: [Annotation] = []
 
     var enablePrimaryAxisGrid = true
@@ -50,13 +49,14 @@ public struct GraphLayout {
         var yMarkersTextLocation = [Point]()
         var y2MarkersTextLocation = [Point]()
         
+        var legendLabels: [(String, LegendIcon)] = []
         var legendRect: Rect?
     }
     
     // Layout.
         
     func layout<T>(size: Size, renderer: Renderer,
-                   calculateMarkers: (Size)->(T, PlotMarkers?)) -> (T, Results) {
+                   calculateMarkers: (Size)->(T, PlotMarkers?, [(String, LegendIcon)]?) ) -> (T, Results) {
         
         // 1. Measure the things outside of the plot's border (axis titles, plot title)
         let sizes = measureLabels(renderer: renderer)
@@ -66,11 +66,12 @@ public struct GraphLayout {
         var results = Results(totalSize: size, plotBorderRect: borderRect, sizes: sizes)
         calcLabelLocations(&results)
         // 4. Let the plot calculate its scale, calculate marker positions.
-        let (drawingData, markers) = calculateMarkers(results.plotBorderRect.size)
+        let (drawingData, markers, legendInfo) = calculateMarkers(results.plotBorderRect.size)
         markers.map { results.plotMarkers = $0 }
+        legendInfo.map { results.legendLabels = $0 }
         // 5. Lay out remaining chrome.
         calcMarkerTextLocations(renderer: renderer, results: &results)
-        calcLegend(legendLabels, renderer: renderer, results: &results)
+        calcLegend(results.legendLabels, renderer: renderer, results: &results)
         return (drawingData, results)
     }
     
@@ -204,8 +205,12 @@ public struct GraphLayout {
     func drawForeground(results: Results, renderer: Renderer) {
         drawTitle(results: results, renderer: renderer)
         drawLabels(results: results, renderer: renderer)
+<<<<<<< HEAD
         drawLegend(legendLabels, results: results, renderer: renderer)
         drawAnnotations(renderer: renderer)
+=======
+        drawLegend(results.legendLabels, results: results, renderer: renderer)
+>>>>>>> 57cda29... Move LegendLabels in to results, so now we don't mutate the layout object when drawing! Woo!
     }
     
     private func drawTitle(results: Results, renderer: Renderer) {
@@ -462,11 +467,11 @@ extension HasGraphLayout {
 
 extension Plot where Self: HasGraphLayout {
     
-    // TODO: Stop this being mutating.
-    public mutating func drawGraph(size: Size, renderer: Renderer) {
-        layout.legendLabels = self.legendLabels
-        let (drawingData, results) = layout.layout(size: size, renderer: renderer) { size in
-            layoutData(size: size, renderer: renderer)
+    public func drawGraph(size: Size, renderer: Renderer) {
+        let (drawingData, results) = layout.layout(size: size, renderer: renderer) {
+            size -> (DrawingData, PlotMarkers?, [(String, LegendIcon)]?) in
+            let tup = layoutData(size: size, renderer: renderer)
+            return (tup.0, tup.1, self.legendLabels)
         }
         layout.drawBackground(results: results, renderer: renderer)
         renderer.withAdditionalOffset(results.plotBorderRect.origin) { renderer in
