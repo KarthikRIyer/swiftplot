@@ -1,4 +1,4 @@
-public class ScatterPlotSeriesOptions {
+public struct ScatterPlotSeriesOptions {
     public enum ScatterPattern{
         case circle
         case square

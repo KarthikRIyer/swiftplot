@@ -32,20 +32,26 @@ extension Histogram {
                           label: String,
                           color: Color = .lightBlue,
                           histogramType: HistogramSeriesOptions.HistogramType = .bar){
-        addSeries(calculateSeriesData(data: data,
-                                      bins: bins,
-                                      label: label,
-                                      color: color,
-                                      histogramType: histogramType))
+        let series = HistogramSeries<T>(
+            data: data,
+            bins: bins,
+            label: label,
+            color: color,
+            histogramType: histogramType
+        )
+        addSeries(series)
     }
     public mutating func addStackSeries(data: [T],
                                label: String,
                                color: Color = .lightBlue){
-        histogramStackSeries.append(calculateSeriesData(data: data,
-                                                        bins: histogramSeries.bins,
-                                                        label: label,
-                                                        color: color,
-                                                        histogramType: histogramSeries.histogramSeriesOptions.histogramType))
+        let series = HistogramSeries<T>(
+            data: data,
+            bins: histogramSeries.bins,
+            label: label,
+            color: color,
+            histogramType: histogramSeries.histogramSeriesOptions.histogramType
+        )
+        histogramStackSeries.append(series)
     }
 }
 
@@ -56,81 +62,6 @@ extension Histogram {
     public var enableGrid: Bool {
         get { layout.enablePrimaryAxisGrid }
         set { layout.enablePrimaryAxisGrid = newValue }
-    }
-}
-
-extension Histogram {
-    func calculateSeriesData(data: [T],
-                             bins: Int,
-                             label: String,
-                             color: Color,
-                             histogramType: HistogramSeriesOptions.HistogramType) -> HistogramSeries<T> {
-        var sortedData = data
-        sortedData.sort()
-        let minimumX = T(roundFloor10(Float(sortedData[0])))
-        let maximumX = T(roundCeil10(Float(sortedData[sortedData.count-1])))
-        let binInterval = (maximumX-minimumX)/T(bins)
-        var dataIndex: Int = 0
-        var binStart = minimumX
-        var binEnd = minimumX + binInterval
-        var maximumFrequency: Float = 0
-        var binFrequency = [Float]()
-        for _ in 1...bins {
-            var count: Float = 0
-            while (dataIndex<sortedData.count && sortedData[dataIndex] >= binStart && sortedData[dataIndex] < binEnd) {
-                count+=1
-                dataIndex+=1
-            }
-            if (count > maximumFrequency) {
-                maximumFrequency = count
-            }
-            binFrequency.append(count)
-            binStart = binStart + binInterval
-            binEnd = binEnd + binInterval
-        }
-        if (isNormalized) {
-            let factor = Float(sortedData.count)*Float(binInterval)
-            for index in 0..<bins {
-                binFrequency[index]/=factor
-            }
-            maximumFrequency/=factor
-        }
-        return HistogramSeries<T>(data: sortedData,
-                                  bins: bins,
-                                  isNormalized: isNormalized,
-                                  label: label,
-                                  color: color,
-                                  histogramType: histogramType,
-                                  minimumX: minimumX,
-                                  maximumX: maximumX,
-                                  binInterval: binInterval)
-    }
-    func recalculateBins(series: HistogramSeries<T>,
-                         binStart: T,
-                         binEnd: T,
-                         binInterval: T) -> (binFrequency: [Float], maxFrequency: Float) {
-        
-        var maximumFrequency = Float(0)
-        var binFrequency = stride(from: Float(binStart), through: Float(binEnd), by: Float(binInterval)).map {
-            start -> Float in
-            let end = start + Float(binInterval)
-            var count: Float = 0
-            for d in series.data {
-                if(d < T(end) && d >= T(start)) {
-                    count += 1
-                }
-            }
-            maximumFrequency = max(count, maximumFrequency)
-            return count
-        }
-        if (isNormalized) {
-            let factor = Float(series.data.count)*Float(binInterval)
-            for index in 0..<binFrequency.count {
-                binFrequency[index]/=factor
-            }
-            maximumFrequency/=factor
-        }
-        return (binFrequency, maximumFrequency)
     }
 }
 
@@ -159,17 +90,14 @@ extension Histogram: HasGraphLayout {
         var results = DrawingData()
         var markers = PlotMarkers()
         
-        var maximumX: T = histogramSeries.maximumX!
-        var minimumX: T = histogramSeries.minimumX!
-
+        var minimumX = histogramSeries.data.first!
+        var maximumX = histogramSeries.data.last!
         for series in histogramStackSeries {
-            if (series.maximumX! > maximumX) {
-                maximumX = series.maximumX!
-            }
-            if (series.minimumX! < minimumX) {
-                minimumX = series.minimumX!
-            }
+            minimumX = min(minimumX, series.data.first!)
+            maximumX = max(maximumX, series.data.last!)
         }
+        minimumX = T(roundFloor10(Float(minimumX)))
+        maximumX = T(roundCeil10(Float(maximumX)))
         let binInterval = (maximumX-minimumX)/T(histogramSeries.bins)
         let (series_binFrequency, series_maxFreq) = recalculateBins(series: histogramSeries,
                         binStart: minimumX,
@@ -374,5 +302,38 @@ extension Histogram: HasGraphLayout {
                 backHeightsSlice = frontHeights[...]
             }
         }
+    }
+}
+
+// Helpers.
+
+private extension Histogram {
+    
+    func recalculateBins(series: HistogramSeries<T>,
+                         binStart: T,
+                         binEnd: T,
+                         binInterval: T) -> (binFrequency: [Float], maxFrequency: Float) {
+        
+        var maximumFrequency = Float(0)
+        var binFrequency = stride(from: Float(binStart), through: Float(binEnd), by: Float(binInterval)).map {
+            start -> Float in
+            let end = start + Float(binInterval)
+            var count: Float = 0
+            for d in series.data {
+                if(d < T(end) && d >= T(start)) {
+                    count += 1
+                }
+            }
+            maximumFrequency = max(count, maximumFrequency)
+            return count
+        }
+        if (isNormalized) {
+            let factor = Float(series.data.count)*Float(binInterval)
+            for index in 0..<binFrequency.count {
+                binFrequency[index]/=factor
+            }
+            maximumFrequency/=factor
+        }
+        return (binFrequency, maximumFrequency)
     }
 }
