@@ -11,7 +11,7 @@ public struct Histogram<T:FloatConvertible>: Plot {
     var histogramStackSeries = [HistogramSeries<T>]()
     // Histogram layout properties.
     public var strokeWidth: Float = 2
-    var isNormalized = false
+    public var isNormalized = false
     
     public init(isNormalized: Bool = false,
                 enableGrid: Bool = false){
