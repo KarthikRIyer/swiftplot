@@ -99,8 +99,9 @@ let y:[Float] = [10,120,500,800]
 var agg_renderer: AGGRenderer = AGGRenderer()
 var lineGraph = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
 lineGraph.addSeries(x, y, label: "Plot 1", color: .lightBlue)
-lineGraph.plotTitle = PlotTitle("SINGLE SERIES")
-lineGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
+lineGraph.plotTitle.title = "SINGLE SERIES"
+lineGraph.plotLabel.xLabel = 
+lineGraph.plotLabel.yLabel = "Y-AXIS"
 lineGraph.plotLineThickness = 3.0
 lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
 ```
@@ -122,8 +123,9 @@ var agg_renderer: AGGRenderer = AGGRenderer()
 var lineGraph = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
 lineGraph.addSeries(x1, y1, label: "Plot 1", color: .lightBlue)
 lineGraph.addSeries(x2, y2, label: "Plot 2", color: .orange)
-lineGraph.plotTitle = PlotTitle("MULTIPLE SERIES")
-lineGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
+lineGraph.plotTitle.title = "MULTIPLE SERIES"
+lineGraph.plotLabel.xLabel = "X-AXIS"
+lineGraph.plotlabel.yLabel = "Y-AXIS"
 lineGraph.plotLineThickness = 3.0
 lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
 ```
@@ -140,25 +142,24 @@ let x:[Float] = [10,100,263,489]
 let y:[Float] = [10,120,500,800]
 
 var agg_renderer: AGGRenderer = AGGRenderer()
-var plots = [Plot]()
+var subplot = SubPlot(layout: .horizontal)
 
 var lineGraph1 = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
 lineGraph1.addSeries(x, y, label: "Plot 1", color: .lightBlue)
-lineGraph1.plotTitle = PlotTitle("PLOT 1")
-lineGraph1.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
+lineGraph1.plotTitle.title = "PLOT 1"
+lineGraph1.plotLabel.xLabel = "X-AXIS"
+lineGraph1.plotLabel.yLabel = "Y-AXIS"
 lineGraph1.plotLineThickness = 3.0
 
 var lineGraph2 = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
 lineGraph2.addSeries(x, y, label: "Plot 2", color: .orange)
-lineGraph2.plotTitle = PlotTitle("PLOT 2")
-lineGraph2.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
+lineGraph2.plotTitle.title = "PLOT 2"
+lineGraph2.plotLabel.xLabel = "X-AXIS"
+lineGraph2.plotLabel.yLabel = "Y-AXIS"
 lineGraph2.plotLineThickness = 3.0
 
-plots.append(lineGraph1)
-plots.append(lineGraph2)
-
-var subPlot: SubPlot = SubPlot(numberOfPlots: 2, stackPattern: .horizontallyStacked)
-subPlot.draw(plots: plots, renderer: agg_renderer, fileName: "subPlotsHorizontallyStacked")
+subplot.plots = [lineGraph1, lineGraph2]
+subPlot.drawGraphAndOutput(fileName: "subPlotsHorizontallyStacked", renderer: agg_renderer)
 ```
 
 <img src="Tests/SwiftPlotTests/Reference/agg/_03_sub_plot_horizontally_stacked_line_chart.png" width="500">
@@ -176,9 +177,10 @@ func function(_ x: Float)->Float {
 
 var agg_renderer: AGGRenderer = AGGRenderer()
 var lineGraph = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
-lineGraph.addFunction(function, minX: -5.0, maxX: 5.0, numberOfSamples: 400, label: "Function", color: .orange)
-lineGraph.plotTitle = PlotTitle("FUNCTION")
-lineGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
+lineGraph.addFunction(function, minX: -5.0, maxX: 5.0, numberOfSamples: 400, clampY: -50...50, label: "Function", color: .orange)
+lineGraph.plotTitle.title = "FUNCTION"
+lineGraph.plotLabel.xLabel = "X-AXIS"
+lineGraph.plotLabel.yLabel = "Y-AXIS"
 lineGraph.drawGraphAndOutput(fileName: "functionPlotLineGraph", renderer: agg_renderer)
 ```
 
@@ -198,8 +200,9 @@ let y1:[Float] = [150,250,628,800]
 var lineGraph = LineGraph<Float,Float>()
 lineGraph.addSeries(x1, y1, label: "Plot 1", color: .lightBlue, axisType: .primaryAxis)
 lineGraph.addSeries(x, y, label: "Plot 2", color: .orange, axisType: .secondaryAxis)
-lineGraph.plotTitle = PlotTitle("SECONDARY AXIS")
-lineGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
+lineGraph.plotTitle.title = "SECONDARY AXIS"
+lineGraph.plotLabel.xLabel = "X-AXIS"
+lineGraph.plotLabel.yLabel = "Y-AXIS"
 lineGraph.plotLineThickness = 3.0
 lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
 ```
