@@ -85,8 +85,8 @@ extension BarGraph: HasGraphLayout {
     }
     
     public struct DrawingData {
-        var series_scaledValues = [Pair<T,U>]()
-        var stackSeries_scaledValues = [[Pair<T,U>]]()
+        var series_scaledValues = [Pair<Float,Float>]()
+        var stackSeries_scaledValues = [[Pair<Float,Float>]]()
         var scaleY: Float = 1
         var scaleX: Float = 1
         var barWidth : Int = 0
@@ -174,20 +174,31 @@ extension BarGraph: HasGraphLayout {
                 markers.yMarkersText.append("\(round(results.scaleY*(yM-results.origin.y)))")
                 yM = yM - inc1
             }
+            
+            func xMarkerLocationForBar(_ index: Int) -> Float {
+                Float(index*results.barWidth) + Float(results.barWidth)*Float(0.5)
+            }
+            func xLocationForBar(_ index: Int) -> Float {
+                xMarkerLocationForBar(index) - Float(results.barWidth)*Float(0.5) + Float(space)*Float(0.5)
+            }
 
             for i in 0..<series.count {
-                markers.xMarkers.append(Float(i*results.barWidth) + Float(results.barWidth)*Float(0.5))
+                markers.xMarkers.append(xMarkerLocationForBar(i))
                 markers.xMarkersText.append("\(series[i].x)")
             }
 
             // scale points to be plotted according to plot size
             let scaleYInv: Float = 1.0/results.scaleY
-            results.series_scaledValues = series.values.map { pt in
-                Pair<T,U>(pt.x, pt.y*U(scaleYInv) + U(results.origin.y))
+            results.series_scaledValues = (0..<series.values.count).map { i in
+                let pt = series.values[i]
+                return Pair(xLocationForBar(i),
+                            Float(pt.y*U(scaleYInv) + U(results.origin.y)))
             }
             results.stackSeries_scaledValues = stackSeries.map { series in
-                series.values.map { pt in
-                    Pair<T,U>(pt.x, (pt.y)*U(scaleYInv)+U(results.origin.y))
+                (0..<series.values.count).map { i in
+                    let pt = series[i]
+                    return Pair(xLocationForBar(i),
+                                Float((pt.y)*U(scaleYInv)+U(results.origin.y)))
                 }
             }
         }
@@ -253,19 +264,27 @@ extension BarGraph: HasGraphLayout {
                 xM = xM - inc1
             }
 
+            func yMarkerLocationForBar(_ index: Int) -> Float {
+                Float(index*results.barWidth) + Float(results.barWidth)*Float(0.5)
+            }
+            func yLocationForBar(_ index: Int) -> Float {
+                yMarkerLocationForBar(index) - Float(results.barWidth)*Float(0.5) + Float(space)*Float(0.5)
+            }
             for i in 0..<series.count {
-                markers.yMarkers.append(Float(i*results.barWidth) + Float(results.barWidth)*Float(0.5))
+                markers.yMarkers.append(yMarkerLocationForBar(i))
                 markers.yMarkersText.append("\(series[i].x)")
             }
-
+            
             // scale points to be plotted according to plot size
             let scaleXInv: Float = 1.0/results.scaleX
-            results.series_scaledValues = series.values.map { pt in
-                Pair<T,U>(pt.x, pt.y*U(scaleXInv)+U(results.origin.x))
+            results.series_scaledValues = (0..<series.values.count).map { i in
+                let pt = series.values[i]
+                return Pair(Float(pt.y*U(scaleXInv)+U(results.origin.x)), yLocationForBar(i))
             }
             results.stackSeries_scaledValues = stackSeries.map { series in
-                series.values.map { pt in
-                    Pair<T,U>(pt.x, pt.y*U(scaleXInv)+U(results.origin.x))
+                (0..<series.values.count).map { i in
+                    let pt = series.values[i]
+                    return Pair(Float(pt.y*U(scaleXInv)+U(results.origin.x)), yLocationForBar(i))
                 }
             }
         }
@@ -279,12 +298,10 @@ extension BarGraph: HasGraphLayout {
                 var currentHeightPositive: Float = 0
                 var currentHeightNegative: Float = 0
                 var rect = Rect(
-                    origin: Point(
-                        markers.xMarkers[index]-Float(data.barWidth)*Float(0.5)+Float(space)*Float(0.5),
-                        data.origin.y),
+                    origin: Point(data.series_scaledValues[index].x, data.origin.y),
                     size: Size(
                         width: Float(data.barWidth - space),
-                        height: Float(data.series_scaledValues[index].y) - data.origin.y)
+                        height: data.series_scaledValues[index].y - data.origin.y)
                 )
                 if (rect.size.height >= 0) {
                     currentHeightPositive = rect.size.height
@@ -318,9 +335,9 @@ extension BarGraph: HasGraphLayout {
                 var currentWidthPositive: Float = 0
                 var currentWidthNegative: Float = 0
                 var rect = Rect(
-                    origin: Point(data.origin.x, markers.yMarkers[index]-Float(data.barWidth)*Float(0.5)+Float(space)*Float(0.5)),
+                    origin: Point(data.origin.x, data.series_scaledValues[index].y),
                     size: Size(
-                        width: Float(data.series_scaledValues[index].y) - data.origin.x,
+                        width: data.series_scaledValues[index].x - data.origin.x,
                         height: Float(data.barWidth - space))
                 )
                 if (rect.size.width >= 0) {
@@ -333,7 +350,7 @@ extension BarGraph: HasGraphLayout {
                                        fillColor: series.color,
                                        hatchPattern: series.barGraphSeriesOptions.hatchPattern)
                 for i in 0..<stackSeries.count {
-                    let stackValue = Float(data.stackSeries_scaledValues[i][index].y)
+                    let stackValue = Float(data.stackSeries_scaledValues[i][index].x)
                     if (stackValue - data.origin.x >= 0) {
                         rect.origin.x = data.origin.x + currentWidthPositive
                         rect.size.width = stackValue - data.origin.x
