@@ -51,7 +51,7 @@ public struct GraphLayout {
     
     // Layout.
         
-    func layout(renderer: Renderer, calculateMarkers: (inout PlotMarkers, Size)->Void) -> Results {
+    func layout<T>(renderer: Renderer, calculateMarkers: (Size)->(T, PlotMarkers)) -> (T, Results) {
         // 1. Measure the things outside of the plot's border (axis titles, plot title)
         var sizes = Results.Sizes()
         measureLabels(renderer: renderer, results: &sizes)
@@ -61,11 +61,12 @@ public struct GraphLayout {
         var results = Results(plotBorderRect: borderRect, sizes: sizes)
         calcLabelLocations(&results)
         // 4. Let the plot calculate its scale, calculate marker positions.
-        calculateMarkers(&results.plotMarkers, results.plotBorderRect.size)
+        let (drawingData, markers) = calculateMarkers(results.plotBorderRect.size)
+        results.plotMarkers = markers
         // 5. Lay out remaining chrome.
         calcMarkerTextLocations(renderer: renderer, results: &results)
         calcLegend(legendLabels, renderer: renderer, results: &results)
-        return results
+        return (drawingData, results)
     }
     
     static let xLabelPadding: Float = 10
@@ -379,9 +380,12 @@ public protocol HasGraphLayout: AnyObject {
     
     var legendLabels: [(String, LegendIcon)] { get }
     
-    func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, size: Size, renderer: Renderer)
+    // Layout and drawing callbacks.
     
-    func drawData(markers: PlotMarkers, size: Size, renderer: Renderer)
+    /// The information this graph needs to draw - for example: scaled locations for data points.
+    associatedtype DrawingData = Void
+    func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers)
+    func drawData(_ data: DrawingData, markers: PlotMarkers, size: Size, renderer: Renderer)
 }
 
 extension HasGraphLayout {
@@ -437,15 +441,13 @@ extension Plot where Self: HasGraphLayout {
     public func drawGraph(size: Size, renderer: Renderer) {
         layout.legendLabels = self.legendLabels
         layout.plotSize = size
-        let results = layout.layout(renderer: renderer, calculateMarkers: { markers, size in
-            calculateScaleAndMarkerLocations(
-                markers: &markers,
-                size: size,
-                renderer: renderer)
-        })
+        let (drawingData, results) = layout.layout(renderer: renderer) { size in
+            layoutData(size: size, renderer: renderer)
+        }
         layout.drawBackground(results: results, renderer: renderer)
         renderer.withAdditionalOffset(results.plotBorderRect.origin) { renderer in
-            drawData(markers: results.plotMarkers, size: results.plotBorderRect.size, renderer: renderer)
+            drawData(drawingData, markers: results.plotMarkers,
+                     size: results.plotBorderRect.size, renderer: renderer)
         }
         layout.drawForeground(results: results, renderer: renderer)
     }

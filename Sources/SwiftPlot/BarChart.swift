@@ -92,15 +92,22 @@ extension BarGraph: HasGraphLayout {
         return legendSeries
     }
     
-    // functions implementing plotting logic
-    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, size: Size, renderer: Renderer) {
+    public struct DrawingData {
+        
+    }
     
+    // functions implementing plotting logic
+    public func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers) {
+        
+        var results = DrawingData()
+        var markers = PlotMarkers()
+        
         var maximumY: U = U(0)
         var minimumY: U = U(0)
         var maximumX: U = U(0)
         var minimumX: U = U(0)
 
-        guard series.count > 0 else { return }
+        guard series.count > 0 else { return (results, markers) }
         if (graphOrientation == .vertical) {
             barWidth = Int(round(size.width/Float(series.count)))
             maximumY = maxY(points: series.values)
@@ -265,11 +272,11 @@ extension BarGraph: HasGraphLayout {
                 }
             }
         }
-
+        return (results, markers)
     }
 
     //functions to draw the plot
-    public func drawData(markers: PlotMarkers, size: Size, renderer: Renderer) {
+    public func drawData(_ data: DrawingData, markers: PlotMarkers, size: Size, renderer: Renderer) {
         if (graphOrientation == .vertical) {
             for index in 0..<series.count {
                 var currentHeightPositive: Float = 0

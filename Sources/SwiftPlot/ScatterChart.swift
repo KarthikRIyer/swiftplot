@@ -118,9 +118,16 @@ extension ScatterPlot: HasGraphLayout {
             ($0.label, .shape($0.scatterPlotSeriesOptions.scatterPattern, $0.startColor ?? $0.color))
         }
     }
+    
+    public struct DrawingData {
+        
+    }
 
     // functions implementing plotting logic
-    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, size: Size, renderer: Renderer) {
+    public func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers) {
+        
+        var results = DrawingData()
+        var markers = PlotMarkers()
         
         var maximumX: T = maxX(points: series[0].values)
         var maximumY: U = maxY(points: series[0].values)
@@ -294,10 +301,12 @@ extension ScatterPlot: HasGraphLayout {
                 return scaledPair
             }
         }
+        
+        return (results, markers)
     }
 
     //functions to draw the plot
-    public func drawData(markers: PlotMarkers, size: Size, renderer: Renderer) {
+    public func drawData(_ data: DrawingData, markers: PlotMarkers, size: Size, renderer: Renderer) {
         for seriesIndex in 0..<series.count {
             let s = series[seriesIndex]
             let scaledValues = series_scaledValues[seriesIndex]

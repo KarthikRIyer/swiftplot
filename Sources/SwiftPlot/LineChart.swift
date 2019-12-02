@@ -115,10 +115,16 @@ extension LineGraph: HasGraphLayout {
         }
         return allSeries.map { ($0.label, .square($0.color)) }
     }
+    
+    public struct DrawingData {
+        
+    }
 
     // functions implementing plotting logic
-    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, size: Size, renderer: Renderer) {
-        guard !primaryAxis.series.isEmpty, !primaryAxis.series[0].values.isEmpty else { return }
+    public func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers) {
+        var results = DrawingData()
+        var markers = PlotMarkers()
+        guard !primaryAxis.series.isEmpty, !primaryAxis.series[0].values.isEmpty else { return (results, markers) }
         var maximumXPrimary: T = maxX(points: primaryAxis.series[0].values)
         var maximumYPrimary: U = maxY(points: primaryAxis.series[0].values)
         var minimumXPrimary: T = minX(points: primaryAxis.series[0].values)
@@ -418,10 +424,12 @@ extension LineGraph: HasGraphLayout {
                 }
             }
         }
+        
+        return (results, markers)
     }
 
     //functions to draw the plot
-    public func drawData(markers: PlotMarkers, size: Size, renderer: Renderer) {
+    public func drawData(_ data: DrawingData, markers: PlotMarkers, size: Size, renderer: Renderer) {
         for i in 0..<primaryAxis.series.count {
             let s = primaryAxis.series[i]
             let scaledValues = primaryAxis_series_scaledValues[i]

@@ -136,9 +136,16 @@ extension Histogram: HasGraphLayout {
         legendSeries.insert((histogramSeries.label, .square(histogramSeries.color)), at: 0)
         return legendSeries
     }
+    
+    public struct DrawingData {
+        
+    }
 
     // functions implementing plotting logic
-    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, size: Size, renderer: Renderer) {
+    public func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers) {
+        
+        var results = DrawingData()
+        var markers = PlotMarkers()
         
         var maximumY = Float(histogramSeries.maximumFrequency)
         let minimumY = Float(0)
@@ -275,10 +282,11 @@ extension Histogram: HasGraphLayout {
                 histogramStackSeries[index].scaledBinFrequency.append(frequency*scaleYInv + origin.y)
             }
         }
+        
+        return (results, markers)
     }
-    
-    /// Draw with rectangles if `histogramType` is `.bar` or with lines if `histogramType` is `.step`
-    public func drawData(markers: PlotMarkers, size: Size, renderer: Renderer) {
+    //functions to draw the plot
+    public func drawData(_ data: DrawingData, markers: PlotMarkers, size: Size, renderer: Renderer) {
         let binCount = histogramSeries.bins
         let allSeries = [histogramSeries] + histogramStackSeries
         switch histogramSeries.histogramSeriesOptions.histogramType {
