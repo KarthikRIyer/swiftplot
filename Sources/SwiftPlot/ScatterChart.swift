@@ -14,6 +14,8 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     var series = [Series<T,U>]()
     var series_scaledValues = [[Pair<T,U>]]()
+    var series_maxY: U? = nil
+    var series_minY: U? = nil
     var scaleX: Float = 1
     var scaleY: Float = 1
 
@@ -297,11 +299,11 @@ extension ScatterPlot: HasGraphLayout {
     //functions to draw the plot
     public func drawData(markers: PlotMarkers, size: Size, renderer: Renderer) {
         for seriesIndex in 0..<series.count {
-            var s = series[seriesIndex]
+            let s = series[seriesIndex]
             let scaledValues = series_scaledValues[seriesIndex]
-            s.maxY = maxY(points: scaledValues)
-            s.minY = minY(points: scaledValues)
-            let seriesYRangeInverse: Float = 1.0/Float(s.maxY!-s.minY!)
+            series_maxY = maxY(points: scaledValues)
+            series_minY = minY(points: scaledValues)
+            let seriesYRangeInverse: Float = 1.0/Float(series_maxY!-series_minY!)
 
             for value in scaledValues {
                 let p = Point(Float(value.x),Float(value.y))
@@ -309,7 +311,7 @@ extension ScatterPlot: HasGraphLayout {
                 if let startColor = s.startColor, let endColor = s.endColor {
                     color = lerp(startColor: startColor,
                                  endColor: endColor,
-                                 Float(value.y-s.minY!)*seriesYRangeInverse)
+                                 Float(value.y-series_minY!)*seriesYRangeInverse)
                 } else {
                     color = s.color
                 }

@@ -3,8 +3,6 @@ public struct Series<T,U> {
     public var barGraphSeriesOptions = BarGraphSeriesOptions()
     public var scatterPlotSeriesOptions = ScatterPlotSeriesOptions()
     public var values = [Pair<T,U>]()
-    public var maxY: U? = nil
-    public var minY: U? = nil
     public var label = "Plot"
     public var color : Color = .blue
     public var startColor: Color? = nil
