@@ -23,11 +23,11 @@ public struct ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
         let s = Series<T,U>(values: p,label: "Plot")
         series.append(s)
     }
+}
 
-    public var enableGrid: Bool {
-        get { layout.enablePrimaryAxisGrid }
-        set { layout.enablePrimaryAxisGrid = newValue }
-    }
+// Setting data.
+
+extension ScatterPlot {
 
     // functions to add series
     public mutating func addSeries(_ s: Series<T,U>){
@@ -104,7 +104,18 @@ public struct ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
     }
 }
 
-// extension containing drawing logic
+// Layout properties.
+
+extension ScatterPlot {
+    
+    public var enableGrid: Bool {
+        get { layout.enablePrimaryAxisGrid }
+        set { layout.enablePrimaryAxisGrid = newValue }
+    }
+}
+
+// Layout and drawing of data.
+
 extension ScatterPlot: HasGraphLayout {
 
     public var legendLabels: [(String, LegendIcon)] {
