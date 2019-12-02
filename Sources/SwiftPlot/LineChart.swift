@@ -342,15 +342,15 @@ extension LineGraph: HasGraphLayout {
         // scale points to be plotted according to plot size
         let scaleXInvPrimary: Float = 1.0/primaryAxis.scaleX;
         let scaleYInvPrimary: Float = 1.0/primaryAxis.scaleY
-        primaryAxis_series_scaledValues = []
-        for i in 0..<primaryAxis.series.count {
-            primaryAxis_series_scaledValues.append([])
-            for j in 0..<primaryAxis.series[i].count {
-                let scaledPair = Pair<T,U>(((primaryAxis.series[i])[j].x)*T(scaleXInvPrimary) + T(originPrimary.x),
-                                           ((primaryAxis.series[i])[j].y)*U(scaleYInvPrimary) + U(originPrimary.y))
-                if Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= size.width && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= size.height {
-                    primaryAxis_series_scaledValues[i].append(scaledPair)
+        primaryAxis_series_scaledValues = primaryAxis.series.map { series in
+            series.values.compactMap { value in
+                let scaledPair = Pair<T,U>(value.x * T(scaleXInvPrimary) + T(originPrimary.x),
+                                           value.y * U(scaleYInvPrimary) + U(originPrimary.y))
+                guard Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= size.width
+                    && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= size.height else {
+                    return nil
                 }
+                return scaledPair
             }
         }
 
@@ -405,17 +405,16 @@ extension LineGraph: HasGraphLayout {
 
 
             // scale points to be plotted according to plot size
-            secondaryAxis_series_scaledValues = []
             let scaleYInvSecondary: Float = 1.0/secondaryAxis!.scaleY
-            for i in 0..<secondaryAxis!.series.count {
-                // let pairs = secondaryAxis!.series[i].pairs
-                secondaryAxis_series_scaledValues.append([])
-                for j in 0..<secondaryAxis!.series[i].count {
-                    let scaledPair = Pair<T,U>(((secondaryAxis!.series[i])[j].x)*T(scaleXInvPrimary) + T(originPrimary.x),
-                                               ((secondaryAxis!.series[i])[j].y)*U(scaleYInvSecondary) + U(originSecondary!.y))
-                    if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= size.width && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= size.height) {
-                        secondaryAxis_series_scaledValues[i].append(scaledPair)
+            secondaryAxis_series_scaledValues = secondaryAxis!.series.map { series in
+                series.values.compactMap { value in
+                    let scaledPair = Pair<T,U>(value.x * T(scaleXInvPrimary) + T(originPrimary.x),
+                                               value.y * U(scaleYInvSecondary) + U(originSecondary!.y))
+                    guard Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= size.width
+                        && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= size.height else {
+                        return nil
                     }
+                    return scaledPair
                 }
             }
         }

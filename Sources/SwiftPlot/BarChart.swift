@@ -178,19 +178,12 @@ extension BarGraph: HasGraphLayout {
 
             // scale points to be plotted according to plot size
             let scaleYInv: Float = 1.0/scaleY
-            series_scaledValues.removeAll();
-            for j in 0..<series.count {
-                let scaledPair = Pair<T,U>(series[j].x,
-                                           series[j].y*U(scaleYInv) + U(origin.y))
-                series_scaledValues.append(scaledPair)
+            series_scaledValues = series.values.map { pt in
+                Pair<T,U>(pt.x, pt.y*U(scaleYInv) + U(origin.y))
             }
-            stackSeries_scaledValues.removeAll()
-            for index in 0..<stackSeries.count {
-                stackSeries_scaledValues.append([])
-                for j in 0..<(stackSeries[index]).count {
-                    let scaledPair = Pair<T,U>((stackSeries[index])[j].x,
-                                               ((stackSeries[index])[j].y)*U(scaleYInv)+U(origin.y))
-                    stackSeries_scaledValues[index].append(scaledPair)
+            stackSeries_scaledValues = stackSeries.map { series in
+                series.values.map { pt in
+                    Pair<T,U>(pt.x, (pt.y)*U(scaleYInv)+U(origin.y))
                 }
             }
         }
@@ -263,19 +256,12 @@ extension BarGraph: HasGraphLayout {
 
             // scale points to be plotted according to plot size
             let scaleXInv: Float = 1.0/scaleX
-            series_scaledValues.removeAll();
-            for j in 0..<series.count {
-                let scaledPair = Pair<T,U>(series[j].x,
-                                           series[j].y*U(scaleXInv)+U(origin.x))
-                series_scaledValues.append(scaledPair)
+            series_scaledValues = series.values.map { pt in
+                Pair<T,U>(pt.x, pt.y*U(scaleXInv)+U(origin.x))
             }
-            stackSeries_scaledValues.removeAll()
-            for index in 0..<stackSeries.count {
-                stackSeries_scaledValues.append([])
-                for j in 0..<(stackSeries[index]).count {
-                    let scaledPair = Pair<T,U>((stackSeries[index])[j].x,
-                                                (stackSeries[index])[j].y*U(scaleXInv)+U(origin.x))
-                    stackSeries_scaledValues[index].append(scaledPair)
+            stackSeries_scaledValues = stackSeries.map { series in
+                series.values.map { pt in
+                    Pair<T,U>(pt.x, pt.y*U(scaleXInv)+U(origin.x))
                 }
             }
         }

@@ -283,15 +283,15 @@ extension ScatterPlot: HasGraphLayout {
         // scale points to be plotted according to plot size
         let scaleXInv: Float = 1.0/scaleX;
         let scaleYInv: Float = 1.0/scaleY
-        series_scaledValues = []
-        for i in 0..<series.count {
-            series_scaledValues.append([])
-            for j in 0..<series[i].count {
-                let scaledPair = Pair<T,U>(((series[i])[j].x)*T(scaleXInv) + T(origin.x),
-                                           ((series[i])[j].y)*U(scaleYInv) + U(origin.y))
-                if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= size.width && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= size.height) {
-                    series_scaledValues[i].append(scaledPair)
+        series_scaledValues = series.map { series in
+            series.values.compactMap { value in
+                let scaledPair = Pair<T,U>(value.x * T(scaleXInv) + T(origin.x),
+                                           value.y * U(scaleYInv) + U(origin.y))
+                guard Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= size.width
+                    && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= size.height else {
+                    return nil
                 }
+                return scaledPair
             }
         }
     }
