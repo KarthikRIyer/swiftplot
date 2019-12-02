@@ -1,4 +1,4 @@
-<div><img src="swiftplot.png" width="600"></div>
+<p align="center"><img src="swiftplot.png" width=600></p>
 <br>
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
