@@ -15,7 +15,7 @@ extension HistogramTests {
     
     let fileName = "_24_histogram_stacked_step"
     
-    let histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
+    var histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
     histogram.addSeries(data: histogram_stacked_step_values, bins: 50, label: "Plot 1", color: .blue, histogramType: .step)
     histogram.addStackSeries(data: histogram_stacked_step_values_2, label: "Plot 2", color: .orange)
     histogram.plotTitle = PlotTitle("HISTOGRAM STACKED STEP")

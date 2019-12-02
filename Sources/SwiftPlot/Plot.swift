@@ -7,20 +7,20 @@ public protocol Plot {
     ///     - renderer: The renderer. The plot should draw between
     ///       `(0...size.width)` on the X-axis and
     ///       `(0...size.height)` on the Y-axis.
-    func drawGraph(size: Size, renderer: Renderer)
+    mutating func drawGraph(size: Size, renderer: Renderer)
 }
 
 extension Plot {
    
     /// Draws to the given renderer in-memory at a default size.
-    public func drawGraph(renderer: Renderer) {
+    public mutating func drawGraph(renderer: Renderer) {
         drawGraph(size: Size(width: 1000, height: 660),
                   renderer: renderer)
     }
     
     /// Draws and saves the graph to the named file.
     /// - note: This function changes the `imageSize` of the `Renderer` it is given.
-    public func drawGraphAndOutput(size: Size = Size(width: 1000, height: 660),
+    public mutating func drawGraphAndOutput(size: Size = Size(width: 1000, height: 660),
                                    fileName name: String = "swiftplot_graph", renderer: Renderer) throws {
         renderer.imageSize = size
         drawGraph(size: size, renderer: renderer)
@@ -29,7 +29,7 @@ extension Plot {
 
     /// Saves the already-drawn graph to the named file.
     /// - note: This function changes the `imageSize` of the `Renderer` it is given.
-    public func drawGraphOutput(size: Size = Size(width: 1000, height: 660),
+    public mutating func drawGraphOutput(size: Size = Size(width: 1000, height: 660),
                                 fileName name: String = "swiftplot_graph", renderer: Renderer) throws {
         renderer.imageSize = size
         try renderer.drawOutput(fileName: name)

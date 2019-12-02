@@ -17,7 +17,7 @@ extension BarchartTests {
     let x:[String] = ["2008","2009","2010","2011"]
     let y:[Float] = [320,-100,420,500]
 
-    let barGraph = BarGraph<String,Float>(enableGrid: true)
+    var barGraph = BarGraph<String,Float>(enableGrid: true)
     barGraph.addSeries(x, y, label: "Plot 1", color: .orange, hatchPattern: .horizontal)
     barGraph.plotTitle = PlotTitle("HATCHED BAR CHART")
     barGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")

@@ -377,7 +377,7 @@ public struct GraphLayout {
     }
 }
 
-public protocol HasGraphLayout: AnyObject {
+public protocol HasGraphLayout {
     
     var layout: GraphLayout { get set }
     
@@ -458,7 +458,8 @@ extension HasGraphLayout {
 
 extension Plot where Self: HasGraphLayout {
     
-    public func drawGraph(size: Size, renderer: Renderer) {
+    // TODO: Stop this being mutating.
+    public mutating func drawGraph(size: Size, renderer: Renderer) {
         layout.legendLabels = self.legendLabels
         layout.plotSize = size
         let (drawingData, results) = layout.layout(renderer: renderer) { size in
