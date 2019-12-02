@@ -42,7 +42,7 @@ extension HistogramTests {
   func testHistogramStackedStepLineJoins() throws {
     let fileName = "_27_histogram_stacked_step_line_joins"
     
-    let histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
+    var histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
     histogram.addSeries(data: [0, 13, 17, 17, 21, 25, 30, 34, 34, 38, 42, 45], bins: 49, label: "Plot 1", color: .blue, histogramType: .step)
     histogram.addStackSeries(data: [0, 6, 9, 10, 16, 18, 20, 22, 24, 24, 26, 26, 30, 33, 34, 35, 37, 38, 39, 41, 41, 42, 42, 43, 43, 45], label: "Plot 2", color: .orange)
     histogram.plotTitle = PlotTitle("HISTOGRAM STACKED STEP LINE JOINS")
@@ -73,7 +73,7 @@ extension HistogramTests {
     let data3: [Float] = x.flatMap { [Float](repeating: $0, count: Int((sin($0 + .pi) + 1)*10)) }
     let data4: [Float] = x.flatMap { [Float](repeating: $0, count: Int((cos($0 + .pi) + 1)*10)) }
     
-    let histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
+    var histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
     histogram.addSeries(data: data1, bins: 40, label: "Plot 1", color: .blue, histogramType: .step)
     histogram.addStackSeries(data: data2, label: "Plot 2", color: .orange)
     histogram.addStackSeries(data: data3, label: "Plot 3", color: .purple)

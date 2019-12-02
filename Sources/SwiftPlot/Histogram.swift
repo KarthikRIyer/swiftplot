@@ -80,7 +80,7 @@ extension Histogram: HasGraphLayout {
         var stack_scaledBinFrequency = [[Float]]()
         
         var barWidth: Float = 0
-        var xMargin: Float = 5
+        let xMargin: Float = 5
         var origin = zeroPoint
     }
 
@@ -237,8 +237,7 @@ extension Histogram: HasGraphLayout {
                 var currentHeight: Float = 0.0
                 for (series, index) in zip(allSeries, frequencySlices.indices) {
                     let height = frequencySlices[index].removeFirst()
-                    let rect = Rect(origin: Point(x, currentHeight), size: Size(width: data.barWidth, height:
-                        height))
+                    let rect = Rect(origin: Point(x, currentHeight), size: Size(width: data.barWidth, height: height))
                     renderer.drawSolidRect(rect, fillColor: allSeriesInfo[index].color,
                                            hatchPattern: .none)
                     currentHeight += height

@@ -48,7 +48,7 @@ extension HistogramTests {
     let data3: [Float] = x.flatMap { [Float](repeating: $0, count: Int((sin($0 + .pi) + 1)*10)) }
     let data4: [Float] = x.flatMap { [Float](repeating: $0, count: Int((cos($0 + .pi) + 1)*10)) }
     
-    let histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
+    var histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
     histogram.addSeries(data: data1, bins: 40, label: "Plot 1", color: .blue, histogramType: .bar)
     histogram.addStackSeries(data: data2, label: "Plot 2", color: .orange)
     histogram.addStackSeries(data: data3, label: "Plot 3", color: .purple)
