@@ -1,7 +1,7 @@
 import Foundation
 
 // class defining a barGraph and all it's logic
-public class Histogram<T:FloatConvertible>: Plot {
+public struct Histogram<T:FloatConvertible>: Plot {
 
     let MAX_DIV: Float = 50
 
@@ -10,16 +10,9 @@ public class Histogram<T:FloatConvertible>: Plot {
     public var strokeWidth: Float = 2
     
     var histogramSeries = HistogramSeries<T>()
-    var histogramSeriesInfo = HistogramSeriesInfo()
-    
     var histogramStackSeries = [HistogramSeries<T>]()
-    var histogramStackSeriesInfo = [HistogramSeriesInfo]()
     var isNormalized = false
-    var scaleY: Float = 1
-    var scaleX: Float = 1
-    var barWidth: Float = 0
-    var xMargin: Float = 5
-    var origin = zeroPoint
+    
     
     public init(isNormalized: Bool = false,
                 enableGrid: Bool = false){
@@ -32,10 +25,10 @@ public class Histogram<T:FloatConvertible>: Plot {
         set { layout.enablePrimaryAxisGrid = newValue }
     }
     
-    public func addSeries(_ s: HistogramSeries<T>){
+    public mutating func addSeries(_ s: HistogramSeries<T>){
         histogramSeries = s
     }
-    public func addSeries(data: [T],
+    public mutating func addSeries(data: [T],
                           bins: Int,
                           label: String,
                           color: Color = .lightBlue,
@@ -46,7 +39,7 @@ public class Histogram<T:FloatConvertible>: Plot {
                                       color: color,
                                       histogramType: histogramType))
     }
-    public func addStackSeries(data: [T],
+    public mutating func addStackSeries(data: [T],
                                label: String,
                                color: Color = .lightBlue){
         histogramStackSeries.append(calculateSeriesData(data: data,
@@ -142,6 +135,10 @@ extension Histogram: HasGraphLayout {
 
         var series_scaledBinFrequency = [Float]()
         var stack_scaledBinFrequency = [[Float]]()
+        
+        var barWidth: Float = 0
+        var xMargin: Float = 5
+        var origin = zeroPoint
     }
 
     // functions implementing plotting logic
@@ -188,13 +185,13 @@ extension Histogram: HasGraphLayout {
             }
         }
 
-        barWidth = round((size.width - Float(2.0*xMargin))/Float(histogramSeries.bins))
+        results.barWidth = round((size.width - Float(2.0*results.xMargin))/Float(histogramSeries.bins))
 
-        origin = Point((size.width-(2.0*xMargin))/Float(maximumX-minimumX)*Float(T(-1)*minimumX), 0.0)
+        results.origin = Point((size.width-(2.0*results.xMargin))/Float(maximumX-minimumX)*Float(T(-1)*minimumX), 0.0)
 
         let topScaleMargin: Float = size.height * 0.10
-        scaleY = Float(maximumY - minimumY) / (size.height - topScaleMargin)
-        scaleX = Float(maximumX - minimumX) / (size.width-Float(2.0*xMargin))
+        let scaleY = Float(maximumY - minimumY) / (size.height - topScaleMargin)
+        let scaleX = Float(maximumX - minimumX) / (size.width-Float(2.0*results.xMargin))
 
         var inc1: Float = -1
         var yIncRound: Int = 1
@@ -240,14 +237,14 @@ extension Histogram: HasGraphLayout {
             }
         }
 
-        var yM: Float = origin.y
+        var yM: Float = results.origin.y
         while yM<=size.height {
             if(yM+inc1<0.0 || yM<0.0){
                 yM = yM + inc1
                 continue
             }
             markers.yMarkers.append(yM)
-            markers.yMarkersText.append("\(roundToN(scaleY*(yM-origin.y), yIncRound))")
+            markers.yMarkersText.append("\(roundToN(scaleY*(yM-results.origin.y), yIncRound))")
             yM = yM + inc1
         }
 
@@ -267,7 +264,7 @@ extension Histogram: HasGraphLayout {
         if(size.width/nX > MAX_DIV){
             inc2 = (size.height/nX)*inc1/MAX_DIV
         }
-        let xM: Float = xMargin
+        let xM: Float = results.xMargin
         let scaleXInv = 1.0/scaleX
         let xIncrement = inc2*scaleX
         for i in stride(from: Float(minimumX), through: Float(maximumX), by: xIncrement)  {
@@ -277,9 +274,9 @@ extension Histogram: HasGraphLayout {
 
         // scale points to be plotted according to plot size
         let scaleYInv: Float = 1.0/scaleY
-        results.series_scaledBinFrequency = series_binFrequency.map { ($0 * scaleYInv) + origin.y }
+        results.series_scaledBinFrequency = series_binFrequency.map { ($0 * scaleYInv) + results.origin.y }
         results.stack_scaledBinFrequency = stack_binFrequencies.map {
-            stackVals in stackVals.map { freq in (freq * scaleYInv) + origin.y }
+            stackVals in stackVals.map { freq in (freq * scaleYInv) + results.origin.y }
         }
         
         return (results, markers)
@@ -291,8 +288,8 @@ extension Histogram: HasGraphLayout {
         let allSeriesInfo = [histogramSeries] + histogramStackSeries
         switch histogramSeries.histogramSeriesOptions.histogramType {
         case .bar:
-            let xStart = Float(xMargin)
-            let xValues = stride(from: xStart, to: xStart + Float(binCount) * barWidth, by: barWidth)
+            let xStart = Float(data.xMargin)
+            let xValues = stride(from: xStart, to: xStart + Float(binCount) * data.barWidth, by: data.barWidth)
             
             // Get a `Slice` of frequencies for each series so we can take one element from each series for each x value
             var frequencySlices = allSeries.map { $0[...] }
@@ -300,7 +297,7 @@ extension Histogram: HasGraphLayout {
                 var currentHeight: Float = 0.0
                 for (series, index) in zip(allSeries, frequencySlices.indices) {
                     let height = frequencySlices[index].removeFirst()
-                    let rect = Rect(origin: Point(x, currentHeight), size: Size(width: barWidth, height:
+                    let rect = Rect(origin: Point(x, currentHeight), size: Size(width: data.barWidth, height:
                         height))
                     renderer.drawSolidRect(rect, fillColor: allSeriesInfo[index].color,
                                            hatchPattern: .none)
@@ -309,8 +306,8 @@ extension Histogram: HasGraphLayout {
                 currentHeight = 0.0
             }
         case .step:
-            let xStart = Float(xMargin)
-            let xValues = stride(from: xStart, through: xStart + Float(binCount) * barWidth, by: barWidth)
+            let xStart = Float(data.xMargin)
+            let xValues = stride(from: xStart, through: xStart + Float(binCount) * data.barWidth, by: data.barWidth)
             
             // One heights array for each series
             var seriesHeights: [[Float]] = [[Float](repeating: 0.0, count: binCount + 2)]
