@@ -51,7 +51,7 @@ public struct GraphLayout {
     
     // Layout.
         
-    func layout<T>(renderer: Renderer, calculateMarkers: (Size)->(T, PlotMarkers)) -> (T, Results) {
+    func layout<T>(renderer: Renderer, calculateMarkers: (Size)->(T, PlotMarkers?)) -> (T, Results) {
         // 1. Measure the things outside of the plot's border (axis titles, plot title)
         var sizes = Results.Sizes()
         measureLabels(renderer: renderer, results: &sizes)
@@ -62,7 +62,7 @@ public struct GraphLayout {
         calcLabelLocations(&results)
         // 4. Let the plot calculate its scale, calculate marker positions.
         let (drawingData, markers) = calculateMarkers(results.plotBorderRect.size)
-        results.plotMarkers = markers
+        markers.map { results.plotMarkers = $0 }
         // 5. Lay out remaining chrome.
         calcMarkerTextLocations(renderer: renderer, results: &results)
         calcLegend(legendLabels, renderer: renderer, results: &results)
@@ -117,6 +117,9 @@ public struct GraphLayout {
         borderRect.clampingShift(dx: yMarkerMaxWidth + 10) // Y markers
         borderRect.size.width -= yMarkerMaxWidth + 10 // Y2 markers
 
+        // Sanitize the resulting rectangle.
+        borderRect.size.width = max(borderRect.size.width, 0)
+        borderRect.size.height = max(borderRect.size.height, 0)
         return borderRect
     }
     
@@ -378,14 +381,31 @@ public protocol HasGraphLayout: AnyObject {
     
     var layout: GraphLayout { get set }
     
+    // Optional graph features (have default implementations).
+    
     var legendLabels: [(String, LegendIcon)] { get }
     
     // Layout and drawing callbacks.
     
     /// The information this graph needs to draw - for example: scaled locations for data points.
-    associatedtype DrawingData = Void
-    func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers)
-    func drawData(_ data: DrawingData, markers: PlotMarkers, size: Size, renderer: Renderer)
+    associatedtype DrawingData
+    
+    /// Lays out the chart's data within the rect `{ x: (0...size.width), y: (0...size.height) }`
+    /// and produces a set of instructions for drawing by the `drawData` function, and optionally
+    /// a set of axis markers for the `GraphLayout` to draw.
+    /// - parameters:
+    ///     - size: The size which the chart has to present its data.
+    ///     - renderer: The renderer which will draw the chart. Useful for text-size calculations.
+    /// - returns: A tuple containing data to be drawn and any axis markers the chart desires.
+    func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers?)
+    
+    /// Draws the data calculated by this chart's layout phase in the given renderer.
+    /// - parameters:
+    ///     - data: The data produced by this chart's `layoutData` method.
+    ///     - size: The size which the chart has to present its data. The same size as was used to calculate `data`.
+    ///             The chart must only draw within the rect `{ x: (0...size.width), y: (0...size.height) }`.
+    ///     - renderer: The renderer in which to draw.
+    func drawData(_ data: DrawingData, size: Size, renderer: Renderer)
 }
 
 extension HasGraphLayout {
@@ -446,8 +466,7 @@ extension Plot where Self: HasGraphLayout {
         }
         layout.drawBackground(results: results, renderer: renderer)
         renderer.withAdditionalOffset(results.plotBorderRect.origin) { renderer in
-            drawData(drawingData, markers: results.plotMarkers,
-                     size: results.plotBorderRect.size, renderer: renderer)
+            drawData(drawingData, size: results.plotBorderRect.size, renderer: renderer)
         }
         layout.drawForeground(results: results, renderer: renderer)
     }

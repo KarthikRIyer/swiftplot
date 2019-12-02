@@ -142,7 +142,7 @@ extension Histogram: HasGraphLayout {
     }
 
     // functions implementing plotting logic
-    public func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers) {
+    public func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers?) {
         
         var results = DrawingData()
         var markers = PlotMarkers()
@@ -286,7 +286,7 @@ extension Histogram: HasGraphLayout {
         return (results, markers)
     }
     //functions to draw the plot
-    public func drawData(_ data: DrawingData, markers: PlotMarkers, size: Size, renderer: Renderer) {
+    public func drawData(_ data: DrawingData, size: Size, renderer: Renderer) {
         let binCount = histogramSeries.bins
         let allSeries = [histogramSeries] + histogramStackSeries
         switch histogramSeries.histogramSeriesOptions.histogramType {

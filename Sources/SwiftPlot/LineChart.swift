@@ -121,7 +121,7 @@ extension LineGraph: HasGraphLayout {
     }
 
     // functions implementing plotting logic
-    public func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers) {
+    public func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers?) {
         var results = DrawingData()
         var markers = PlotMarkers()
         guard !primaryAxis.series.isEmpty, !primaryAxis.series[0].values.isEmpty else { return (results, markers) }
@@ -429,7 +429,7 @@ extension LineGraph: HasGraphLayout {
     }
 
     //functions to draw the plot
-    public func drawData(_ data: DrawingData, markers: PlotMarkers, size: Size, renderer: Renderer) {
+    public func drawData(_ data: DrawingData, size: Size, renderer: Renderer) {
         for i in 0..<primaryAxis.series.count {
             let s = primaryAxis.series[i]
             let scaledValues = primaryAxis_series_scaledValues[i]

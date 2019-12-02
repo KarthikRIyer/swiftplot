@@ -124,7 +124,7 @@ extension ScatterPlot: HasGraphLayout {
     }
 
     // functions implementing plotting logic
-    public func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers) {
+    public func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers?) {
         
         var results = DrawingData()
         var markers = PlotMarkers()
@@ -306,7 +306,7 @@ extension ScatterPlot: HasGraphLayout {
     }
 
     //functions to draw the plot
-    public func drawData(_ data: DrawingData, markers: PlotMarkers, size: Size, renderer: Renderer) {
+    public func drawData(_ data: DrawingData, size: Size, renderer: Renderer) {
         for seriesIndex in 0..<series.count {
             let s = series[seriesIndex]
             let scaledValues = series_scaledValues[seriesIndex]

@@ -94,7 +94,7 @@ extension BarGraph: HasGraphLayout {
     }
     
     // functions implementing plotting logic
-    public func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers) {
+    public func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers?) {
         
         var results = DrawingData()
         var markers = PlotMarkers()
@@ -292,7 +292,7 @@ extension BarGraph: HasGraphLayout {
     }
 
     //functions to draw the plot
-    public func drawData(_ data: DrawingData, markers: PlotMarkers, size: Size, renderer: Renderer) {
+    public func drawData(_ data: DrawingData, size: Size, renderer: Renderer) {
         if (graphOrientation == .vertical) {
             for index in 0..<data.series_scaledValues.count {
                 var currentHeightPositive: Float = 0
