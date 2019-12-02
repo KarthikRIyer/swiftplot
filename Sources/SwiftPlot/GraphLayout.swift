@@ -205,12 +205,8 @@ public struct GraphLayout {
     func drawForeground(results: Results, renderer: Renderer) {
         drawTitle(results: results, renderer: renderer)
         drawLabels(results: results, renderer: renderer)
-<<<<<<< HEAD
-        drawLegend(legendLabels, results: results, renderer: renderer)
-        drawAnnotations(renderer: renderer)
-=======
         drawLegend(results.legendLabels, results: results, renderer: renderer)
->>>>>>> 57cda29... Move LegendLabels in to results, so now we don't mutate the layout object when drawing! Woo!
+        drawAnnotations(renderer: renderer)
     }
     
     private func drawTitle(results: Results, renderer: Renderer) {
@@ -480,7 +476,7 @@ extension Plot where Self: HasGraphLayout {
         layout.drawForeground(results: results, renderer: renderer)
     }
 
-    public func addAnnotation(annotation: Annotation) {
+    public mutating func addAnnotation(annotation: Annotation) {
         layout.annotations.append(annotation)
     }
 }

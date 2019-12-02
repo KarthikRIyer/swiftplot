@@ -1,9 +1,7 @@
 public class HistogramSeries<T> {
     public var data = [T]()
     public var bins: Int = 0
-    public var binFrequency = [Float]()
-    public var scaledBinFrequency = [Float]()
-    public var maximumFrequency: Float = 0
+
     public var minimumX: T?
     public var maximumX: T?
     public var binInterval: T?
@@ -18,8 +16,6 @@ public class HistogramSeries<T> {
                 label: String,
                 color: Color,
                 histogramType: HistogramSeriesOptions.HistogramType,
-                binFrequency: [Float],
-                maximumFrequency: Float,
                 minimumX: T,
                 maximumX: T,
                 binInterval: T) {
@@ -29,8 +25,6 @@ public class HistogramSeries<T> {
         self.label = label
         self.color = color
         histogramSeriesOptions.histogramType = histogramType
-        self.binFrequency = binFrequency
-        self.maximumFrequency = maximumFrequency
         self.minimumX = minimumX
         self.maximumX = maximumX
         self.binInterval = binInterval

@@ -10,14 +10,17 @@ public class Histogram<T:FloatConvertible>: Plot {
     public var strokeWidth: Float = 2
     
     var histogramSeries = HistogramSeries<T>()
+    var histogramSeriesInfo = HistogramSeriesInfo()
+    
     var histogramStackSeries = [HistogramSeries<T>]()
+    var histogramStackSeriesInfo = [HistogramSeriesInfo]()
     var isNormalized = false
     var scaleY: Float = 1
     var scaleX: Float = 1
     var barWidth: Float = 0
     var xMargin: Float = 5
     var origin = zeroPoint
-
+    
     public init(isNormalized: Bool = false,
                 enableGrid: Bool = false){
         self.isNormalized = isNormalized
@@ -93,8 +96,6 @@ public class Histogram<T:FloatConvertible>: Plot {
                                   label: label,
                                   color: color,
                                   histogramType: histogramType,
-                                  binFrequency: binFrequency,
-                                  maximumFrequency: maximumFrequency,
                                   minimumX: minimumX,
                                   maximumX: maximumX,
                                   binInterval: binInterval)
@@ -102,10 +103,11 @@ public class Histogram<T:FloatConvertible>: Plot {
     func recalculateBins(series: HistogramSeries<T>,
                          binStart: T,
                          binEnd: T,
-                         binInterval: T) {
-    series.binFrequency.removeAll()
-        series.maximumFrequency = 0
-        for start in stride(from: Float(binStart), through: Float(binEnd), by: Float(binInterval)){
+                         binInterval: T) -> (binFrequency: [Float], maxFrequency: Float) {
+        
+        var maximumFrequency = Float(0)
+        var binFrequency = stride(from: Float(binStart), through: Float(binEnd), by: Float(binInterval)).map {
+            start -> Float in
             let end = start + Float(binInterval)
             var count: Float = 0
             for d in series.data {
@@ -113,18 +115,17 @@ public class Histogram<T:FloatConvertible>: Plot {
                     count += 1
                 }
             }
-            if (count > series.maximumFrequency) {
-                series.maximumFrequency = count
-            }
-            series.binFrequency.append(count)
+            maximumFrequency = max(count, maximumFrequency)
+            return count
         }
         if (isNormalized) {
             let factor = Float(series.data.count)*Float(binInterval)
-            for index in 0..<series.bins {
-                series.binFrequency[index]/=factor
+            for index in 0..<binFrequency.count {
+                binFrequency[index]/=factor
             }
-            series.maximumFrequency/=factor
+            maximumFrequency/=factor
         }
+        return (binFrequency, maximumFrequency)
     }
 }
 
@@ -138,7 +139,9 @@ extension Histogram: HasGraphLayout {
     }
     
     public struct DrawingData {
-        
+
+        var series_scaledBinFrequency = [Float]()
+        var stack_scaledBinFrequency = [[Float]]()
     }
 
     // functions implementing plotting logic
@@ -147,8 +150,6 @@ extension Histogram: HasGraphLayout {
         var results = DrawingData()
         var markers = PlotMarkers()
         
-        var maximumY = Float(histogramSeries.maximumFrequency)
-        let minimumY = Float(0)
         var maximumX: T = histogramSeries.maximumX!
         var minimumX: T = histogramSeries.minimumX!
 
@@ -161,20 +162,26 @@ extension Histogram: HasGraphLayout {
             }
         }
         let binInterval = (maximumX-minimumX)/T(histogramSeries.bins)
-        recalculateBins(series: histogramSeries,
+        let (series_binFrequency, series_maxFreq) = recalculateBins(series: histogramSeries,
                         binStart: minimumX,
                         binEnd: maximumX,
                         binInterval: binInterval)
+        
+        var stack_binFrequencies = [[Float]]()
         for index in 0..<histogramStackSeries.count {
-            recalculateBins(series: histogramStackSeries[index],
+            let (stack_binFreq, _) = recalculateBins(series: histogramStackSeries[index],
                             binStart: minimumX,
                             binEnd: maximumX,
                             binInterval: binInterval)
+            stack_binFrequencies.append(stack_binFreq)
         }
+        
+        let minimumY = Float(0)
+        var maximumY = series_maxFreq
         for index in 0..<histogramSeries.bins {
-            var tempFrequency = histogramSeries.binFrequency[index]
-            for series in histogramStackSeries {
-                tempFrequency += series.binFrequency[index]
+            var tempFrequency = series_binFrequency[index]
+            for stack in stack_binFrequencies {
+                tempFrequency += stack[index]
             }
             if (tempFrequency>maximumY) {
                 maximumY = tempFrequency
@@ -270,17 +277,9 @@ extension Histogram: HasGraphLayout {
 
         // scale points to be plotted according to plot size
         let scaleYInv: Float = 1.0/scaleY
-        histogramSeries.scaledBinFrequency.removeAll();
-        for j in 0..<histogramSeries.binFrequency.count {
-            let frequency = Float(histogramSeries.binFrequency[j])
-            histogramSeries.scaledBinFrequency.append(frequency*scaleYInv + origin.y)
-        }
-        for index in 0..<histogramStackSeries.count {
-            histogramStackSeries[index].scaledBinFrequency.removeAll()
-            for j in 0..<histogramStackSeries[index].binFrequency.count {
-                let frequency = Float(histogramStackSeries[index].binFrequency[j])
-                histogramStackSeries[index].scaledBinFrequency.append(frequency*scaleYInv + origin.y)
-            }
+        results.series_scaledBinFrequency = series_binFrequency.map { ($0 * scaleYInv) + origin.y }
+        results.stack_scaledBinFrequency = stack_binFrequencies.map {
+            stackVals in stackVals.map { freq in (freq * scaleYInv) + origin.y }
         }
         
         return (results, markers)
@@ -288,21 +287,23 @@ extension Histogram: HasGraphLayout {
     //functions to draw the plot
     public func drawData(_ data: DrawingData, size: Size, renderer: Renderer) {
         let binCount = histogramSeries.bins
-        let allSeries = [histogramSeries] + histogramStackSeries
+        let allSeries = [data.series_scaledBinFrequency] + data.stack_scaledBinFrequency
+        let allSeriesInfo = [histogramSeries] + histogramStackSeries
         switch histogramSeries.histogramSeriesOptions.histogramType {
         case .bar:
             let xStart = Float(xMargin)
             let xValues = stride(from: xStart, to: xStart + Float(binCount) * barWidth, by: barWidth)
             
             // Get a `Slice` of frequencies for each series so we can take one element from each series for each x value
-            var frequencySlices = allSeries.map { $0.scaledBinFrequency[...] }
+            var frequencySlices = allSeries.map { $0[...] }
             for x in xValues {
                 var currentHeight: Float = 0.0
                 for (series, index) in zip(allSeries, frequencySlices.indices) {
                     let height = frequencySlices[index].removeFirst()
                     let rect = Rect(origin: Point(x, currentHeight), size: Size(width: barWidth, height:
                         height))
-                    renderer.drawSolidRect(rect, fillColor: series.color, hatchPattern: .none)
+                    renderer.drawSolidRect(rect, fillColor: allSeriesInfo[index].color,
+                                           hatchPattern: .none)
                     currentHeight += height
                 }
                 currentHeight = 0.0
@@ -317,7 +318,7 @@ extension Histogram: HasGraphLayout {
             // Update `currentHeights` with the height from the series and add ìt to `heights`
             var currentHeights = seriesHeights[seriesHeights.startIndex]
             for series in allSeries {
-                for (newHeight, index) in zip(series.scaledBinFrequency, currentHeights.indices.dropFirst().dropLast()) {
+                for (newHeight, index) in zip(series, currentHeights.indices.dropFirst().dropLast()) {
                     currentHeights[index] += newHeight
                 }
                 seriesHeights.append(currentHeights)
@@ -327,8 +328,9 @@ extension Histogram: HasGraphLayout {
             // We iterate over the series in reverse to draw them from back to front
             var seriesHeightsSlice = seriesHeights.reversed()[...]
             var backHeightsSlice = seriesHeightsSlice.removeFirst()[...]
-            for (frontHeights, series) in zip(seriesHeightsSlice, allSeries.reversed()) {
+            for (frontHeights, seriesIdx) in zip(seriesHeightsSlice, allSeries.indices.reversed()) {
                 var frontHeightsSlice = frontHeights[...]
+                let series = allSeries[seriesIdx]
                 
                 // Iterate over bin edges focusing on the height of the left and right bins of the series on the back and in front
                 var backLeftBinHeight = backHeightsSlice.removeFirst()
@@ -338,7 +340,8 @@ extension Histogram: HasGraphLayout {
                     
                     func endLine() {
                         renderer.drawPlotLines(points: line, strokeWidth: strokeWidth,
-                                               strokeColor: series.color, isDashed: false)
+                                               strokeColor: allSeriesInfo[seriesIdx].color,
+                                               isDashed: false)
                         line.removeAll(keepingCapacity: true)
                     }
                     
