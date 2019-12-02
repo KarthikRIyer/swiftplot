@@ -1,52 +1,46 @@
 import Foundation
 
+fileprivate let MAX_DIV: Float = 50
+fileprivate let sqrt3: Float = sqrt(3)
+
 // class defining a lineGraph and all its logic
-public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
-
-    let MAX_DIV: Float = 50
-
-    let sqrt3: Float = sqrt(3)
+public struct ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     public var layout = GraphLayout()
-    
+    // Data.
+    var series = [Series<T,U>]()
+    // ScatterPlot layout properties.
     // public var plotLineThickness: Float = 3
     public var scatterPatternSize: Float = 10
 
-    var series = [Series<T,U>]()
-    var series_scaledValues = [[Pair<T,U>]]()
-    var series_maxY: U? = nil
-    var series_minY: U? = nil
-    var scaleX: Float = 1
-    var scaleY: Float = 1
-
-    public convenience init(points p: [Pair<T,U>],
+    public init(enableGrid: Bool = false){
+        self.enableGrid = enableGrid
+    }
+    
+    public init(points p: [Pair<T,U>],
                             enableGrid: Bool = false){
         self.init(enableGrid: enableGrid)
         let s = Series<T,U>(values: p,label: "Plot")
         series.append(s)
     }
 
-    public init(enableGrid: Bool = false){
-        self.enableGrid = enableGrid
-    }
-    
     public var enableGrid: Bool {
         get { layout.enablePrimaryAxisGrid }
         set { layout.enablePrimaryAxisGrid = newValue }
     }
 
     // functions to add series
-    public func addSeries(_ s: Series<T,U>){
+    public mutating func addSeries(_ s: Series<T,U>){
         series.append(s)
     }
-    public func addSeries(points: [Pair<T,U>],
+    public mutating func addSeries(points: [Pair<T,U>],
                           label: String,
                           color: Color = .lightBlue,
                           scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
         let s = Series(values: points,label: label, color: color, scatterPattern: scatterPattern)
         addSeries(s)
     }
-    public func addSeries(_ x: [T],
+    public mutating func addSeries(_ x: [T],
                           _ y: [U],
                           label: String,
                           color: Color = .lightBlue,
@@ -61,7 +55,7 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
                        scatterPattern: scatterPattern)
         addSeries(s)
     }
-    public func addSeries(_ x: [T],
+    public mutating func addSeries(_ x: [T],
                           _ y: [U],
                           label: String,
                           startColor: Color = .lightBlue,
@@ -78,7 +72,7 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
                        scatterPattern: scatterPattern)
         addSeries(s)
     }
-    public func addSeries(_ y: [U],
+    public mutating func addSeries(_ y: [U],
                           label: String,
                           color: Color = .lightBlue,
                           scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle){
@@ -92,7 +86,7 @@ public class ScatterPlot<T:FloatConvertible,U:FloatConvertible>: Plot {
                        scatterPattern: scatterPattern)
         addSeries(s)
     }
-    public func addSeries(_ y: [U],
+    public mutating func addSeries(_ y: [U],
                           label: String,
                           startColor: Color = .lightBlue,
                           endColor: Color = .lightBlue,
@@ -120,7 +114,9 @@ extension ScatterPlot: HasGraphLayout {
     }
     
     public struct DrawingData {
-        
+        var series_scaledValues = [[Pair<T,U>]]()
+        var scaleX: Float = 1
+        var scaleY: Float = 1
     }
 
     // functions implementing plotting logic
@@ -160,8 +156,8 @@ extension ScatterPlot: HasGraphLayout {
 
         let rightScaleMargin: Float = size.width * 0.2
         let topScaleMargin: Float = size.height * 0.2
-        scaleX = Float(maximumX - minimumX) / (size.width - rightScaleMargin);
-        scaleY = Float(maximumY - minimumY) / (size.height - topScaleMargin);
+        results.scaleX = Float(maximumX - minimumX) / (size.width - rightScaleMargin);
+        results.scaleY = Float(maximumY - minimumY) / (size.height - topScaleMargin);
 
         var inc1: Float = -1
         var inc2: Float = -1
@@ -174,7 +170,7 @@ extension ScatterPlot: HasGraphLayout {
             while(abs(inc1)*pow(10.0,Float(c))<1.0) {
                 c+=1
             }
-            inc1 = inc1/scaleY
+            inc1 = inc1/results.scaleY
             yIncRound = c+1
         }
         if(Float(maximumY-minimumY)<1.0) {
@@ -184,7 +180,7 @@ extension ScatterPlot: HasGraphLayout {
             while(abs(inc1)*pow(10.0,Float(c))<1.0) {
                 c+=1
             }
-            inc1 = inc1/scaleY
+            inc1 = inc1/results.scaleY
             yIncRound = c+1
         }
         if(Float(maximumX-minimumX)<=2.0 && Float(maximumX-minimumX)>=1.0) {
@@ -194,7 +190,7 @@ extension ScatterPlot: HasGraphLayout {
             while(abs(inc2)*pow(10.0,Float(c))<1.0) {
                 c+=1
             }
-            inc2 = inc2/scaleX
+            inc2 = inc2/results.scaleX
             xIncRound = c+1
         }
         else if(Float(maximumX-minimumX)<1.0) {
@@ -204,7 +200,7 @@ extension ScatterPlot: HasGraphLayout {
             while(abs(inc2)*pow(10.0,Float(c))<1.0) {
                 c+=1
             }
-            inc2 = inc2/scaleX
+            inc2 = inc2/results.scaleX
             xIncRound = c+1
         }
 
@@ -219,7 +215,7 @@ extension ScatterPlot: HasGraphLayout {
         }
 
         if(inc1 == -1) {
-            let nY: Float = v1/scaleY
+            let nY: Float = v1/results.scaleY
             inc1 = nY
             if(size.height/nY > MAX_DIV){
                 inc1 = (size.height/nY)*inc1/MAX_DIV
@@ -237,7 +233,7 @@ extension ScatterPlot: HasGraphLayout {
         }
 
         if(inc2 == -1) {
-            let nX: Float = v2/scaleX
+            let nX: Float = v2/results.scaleX
             inc2 = nX
             var noXD: Float = size.width/nX
             if(noXD > MAX_DIV){
@@ -253,7 +249,7 @@ extension ScatterPlot: HasGraphLayout {
                 continue
             }
             markers.xMarkers.append(xM)
-            markers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
+            markers.xMarkersText.append("\(roundToN(results.scaleX*(xM-origin.x), xIncRound))")
             xM = xM + inc2
         }
 
@@ -264,7 +260,7 @@ extension ScatterPlot: HasGraphLayout {
                 continue
             }
             markers.xMarkers.append(xM)
-            markers.xMarkersText.append("\(roundToN(scaleX*(xM-origin.x), xIncRound))")
+            markers.xMarkersText.append("\(roundToN(results.scaleX*(xM-origin.x), xIncRound))")
             xM = xM - inc2
         }
 
@@ -275,22 +271,22 @@ extension ScatterPlot: HasGraphLayout {
                 continue
             }
             markers.yMarkers.append(yM)
-            markers.yMarkersText.append("\(ceilToN(scaleY*(yM-origin.y), yIncRound))")
+            markers.yMarkersText.append("\(ceilToN(results.scaleY*(yM-origin.y), yIncRound))")
             yM = yM + inc1
         }
         yM = origin.y - inc1
         while yM>0.0 {
             markers.yMarkers.append(yM)
-            markers.yMarkersText.append("\(floorToN(scaleY*(yM-origin.y), xIncRound))")
+            markers.yMarkersText.append("\(floorToN(results.scaleY*(yM-origin.y), xIncRound))")
             yM = yM - inc1
         }
 
 
 
         // scale points to be plotted according to plot size
-        let scaleXInv: Float = 1.0/scaleX;
-        let scaleYInv: Float = 1.0/scaleY
-        series_scaledValues = series.map { series in
+        let scaleXInv: Float = 1.0/results.scaleX;
+        let scaleYInv: Float = 1.0/results.scaleY
+        results.series_scaledValues = series.map { series in
             series.values.compactMap { value in
                 let scaledPair = Pair<T,U>(value.x * T(scaleXInv) + T(origin.x),
                                            value.y * U(scaleYInv) + U(origin.y))
@@ -309,10 +305,10 @@ extension ScatterPlot: HasGraphLayout {
     public func drawData(_ data: DrawingData, size: Size, renderer: Renderer) {
         for seriesIndex in 0..<series.count {
             let s = series[seriesIndex]
-            let scaledValues = series_scaledValues[seriesIndex]
-            series_maxY = maxY(points: scaledValues)
-            series_minY = minY(points: scaledValues)
-            let seriesYRangeInverse: Float = 1.0/Float(series_maxY!-series_minY!)
+            let scaledValues = data.series_scaledValues[seriesIndex]
+            let series_maxY = maxY(points: scaledValues)
+            let series_minY = minY(points: scaledValues)
+            let seriesYRangeInverse: Float = 1.0/Float(series_maxY-series_minY)
 
             for value in scaledValues {
                 let p = Point(Float(value.x),Float(value.y))
@@ -320,7 +316,7 @@ extension ScatterPlot: HasGraphLayout {
                 if let startColor = s.startColor, let endColor = s.endColor {
                     color = lerp(startColor: startColor,
                                  endColor: endColor,
-                                 Float(value.y-series_minY!)*seriesYRangeInverse)
+                                 Float(value.y-series_minY)*seriesYRangeInverse)
                 } else {
                     color = s.color
                 }
@@ -417,8 +413,6 @@ extension ScatterPlot: HasGraphLayout {
 
 extension ScatterPlotSeriesOptions.ScatterPattern {
     
-    static let sqrt3: Float = sqrt(3)
-
     func draw(in rect: Rect, color: Color, renderer: Renderer) {
         let tL = Point(rect.minX, rect.maxY)
         let bR = Point(rect.maxX, rect.minY)
@@ -442,9 +436,9 @@ extension ScatterPlotSeriesOptions.ScatterPattern {
             let r: Float = (tR.x-tL.x)*Float(0.5)
             let p1 = Point(c.x + 0,
                            c.y + r)
-            let p2 = Point(c.x + r*Self.sqrt3*Float(0.5),
+            let p2 = Point(c.x + r*sqrt3*Float(0.5),
                            c.y - r*Float(0.5))
-            let p3 = Point(c.x - r*Self.sqrt3*Float(0.5),
+            let p3 = Point(c.x - r*sqrt3*Float(0.5),
                            c.y - r*Float(0.5))
             renderer.drawSolidTriangle(point1: p1,
                                        point2: p2,
