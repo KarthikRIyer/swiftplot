@@ -1,23 +1,16 @@
 public protocol Renderer: AnyObject{
 
-    /*property: xOffset
-    *description: Specifies the offset in the x-direction for everything in the
-    *             particular SubPlot being renderer currently.
+    /*property: offset
+    *description: Specifies the offset for everything in the
+    *             particular SubPlot being rendered currently.
     */
-    var xOffset: Float { get set }
+    var offset: Point { get set }
 
-    /*property: yOffset
-    *description: Specifies the offset in the y-direction for everything in the
-    *             particular SubPlot being renderer currently.
-    */
-    var yOffset: Float { get set }
-
-    /*property: plotDimensions
+    /*property: imageSize
     *description: Specifies the dimensions of the particular Image and SubPlot
                   being renderered currently.
-    *             It holds the Frame, Graph and SubPlot Dimensions.
     */
-    var plotDimensions: PlotDimensions { get set }
+    var imageSize: Size { get set }
 
     /*drawRect()
     *params: topLeftPoint p1: Point,
@@ -179,15 +172,24 @@ public protocol Renderer: AnyObject{
 }
 
 extension Renderer {
+    
+    public var xOffset: Float {
+        get { return offset.x }
+        set { offset.x = newValue}
+    }
+    public var yOffset: Float {
+        get { return offset.y }
+        set { offset.y = newValue}
+    }
     func getTextWidth(text: String, textSize size: Float) -> Float {
         return getTextLayoutSize(text: text, textSize: size).width
     }
     
-    func withAdditionalOffset(_ offset: Point, _ perform: (Self)->Void) {
+    public func withAdditionalOffset(_ offset: Point, _ perform: (Self) throws -> Void) rethrows {
         let oldOffset = (self.xOffset, self.yOffset)
         self.xOffset += offset.x
         self.yOffset += offset.y
-        perform(self)
+        try perform(self)
         (self.xOffset, self.yOffset) = oldOffset
     }
 }

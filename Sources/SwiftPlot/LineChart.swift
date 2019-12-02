@@ -5,30 +5,24 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     let MAX_DIV: Float = 50
 
-    public var layout: GraphLayout
-
+    public var layout = GraphLayout()
+    
     public var plotLineThickness: Float = 1.5
 
     var primaryAxis = Axis<T,U>()
     var secondaryAxis: Axis<T,U>? = nil
 
     public convenience init(points : [Pair<T,U>],
-                width: Float = 1000,
-                height: Float = 660,
                 enablePrimaryAxisGrid: Bool = false,
                 enableSecondaryAxisGrid: Bool = false){
-        self.init(width: width, height: height,
-                  enablePrimaryAxisGrid: enablePrimaryAxisGrid, enableSecondaryAxisGrid: enableSecondaryAxisGrid)
+        self.init(enablePrimaryAxisGrid: enablePrimaryAxisGrid, enableSecondaryAxisGrid: enableSecondaryAxisGrid)
 
         let s = Series<T,U>(values: points,label: "Plot")
         primaryAxis.series.append(s)
     }
 
-    public init(width: Float = 1000,
-                height: Float = 660,
-                enablePrimaryAxisGrid: Bool = false,
+    public init(enablePrimaryAxisGrid: Bool = false,
                 enableSecondaryAxisGrid: Bool = false){
-        layout = GraphLayout(size: Size(width: width, height: height))
         self.enablePrimaryAxisGrid = enablePrimaryAxisGrid
         self.enableSecondaryAxisGrid = enableSecondaryAxisGrid
     }
@@ -89,25 +83,19 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
                             minX: T,
                             maxX: T,
                             numberOfSamples: Int = 400,
+                            clampY: ClosedRange<U>? = nil,
                             label: String,
                             color: Color = Color.lightBlue,
                             axisType: Axis<T,U>.Location = .primaryAxis) {
-        var x = [T]()
-        var y = [U]()
+        
         let step = Float(maxX - minX)/Float(numberOfSamples)
-        var r: Float = 0.0
-        for i in stride(from: Float(minX), through: Float(maxX), by: step) {
-            r = Float(function(T(i)))
-            if (r.isNaN || r.isInfinite) {
-                continue
+        let points = stride(from: Float(minX), through: Float(maxX), by: step).compactMap { i -> Pair<T,U>? in
+            let result = function(T(i))
+            guard Float(result).isFinite else { return nil }
+            if let clampY = clampY, !clampY.contains(result) {
+                return nil
             }
-            x.append(T(i))
-            y.append(clamp(U(r), minValue: U(-1.0/step), maxValue: U(1.0/step)))
-            // y.append(r)
-        }
-        var points = [Pair<T,U>]()
-        for i in 0..<x.count {
-            points.append(Pair<T,U>(x[i], y[i]))
+            return Pair(T(i), result)
         }
         let s = Series<T,U>(values: points, label: label, color: color)
         addSeries(s, axisType: axisType)
@@ -127,7 +115,7 @@ extension LineGraph: HasGraphLayout {
 
     // functions implementing plotting logic
     public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, size: Size, renderer: Renderer) {
-
+        guard !primaryAxis.series.isEmpty, !primaryAxis.series[0].values.isEmpty else { return }
         var maximumXPrimary: T = maxX(points: primaryAxis.series[0].values)
         var maximumYPrimary: U = maxY(points: primaryAxis.series[0].values)
         var minimumXPrimary: T = minX(points: primaryAxis.series[0].values)
@@ -304,42 +292,46 @@ extension LineGraph: HasGraphLayout {
         }
 
         var xM = originPrimary.x
-        while xM<=size.width {
-            if(xM+inc2Primary<0.0 || xM<0.0) {
-                xM = xM+inc2Primary
-                continue
+        if size.width > 0 {
+            while xM<=size.width {
+                if(xM+inc2Primary<0.0 || xM<0.0) {
+                    xM = xM+inc2Primary
+                    continue
+                }
+                markers.xMarkers.append(xM)
+                markers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
+                xM = xM + inc2Primary
             }
-            markers.xMarkers.append(xM)
-            markers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
-            xM = xM + inc2Primary
-        }
 
-        xM = originPrimary.x - inc2Primary
-        while xM>0.0 {
-            if (xM > size.width) {
+            xM = originPrimary.x - inc2Primary
+            while xM>0.0 {
+                if (xM > size.width) {
+                    xM = xM - inc2Primary
+                    continue
+                }
+                markers.xMarkers.append(xM)
+                markers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
                 xM = xM - inc2Primary
-                continue
             }
-            markers.xMarkers.append(xM)
-            markers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
-            xM = xM - inc2Primary
         }
 
         var yM = originPrimary.y
-        while yM<=size.height {
-            if(yM+inc1Primary<0.0 || yM<0.0){
+        if size.height > 0 {
+            while yM<=size.height {
+                if(yM+inc1Primary<0.0 || yM<0.0){
+                    yM = yM + inc1Primary
+                    continue
+                }
+                markers.yMarkers.append(yM)
+                markers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
                 yM = yM + inc1Primary
-                continue
             }
-            markers.yMarkers.append(yM)
-            markers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
-            yM = yM + inc1Primary
-        }
-        yM = originPrimary.y - inc1Primary
-        while yM>0.0 {
-            markers.yMarkers.append(yM)
-            markers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
-            yM = yM - inc1Primary
+            yM = originPrimary.y - inc1Primary
+            while yM>0.0 {
+                markers.yMarkers.append(yM)
+                markers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
+                yM = yM - inc1Primary
+            }
         }
 
 
@@ -352,7 +344,7 @@ extension LineGraph: HasGraphLayout {
             for j in 0..<primaryAxis.series[i].count {
                 let scaledPair = Pair<T,U>(((primaryAxis.series[i])[j].x)*T(scaleXInvPrimary) + T(originPrimary.x),
                                            ((primaryAxis.series[i])[j].y)*U(scaleYInvPrimary) + U(originPrimary.y))
-                if (0...size.width).contains(Float(scaledPair.x)) && (0...size.height).contains(Float(scaledPair.y)) {
+                if Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= size.width && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= size.height {
                     primaryAxis.series[i].scaledValues.append(scaledPair)
                 }
             }

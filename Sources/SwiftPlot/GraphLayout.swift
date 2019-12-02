@@ -7,11 +7,8 @@ public enum LegendIcon {
 
 public struct GraphLayout {
     // Inputs.
-    var plotSize: Size
+    var plotSize: Size = .zero
     
-    init(size: Size) {
-        self.plotSize = size
-    }
     var backgroundColor: Color = .white
     var plotBackgroundColor: Color?
     var plotTitle = PlotTitle()
@@ -107,6 +104,9 @@ public struct GraphLayout {
         }
         if let titleLabel = sizes.titleSize {
             borderRect.size.height -= (titleLabel.height + 2 * Self.titleLabelPadding)
+        } else {
+            // Add a space to the top when there is no title.
+            borderRect.size.height -= Self.titleLabelPadding
         }
         borderRect.contract(by: plotBorder.thickness)
         // Give space for the markers.
@@ -378,6 +378,11 @@ public protocol HasGraphLayout: AnyObject {
 
 extension HasGraphLayout {
     
+    // Default implementation.
+    public var legendLabels: [(String, LegendIcon)] {
+        return []
+    }
+    
     public var plotSize: Size {
         get { layout.plotSize }
         set { layout.plotSize = newValue }
@@ -420,8 +425,9 @@ extension HasGraphLayout {
 
 extension Plot where Self: HasGraphLayout {
     
-    public func drawGraph(renderer: Renderer) {
+    public func drawGraph(size: Size, renderer: Renderer) {
         layout.legendLabels = self.legendLabels
+        layout.plotSize = size
         let results = layout.layout(renderer: renderer, calculateMarkers: { markers, size in
             calculateScaleAndMarkerLocations(
                 markers: &markers,

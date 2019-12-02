@@ -16,43 +16,53 @@ public class QuartzRenderer: Renderer {
     static let bitmapInfo = CGImageAlphaInfo.premultipliedFirst.rawValue
     
     var context: CGContext
+    /// Whether or not this context was given to us. If `true`, we should never re-make `context`
+    let isExternalContext: Bool
     var fontPath = ""
-    public var xOffset: Float = 0
-    public var yOffset: Float = 0
+    public var offset = zeroPoint
     
-    public var plotDimensions: PlotDimensions {
+    public var imageSize: Size {
         didSet {
+            guard !isExternalContext else { return }
             context = CGContext(data: nil,
-                                width: Int(plotDimensions.frameWidth),
-                                height: Int(plotDimensions.frameHeight),
+                                width: Int(imageSize.width),
+                                height: Int(imageSize.height),
                                 bitsPerComponent: 8,
                                 bytesPerRow: 0,
                                 space: Self.colorSpace,
                                 bitmapInfo: Self.bitmapInfo)!
             let rect = CGRect(x: 0,
                               y: 0,
-                              width: Int(plotDimensions.frameWidth),
-                              height: Int(plotDimensions.frameHeight))
+                              width: Int(imageSize.width),
+                              height: Int(imageSize.height))
             context.setFillColor(Color.white.cgColor)
             context.fill(rect)
         }
     }
 
-    public init(width w: Float = 1000, height h: Float = 660, fontPath: String = "") {
-        plotDimensions = PlotDimensions(frameWidth: w, frameHeight: h)
-        context = CGContext(data: nil,
-                            width: Int(plotDimensions.frameWidth),
-                            height: Int(plotDimensions.frameHeight),
-                            bitsPerComponent: 8,
-                            bytesPerRow: 0,
-                            space: Self.colorSpace,
-                            bitmapInfo: Self.bitmapInfo)!
-        let rect = CGRect(x: 0,
-                          y: 0,
-                          width: Int(plotDimensions.frameWidth),
-                          height: Int(plotDimensions.frameHeight))
-        context.setFillColor(Color.white.cgColor)
-        context.fill(rect)
+    /// Creates a renderer with the given width and height.
+    public convenience init(width w: Float = 1000, height h: Float = 660, fontPath: String = "") {
+        self.init(size: Size(width: w, height: h), fontPath: fontPath)
+    }
+    
+    /// Creates a renderer with the given size.
+    public init(size: Size, fontPath: String = "") {
+        self.imageSize = size
+        self.context = CGContext(data: nil,
+                                 width: Int(size.width),
+                                 height: Int(size.height),
+                                 bitsPerComponent: 8,
+                                 bytesPerRow: 0,
+                                 space: Self.colorSpace,
+                                 bitmapInfo: Self.bitmapInfo)!
+        self.isExternalContext = false
+    }
+    
+    /// Creates a renderer with the given external context and dimensions..
+    public init(externalContext: CGContext, dimensions: Size) {
+        self.imageSize = dimensions
+        self.context = externalContext
+        self.isExternalContext = true
     }
 
     public func drawRect(_ rect: Rect,
@@ -477,20 +487,38 @@ public class QuartzRenderer: Renderer {
 // - Helpers
 
 extension CGPoint {
-    init(_ swiftplotPoint: SwiftPlot.Point) {
+    public init(_ swiftplotPoint: SwiftPlot.Point) {
         self.init(x: CGFloat(swiftplotPoint.x), y: CGFloat(swiftplotPoint.y))
     }
 }
 
+extension SwiftPlot.Point {
+    public init(_ cgPoint: CGPoint) {
+        self.init(Float(cgPoint.x), Float(cgPoint.y))
+    }
+}
+
 extension CGSize {
-    init(_ swiftplotSize: SwiftPlot.Size) {
+    public init(_ swiftplotSize: SwiftPlot.Size) {
         self.init(width: CGFloat(swiftplotSize.width), height: CGFloat(swiftplotSize.height))
     }
 }
 
+extension SwiftPlot.Size {
+    public init(_ cgSize: CGSize) {
+        self.init(width: Float(cgSize.width), height: Float(cgSize.height))
+    }
+}
+
 extension CGRect {
-    init(_ swiftplotRect: SwiftPlot.Rect) {
+    public init(_ swiftplotRect: SwiftPlot.Rect) {
         self.init(origin: CGPoint(swiftplotRect.origin), size: CGSize(swiftplotRect.size))
+    }
+}
+
+extension SwiftPlot.Rect {
+    public init(_ cgRect: CGRect) {
+        self.init(origin: Point(cgRect.origin), size: Size(cgRect.size))
     }
 }
 

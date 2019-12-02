@@ -22,3 +22,12 @@ public struct PlotDimensions{
         subHeight = frameHeight
     }
 }
+
+extension PlotDimensions {
+    var frameSize: Size {
+        return Size(width: frameWidth, height: frameHeight)
+    }
+    var subplotSize: Size {
+        return Size(width: subWidth, height: subHeight)
+    }
+}

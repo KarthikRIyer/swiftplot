@@ -24,9 +24,8 @@ public class SVGRenderer: Renderer{
     static let gridHatch: String = #"<defs><pattern id="gridHatch" width="10" height="10" patternUnits="userSpaceOnUse"><line x1="0" y1="5" x2="10" y2="5" style="stroke:black; stroke-width:1" /><line x1="5" y1="0" x2="5" y2="10" style="stroke:black; stroke-width:1" /></pattern></defs>"#
     static let crossHatch: String = #"<defs><pattern id="crossHatch" width="10" height="10" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="10" y2="10" style="stroke:black; stroke-width:1" /><line x1="0" y1="10" x2="10" y2="0" style="stroke:black; stroke-width:1" /></pattern></defs>"#
     
-    public var xOffset: Float = 0
-    public var yOffset: Float = 0
-    public var plotDimensions: PlotDimensions
+    public var offset = zeroPoint
+    public var imageSize: Size
 
     var hatchingIncluded = Array(repeating: false,
                                  count: BarGraphSeriesOptions.Hatching.allCases.count)
@@ -35,14 +34,14 @@ public class SVGRenderer: Renderer{
     var fontFamily: String = "Roboto"
     
     public init(width w: Float = 1000, height h: Float = 660, fontFamily: String = "Roboto") {
+        self.imageSize = Size(width: w, height: h)
         self.fontFamily = fontFamily
-        plotDimensions = PlotDimensions(frameWidth: w, frameHeight: h)
     }
 
     func convertToSVGCoordinates(_ point: Point) -> Point {
         let x = point.x + xOffset
         var y = point.y + yOffset
-        y = plotDimensions.frameHeight - y
+        y = imageSize.height - y
         return Point(x, y)
     }
 
@@ -225,7 +224,7 @@ public class SVGRenderer: Renderer{
 
     func savePlotImage(fileName name: String) throws {
         // Build the document.
-        let header = #"<svg height="\#(plotDimensions.frameHeight)" width="\#(plotDimensions.frameWidth)" version="4.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">"#
+        let header = #"<svg height="\#(imageSize.height)" width="\#(imageSize.width)" version="4.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">"#
             + "\n" + #"<rect width="100%" height="100%" fill="white"/>"#
         let font = #"<defs><style>@import url("https://fonts.googleapis.com/css?family=\#(fontFamily)");</style></defs>"#
         let image = header + "\n" + font + "\n" + lines.joined(separator: "\n") + "\n</svg>"

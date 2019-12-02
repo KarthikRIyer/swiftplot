@@ -5,7 +5,7 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
 
     let MAX_DIV: Float = 50
 
-    public var layout: GraphLayout
+    public var layout = GraphLayout()
     
     public enum GraphOrientation {
         case vertical
@@ -21,10 +21,7 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
     var barWidth : Int = 0
     var origin = zeroPoint
 
-    public init(width: Float = 1000,
-                height: Float = 660,
-                enableGrid: Bool = false){
-        layout = GraphLayout(size: Size(width: width, height: height))
+    public init(enableGrid: Bool = false){
         self.enableGrid = enableGrid
     }
     
@@ -106,6 +103,7 @@ extension BarGraph: HasGraphLayout {
         var maximumX: U = U(0)
         var minimumX: U = U(0)
 
+        guard series.count > 0 else { return }
         if (graphOrientation == .vertical) {
             barWidth = Int(round(size.width/Float(series.count)))
             maximumY = maxY(points: series.values)
