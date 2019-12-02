@@ -1,29 +1,28 @@
 import Foundation
 
+fileprivate let MAX_DIV: Float = 50
+
 // class defining a barGraph and all it's logic
 public struct Histogram<T:FloatConvertible>: Plot {
 
-    let MAX_DIV: Float = 50
-
     public var layout = GraphLayout()
-
-    public var strokeWidth: Float = 2
-    
+    // Data.
     var histogramSeries = HistogramSeries<T>()
     var histogramStackSeries = [HistogramSeries<T>]()
+    // Histogram layout properties.
+    public var strokeWidth: Float = 2
     var isNormalized = false
-    
     
     public init(isNormalized: Bool = false,
                 enableGrid: Bool = false){
         self.isNormalized = isNormalized
         self.enableGrid = enableGrid
     }
-    
-    public var enableGrid: Bool {
-        get { layout.enablePrimaryAxisGrid }
-        set { layout.enablePrimaryAxisGrid = newValue }
-    }
+}
+
+// Setting data.
+
+extension Histogram {
     
     public mutating func addSeries(_ s: HistogramSeries<T>){
         histogramSeries = s
@@ -48,6 +47,19 @@ public struct Histogram<T:FloatConvertible>: Plot {
                                                         color: color,
                                                         histogramType: histogramSeries.histogramSeriesOptions.histogramType))
     }
+}
+
+// Layout properties.
+
+extension Histogram {
+    
+    public var enableGrid: Bool {
+        get { layout.enablePrimaryAxisGrid }
+        set { layout.enablePrimaryAxisGrid = newValue }
+    }
+}
+
+extension Histogram {
     func calculateSeriesData(data: [T],
                              bins: Int,
                              label: String,
