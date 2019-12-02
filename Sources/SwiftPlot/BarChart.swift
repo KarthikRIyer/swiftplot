@@ -1,7 +1,7 @@
 import Foundation
 
 // class defining a barGraph and all it's logic
-public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
+public struct BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
 
     let MAX_DIV: Float = 50
 
@@ -26,10 +26,10 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
         set { layout.enablePrimaryAxisGrid = newValue }
     }
     
-    public func addSeries(_ s: Series<T,U>){
+    public mutating func addSeries(_ s: Series<T,U>){
         series = s
     }
-    public func addStackSeries(_ s: Series<T,U>) {
+    public mutating func addStackSeries(_ s: Series<T,U>) {
         if (series.count != 0 && series.count == s.count) {
             stackSeries.append(s)
         }
@@ -37,7 +37,7 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
             print("Stack point count does not match the Series point count.")
         }
     }
-    public func addStackSeries(_ x: [U],
+    public mutating func addStackSeries(_ x: [U],
                                label: String,
                                color: Color = .lightBlue,
                                hatchPattern: BarGraphSeriesOptions.Hatching = .none) {
@@ -51,7 +51,7 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
                             hatchPattern: hatchPattern)
         addStackSeries(s)
     }
-    public func addSeries(values: [Pair<T,U>],
+    public mutating func addSeries(values: [Pair<T,U>],
                           label: String,
                           color: Color = Color.lightBlue,
                           hatchPattern: BarGraphSeriesOptions.Hatching = .none,
@@ -63,7 +63,7 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
         addSeries(s)
         self.graphOrientation = graphOrientation
     }
-    public func addSeries(_ x: [T],
+    public mutating func addSeries(_ x: [T],
                           _ y: [U],
                           label: String,
                           color: Color = Color.lightBlue,
