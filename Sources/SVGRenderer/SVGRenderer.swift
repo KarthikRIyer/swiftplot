@@ -189,10 +189,16 @@ public class SVGRenderer: Renderer{
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
-        guard !p.isEmpty else { return }
-        for i in 0..<p.count-1 {
-            drawLine(startPoint: p[i], endPoint: p[i+1], strokeWidth: thickness, strokeColor: strokeColor, isDashed: isDashed)
-        }
+        guard p.count > 1 else { return }
+        
+        let pointsString = p.map { point in
+            let convertedPoint = convertToSVGCoordinates(point)
+            return "\(convertedPoint.x),\(convertedPoint.y)"
+        }.joined(separator: " ")
+        
+        let dashedString = isDashed ? ";stroke-dasharray:4 1" : ""
+        
+        lines.append(#"<polyline points="\#(pointsString)" style="stroke:\#(strokeColor.svgColorString);stroke-width:\#(thickness);opacity:\#(strokeColor.a);stroke-linecap:butt;fill:none\#(dashedString)" />"#)
     }
 
     public func drawText(text s: String,
