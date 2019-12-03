@@ -100,7 +100,7 @@ var agg_renderer: AGGRenderer = AGGRenderer()
 var lineGraph = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
 lineGraph.addSeries(x, y, label: "Plot 1", color: .lightBlue)
 lineGraph.plotTitle.title = "SINGLE SERIES"
-lineGraph.plotLabel.xLabel = 
+lineGraph.plotLabel.xLabel = "X-AXIS"
 lineGraph.plotLabel.yLabel = "Y-AXIS"
 lineGraph.plotLineThickness = 3.0
 lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
