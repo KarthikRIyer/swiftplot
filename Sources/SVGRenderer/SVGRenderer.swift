@@ -177,10 +177,10 @@ public class SVGRenderer: Renderer{
         let p2 = convertToSVGCoordinates(p2)
         var line : String
         if (isDashed) {
-            line = #"<line x1="\#(p1.x)" y1="\#(p1.y)" x2="\#(p2.x)" y2="\#(p2.y)" style="stroke:\#(strokeColor.svgColorString);stroke-width:\#(thickness);opacity:\#(strokeColor.a);stroke-linecap:round;stroke-dasharray:4 1" />"#
+            line = #"<line x1="\#(p1.x)" y1="\#(p1.y)" x2="\#(p2.x)" y2="\#(p2.y)" style="stroke:\#(strokeColor.svgColorString);stroke-width:\#(thickness);opacity:\#(strokeColor.a);stroke-linecap:butt;stroke-dasharray:4 1" />"#
         }
         else {
-            line = #"<line x1="\#(p1.x)" y1="\#(p1.y)" x2="\#(p2.x)" y2="\#(p2.y)" style="stroke:\#(strokeColor.svgColorString);stroke-width:\#(thickness);opacity:\#(strokeColor.a);stroke-linecap:round" />"#
+            line = #"<line x1="\#(p1.x)" y1="\#(p1.y)" x2="\#(p2.x)" y2="\#(p2.y)" style="stroke:\#(strokeColor.svgColorString);stroke-width:\#(thickness);opacity:\#(strokeColor.a);stroke-linecap:butt" />"#
         }
         lines.append(line)
     }
