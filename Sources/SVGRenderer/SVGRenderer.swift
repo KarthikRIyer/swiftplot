@@ -191,14 +191,14 @@ public class SVGRenderer: Renderer{
                               isDashed: Bool) {
         guard p.count > 1 else { return }
         
-        let pointsString = p.map { point in
+        let pointsString = p.lazy.map { point in
             let convertedPoint = convertToSVGCoordinates(point)
             return "\(convertedPoint.x),\(convertedPoint.y)"
         }.joined(separator: " ")
         
-        let dashedString = isDashed ? ";stroke-dasharray:4 1" : ""
+        let dashedString = isDashed ? "stroke-dasharray:4 1;" : ""
         
-        lines.append(#"<polyline points="\#(pointsString)" style="stroke:\#(strokeColor.svgColorString);stroke-width:\#(thickness);opacity:\#(strokeColor.a);stroke-linecap:butt;fill:none\#(dashedString)" />"#)
+        lines.append(#"<polyline points="\#(pointsString)" style="stroke:\#(strokeColor.svgColorString);stroke-width:\#(thickness);opacity:\#(strokeColor.a);stroke-linecap:butt;fill:none;\#(dashedString)" />"#)
     }
 
     public func drawText(text s: String,
