@@ -249,8 +249,11 @@ public class AGGRenderer: Renderer{
     public func base64Png() -> String{
         let pngBufferPointer: UnsafePointer<UInt8> = get_png_buffer(agg_object)
         let bufferSize: Int = Int(get_png_buffer_size(agg_object))
-        return encodeBase64PNG(pngBufferPointer: pngBufferPointer,
-                               bufferSize: bufferSize)
+        return Data(
+            bytesNoCopy: UnsafeMutableRawPointer(mutating: pngBufferPointer),
+            count: bufferSize,
+            deallocator: .none
+        ).base64EncodedString(options: .lineLength64Characters)
     }
 
     deinit {
