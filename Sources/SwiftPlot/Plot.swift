@@ -13,7 +13,7 @@ public protocol Plot {
 extension Plot {
    
     /// Draws to the given renderer in-memory at a default size.
-    func drawGraph(renderer: Renderer) {
+    public func drawGraph(renderer: Renderer) {
         drawGraph(size: Size(width: 1000, height: 660),
                   renderer: renderer)
     }
