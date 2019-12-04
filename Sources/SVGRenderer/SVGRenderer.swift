@@ -192,7 +192,7 @@ public class SVGRenderer: Renderer{
         guard p.count > 1 else { return }
         
         let pointsString = p.lazy.map { point in
-            let convertedPoint = convertToSVGCoordinates(point)
+            let convertedPoint = self.convertToSVGCoordinates(point)
             return "\(convertedPoint.x),\(convertedPoint.y)"
         }.joined(separator: " ")
         
