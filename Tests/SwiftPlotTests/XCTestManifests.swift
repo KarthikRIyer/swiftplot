@@ -38,6 +38,7 @@ extension HistogramTests {
         ("testHistogram", testHistogram),
         ("testHistogramStacked", testHistogramStacked),
         ("testHistogramStackedStep", testHistogramStackedStep),
+        ("testHistogramStackedStepLineJoins", testHistogramStackedStepLineJoins),
         ("testHistogramStep", testHistogramStep),
     ]
 }
