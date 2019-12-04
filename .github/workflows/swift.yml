@@ -1,0 +1,20 @@
+name: SwiftPlot
+
+on:
+  push:
+    branches: master
+  pull_request:
+
+jobs:
+  build:
+    
+    runs-on: macOS-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install FreeType
+      run: brew install freetype
+    - name: Build
+      run: swift build -v
+    - name: Run tests
+      run: swift test -v
