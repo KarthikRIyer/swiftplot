@@ -77,7 +77,7 @@ namespace CPPAGGRenderer{
   public:
     agg::rasterizer_scanline_aa<> m_ras;
     agg::scanline_p8              m_sl_p8;
-    agg::line_cap_e roundCap = agg::round_cap;
+    agg::line_cap_e buttCap = agg::butt_cap;
     renderer_aa ren_aa;
     int pngBufferSize = 0;
 
@@ -352,7 +352,7 @@ namespace CPPAGGRenderer{
         agg::conv_stroke<agg::conv_dash<agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>>>> poly2(poly2_dash);
         poly2.width(thickness);
         poly2_dash.add_dash(thickness + 1, thickness + 1);
-        poly2.line_cap(roundCap);
+        poly2.line_cap(buttCap);
         m_ras.add_path(poly2);
       }
       else {
@@ -384,7 +384,7 @@ namespace CPPAGGRenderer{
         agg::conv_stroke<agg::conv_curve<agg::conv_dash<agg::conv_transform<agg::path_storage, agg::trans_affine>>>> poly2(curve);
         poly2.width(thickness);
         poly2_dash.add_dash(thickness + 1, thickness + 1);
-        poly2.line_cap(roundCap);
+        poly2.line_cap(buttCap);
         m_ras.add_path(poly2);
       }
       else {
