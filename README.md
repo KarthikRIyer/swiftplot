@@ -76,7 +76,8 @@ If the above method doesn't work you can also build and install freetype on your
 Add these lines to the first cell:
 ```swift
 %install-swiftpm-flags -Xcc -isystem/usr/include/freetype2 -Xswiftc -lfreetype
-%install '.package(url: "https://github.com/KarthikRIyer/swiftplot", from: "1.0.0")' SwiftPlot
+%install '.package(url: "https://github.com/IBM-Swift/BlueCryptor.git", from: "1.0.28")' Cryptor
+%install '.package(url: "https://github.com/KarthikRIyer/swiftplot", .branch("master"))' SwiftPlot AGGRenderer
 ```
 In order to display the generated plot in the notebook, add this line to a new cell:
 ```swift
