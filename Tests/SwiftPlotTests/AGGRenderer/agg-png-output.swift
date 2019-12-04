@@ -14,12 +14,14 @@ extension AGGRendererTests {
         renderer.drawSolidCircle(center: Point(100,100), radius: 75, fillColor: .red)
         
         let png = renderer.base64Png()
+        XCTAssertEqual(png.count, 2315)
         
         // Check that we can decode it again.
-        guard let _ = Data(base64Encoded: png, options: .ignoreUnknownCharacters) else {
+        guard let data = Data(base64Encoded: png, options: .ignoreUnknownCharacters) else {
             XCTFail("Failed to decode base64-encoded PNG")
             return
         }
+        XCTAssertEqual(data.count, 1710)
         // Check expected data.
         // A reference file would be better, but this will have to do for now.
         let pngPrefix = png.prefix(128)
