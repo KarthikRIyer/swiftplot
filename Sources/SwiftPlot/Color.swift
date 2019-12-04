@@ -32,22 +32,25 @@ public struct Color {
 
 #if canImport(CoreGraphics)
 import CoreGraphics
+
+fileprivate let RGBColorSpace = CGColorSpaceCreateDeviceRGB()
+
 public extension Color {
-    @available(tvOS 13, watchOS 13, *)
+    @available(tvOS 13.0, watchOS 6.0, *)
     var cgColor : CGColor {
-      if #available(OSX 10.15, iOS 13, *) {
-        return CGColor(srgbRed: CGFloat(r),
-                       green: CGFloat(g),
-                       blue: CGFloat(b),
-                       alpha: CGFloat(a))
-      } else {
-        #if !os(tvOS) && !os(watchOS) // Shouldn't be necessary, but it is.
-        return CGColor(red: CGFloat(r),
-                       green: CGFloat(g),
-                       blue: CGFloat(b),
-                       alpha: CGFloat(a))
-        #endif
-      }
+        if #available(OSX 10.15, iOS 13.0, *) {
+            return CGColor(srgbRed: CGFloat(r),
+                           green: CGFloat(g),
+                           blue: CGFloat(b),
+                           alpha: CGFloat(a))
+        } else {
+            var tuple = (CGFloat(r), CGFloat(g), CGFloat(b), CGFloat(a))
+            return withUnsafePointer(to: &tuple) { tupPtr in
+                return tupPtr.withMemoryRebound(to: CGFloat.self, capacity: 4) { floatPtr in
+                    return CGColor(colorSpace: RGBColorSpace, components:floatPtr)!
+                }
+            }
+        }
     }
 }
 #endif

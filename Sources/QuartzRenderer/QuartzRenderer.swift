@@ -10,7 +10,7 @@ import AppKit
 import UIKit
 #endif
 
-@available(tvOS 13, watchOS 13, *)
+@available(tvOS 13.0, watchOS 6.0, *)
 public class QuartzRenderer: Renderer {
     static let colorSpace = CGColorSpaceCreateDeviceRGB()
     static let bitmapInfo = CGImageAlphaInfo.premultipliedFirst.rawValue
@@ -482,6 +482,10 @@ public class QuartzRenderer: Renderer {
             #endif
         }
     }
+    
+    public func makeCGImage() -> CGImage? {
+        context.makeImage()
+    }
 }
 
 // - Helpers
@@ -534,6 +538,7 @@ fileprivate extension NSImage {
     }
 }
 #elseif canImport(UIKit)
+@available(tvOS 13.0, watchOS 6.0, *)
 fileprivate extension UIImage {
     func writePng(to url: URL, options: Data.WritingOptions = .atomic) throws {
         guard let data = pngData() else { throw QuartzRenderer.WritePNGError.imageCouldNotBeRendered }

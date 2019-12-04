@@ -73,16 +73,9 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
                           color: Color = Color.lightBlue,
                           hatchPattern: BarGraphSeriesOptions.Hatching = .none,
                           graphOrientation: BarGraph.GraphOrientation = .vertical){
-        var values = [Pair<T,U>]()
-        for i in 0..<x.count {
-            values.append(Pair<T,U>(x[i], y[i]))
-        }
-        let s = Series<T,U>(values: values,
-                            label: label,
-                            color: color,
-                            hatchPattern: hatchPattern)
-        addSeries(s)
-        self.graphOrientation = graphOrientation
+        self.addSeries(values: zip(x, y).map { Pair($0.0, $0.1) },
+                       label: label, color: color, hatchPattern: hatchPattern,
+                       graphOrientation: graphOrientation)
     }
 }
 
