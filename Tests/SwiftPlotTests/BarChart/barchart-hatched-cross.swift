@@ -10,6 +10,8 @@ import QuartzRenderer
 @available(tvOS 13, watchOS 13, *)
 extension BarchartTests {
   
+  /// - note: This test is duplicated to also test base64 encoding.
+  ///         If the test changes, please update that test, too.
   func testBarchartHatchedCross() throws {
     
     let fileName = "_15_bar_chart_cross_hatched"
