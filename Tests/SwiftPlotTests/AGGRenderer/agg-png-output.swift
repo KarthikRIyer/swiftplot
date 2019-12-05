@@ -5,8 +5,6 @@ import AGGRenderer
 
 extension AGGRendererTests {
   
-  /// **XFAIL**
-  ///
   /// Tests that base64 encoding is accurate by drawing a known graph directly in to
   /// a PNG buffer (no files), then verifying the base64-encoded data matches that from
   /// the reference file.
@@ -36,9 +34,9 @@ extension AGGRendererTests {
       .appendingPathComponent(fileName)
       .appendingPathExtension(KnownRenderer.agg.fileExtension)
     let referenceBase64 = try Data(contentsOf: referenceFile)
-      .base64EncodedString()//(options: .lineLength64Characters)
+      .base64EncodedString(options: .lineLength64Characters)
     
-    //XCTAssertEqual(outputBase64, referenceBase64)
+    XCTAssertEqual(outputBase64, referenceBase64)
   }
 }
 

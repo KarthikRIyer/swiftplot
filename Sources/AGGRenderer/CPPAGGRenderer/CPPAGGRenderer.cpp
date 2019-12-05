@@ -52,24 +52,23 @@ namespace CPPAGGRenderer{
     saveBMP(buf, width, height, file_name);
   }
 
-  unsigned write_png(std::vector<unsigned char>& image, unsigned width, unsigned height, const char* filename, const char** errorDesc) {
+  unsigned write_png(const unsigned char* image, unsigned width, unsigned height, const char* filename, const char** errorDesc) {
     //Encode the image
     LodePNGColorType colorType = LCT_RGB;
     unsigned error = lodepng::encode(filename, image, width, height, colorType);
     if(error && errorDesc)
         *errorDesc = lodepng_error_text(error);
-      return error;
+    return error;
   }
 
-  std::vector<unsigned char> write_png_memory(const unsigned char* buf, unsigned width, unsigned height){
+  unsigned write_png_memory(const unsigned char *image, unsigned width, unsigned height,
+                            unsigned char **output, size_t *outputSize, const char **errorDesc){
     //Encode the image
     LodePNGColorType colorType = LCT_RGB;
-    std::vector<unsigned char> out;
-    unsigned error = lodepng::encode(out, buf, width, height, colorType);
-
-    //if there's an error, display it
-    if(error) std::cout << "encoder error " << error << ": "<< lodepng_error_text(error) << std::endl;
-    return out;
+    unsigned error = lodepng_encode_memory(output, outputSize, image, w, h, colorType, 8);
+    if(error && errorDesc)
+        *errorDesc = lodepng_error_text(error);
+    return error;
   }
 
   class Plot{
@@ -79,7 +78,6 @@ namespace CPPAGGRenderer{
     agg::scanline_p8              m_sl_p8;
     agg::line_cap_e buttCap = agg::butt_cap;
     renderer_aa ren_aa;
-    int pngBufferSize = 0;
 
     font_engine_type  m_feng;
     font_manager_type m_fman;
@@ -466,20 +464,13 @@ namespace CPPAGGRenderer{
       char* file_png = (char *) malloc(1 + strlen(s)+ strlen(".png") );
       strcpy(file_png, s);
       strcat(file_png, ".png");
-      std::vector<unsigned char> image(buffer, buffer + (frame_width*frame_height*3));
-      unsigned err = write_png(image, frame_width, frame_height, file_png, errorDesc);
+      unsigned err = write_png(buffer, frame_width, frame_height, file_png, errorDesc);
       free(file_png);
       return err;
     }
 
-    const unsigned char* getPngBuffer(){
-      std::vector<unsigned char> outputImage = write_png_memory(buffer, frame_width, frame_height);
-      pngBufferSize = outputImage.size();
-    	return outputImage.data();
-    }
-
-    int getPngBufferSize(){
-      return pngBufferSize;
+    unsigned create_png_buffer(unsigned char** output, size_t *outputSize, const char** errorDesc) {
+      return write_png_memory(buffer, frame_width, frame_height, output, outputSize, errorDesc);
     }
 
     void delete_buffer(){
@@ -545,14 +536,14 @@ namespace CPPAGGRenderer{
     return plot -> save_image(s, errorDesc);
   }
 
-  const unsigned char* get_png_buffer(const void *object){
+  unsigned create_png_buffer(unsigned char** output, size_t *outputSize, const char** errorDesc, const void *object) {
     Plot *plot = (Plot *)object;
-    return plot -> getPngBuffer();
+    return plot -> create_png_buffer(output, outputSize, errorDesc);
   }
 
-  int get_png_buffer_size(const void *object){
-    Plot *plot = (Plot *)object;
-    return plot -> getPngBufferSize();
+  void free_png_buffer(unsigned char** buffer) {
+    if (buffer) { free(*buffer); }
+    *buffer = 0;
   }
 
   void delete_buffer(const void *object){

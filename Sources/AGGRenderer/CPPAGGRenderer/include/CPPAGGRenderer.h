@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 namespace CPPAGGRenderer{
 
   const void * initializePlot(float w, float h, const char* fontPath);
@@ -22,9 +24,9 @@ namespace CPPAGGRenderer{
 
   unsigned save_image(const char *s, const char** errorDesc, const void *object);
 
-  const unsigned char* get_png_buffer(const void *object);
+  unsigned create_png_buffer(unsigned char **output, size_t *outputSize, const char **errorDesc, const void *object);
 
-  int get_png_buffer_size(const void *object);
+  void free_png_buffer(unsigned char **buffer);
 
   void delete_buffer(const void *object);
 

@@ -46,12 +46,12 @@ unsigned save_image(const char *s, const char** errorDesc, const void *object){
   return CPPAGGRenderer::save_image(s, errorDesc, object);
 }
 
-const unsigned char* get_png_buffer(const void *object){
-  return CPPAGGRenderer::get_png_buffer(object);
+unsigned create_png_buffer(unsigned char** output, size_t *outputSize, const char** errorDesc, const void *object) {
+  return CPPAGGRenderer::create_png_buffer(output, outputSize, errorDesc, object);
 }
 
-int get_png_buffer_size(const void *object){
-  return CPPAGGRenderer::get_png_buffer_size(object);
+void free_png_buffer(unsigned char** output) {
+  CPPAGGRenderer::free_png_buffer(output);
 }
 
 void delete_buffer(const void *object){

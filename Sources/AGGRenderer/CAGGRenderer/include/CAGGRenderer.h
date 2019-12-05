@@ -1,4 +1,5 @@
 #include<stdbool.h>
+#include<stddef.h>
 #ifdef __cplusplus
 extern "C"  {
 #endif
@@ -25,9 +26,9 @@ void get_text_size(const char *s, float size, float* outW, float* outH, const vo
 
 unsigned save_image(const char *s, const char** errorDesc, const void *object);
 
-const unsigned char* get_png_buffer(const void *object);
+unsigned create_png_buffer(unsigned char** output, size_t *outputSize, const char** errorDesc, const void *object);
 
-int get_png_buffer_size(const void *object);
+void free_png_buffer(unsigned char** output);
 
 void delete_buffer(const void *object);
 
