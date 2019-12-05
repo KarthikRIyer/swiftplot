@@ -23,17 +23,20 @@ extension BarchartTests {
     barGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
 
     let svg_renderer = SVGRenderer()
-    try barGraph.drawGraphAndOutput(fileName: self.svgOutputDirectory+fileName,
+    try barGraph.drawGraphAndOutput(fileName: svgOutputDirectory+fileName,
                                     renderer: svg_renderer)
+    verifyImage(name: fileName, renderer: .svg)
     #if canImport(AGGRenderer)
     let agg_renderer = AGGRenderer()
-    try barGraph.drawGraphAndOutput(fileName: self.aggOutputDirectory+fileName,
+    try barGraph.drawGraphAndOutput(fileName: aggOutputDirectory+fileName,
                                     renderer: agg_renderer)
+    verifyImage(name: fileName, renderer: .agg)
     #endif
     #if canImport(QuartzRenderer)
     let quartz_renderer = QuartzRenderer()
-    try barGraph.drawGraphAndOutput(fileName: self.coreGraphicsOutputDirectory+fileName,
+    try barGraph.drawGraphAndOutput(fileName: coreGraphicsOutputDirectory+fileName,
                                     renderer: quartz_renderer)
+    verifyImage(name: fileName, renderer: .coreGraphics)
     #endif
   }
 }
