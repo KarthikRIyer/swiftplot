@@ -7,10 +7,11 @@ public class AGGRenderer: Renderer{
     public var offset = zeroPoint
     public var imageSize: Size {
         willSet {
-            agg_object = initializePlot(newValue.width, newValue.height, fontPath)
+          delete_plot(agg_object);
+          agg_object = initializePlot(newValue.width, newValue.height, fontPath)
         }
     }
-    var agg_object: UnsafeRawPointer
+    var agg_object: UnsafeMutableRawPointer
     var fontPath = ""
 
     public init(width w: Float = 1000, height h: Float = 660, fontPath: String = "") {
@@ -272,7 +273,7 @@ public class AGGRenderer: Renderer{
     }
 
     deinit {
-        delete_buffer(agg_object)
+        delete_plot(agg_object)
     }
 
 }

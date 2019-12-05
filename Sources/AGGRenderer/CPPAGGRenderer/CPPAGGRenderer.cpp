@@ -479,10 +479,17 @@ namespace CPPAGGRenderer{
 
   };
 
-  const void * initializePlot(float w, float h, const char* fontPath){
+  void * initializePlot(float w, float h, const char* fontPath){
     Plot *plot = new Plot(w, h, fontPath);
     memset(plot->buffer, 255, plot->frame_width*plot->frame_height*3);
     return (void *)plot;
+  }
+
+  void delete_plot(void *object) {
+    Plot *plot = (Plot *)object;
+    plot -> delete_buffer();
+    delete plot;
+    object = 0;
   }
 
   void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a,
@@ -544,11 +551,6 @@ namespace CPPAGGRenderer{
   void free_png_buffer(unsigned char** buffer) {
     if (buffer) { free(*buffer); }
     *buffer = 0;
-  }
-
-  void delete_buffer(const void *object){
-    Plot *plot = (Plot *)object;
-    plot -> delete_buffer();
   }
 
 }

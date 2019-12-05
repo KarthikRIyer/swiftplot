@@ -2,8 +2,12 @@
 #include "CPPAGGRenderer.h"
 #include <iostream>
 
-const void * initializePlot(float w, float h, const char* fontPath){
+void * initializePlot(float w, float h, const char* fontPath){
   return CPPAGGRenderer::initializePlot(w, h, fontPath);
+}
+
+void delete_plot(void *object){
+  CPPAGGRenderer::delete_plot(object);
 }
 
 void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a, const void *object){
@@ -52,8 +56,4 @@ unsigned create_png_buffer(unsigned char** output, size_t *outputSize, const cha
 
 void free_png_buffer(unsigned char** output) {
   CPPAGGRenderer::free_png_buffer(output);
-}
-
-void delete_buffer(const void *object){
-  CPPAGGRenderer::delete_buffer(object);
 }
