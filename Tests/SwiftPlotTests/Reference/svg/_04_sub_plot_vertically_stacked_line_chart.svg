@@ -48,7 +48,7 @@
 <text font-size="12.0" font-family="Roboto" x="39.0" y="418.5247" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,39.0,418.5247)">700.0</text>
 <line x1="81.0" y1="390.71457" x2="87.0" y2="390.71457" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:butt" />
 <text font-size="12.0" font-family="Roboto" x="39.0" y="394.71457" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,39.0,394.71457)">800.0</text>
-<polyline points="128.2525,578.8146 273.84958,552.6234 537.54205,462.14493 903.1525,390.71454" style="stroke:rgb(134.89499,206.04001,235.11);stroke-width:3.0;opacity:1.0;stroke-linecap:butt;fill:none" />
+<polyline points="128.2525,578.8146 273.84958,552.6234 537.54205,462.14493 903.1525,390.71454" style="stroke:rgb(134.89499,206.04001,235.11);stroke-width:3.0;opacity:1.0;stroke-linecap:butt;fill:none;" />
 <text font-size="20.0" font-family="Roboto" x="486.2" y="364.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,486.2,364.0)">PLOT 1</text>
 <text font-size="15.0" font-family="Roboto" x="488.95" y="650.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,488.95,650.0)">X-AXIS</text>
 <text font-size="15.0" font-family="Roboto" x="25.0" y="513.2" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-90.0,25.0,513.2)">Y-AXIS</text>
@@ -102,7 +102,7 @@
 <text font-size="12.0" font-family="Roboto" x="39.0" y="88.52466" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,39.0,88.52466)">700.0</text>
 <line x1="81.0" y1="60.7146" x2="87.0" y2="60.7146" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:butt" />
 <text font-size="12.0" font-family="Roboto" x="39.0" y="64.7146" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,39.0,64.7146)">800.0</text>
-<polyline points="128.2525,248.81454 273.84958,222.62341 537.54205,132.14496 903.1525,60.71454" style="stroke:rgb(255.0,164.985,0.0);stroke-width:3.0;opacity:1.0;stroke-linecap:butt;fill:none" />
+<polyline points="128.2525,248.81454 273.84958,222.62341 537.54205,132.14496 903.1525,60.71454" style="stroke:rgb(255.0,164.985,0.0);stroke-width:3.0;opacity:1.0;stroke-linecap:butt;fill:none;" />
 <text font-size="20.0" font-family="Roboto" x="485.4" y="34.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,485.4,34.0)">PLOT 2</text>
 <text font-size="15.0" font-family="Roboto" x="488.95" y="320.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,488.95,320.0)">X-AXIS</text>
 <text font-size="15.0" font-family="Roboto" x="25.0" y="183.20001" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-90.0,25.0,183.20001)">Y-AXIS</text>

@@ -1,3 +1,4 @@
+import Foundation
 import SwiftPlot
 import SVGRenderer
 #if canImport(AGGRenderer)
@@ -16,11 +17,11 @@ extension SubPlotTests {
         
         // ScatterPlot.
         let xValues = Array(-50...50).map { Float($0) }
-        let yValues = xValues.map { $0 + .random(in: -5...5) }
+        let yValues = xValues.map { $0 + (5 * sin($0)) }
         let scatterPlot = ScatterPlot<Float,Float>(enableGrid: true)
         scatterPlot.addSeries(xValues, yValues, label: "Plot 1",
                               startColor: .gold, endColor: .blue, scatterPattern: .circle)
-        scatterPlot.addSeries(xValues, yValues.map { 2 * $0 + .random(in: -5...5) }, label: "Plot 2",
+        scatterPlot.addSeries(xValues, yValues.map { 2 * $0 + (5 * sin($0)) }, label: "Plot 2",
                               color: .darkRed, scatterPattern: .triangle)
         scatterPlot.plotTitle.title = "SCATTER PLOT"
         scatterPlot.plotLabel.xLabel = "X-AXIS"
@@ -60,19 +61,22 @@ extension SubPlotTests {
         let imageSize = Size(width: 1000, height: 1000)
         let svg_renderer = SVGRenderer()
         try subplot.drawGraphAndOutput(size: imageSize,
-                                       fileName: self.svgOutputDirectory+fileName,
+                                       fileName: svgOutputDirectory+fileName,
                                        renderer: svg_renderer)
+        verifyImage(name: fileName, renderer: .svg)
         #if canImport(AGGRenderer)
         let agg_renderer = AGGRenderer()
         try subplot.drawGraphAndOutput(size: imageSize,
-                                       fileName: self.aggOutputDirectory+fileName,
+                                       fileName: aggOutputDirectory+fileName,
                                        renderer: agg_renderer)
+        verifyImage(name: fileName, renderer: .agg)
         #endif
         #if canImport(QuartzRenderer)
         let quartz_renderer = QuartzRenderer()
         try subplot.drawGraphAndOutput(size: imageSize,
-                                       fileName: self.coreGraphicsOutputDirectory+fileName,
+                                       fileName: coreGraphicsOutputDirectory+fileName,
                                        renderer: quartz_renderer)
+        verifyImage(name: fileName, renderer: .coreGraphics)
         #endif
     }
 }
