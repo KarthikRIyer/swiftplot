@@ -266,7 +266,7 @@ public class AGGRenderer: Renderer{
         bytesNoCopy: UnsafeMutableRawPointer(mutating: bufferPtr),
         count: bufferSize,
         deallocator: .none
-      ).base64EncodedString(options: .lineLength64Characters)
+      ).base64EncodedString()
       
       free_png_buffer(&_bufferPtr)
       return base64String

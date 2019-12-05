@@ -20,7 +20,7 @@ extension AGGRendererTests {
     let renderer = AGGRenderer()
     barGraph.drawGraph(renderer: renderer)
     let outputBase64 = renderer.base64Png()
-    XCTAssertEqual(outputBase64.count, 47397)
+    XCTAssertEqual(outputBase64.count, 46668)
     
     // First, sanity check: ensure *we* can decode the string.
     guard let _ = Data(base64Encoded: outputBase64, options: .ignoreUnknownCharacters) else {
@@ -34,7 +34,7 @@ extension AGGRendererTests {
       .appendingPathComponent(fileName)
       .appendingPathExtension(KnownRenderer.agg.fileExtension)
     let referenceBase64 = try Data(contentsOf: referenceFile)
-      .base64EncodedString(options: .lineLength64Characters)
+      .base64EncodedString()
     
     XCTAssertEqual(outputBase64, referenceBase64)
   }
