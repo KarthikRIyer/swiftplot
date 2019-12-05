@@ -48,7 +48,7 @@
 <text font-size="12.0" font-family="Roboto" x="39.0" y="143.03735" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,39.0,143.03735)">700.0</text>
 <line x1="81.0" y1="77.632324" x2="87.0" y2="77.632324" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:butt" />
 <text font-size="12.0" font-family="Roboto" x="39.0" y="81.632324" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,39.0,81.632324)">800.0</text>
-<polyline points="128.2525,562.7323 273.84958,495.1867 537.54205,261.84747 903.1525,77.63226" style="stroke:rgb(134.89499,206.04001,235.11);stroke-width:3.0;opacity:1.0;stroke-linecap:butt;fill:none" />
+<polyline points="128.2525,562.7323 273.84958,495.1867 537.54205,261.84747 903.1525,77.63226" style="stroke:rgb(134.89499,206.04001,235.11);stroke-width:3.0;opacity:1.0;stroke-linecap:butt;fill:none;" />
 <text font-size="20.0" font-family="Roboto" x="459.6" y="34.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,459.6,34.0)">SINGLE SERIES</text>
 <text font-size="15.0" font-family="Roboto" x="488.95" y="650.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,488.95,650.0)">X-AXIS</text>
 <text font-size="15.0" font-family="Roboto" x="25.0" y="348.2" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-90.0,25.0,348.2)">Y-AXIS</text>

@@ -54,8 +54,8 @@
 <text font-size="12.0" font-family="Roboto" x="39.0" y="143.03735" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,39.0,143.03735)">700.0</text>
 <line x1="81.0" y1="77.632324" x2="87.0" y2="77.632324" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:butt" />
 <text font-size="12.0" font-family="Roboto" x="39.0" y="81.632324" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,39.0,81.632324)">800.0</text>
-<polyline points="128.74939,562.7323 234.09834,495.1867 424.89697,261.84747 689.4399,77.63226" style="stroke:rgb(134.89499,206.04001,235.11);stroke-width:3.0;opacity:1.0;stroke-linecap:butt;fill:none" />
-<polyline points="234.09834,476.7652 351.1527,415.36014 539.6102,183.249 903.64935,77.63226" style="stroke:rgb(255.0,164.985,0.0);stroke-width:3.0;opacity:1.0;stroke-linecap:butt;fill:none" />
+<polyline points="128.74939,562.7323 234.09834,495.1867 424.89697,261.84747 689.4399,77.63226" style="stroke:rgb(134.89499,206.04001,235.11);stroke-width:3.0;opacity:1.0;stroke-linecap:butt;fill:none;" />
+<polyline points="234.09834,476.7652 351.1527,415.36014 539.6102,183.249 903.64935,77.63226" style="stroke:rgb(255.0,164.985,0.0);stroke-width:3.0;opacity:1.0;stroke-linecap:butt;fill:none;" />
 <text font-size="20.0" font-family="Roboto" x="452.2" y="34.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,452.2,34.0)">MULTIPLE SERIES</text>
 <text font-size="15.0" font-family="Roboto" x="488.95" y="650.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,488.95,650.0)">X-AXIS</text>
 <text font-size="15.0" font-family="Roboto" x="25.0" y="348.2" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-90.0,25.0,348.2)">Y-AXIS</text>
