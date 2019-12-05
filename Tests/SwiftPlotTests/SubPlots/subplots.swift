@@ -1,3 +1,4 @@
+import Foundation
 import SwiftPlot
 import SVGRenderer
 #if canImport(AGGRenderer)
@@ -16,11 +17,11 @@ extension SubPlotTests {
         
         // ScatterPlot.
         let xValues = Array(-50...50).map { Float($0) }
-        let yValues = xValues.map { $0 + .random(in: -5...5) }
+        let yValues = xValues.map { $0 + (5 * sin($0)) }
         let scatterPlot = ScatterPlot<Float,Float>(enableGrid: true)
         scatterPlot.addSeries(xValues, yValues, label: "Plot 1",
                               startColor: .gold, endColor: .blue, scatterPattern: .circle)
-        scatterPlot.addSeries(xValues, yValues.map { 2 * $0 + .random(in: -5...5) }, label: "Plot 2",
+        scatterPlot.addSeries(xValues, yValues.map { 2 * $0 + (5 * sin($0)) }, label: "Plot 2",
                               color: .darkRed, scatterPattern: .triangle)
         scatterPlot.plotTitle.title = "SCATTER PLOT"
         scatterPlot.plotLabel.xLabel = "X-AXIS"
