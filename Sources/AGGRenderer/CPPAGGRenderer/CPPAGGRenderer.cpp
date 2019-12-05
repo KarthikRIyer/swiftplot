@@ -72,8 +72,6 @@ namespace CPPAGGRenderer{
   }
 
   class Plot{
-
-  public:
     agg::rasterizer_scanline_aa<> m_ras;
     agg::scanline_p8              m_sl_p8;
     agg::line_cap_e buttCap = agg::butt_cap;
@@ -99,7 +97,9 @@ namespace CPPAGGRenderer{
     agg::int8u*           m_pattern;
     agg::rendering_buffer m_pattern_rbuf;
     renderer_base_pre rb_pre;
-
+    
+  public:
+    
     Plot(float width, float height, const char* fontPathPtr) :
     m_feng(),
     m_fman(m_feng),
@@ -108,10 +108,8 @@ namespace CPPAGGRenderer{
     frame_width(width),
     frame_height(height)
     {
-      if (buffer != NULL) {
-        delete[] buffer;
-      }
       buffer = new unsigned char[frame_width*frame_height*3];
+      memset(buffer, 255, frame_width*frame_height*3);
       m_curves.approximation_scale(2.0);
       m_contour.auto_detect_orientation(false);
       fontPath = fontPathPtr;
@@ -120,6 +118,10 @@ namespace CPPAGGRenderer{
         string dir_path = file_path.substr(0, file_path.rfind("/"));
         fontPath = dir_path.append("/Roboto-Regular.ttf");
       }
+    }
+    
+    ~Plot() {
+      delete [] buffer;
     }
 
     void generate_pattern(float r, float g, float b, float a, int hatch_pattern){
@@ -472,22 +474,15 @@ namespace CPPAGGRenderer{
     unsigned create_png_buffer(unsigned char** output, size_t *outputSize, const char** errorDesc) {
       return write_png_memory(buffer, frame_width, frame_height, output, outputSize, errorDesc);
     }
-
-    void delete_buffer(){
-      delete[] buffer;
-    }
-
   };
 
   void * initializePlot(float w, float h, const char* fontPath){
     Plot *plot = new Plot(w, h, fontPath);
-    memset(plot->buffer, 255, plot->frame_width*plot->frame_height*3);
     return (void *)plot;
   }
 
   void delete_plot(void *object) {
     Plot *plot = (Plot *)object;
-    plot -> delete_buffer();
     delete plot;
     object = 0;
   }
@@ -552,5 +547,4 @@ namespace CPPAGGRenderer{
     if (buffer) { free(*buffer); }
     *buffer = 0;
   }
-
 }
