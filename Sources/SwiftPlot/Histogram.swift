@@ -269,6 +269,7 @@ extension Histogram: HasGraphLayout {
             histogramSeries.scaledBinFrequency.append(frequency*scaleYInv + origin.y)
         }
         for index in 0..<histogramStackSeries.count {
+            histogramStackSeries[index].scaledBinFrequency.removeAll()
             for j in 0..<histogramStackSeries[index].binFrequency.count {
                 let frequency = Float(histogramStackSeries[index].binFrequency[j])
                 histogramStackSeries[index].scaledBinFrequency.append(frequency*scaleYInv + origin.y)
