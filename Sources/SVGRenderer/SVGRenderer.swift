@@ -224,8 +224,9 @@ public class SVGRenderer: Renderer{
         let scaleFactor = size/100.0
 
         for i in 0..<text.count {
-            let index =  text.index(text.startIndex, offsetBy: i)
-            width = width + Float(Self.LCARS_CHAR_SIZE_ARRAY[Int(text[index].ascii!)])
+          let index =  text.index(text.startIndex, offsetBy: i)
+          guard let asciiVal = text[index].ascii else { continue }
+          width = width + Float(Self.LCARS_CHAR_SIZE_ARRAY[Int(asciiVal)])
         }
 
         return Size(width: width*scaleFactor + 25, height: size)
