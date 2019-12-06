@@ -52,34 +52,30 @@ namespace CPPAGGRenderer{
     saveBMP(buf, width, height, file_name);
   }
 
-  unsigned write_png(std::vector<unsigned char>& image, unsigned width, unsigned height, const char* filename, const char** errorDesc) {
+  unsigned write_png(const unsigned char* image, unsigned width, unsigned height, const char* filename, const char** errorDesc) {
     //Encode the image
     LodePNGColorType colorType = LCT_RGB;
     unsigned error = lodepng::encode(filename, image, width, height, colorType);
     if(error && errorDesc)
         *errorDesc = lodepng_error_text(error);
-      return error;
+    return error;
   }
 
-  std::vector<unsigned char> write_png_memory(const unsigned char* buf, unsigned width, unsigned height){
+  unsigned write_png_memory(const unsigned char *image, unsigned width, unsigned height,
+                            unsigned char **output, size_t *outputSize, const char **errorDesc){
     //Encode the image
     LodePNGColorType colorType = LCT_RGB;
-    std::vector<unsigned char> out;
-    unsigned error = lodepng::encode(out, buf, width, height, colorType);
-
-    //if there's an error, display it
-    if(error) std::cout << "encoder error " << error << ": "<< lodepng_error_text(error) << std::endl;
-    return out;
+    unsigned error = lodepng_encode_memory(output, outputSize, image, w, h, colorType, 8);
+    if(error && errorDesc)
+        *errorDesc = lodepng_error_text(error);
+    return error;
   }
 
   class Plot{
-
-  public:
     agg::rasterizer_scanline_aa<> m_ras;
     agg::scanline_p8              m_sl_p8;
     agg::line_cap_e buttCap = agg::butt_cap;
     renderer_aa ren_aa;
-    int pngBufferSize = 0;
 
     font_engine_type  m_feng;
     font_manager_type m_fman;
@@ -101,7 +97,9 @@ namespace CPPAGGRenderer{
     agg::int8u*           m_pattern;
     agg::rendering_buffer m_pattern_rbuf;
     renderer_base_pre rb_pre;
-
+    
+  public:
+    
     Plot(float width, float height, const char* fontPathPtr) :
     m_feng(),
     m_fman(m_feng),
@@ -110,10 +108,8 @@ namespace CPPAGGRenderer{
     frame_width(width),
     frame_height(height)
     {
-      if (buffer != NULL) {
-        delete[] buffer;
-      }
       buffer = new unsigned char[frame_width*frame_height*3];
+      memset(buffer, 255, frame_width*frame_height*3);
       m_curves.approximation_scale(2.0);
       m_contour.auto_detect_orientation(false);
       fontPath = fontPathPtr;
@@ -122,6 +118,10 @@ namespace CPPAGGRenderer{
         string dir_path = file_path.substr(0, file_path.rfind("/"));
         fontPath = dir_path.append("/Roboto-Regular.ttf");
       }
+    }
+    
+    ~Plot() {
+      delete [] buffer;
     }
 
     void generate_pattern(float r, float g, float b, float a, int hatch_pattern){
@@ -466,32 +466,25 @@ namespace CPPAGGRenderer{
       char* file_png = (char *) malloc(1 + strlen(s)+ strlen(".png") );
       strcpy(file_png, s);
       strcat(file_png, ".png");
-      std::vector<unsigned char> image(buffer, buffer + (frame_width*frame_height*3));
-      unsigned err = write_png(image, frame_width, frame_height, file_png, errorDesc);
+      unsigned err = write_png(buffer, frame_width, frame_height, file_png, errorDesc);
       free(file_png);
       return err;
     }
 
-    const unsigned char* getPngBuffer(){
-      std::vector<unsigned char> outputImage = write_png_memory(buffer, frame_width, frame_height);
-      pngBufferSize = outputImage.size();
-    	return outputImage.data();
+    unsigned create_png_buffer(unsigned char** output, size_t *outputSize, const char** errorDesc) {
+      return write_png_memory(buffer, frame_width, frame_height, output, outputSize, errorDesc);
     }
-
-    int getPngBufferSize(){
-      return pngBufferSize;
-    }
-
-    void delete_buffer(){
-      delete[] buffer;
-    }
-
   };
 
-  const void * initializePlot(float w, float h, const char* fontPath){
+  void * initializePlot(float w, float h, const char* fontPath){
     Plot *plot = new Plot(w, h, fontPath);
-    memset(plot->buffer, 255, plot->frame_width*plot->frame_height*3);
     return (void *)plot;
+  }
+
+  void delete_plot(void *object) {
+    Plot *plot = (Plot *)object;
+    delete plot;
+    object = 0;
   }
 
   void draw_rect(const float *x, const float *y, float thickness, float r, float g, float b, float a,
@@ -545,19 +538,13 @@ namespace CPPAGGRenderer{
     return plot -> save_image(s, errorDesc);
   }
 
-  const unsigned char* get_png_buffer(const void *object){
+  unsigned create_png_buffer(unsigned char** output, size_t *outputSize, const char** errorDesc, const void *object) {
     Plot *plot = (Plot *)object;
-    return plot -> getPngBuffer();
+    return plot -> create_png_buffer(output, outputSize, errorDesc);
   }
 
-  int get_png_buffer_size(const void *object){
-    Plot *plot = (Plot *)object;
-    return plot -> getPngBufferSize();
+  void free_png_buffer(unsigned char** buffer) {
+    if (buffer) { free(*buffer); }
+    *buffer = 0;
   }
-
-  void delete_buffer(const void *object){
-    Plot *plot = (Plot *)object;
-    plot -> delete_buffer();
-  }
-
 }

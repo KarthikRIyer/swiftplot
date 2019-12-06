@@ -7,10 +7,11 @@ public class AGGRenderer: Renderer{
     public var offset = zeroPoint
     public var imageSize: Size {
         willSet {
-            agg_object = initializePlot(newValue.width, newValue.height, fontPath)
+          delete_plot(agg_object);
+          agg_object = initializePlot(newValue.width, newValue.height, fontPath)
         }
     }
-    var agg_object: UnsafeRawPointer
+    var agg_object: UnsafeMutableRawPointer
     var fontPath = ""
 
     public init(width w: Float = 1000, height h: Float = 660, fontPath: String = "") {
@@ -239,25 +240,40 @@ public class AGGRenderer: Renderer{
     }
 
     public func drawOutput(fileName name: String) throws {
-        var errorDescPtr = UnsafePointer<Int8>(bitPattern: 0)
+        var errorDescPtr: UnsafePointer<Int8>?
         let err = save_image(name, &errorDescPtr, agg_object)
         if err != 0, let errorDescPtr = errorDescPtr {
             throw DrawOutputError(errorCode: err, description: String(cString: errorDescPtr))
         }
     }
 
-    public func base64Png() -> String{
-        let pngBufferPointer: UnsafePointer<UInt8> = get_png_buffer(agg_object)
-        let bufferSize: Int = Int(get_png_buffer_size(agg_object))
-        return Data(
-            bytesNoCopy: UnsafeMutableRawPointer(mutating: pngBufferPointer),
-            count: bufferSize,
-            deallocator: .none
-        ).base64EncodedString(options: .lineLength64Characters)
+    public func base64Png() -> String {
+      var _bufferPtr: UnsafeMutablePointer<UInt8>?
+      var errorDescPtr: UnsafePointer<Int8>?
+      var bufferSize = 0
+      
+      let err = create_png_buffer(&_bufferPtr, &bufferSize, &errorDescPtr, agg_object)
+      guard let bufferPtr = _bufferPtr, err == 0 else {
+        // We'll probably never make this throwing, but log the error all the same.
+        print(
+          errorDescPtr.map { "Error rendering image: \(String(cString: $0))"} ??
+          "lodepng failed to render, but didn't produce an error."
+        )
+        return ""
+      }
+      
+      let base64String = Data(
+        bytesNoCopy: UnsafeMutableRawPointer(mutating: bufferPtr),
+        count: bufferSize,
+        deallocator: .none
+      ).base64EncodedString()
+      
+      free_png_buffer(&_bufferPtr)
+      return base64String
     }
 
     deinit {
-        delete_buffer(agg_object)
+        delete_plot(agg_object)
     }
 
 }
