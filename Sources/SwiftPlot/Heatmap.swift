@@ -1,28 +1,60 @@
 
 public struct Heatmap<SeriesType>
 where SeriesType: Sequence, SeriesType.Element: Sequence,
-//SeriesType.Element.Element: Comparable & Strideable,
-SeriesType.Element.Element: FixedWidthInteger {
+      SeriesType.Element.Element: Comparable {
   
-  typealias Element = SeriesType.Element.Element
+  public typealias Element = SeriesType.Element.Element
 
-  public var values: SeriesType
   public var layout = GraphLayout()
+  public var values: SeriesType
+  public var interpolator: Interpolator<Element>
   
-  public init(values: SeriesType) {
+  public init(values: SeriesType, interpolator: Interpolator<Element>) {
     self.values = values
-    self.layout.yMarkerMaxWidth = 100
+    self.interpolator = interpolator
+//    self.layout.yMarkerMaxWidth = 100
+//    self.layout.enablePrimaryAxisGrid = false
   }
 }
+
+// Initialisers with default arguments.
 
 extension Heatmap
   where SeriesType: ExpressibleByArrayLiteral, SeriesType.Element: ExpressibleByArrayLiteral,
         SeriesType.ArrayLiteralElement == SeriesType.Element {
   
-  public init() {
-    self.init(values: [[]])
+  public init(interpolator: Interpolator<Element>) {
+    self.init(values: [[]], interpolator: interpolator)
   }
 }
+
+extension Heatmap
+  where SeriesType: ExpressibleByArrayLiteral, SeriesType.Element: ExpressibleByArrayLiteral,
+        SeriesType.ArrayLiteralElement == SeriesType.Element, Element: FloatConvertible {
+  
+  public init(values: SeriesType) {
+    self.init(values: values, interpolator: .linear)
+  }
+  
+  public init() {
+    self.init(interpolator: .linear)
+  }
+}
+
+extension Heatmap
+  where SeriesType: ExpressibleByArrayLiteral, SeriesType.Element: ExpressibleByArrayLiteral,
+        SeriesType.ArrayLiteralElement == SeriesType.Element, Element: FixedWidthInteger {
+  
+  public init(values: SeriesType) {
+    self.init(values: values, interpolator: .linear)
+  }
+  
+  public init() {
+    self.init(interpolator: .linear)
+  }
+}
+
+// Layout and drawing.
 
 extension Heatmap: HasGraphLayout, Plot {
   
@@ -39,54 +71,47 @@ extension Heatmap: HasGraphLayout, Plot {
     var results = DrawingData()
     var markers = PlotMarkers()
     
-    var maxValue: Element
-    var minValue: Element
-    do {
-      var outerIterator = values.makeIterator()
-      var innerIterator = outerIterator.next()?.makeIterator()
-      guard let firstElem = innerIterator?.next() else {
-        return (results, nil)
-      }
-      (maxValue, minValue) = (firstElem, firstElem)
+    // Extract the first (inner) element as a starting point.
+    guard let firstElem = values.first(where: { _ in true })?.first(where: { _ in true }) else {
+      return (results, nil)
     }
+    var (maxValue, minValue) = (firstElem, firstElem)
     
-    var numberOfColumns = 0
-    var numberOfRows = 0
+    // Discover the maximum/minimum values and shape of the data.
+    var totalRows = 0
+    var maxColumns = 0
     for row in values {
-      var columnsInThisRow = 0
+      var columnsInRow = 0
       for column in row {
         maxValue = max(maxValue, column)
         minValue = min(minValue, column)
-        columnsInThisRow += 1
+        columnsInRow += 1
       }
-      if numberOfRows == 0 {
-        numberOfColumns = columnsInThisRow
-      } else {
-        precondition(numberOfColumns == columnsInThisRow)
-      }
-      numberOfRows += 1
+      maxColumns = max(maxColumns, columnsInRow)
+      totalRows += 1
     }
-        
+    // Update results.
     results.values = values
     results.range = minValue...maxValue
-    results.rows = numberOfRows
-    results.columns = numberOfColumns
-    results.itemSize = Size(width: size.width / Float(results.columns),
-                            height: size.height / Float(results.rows))
-    
+    results.rows = totalRows
+    results.columns = maxColumns
+    results.itemSize = Size(
+      width: size.width / Float(results.columns),
+      height: size.height / Float(results.rows)
+    )
+    // Calculate markers.
     markers.xMarkers = (0..<results.columns).map {
       (Float($0) + 0.5) * results.itemSize.width
     }
-    markers.xMarkersText = (0..<results.columns).map {
-      String($0)
-    }
-    
     markers.yMarkers = (0..<results.rows).map {
       (Float($0) + 0.5) * results.itemSize.height
     }
-    markers.yMarkersText = (0..<results.rows).map {
-      "The number " + String($0)
-    }
+    // TODO: Shift grid by -0.5 * itemSize.
+    
+    // TODO: Allow setting the marker text.
+    markers.xMarkersText = (0..<results.columns).map { String($0) }
+    markers.yMarkersText = (0..<results.rows).map    { String($0) }
+    
     return (results, markers)
   }
   
@@ -104,12 +129,12 @@ extension Heatmap: HasGraphLayout, Plot {
         renderer.drawSolidRect(rect,
                                fillColor: getColor(of: column, range: range),
                                hatchPattern: .none)
-        renderer.drawText(text: String(column),
-                          location: rect.origin + Point(50,50),
-                          textSize: 20,
-                          color: .white,
-                          strokeWidth: 2,
-                          angle: 0)
+//        renderer.drawText(text: String(describing: column),
+//                          location: rect.origin + Point(50,50),
+//                          textSize: 20,
+//                          color: .white,
+//                          strokeWidth: 2,
+//                          angle: 0)
       }
     }
   }
@@ -117,12 +142,67 @@ extension Heatmap: HasGraphLayout, Plot {
   func getColor(of value: Element, range: ClosedRange<Element>) -> Color {
     let startColor = Color.orange
     let endColor = Color.purple
-    
-    let distance = range.lowerBound.distance(to: range.upperBound)
-    let valDist = range.lowerBound.distance(to: value)
-    
-    let interp = Float(valDist)/Float(distance)
+    let interp = interpolator.callAsFunction(value, in: range)
     
     return lerp(startColor: startColor, endColor: endColor, interp)
   }
+}
+
+
+// Interpolator.
+
+public struct Interpolator<Element> where Element: Comparable {
+  public var interpolate: (Element, ClosedRange<Element>) -> Float
+  
+  public init(_ block: @escaping (Element, ClosedRange<Element>)->Float) {
+    self.interpolate = block
+  }
+  public func callAsFunction(_ item: Element, in range: ClosedRange<Element>) -> Float {
+    interpolate(item, range)
+  }
+}
+
+extension Interpolator where Element: FloatConvertible {
+  public static var linear: Interpolator {
+    Interpolator { value, range in
+      let value = Float(value)
+      let range = Float(range.lowerBound)...Float(range.upperBound)
+      let totalDistance = range.lowerBound.distance(to: range.upperBound)
+      let valueOffset   = range.lowerBound.distance(to: value)
+      return valueOffset/totalDistance
+    }
+  }
+}
+extension Interpolator where Element: FixedWidthInteger {
+  public static var linear: Interpolator {
+    Interpolator { value, range in
+      let distance = range.lowerBound.distance(to: range.upperBound)
+      let valDist = range.lowerBound.distance(to: value)
+      return Float(valDist)/Float(distance)
+    }
+  }
+}
+
+extension Interpolator {
+  
+  public static func linearByKeyPath<T>(_ kp: KeyPath<Element, T>) -> Interpolator<Element>
+    where T: FloatConvertible {
+      let i = Interpolator<T>.linear
+      return Interpolator { value, range in
+        let value = value[keyPath: kp]
+        let range = range.lowerBound[keyPath: kp]...range.upperBound[keyPath: kp]
+        return i.interpolate(value, range)
+      }
+  }
+  
+  public static func linearByKeyPath<T>(_ kp: KeyPath<Element, T>) -> Interpolator<Element>
+    where T: FixedWidthInteger {
+      let i = Interpolator<T>.linear
+      return Interpolator { value, range in
+        let value = value[keyPath: kp]
+        let range = range.lowerBound[keyPath: kp]...range.upperBound[keyPath: kp]
+        return i.interpolate(value, range)
+      }
+  }
+  
 }
