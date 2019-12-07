@@ -30,10 +30,10 @@ final class HeatmapTests: SwiftPlotTestCase {
     
     var d = Data(capacity: 10_000)
     for _ in 0..<10_000 { d.append(.random(in: 0..<255)) }
-    var hm3 = d.heatmap(width: 100, interpolator: .linear)
+//    var hm3 = d.heatmap(width: 100, interpolator: .linear)
     
-//    var hm3 = Array("THIS IS SWIFPLOT!!!! Woo let's see what this looks like :)")
-//      .heatmap(width: 5, interpolator: .linearByKeyPath(\.asciiValue!))
+    var hm3 = Array("THIS IS SWIFPLOT!!!! Woo let's see what this looks like :)")
+      .heatmap(height: 1, interpolator: .linearByKeyPath(\.asciiValue!))
 //    var hm3 = Array(stride(from: Float(0), to: 1, by: 0.001)).heatmap(width: 10, interpolator: .linear)
     hm3.colorMap = .viridis
     
