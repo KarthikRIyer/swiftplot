@@ -1,4 +1,6 @@
 
+// TODO: Maybe rename this "Mapping"?
+
 /// An `Interpolator` maps values to a continuum between 0 and 1
 public struct Interpolator<Element> {
   public var compare: (Element, Element) -> Bool
