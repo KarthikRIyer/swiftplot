@@ -86,9 +86,14 @@ public struct GraphLayout {
         calcLabelLocations(&results)
         // 4. Let the plot calculate its scale, calculate marker positions.
         let (drawingData, markers, legendInfo) = calculateMarkers(results.plotBorderRect.size)
-        markers.map { results.plotMarkers = $0 }
+        markers.map {
+          var markers = $0
+          // 5. Round the markers to integer values.
+          roundMarkers(&markers)
+          results.plotMarkers = markers
+      }
         legendInfo.map { results.legendLabels = $0 }
-        // 5. Lay out remaining chrome.
+        // 6. Lay out remaining chrome.
         calcMarkerTextLocations(renderer: renderer, results: &results)
         calcLegend(results.legendLabels, renderer: renderer, results: &results)
         return (drawingData, results)
@@ -152,6 +157,19 @@ public struct GraphLayout {
         borderRect.size.width.round(.down)
         borderRect.size.height.round(.down)
         return borderRect
+    }
+  
+    /// Rounds the given markers to integer pixel locations, for sharper gridlines.
+    private func roundMarkers(_ markers: inout PlotMarkers) {
+      for i in markers.xMarkers.indices {
+        markers.xMarkers[i].round(.down)
+      }
+      for i in markers.yMarkers.indices {
+        markers.yMarkers[i].round(.down)
+      }
+      for i in markers.y2Markers.indices {
+        markers.y2Markers[i].round(.down)
+      }
     }
     
     /// Lays out the chrome elements outside the plot's borders (axis titles, plot title, etc).
