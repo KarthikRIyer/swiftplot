@@ -1,6 +1,5 @@
 
 // Todo list for Heatmap:
-// - Colormaps
 // - Shift grid to block bounds
 // - Draw grid over blocks?
 // - Spacing between blocks
@@ -20,6 +19,7 @@ public struct Heatmap<SeriesType> where SeriesType: Sequence, SeriesType.Element
   
   public var values: SeriesType
   public var interpolator: Interpolator<Element>
+  public var colorMap: ColorMap = .linear(.orange, .purple)
   
   public init(values: SeriesType, interpolator: Interpolator<Element>) {
     self.values = values
@@ -99,7 +99,8 @@ extension Heatmap: HasGraphLayout, Plot {
                         Float(rowIdx) * data.itemSize.height),
           size: data.itemSize
         )
-        let color = getColor(of: element, min: range.min, max: range.max)
+        let offset = interpolator.interpolate(element, range.min, range.max)
+        let color = colorMap.colorForOffset(offset)
         renderer.drawSolidRect(rect, fillColor: color, hatchPattern: .none)
 //        renderer.drawText(text: String(describing: element),
 //                          location: rect.origin + Point(50,50),
@@ -109,13 +110,6 @@ extension Heatmap: HasGraphLayout, Plot {
 //                          angle: 0)
       }
     }
-  }
-  
-  private func getColor(of value: Element, min: Element, max: Element) -> Color {
-    let startColor = Color.orange
-    let endColor = Color.purple
-    let offset = interpolator.interpolate(value, min, max)
-    return lerp(startColor: startColor, endColor: endColor, offset)
   }
 }
 

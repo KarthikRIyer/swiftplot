@@ -28,12 +28,14 @@ final class HeatmapTests: SwiftPlotTestCase {
     ]
     hm.plotTitle.title = "😅"
     
-    var d = Data(capacity: 10000)
-    for _ in 0..<10000 { d.append(.random(in: 0..<255)) }
-//    let hm3 = d.heatmap(width: 100, interpolator: .linear)
+    var d = Data(capacity: 10_000)
+    for _ in 0..<10_000 { d.append(.random(in: 0..<255)) }
+    var hm3 = d.heatmap(width: 100, interpolator: .linear)
     
-    let hm3 = Array("THIS IS SWIFPLOT!!!! Woo let's see what this looks like :)")
-      .heatmap(width: 5, interpolator: .linearByKeyPath(\.asciiValue!))
+//    var hm3 = Array("THIS IS SWIFPLOT!!!! Woo let's see what this looks like :)")
+//      .heatmap(width: 5, interpolator: .linearByKeyPath(\.asciiValue!))
+//    var hm3 = Array(stride(from: Float(0), to: 1, by: 0.001)).heatmap(width: 10, interpolator: .linear)
+    hm3.colorMap = .viridis
     
     
     var hm2 = Heatmap<[[Int]]>(interpolator: .linear)//.inverted)
@@ -42,10 +44,10 @@ final class HeatmapTests: SwiftPlotTestCase {
     }
     hm2.values[8][2] = 1
     hm2.values[8][6] = 1
-    
     hm2.values[6][2] = 1
     hm2.values[6][6] = 1
     hm2.values[5][2...5] = Array(repeating: 1, count: 4)[...]
+    hm2.colorMap = .inferno
     
     var sub = SubPlot(layout: .horizontal)
     sub.plots = [hm3]//,  hm2]
