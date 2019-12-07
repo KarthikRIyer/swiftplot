@@ -73,6 +73,8 @@ extension Heatmap: HasGraphLayout, Plot {
       width: size.width / Float(results.columns),
       height: size.height / Float(results.rows)
     )
+    results.itemSize.width.round(.down)
+    results.itemSize.height.round(.down)
     // Calculate markers.
     markers.xMarkers = (0..<results.columns).map {
       (Float($0) + 0.5) * results.itemSize.width
