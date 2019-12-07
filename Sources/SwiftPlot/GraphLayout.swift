@@ -147,6 +147,10 @@ public struct GraphLayout {
         // Sanitize the resulting rectangle.
         borderRect.size.width = max(borderRect.size.width, 0)
         borderRect.size.height = max(borderRect.size.height, 0)
+        borderRect.origin.y.round(.up)
+        borderRect.origin.x.round(.up)
+        borderRect.size.width.round(.down)
+        borderRect.size.height.round(.down)
         return borderRect
     }
     
