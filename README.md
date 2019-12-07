@@ -53,7 +53,7 @@ The resultant images are stored in a directory named  `output`. The `Tests` fold
 Add the library to your projects dependencies in the Package.swift file as shown below.
 ```swift
 dependencies: [
-        .package(url: "https://github.com/KarthikRIyer/swiftplot.git", .exact("1.0.0")),
+        .package(url: "https://github.com/KarthikRIyer/swiftplot.git", .branch("master")),
     ],
 ```
 
