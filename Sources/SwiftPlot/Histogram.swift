@@ -276,111 +276,79 @@ extension Histogram: HasGraphLayout {
             }
         }
     }
-
-    //functions to draw the plot
+    
+    /// Draw with rectangles if `histogramType` is `.bar` or with lines if `histogramType` is `.step`
     public func drawData(markers: PlotMarkers, size: Size, renderer: Renderer) {
-        var xM = Float(xMargin)
+        let binCount = histogramSeries.bins
+        let allSeries = [histogramSeries] + histogramStackSeries
         switch histogramSeries.histogramSeriesOptions.histogramType {
         case .bar:
-            for i in 0..<histogramSeries.bins {
-                var currentHeight: Float = histogramSeries.scaledBinFrequency[i]
-                var rect = Rect(
-                    origin: Point(xM, 0),
-                    size: Size(width: barWidth, height: currentHeight)
-                )
-                renderer.drawSolidRect(rect,
-                                       fillColor: histogramSeries.color,
-                                       hatchPattern: .none)
-
-                for series in histogramStackSeries {
-                    rect.origin.y = currentHeight
-                    rect.size.height = series.scaledBinFrequency[i]
-                    renderer.drawSolidRect(rect,
-                                           fillColor: series.color,
-                                           hatchPattern: .none)
-                    currentHeight += series.scaledBinFrequency[i]
+            // Generate all rects needed
+            let xStart = Float(xMargin)
+            let xValues = stride(from: xStart, to: xStart + Float(binCount) * barWidth, by: barWidth)
+            var rects: [Rect] = xValues.map { Rect(origin: Point($0, 0.0), size: Size(width: barWidth, height: 0.0)) }
+            
+            for series in allSeries {
+                // Update rects' heights and y pos
+                for (rectIndex, height) in zip(rects.indices, series.scaledBinFrequency) {
+                    rects[rectIndex].size.height = height
+                    renderer.drawSolidRect(rects[rectIndex], fillColor: series.color, hatchPattern: .none)
+                    rects[rectIndex].origin.y += height
                 }
-                xM+=barWidth
             }
         case .step:
-            var firstHeight: Float = histogramSeries.scaledBinFrequency[0]
-            var firstBottomLeft = Point(xM, 0.0)
-            var firstTopLeft    = Point(xM, firstHeight)
-            renderer.drawLine(startPoint: firstBottomLeft,
-                              endPoint: firstTopLeft,
-                              strokeWidth: strokeWidth,
-                              strokeColor: histogramSeries.color,
-                              isDashed: false)
-            for series in histogramStackSeries {
-                firstBottomLeft = Point(firstBottomLeft.x, firstHeight)
-                firstTopLeft = Point(firstTopLeft.x, firstHeight + series.scaledBinFrequency[0])
-                renderer.drawLine(startPoint: firstBottomLeft,
-                                  endPoint: firstTopLeft,
-                                  strokeWidth: strokeWidth,
-                                  strokeColor: series.color,
-                                  isDashed: false)
-                firstHeight += series.scaledBinFrequency[0]
-            }
-            for i in 0..<histogramSeries.bins {
-                var currentHeight: Float = histogramSeries.scaledBinFrequency[i]
-                var topLeft = Point(xM,currentHeight)
-                var topRight = Point(xM+barWidth,currentHeight)
-                renderer.drawLine(startPoint: topLeft,
-                                  endPoint: topRight,
-                                  strokeWidth: strokeWidth,
-                                  strokeColor: histogramSeries.color,
-                                  isDashed: false)
-                if (i != histogramSeries.bins-1) {
-                    let nextTopLeft = Point(topRight.x, histogramSeries.scaledBinFrequency[i+1])
-                    renderer.drawLine(startPoint: topRight,
-                                      endPoint: nextTopLeft,
-                                      strokeWidth: strokeWidth,
-                                      strokeColor: histogramSeries.color,
-                                      isDashed: false)
+            let xStart = Float(xMargin)
+            let xValues = stride(from: xStart, through: xStart + Float(binCount) * barWidth, by: barWidth)
+            
+            // One heights array for each series
+            var seriesHeights: [[Float]] = [[Float](repeating: 0.0, count: binCount + 2)]
+            
+            // Update `currentHeights` with the height from the series and add ìt to `heights`
+            var currentHeights = seriesHeights[seriesHeights.startIndex]
+            for series in allSeries {
+                for (newHeight, index) in zip(series.scaledBinFrequency, currentHeights.indices.dropFirst().dropLast()) {
+                    currentHeights[index] += newHeight
                 }
-                for series in histogramStackSeries {
-                    topLeft = Point(topLeft.x, currentHeight + series.scaledBinFrequency[i])
-                    topRight = Point(topRight.x, currentHeight + series.scaledBinFrequency[i])
-                    if (series.scaledBinFrequency[i] > 0) {
-                        renderer.drawLine(startPoint: topLeft,
-                                          endPoint: topRight,
-                                          strokeWidth: strokeWidth,
-                                          strokeColor: series.color,
-                                          isDashed: false)
-                        if (i != histogramSeries.bins-1) {
-                            var nextHeight = histogramSeries.scaledBinFrequency[i+1]
-                            for k in histogramStackSeries {
-                                nextHeight += k.scaledBinFrequency[i+1]
-                            }
-                            let nextTopLeft = Point(topRight.x, nextHeight)
-                            renderer.drawLine(startPoint: topRight,
-                                              endPoint: nextTopLeft,
-                                              strokeWidth: strokeWidth,
-                                              strokeColor: series.color,
-                                              isDashed: false)
-                        }
+                seriesHeights.append(currentHeights)
+            }
+            
+            // Draw only the line segments that will actually be visible, unobstructed from other lines that will be on top
+            // We iterate over the series in reverse to draw them from back to front
+            var seriesHeightsSlice = seriesHeights.reversed()[...]
+            var heightsS1Slice = seriesHeightsSlice.removeFirst()[...]
+            for (heightsSeries2, series) in zip(seriesHeightsSlice, allSeries.reversed()) {
+                var heightsS2Slice = heightsSeries2[...]
+                
+                // Grab 2 heights from the first series and 2 from the second one (iterate over bar edges of two adjacent series simultaneously)
+                var height1S1 = heightsS1Slice.removeFirst()
+                var height1S2 = heightsS2Slice.removeFirst()
+                var line = [Point]()
+                for ((height2S1, height2S2), x) in zip(zip(heightsS1Slice, heightsS2Slice), xValues) {
+                    
+                    func endLine() {
+                        renderer.drawPlotLines(points: line, strokeWidth: strokeWidth,
+                                               strokeColor: series.color, isDashed: false)
+                        line.removeAll(keepingCapacity: true)
                     }
-                    currentHeight += series.scaledBinFrequency[i]
+                    
+                    // Conditions for appending specific points or ending the line at different places based on the relative heights (4 measures)
+                    let c1 = height1S1 > height1S2
+                    let c2 = height2S1 > height2S2
+                    let c3 = height1S1 > height2S2
+                    let c4 = height2S1 > height1S2
+                    
+                    if  c1 ||  c3 && c4 { line.append(Point(x, height1S1)) }
+                    if !c3              { endLine() }
+                    if  c1 && !c4       { line.append(Point(x, height1S2)) }
+                    if !c4              { endLine() }
+                    if  c2 && !c3       { line.append(Point(x, height2S2)) }
+                    if  c2 ||  c3 && c4 { line.append(Point(x, height2S1)) }
+                    if !c2              { endLine() }
+                    
+                    height1S1 = height2S1
+                    height1S2 = height2S2
                 }
-                xM+=barWidth
-            }
-            var lastHeight: Float = histogramSeries.scaledBinFrequency[histogramSeries.scaledBinFrequency.count-1]
-            var lastBottomRight = Point(xM, 0.0)
-            var lastTopRight    = Point(xM, lastHeight)
-            renderer.drawLine(startPoint: lastBottomRight,
-                              endPoint: lastTopRight,
-                              strokeWidth: strokeWidth,
-                              strokeColor: histogramSeries.color,
-                              isDashed: false)
-            for series in histogramStackSeries {
-                lastBottomRight = Point(lastBottomRight.x, lastHeight)
-                lastTopRight = Point(lastTopRight.x, lastHeight + series.scaledBinFrequency[series.scaledBinFrequency.count-1])
-                renderer.drawLine(startPoint: lastBottomRight,
-                                  endPoint: lastTopRight,
-                                  strokeWidth: strokeWidth,
-                                  strokeColor: series.color,
-                                  isDashed: false)
-                lastHeight += series.scaledBinFrequency[series.scaledBinFrequency.count-1]
+                heightsS1Slice = heightsSeries2[...]
             }
         }
     }
