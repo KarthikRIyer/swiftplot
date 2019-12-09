@@ -13,7 +13,7 @@ extension SubPlotTests {
     
     func testNestedSubplots() throws {
         
-        let fileName = "_26_nested_subplots"
+        let fileName = "_28_nested_subplots"
         
         // ScatterPlot.
         let xValues = Array(-50...50).map { Float($0) }
