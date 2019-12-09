@@ -315,15 +315,15 @@ extension Histogram: HasGraphLayout {
             // Draw only the line segments that will actually be visible, unobstructed from other lines that will be on top
             // We iterate over the series in reverse to draw them from back to front
             var seriesHeightsSlice = seriesHeights.reversed()[...]
-            var heightsS1Slice = seriesHeightsSlice.removeFirst()[...]
-            for (heightsSeries2, series) in zip(seriesHeightsSlice, allSeries.reversed()) {
-                var heightsS2Slice = heightsSeries2[...]
+            var backHeightsSlice = seriesHeightsSlice.removeFirst()[...]
+            for (frontHeights, series) in zip(seriesHeightsSlice, allSeries.reversed()) {
+                var frontHeightsSlice = frontHeights[...]
                 
-                // Grab 2 heights from the first series and 2 from the second one (iterate over bar edges of two adjacent series simultaneously)
-                var height1S1 = heightsS1Slice.removeFirst()
-                var height1S2 = heightsS2Slice.removeFirst()
+                // Iterate over bin edges focusing on the height of the left and right bins of the series on the back and in front
+                var backLeftBinHeight = backHeightsSlice.removeFirst()
+                var frontLeftBinHeight = frontHeightsSlice.removeFirst()
                 var line = [Point]()
-                for ((height2S1, height2S2), x) in zip(zip(heightsS1Slice, heightsS2Slice), xValues) {
+                for ((backRightBinHeight, frontRightBinHeight), x) in zip(zip(backHeightsSlice, frontHeightsSlice), xValues) {
                     
                     func endLine() {
                         renderer.drawPlotLines(points: line, strokeWidth: strokeWidth,
@@ -332,23 +332,23 @@ extension Histogram: HasGraphLayout {
                     }
                     
                     // Conditions for appending specific points or ending the line at different places based on the relative heights (4 measures)
-                    let c1 = height1S1 > height1S2
-                    let c2 = height2S1 > height2S2
-                    let c3 = height1S1 > height2S2
-                    let c4 = height2S1 > height1S2
+                    let c1 = backLeftBinHeight  > frontLeftBinHeight
+                    let c2 = backRightBinHeight > frontRightBinHeight
+                    let c3 = backLeftBinHeight  > frontRightBinHeight
+                    let c4 = backRightBinHeight > frontLeftBinHeight
                     
-                    if  c1 ||  c3 && c4 { line.append(Point(x, height1S1)) }
+                    if  c1 ||  c3 && c4 { line.append(Point(x, backLeftBinHeight)) }
                     if !c3              { endLine() }
-                    if  c1 && !c4       { line.append(Point(x, height1S2)) }
+                    if  c1 && !c4       { line.append(Point(x, frontLeftBinHeight)) }
                     if !c4              { endLine() }
-                    if  c2 && !c3       { line.append(Point(x, height2S2)) }
-                    if  c2 ||  c3 && c4 { line.append(Point(x, height2S1)) }
+                    if  c2 && !c3       { line.append(Point(x, frontRightBinHeight)) }
+                    if  c2 ||  c3 && c4 { line.append(Point(x, backRightBinHeight)) }
                     if !c2              { endLine() }
                     
-                    height1S1 = height2S1
-                    height1S2 = height2S2
+                    backLeftBinHeight  = backRightBinHeight
+                    frontLeftBinHeight = frontRightBinHeight
                 }
-                heightsS1Slice = heightsSeries2[...]
+                backHeightsSlice = frontHeights[...]
             }
         }
     }
