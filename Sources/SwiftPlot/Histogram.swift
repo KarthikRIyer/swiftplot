@@ -283,18 +283,21 @@ extension Histogram: HasGraphLayout {
         let allSeries = [histogramSeries] + histogramStackSeries
         switch histogramSeries.histogramSeriesOptions.histogramType {
         case .bar:
-            // Generate all rects needed
             let xStart = Float(xMargin)
             let xValues = stride(from: xStart, to: xStart + Float(binCount) * barWidth, by: barWidth)
-            var rects: [Rect] = xValues.map { Rect(origin: Point($0, 0.0), size: Size(width: barWidth, height: 0.0)) }
             
-            for series in allSeries {
-                // Update rects' heights and y pos
-                for (rectIndex, height) in zip(rects.indices, series.scaledBinFrequency) {
-                    rects[rectIndex].size.height = height
-                    renderer.drawSolidRect(rects[rectIndex], fillColor: series.color, hatchPattern: .none)
-                    rects[rectIndex].origin.y += height
+            // Get a `Slice` of frequencies for each series so we can take one element from each series for each x value
+            var frequencySlices = allSeries.map { $0.scaledBinFrequency[...] }
+            for x in xValues {
+                var currentHeight: Float = 0.0
+                for (series, index) in zip(allSeries, frequencySlices.indices) {
+                    let height = frequencySlices[index].removeFirst()
+                    let rect = Rect(origin: Point(x, currentHeight), size: Size(width: barWidth, height:
+                        height))
+                    renderer.drawSolidRect(rect, fillColor: series.color, hatchPattern: .none)
+                    currentHeight += height
                 }
+                currentHeight = 0.0
             }
         case .step:
             let xStart = Float(xMargin)
