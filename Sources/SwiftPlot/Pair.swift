@@ -8,6 +8,8 @@ public struct Pair<T,U> {
         self.y = y
     }
 }
+extension Pair: Equatable where T: Equatable, U: Equatable {}
+extension Pair: Hashable where T: Hashable, U: Hashable {}
 
 public typealias Point = Pair<Float,Float>
 
@@ -19,7 +21,7 @@ public func + (lhs: Point, rhs: Point) -> Point {
     return Point(lhs.x + rhs.x, lhs.y + rhs.y)
 }
 
-public struct Size {
+public struct Size: Hashable {
     public var width: Float
     public var height: Float
     
@@ -34,7 +36,7 @@ extension Size {
 
 /// A Rectangle in a bottom-left coordinate space.
 ///
-public struct Rect {
+public struct Rect: Hashable {
     public var origin: Point
     public var size: Size
     
@@ -54,6 +56,8 @@ extension Rect {
         return Rect(origin: normalizedOrigin, size: normalizedSize)
     }
     
+    // Coordinate accessors.
+  
     public var minX: Float {
         return normalized.origin.x
     }
@@ -79,22 +83,64 @@ extension Rect {
         let norm = normalized
         return norm.origin.y + norm.size.height
     }
-    
-    public var width: Float {
-        return size.width
+  
+    public var center: Point {
+      return Point(midX, midY)
     }
-    
-    public var height: Float {
-        return size.height
-    }
-    
+  
     public init(size: Size, centeredOn center: Point) {
         self = Rect(
             origin: Point(center.x - size.width/2, center.y - size.height/2),
             size: size
         )
     }
+
+    // Size accessors.
+  
+    public var width: Float {
+      get { return size.width }
+      set { size.width = newValue }
+    }
     
+    public var height: Float {
+      get { return size.height }
+      set { size.height = newValue }
+    }
+    
+    // Rounding.
+  
+    /// Returns a version of this `Rect` rounded by `roundOutwards`
+    public var roundedOutwards: Rect {
+      var rect = self
+      rect.roundOutwards()
+      return rect
+    }
+  
+    /// Rounds this `Rect` to integer coordinates, by rounding all points away from the center.
+    public mutating func roundOutwards() {
+      origin.x.round(.down)
+      origin.y.round(.down)
+      size.width.round(.up)
+      size.height.round(.up)
+    }
+  
+    /// Returns a version of this `Rect` rounded by `roundInwards`
+    public var roundedInwards: Rect {
+      var rect = self
+      rect.roundInwards()
+      return rect
+    }
+    
+    /// Rounds this `Rect` to integer coordinates, by rounding all points towards the center.
+    public mutating func roundInwards() {
+      origin.x.round(.up)
+      origin.y.round(.up)
+      size.width.round(.down)
+      size.width.round(.down)
+    }
+    
+    // Subtraction operations.
+  
     mutating func contract(by distance: Float) {
         origin.x += distance
         origin.y += distance
@@ -107,5 +153,23 @@ extension Rect {
         origin.y += dy
         size.width -= dx
         size.height -= dy
+    }
+  
+    // Other Utilities.
+
+    /// The range of Y coordinates considered inside this `Rect`.
+    /// If a coordinate `y` is inside this Range, it means that `minY < y < maxY`,
+    /// - i.e., it is _within_ and not _on_ the bounds of the `Rect`.
+    internal var internalYCoordinates: Range<Float> {
+      let norm = normalized
+      return norm.origin.y.nextUp..<norm.origin.y.nextUp + norm.size.height
+    }
+  
+    /// The range of X coordinates considered inside this `Rect`.
+    /// If a coordinate `x` is inside this Range, it means that `minX < x < maxX`
+    /// - i.e., it is _within_ and not _on_ the bounds of the `Rect`
+    internal var internalXCoordinates: Range<Float> {
+      let norm = normalized
+      return norm.origin.x.nextUp..<norm.origin.x.nextUp + norm.size.width
     }
 }
