@@ -43,6 +43,8 @@ public class QuartzRenderer: Renderer {
                               height: Int(imageSize.height))
             context.setFillColor(Color.white.cgColor)
             context.fill(rect)
+          self.context.setShouldSmoothFonts(false)
+//          context.setShouldAntialias(false)
         }
     }
 
@@ -64,6 +66,8 @@ public class QuartzRenderer: Renderer {
         self.context.setAllowsFontSmoothing(true)
         self.context.setShouldSmoothFonts(fontSmoothing)
         self.isExternalContext = false
+      self.context.setShouldSmoothFonts(false)
+//      context.setShouldAntialias(false)
     }
     
     /// Creates a renderer with the given external context and dimensions..
@@ -485,7 +489,8 @@ public class QuartzRenderer: Renderer {
         #endif
         let string = NSAttributedString(string: "\(text)", attributes: attributes)
         let size = string.size()
-        return Size(width: Float(size.width), height: Float(size.height))
+        // FIXME: 'size.height' is always too big and misaligns text.
+        return Size(width: Float(size.width), height: s)
     }
     
     enum WritePNGError: Error {

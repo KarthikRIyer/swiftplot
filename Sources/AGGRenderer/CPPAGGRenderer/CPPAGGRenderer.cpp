@@ -481,8 +481,9 @@ namespace CPPAGGRenderer{
     void get_text_size(const char *s, float size, float* outW, float* outH){
       font_width = font_height = size;
       m_contour.width(-font_weight*font_height*0.05);
-        float x = 0;
-        float y = 0;
+      float x = 0;
+      float maxY = 0;
+      float minY = 0;
       // set rotation of font engine to zero before calculating text width
       agg::trans_affine matrix;
       matrix *= agg::trans_affine_rotation(agg::deg2rad(0));
@@ -496,8 +497,8 @@ namespace CPPAGGRenderer{
           const agg::glyph_cache* glyph = m_fman.glyph(*s);
           if(glyph){
             x+=glyph->advance_x;
-            float height = glyph->bounds.y2 - glyph->bounds.y1;
-            y = max(y, height);
+            maxY = max(maxY, (float)glyph->bounds.y2);
+            minY = min(minY, (float)glyph->bounds.y1);
           }
           ++s;
         }
@@ -505,7 +506,7 @@ namespace CPPAGGRenderer{
         if (outW)
             *outW = x;
         if (outH)
-        *outH = y;
+          *outH = maxY - abs(minY);
     }
 
     unsigned save_image(const char *s, const char** errorDesc){
