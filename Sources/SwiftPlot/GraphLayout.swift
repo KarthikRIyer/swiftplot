@@ -18,9 +18,17 @@ public struct GraphLayout {
 
     var enablePrimaryAxisGrid = true
     var enableSecondaryAxisGrid = true
+    var drawsGridOverForeground = false
     var markerTextSize: Float = 12
+    var markerThickness: Float = 2
     /// The amount of (horizontal) space to reserve for markers on the Y-axis.
     var yMarkerMaxWidth: Float = 40
+  
+  enum MarkerLabelAlignment {
+    case atMarker
+    case betweenMarkers
+  }
+  var markerLabelAlignment = MarkerLabelAlignment.atMarker
     
     struct Results : CoordinateResolver {
         /// The size these results have been calculated for; the entire size of the plot.
@@ -91,9 +99,11 @@ public struct GraphLayout {
           // 5. Round the markers to integer values.
           roundMarkers(&markers)
           results.plotMarkers = markers
-      }
+        }
         legendInfo.map { results.legendLabels = $0 }
-        // 6. Lay out remaining chrome.
+        // 6. Adjust the plot size if the graph requests less space.
+        (drawingData as? AdjustsPlotSize).map { adjustPlotSize(info: $0, results: &results) }
+        // 7. Lay out remaining chrome.
         calcMarkerTextLocations(renderer: renderer, results: &results)
         calcLegend(results.legendLabels, renderer: renderer, results: &results)
         return (drawingData, results)
@@ -142,21 +152,26 @@ public struct GraphLayout {
             // Add a space to the top when there is no title.
             borderRect.size.height -= Self.titleLabelPadding
         }
-        borderRect.contract(by: plotBorder.thickness)
         // Give space for the markers.
         borderRect.clampingShift(dy: (2 * markerTextSize) + 10) // X markers
         // TODO: Better space calculation for Y/Y2 markers.
         borderRect.clampingShift(dx: yMarkerMaxWidth + 10) // Y markers
         borderRect.size.width -= yMarkerMaxWidth + 10 // Y2 markers
+        // Space for border thickness.
+        borderRect.contract(by: plotBorder.thickness)
 
         // Sanitize the resulting rectangle.
         borderRect.size.width = max(borderRect.size.width, 0)
         borderRect.size.height = max(borderRect.size.height, 0)
-        borderRect.origin.y.round(.up)
-        borderRect.origin.x.round(.up)
-        borderRect.size.width.round(.down)
-        borderRect.size.height.round(.down)
+        borderRect.roundInwards()
         return borderRect
+    }
+  
+    /// Makes adjustments to the layout as requested by the plot.
+    private func adjustPlotSize(info: AdjustsPlotSize, results: inout Results) {
+      if info.desiredPlotSize != .zero {
+        results.plotBorderRect.size = info.desiredPlotSize
+      }
     }
   
     /// Rounds the given markers to integer pixel locations, for sharper gridlines.
@@ -196,20 +211,58 @@ public struct GraphLayout {
         
         for i in 0..<results.plotMarkers.xMarkers.count {
             let textWidth = renderer.getTextWidth(text: results.plotMarkers.xMarkersText[i], textSize: markerTextSize)
-            let text_p = Point(results.plotMarkers.xMarkers[i] - (textWidth/2), -2.0 * markerTextSize)
-            results.xMarkersTextLocation.append(text_p)
+            let markerLocation = results.plotMarkers.xMarkers[i]
+            var textLocation   = Point(0, -2.0 * markerTextSize)
+            switch markerLabelAlignment {
+            case .atMarker:
+              textLocation.x = markerLocation - (textWidth/2)
+            case .betweenMarkers:
+              let nextMarkerLocation: Float
+              if i < results.plotMarkers.xMarkers.endIndex - 1 {
+                nextMarkerLocation = results.plotMarkers.xMarkers[i + 1]
+              } else {
+                nextMarkerLocation = results.plotBorderRect.width
+              }
+              let midpoint = markerLocation + (nextMarkerLocation - markerLocation)/2
+              textLocation.x = midpoint - (textWidth/2)
+            }
+            results.xMarkersTextLocation.append(textLocation)
         }
-        
+      
+        /// Vertically aligns the label and returns the optimal Y coordinate to draw at.
+        func alignYLabel(markers: [Float], index: Int, textSize: Size) -> Float {
+          let markerLocation = markers[index]
+          switch markerLabelAlignment {
+          case .atMarker:
+            return markerLocation - (textSize.height/2)
+          case .betweenMarkers:
+            let nextMarkerLocation: Float
+            if index < markers.endIndex - 1 {
+              nextMarkerLocation = markers[index + 1]
+            } else {
+              nextMarkerLocation = results.plotBorderRect.height
+            }
+            let midpoint = markerLocation + (nextMarkerLocation - markerLocation)/2
+            return midpoint - (textSize.height/2)
+          }
+        }
+      
         for i in 0..<results.plotMarkers.yMarkers.count {
-            var textWidth = renderer.getTextWidth(text: results.plotMarkers.yMarkersText[i], textSize: markerTextSize)
-            textWidth = min(textWidth, yMarkerMaxWidth)
-            let text_p = Point(-textWidth - 8, results.plotMarkers.yMarkers[i] - 4)
-            results.yMarkersTextLocation.append(text_p)
+            var textSize = renderer.getTextLayoutSize(text: results.plotMarkers.yMarkersText[i],
+                                                      textSize: markerTextSize)
+            textSize.width = min(textSize.width, yMarkerMaxWidth)
+            var textLocation = Point(-textSize.width - 8, 0)
+            textLocation.y = alignYLabel(markers: results.plotMarkers.yMarkers, index: i, textSize: textSize)
+            results.yMarkersTextLocation.append(textLocation)
         }
         
         for i in 0..<results.plotMarkers.y2Markers.count {
-            let text_p = Point(results.plotBorderRect.width + 8, results.plotMarkers.y2Markers[i] - 4)
-            results.y2MarkersTextLocation.append(text_p)
+            var textSize = renderer.getTextLayoutSize(text: results.plotMarkers.y2MarkersText[i],
+                                                      textSize: markerTextSize)
+            textSize.width = min(textSize.width, yMarkerMaxWidth)
+            var textLocation = Point(results.plotBorderRect.width + 8, 0)
+            textLocation.y = alignYLabel(markers: results.plotMarkers.y2Markers, index: i, textSize: textSize)
+            results.y2MarkersTextLocation.append(textLocation)
         }
     }
     
@@ -238,12 +291,17 @@ public struct GraphLayout {
         if let plotBackgroundColor = plotBackgroundColor {
             renderer.drawSolidRect(results.plotBorderRect, fillColor: plotBackgroundColor, hatchPattern: .none)
         }
-        drawGrid(results: results, renderer: renderer)
+        if !drawsGridOverForeground {
+          drawGrid(results: results, renderer: renderer)
+        }
         drawBorder(results: results, renderer: renderer)
         drawMarkers(results: results, renderer: renderer)
     }
     
     func drawForeground(results: Results, renderer: Renderer) {
+        if drawsGridOverForeground {
+          drawGrid(results: results, renderer: renderer)
+        }
         drawTitle(results: results, renderer: renderer)
         drawLabels(results: results, renderer: renderer)
         drawLegend(results.legendLabels, results: results, renderer: renderer)
@@ -289,7 +347,9 @@ public struct GraphLayout {
     }
     
     private func drawBorder(results: Results, renderer: Renderer) {
-        renderer.drawRect(results.plotBorderRect,
+        var rect = results.plotBorderRect
+        rect.contract(by: -plotBorder.thickness/2)
+        renderer.drawRect(rect,
                           strokeWidth: plotBorder.thickness,
                           strokeColor: plotBorder.color)
     }
@@ -298,51 +358,58 @@ public struct GraphLayout {
         guard enablePrimaryAxisGrid || enablePrimaryAxisGrid else { return }
         let rect = results.plotBorderRect
         for index in 0..<results.plotMarkers.xMarkers.count {
-            let p1 = Point(results.plotMarkers.xMarkers[index] + rect.minX, rect.minY)
-            let p2 = Point(results.plotMarkers.xMarkers[index] + rect.minX, rect.maxY)
-            renderer.drawLine(startPoint: p1,
-                              endPoint: p2,
-                              strokeWidth: grid.thickness,
-                              strokeColor: grid.color,
-                              isDashed: false)
+          let p1 = Point(results.plotMarkers.xMarkers[index] + rect.minX, rect.minY)
+          let p2 = Point(results.plotMarkers.xMarkers[index] + rect.minX, rect.maxY)
+          guard rect.internalXCoordinates.contains(p1.x),
+                rect.internalXCoordinates.contains(p2.x) else { continue }
+          renderer.drawLine(startPoint: p1,
+                            endPoint: p2,
+                            strokeWidth: grid.thickness,
+                            strokeColor: grid.color,
+                            isDashed: false)
         }
     
         if (enablePrimaryAxisGrid) {
             for index in 0..<results.plotMarkers.yMarkers.count {
-                let p1 = Point(rect.minX, results.plotMarkers.yMarkers[index] + rect.minY)
-                let p2 = Point(rect.maxX, results.plotMarkers.yMarkers[index] + rect.minY)
-                renderer.drawLine(startPoint: p1,
-                                  endPoint: p2,
-                                  strokeWidth: grid.thickness,
-                                  strokeColor: grid.color,
-                                  isDashed: false)
+              let p1 = Point(rect.minX, results.plotMarkers.yMarkers[index] + rect.minY)
+              let p2 = Point(rect.maxX, results.plotMarkers.yMarkers[index] + rect.minY)
+              guard rect.internalYCoordinates.contains(p1.y),
+                    rect.internalYCoordinates.contains(p2.y) else { continue }
+              renderer.drawLine(startPoint: p1,
+                                endPoint: p2,
+                                strokeWidth: grid.thickness,
+                                strokeColor: grid.color,
+                                isDashed: false)
             }
         }
         if (enableSecondaryAxisGrid) {
             for index in 0..<results.plotMarkers.y2Markers.count {
-                let p1 = Point(rect.minX, results.plotMarkers.y2Markers[index] + rect.minY)
-                let p2 = Point(rect.maxX, results.plotMarkers.y2Markers[index] + rect.minY)
-                renderer.drawLine(startPoint: p1,
-                                  endPoint: p2,
-                                  strokeWidth: grid.thickness,
-                                  strokeColor: grid.color,
-                                  isDashed: false)
+              let p1 = Point(rect.minX, results.plotMarkers.y2Markers[index] + rect.minY)
+              let p2 = Point(rect.maxX, results.plotMarkers.y2Markers[index] + rect.minY)
+              guard rect.internalYCoordinates.contains(p1.y),
+                    rect.internalYCoordinates.contains(p2.y) else { continue }
+              renderer.drawLine(startPoint: p1,
+                                endPoint: p2,
+                                strokeWidth: grid.thickness,
+                                strokeColor: grid.color,
+                                isDashed: false)
             }
         }
     }
 
     private func drawMarkers(results: Results, renderer: Renderer) {
         let rect = results.plotBorderRect
+        let border = plotBorder.thickness
         for index in 0..<results.plotMarkers.xMarkers.count {
-            let p1 = Point(results.plotMarkers.xMarkers[index], -6) + rect.origin
-            let p2 = Point(results.plotMarkers.xMarkers[index], 0) + rect.origin
+            let p1 = Point(results.plotMarkers.xMarkers[index], -border - 6) + rect.origin
+            let p2 = Point(results.plotMarkers.xMarkers[index], -border) + rect.origin
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
-                              strokeWidth: plotBorder.thickness,
+                              strokeWidth: markerThickness,
                               strokeColor: plotBorder.color,
                               isDashed: false)
             renderer.drawText(text: results.plotMarkers.xMarkersText[index],
-                              location: results.xMarkersTextLocation[index] + rect.origin,
+                              location: results.xMarkersTextLocation[index] + rect.origin + Pair(0, -border),
                               textSize: markerTextSize,
                               color: plotBorder.color,
                               strokeWidth: 0.7,
@@ -350,15 +417,15 @@ public struct GraphLayout {
         }
 
         for index in 0..<results.plotMarkers.yMarkers.count {
-            let p1 = Point(-6, results.plotMarkers.yMarkers[index]) + rect.origin
-            let p2 = Point(0, results.plotMarkers.yMarkers[index]) + rect.origin
+            let p1 = Point(-border - 6, results.plotMarkers.yMarkers[index]) + rect.origin
+            let p2 = Point(-border, results.plotMarkers.yMarkers[index]) + rect.origin
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
-                              strokeWidth: plotBorder.thickness,
+                              strokeWidth: markerThickness,
                               strokeColor: plotBorder.color,
                               isDashed: false)
             renderer.drawText(text: results.plotMarkers.yMarkersText[index],
-                              location: results.yMarkersTextLocation[index]  + rect.origin,
+                              location: results.yMarkersTextLocation[index] + rect.origin + Pair(-border, 0),
                               textSize: markerTextSize,
                               color: plotBorder.color,
                               strokeWidth: 0.7,
@@ -367,13 +434,13 @@ public struct GraphLayout {
         
         if !results.plotMarkers.y2Markers.isEmpty {
             for index in 0..<results.plotMarkers.y2Markers.count {
-                let p1 = Point(results.plotBorderRect.width,
+                let p1 = Point(results.plotBorderRect.width + border,
                                (results.plotMarkers.y2Markers[index])) + rect.origin
-                let p2 = Point(results.plotBorderRect.width + 6,
+                let p2 = Point(results.plotBorderRect.width + border + 6,
                                (results.plotMarkers.y2Markers[index])) + rect.origin
                 renderer.drawLine(startPoint: p1,
                                   endPoint: p2,
-                                  strokeWidth: plotBorder.thickness,
+                                  strokeWidth: markerThickness,
                                   strokeColor: plotBorder.color,
                                   isDashed: false)
                 renderer.drawText(text: results.plotMarkers.y2MarkersText[index],
@@ -427,6 +494,9 @@ public struct GraphLayout {
     }
 }
 
+protocol AdjustsPlotSize {
+  var desiredPlotSize: Size { get }
+}
 public protocol HasGraphLayout {
     
     var layout: GraphLayout { get set }
@@ -499,6 +569,11 @@ extension HasGraphLayout {
     public var markerTextSize: Float {
         get { layout.markerTextSize }
         set { layout.markerTextSize = newValue }
+    }
+  
+    public var markerThickness: Float {
+      get { layout.markerThickness }
+      set { layout.markerThickness = newValue }
     }
 }
 
