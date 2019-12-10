@@ -11,8 +11,8 @@ extension HistogramTests {
   
   /// Regression test [#57]. We used to fail to clear the histogram state between renders,
   /// leading to slight offsets in the subsequent AGG and CG renders.
-  func testHistogramStackedStepLineJoins() throws {
-    let fileName = "_reg_57_histogram_stacked_step_line_joins"
+  func testHistogramStackedStepOffset() throws {
+    let fileName = "_reg_57_histogram_stacked_step_offset"
     
     let histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
     histogram.addSeries(data: [5], bins: 10, label: "Plot 1", color: .blue, histogramType: .step)
