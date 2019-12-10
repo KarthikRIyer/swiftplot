@@ -170,8 +170,16 @@ public struct GraphLayout {
     /// Makes adjustments to the layout as requested by the plot.
     private func adjustPlotSize(info: AdjustsPlotSize, results: inout Results) {
       if info.desiredPlotSize != .zero {
+        let topDifference = results.plotBorderRect.height - info.desiredPlotSize.height
         results.plotBorderRect.size = info.desiredPlotSize
+        // Adjust the title location for the change in height.
+        if var oldTitleLocation = results.titleLocation {
+          oldTitleLocation.y -= topDifference/2
+          results.titleLocation = oldTitleLocation
+        }
+        // FIXME: Adjust Y2 label and anything else on the right side.
       }
+      
     }
   
     /// Rounds the given markers to integer pixel locations, for sharper gridlines.
