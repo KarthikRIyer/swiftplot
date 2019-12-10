@@ -1,11 +1,9 @@
 
 // Todo list for Heatmap:
-// - Shift grid to block bounds
-// - Draw grid over blocks?
 // - Spacing between blocks
 // - Setting X/Y axis labels
 // - Displaying colormap next to plot
-// - Collection slicing by filter closure
+// - Collection slicing by filter closure?
 
 /// A heatmap is a plot of 2-dimensional data, where each value is assigned a colour value along a gradient.
 ///
@@ -19,13 +17,24 @@ public struct Heatmap<SeriesType> where SeriesType: Sequence, SeriesType.Element
   
   public var values: SeriesType
   public var interpolator: Interpolator<Element>
-  public var colorMap: ColorMap = .linear(.orange, .purple)
+  public var colorMap: ColorMap = .fiveColorHeatMap
   
   public init(values: SeriesType, interpolator: Interpolator<Element>) {
     self.values = values
     self.interpolator = interpolator
-//    self.layout.yMarkerMaxWidth = 100
-//    self.layout.enablePrimaryAxisGrid = false
+    self.layout.drawsGridOverForeground = true
+    self.layout.markerLabelAlignment = .betweenMarkers
+    self.showGrid = false
+  }
+}
+
+// Customisation properties.
+
+extension Heatmap {
+  
+  public var showGrid: Bool {
+    get { layout.enablePrimaryAxisGrid }
+    set { layout.enablePrimaryAxisGrid = newValue }
   }
 }
 
@@ -33,12 +42,14 @@ public struct Heatmap<SeriesType> where SeriesType: Sequence, SeriesType.Element
 
 extension Heatmap: HasGraphLayout, Plot {
   
-  public struct DrawingData {
+  public struct DrawingData: AdjustsPlotSize {
     var values: SeriesType?
     var range: (min: Element, max: Element)?
     var itemSize = Size.zero
     var rows = 0
     var columns = 0
+    
+    var desiredPlotSize = Size.zero
   }
   
   public func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers?) {
@@ -51,7 +62,7 @@ extension Heatmap: HasGraphLayout, Plot {
     }
     var (maxValue, minValue) = (firstElem, firstElem)
     
-    // Discover the maximum/minimum values and shape of the data.
+    // - Discover the maximum/minimum values and shape of the data.
     var totalRows = 0
     var maxColumns = 0
     for row in values {
@@ -64,32 +75,34 @@ extension Heatmap: HasGraphLayout, Plot {
       maxColumns = max(maxColumns, columnsInRow)
       totalRows += 1
     }
+    
+    // - Calculate the element size.
+    var elementSize = Size(
+      width: size.width / Float(maxColumns),
+      height: size.height / Float(totalRows)
+    )
+    // We prefer showing smaller elements with integer dimensions to avoid aliasing.
+    if elementSize.width > 1  { elementSize.width.round(.down)  }
+    if elementSize.height > 1 { elementSize.height.round(.down) }
+    
     // Update results.
     results.values = values
     results.range = (minValue, maxValue)
     results.rows = totalRows
     results.columns = maxColumns
-    results.itemSize = Size(
-      width: size.width / Float(results.columns),
-      height: size.height / Float(results.rows)
-    )
-    // If we have at enough space to give each element a pixel,
-    // round the items down to integer dimensions to remove aliasing
-    // in the rendered image.
-    if results.itemSize.width > 1 {
-      results.itemSize.width = max(results.itemSize.width.rounded(.down), 1)
-    }
-    if results.itemSize.height > 1 {
-      results.itemSize.height = max(results.itemSize.height.rounded(.down), 1)
-    }
+    results.itemSize = elementSize
+    // The size rounding may leave a gap between the data and the border,
+    // so let the layout know we desire a smaller plot.
+    results.desiredPlotSize = Size(width: Float(results.columns) * results.itemSize.width,
+                                   height: Float(results.rows) * results.itemSize.height)
+    
     // Calculate markers.
     markers.xMarkers = (0..<results.columns).map {
-      (Float($0) + 0.5) * results.itemSize.width
+      Float($0) * results.itemSize.width
     }
     markers.yMarkers = (0..<results.rows).map {
-      (Float($0) + 0.5) * results.itemSize.height
+      Float($0) * results.itemSize.height
     }
-    // TODO: Shift grid by -0.5 * itemSize.
     
     // TODO: Allow setting the marker text.
     markers.xMarkersText = (0..<results.columns).map { String($0) }
@@ -167,8 +180,14 @@ extension SequencePlots where Base.Element: Sequence {
   /// - parameters:
   ///   - interpolator: A function or `KeyPath` which maps values to a continuum between 0 and 1.
   /// - returns: A heatmap plot of the sequence's inner items.
-  public func heatmap(interpolator: Interpolator<Base.Element.Element>) -> Heatmap<Base> {
-    return Heatmap(values: base, interpolator: interpolator)
+  public func heatmap(
+    interpolator: Interpolator<Base.Element.Element>,
+    style: (inout Heatmap<Base>)->Void = { _ in }
+  ) -> Heatmap<Base> {
+    
+    var graph = Heatmap(values: base, interpolator: interpolator)
+    style(&graph)
+    return graph
   }
 }
 
@@ -181,7 +200,12 @@ extension SequencePlots where Base: Collection {
   /// - returns: A heatmap plot of the collection's values.
   /// - complexity: O(n). Consider though, that rendering a heatmap or copying to a `RamdomAccessCollection`
   ///               is also at least O(n), and this does not copy the data.
-  public func heatmap(width: Int, interpolator: Interpolator<Base.Element>) -> Heatmap<[Base.SubSequence]> {
+  public func heatmap(
+    width: Int,
+    interpolator: Interpolator<Base.Element>,
+    style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
+  ) -> Heatmap<[Base.SubSequence]> {
+    
     precondition(width > 0, "Cannot build a histogram with zero or negative width")
     var rows = [Base.SubSequence]()
     var rowStart = base.startIndex
@@ -193,7 +217,7 @@ extension SequencePlots where Base: Collection {
       rows.append(base[rowStart..<rowEnd])
       rowStart = rowEnd
     }
-    return rows.plots.heatmap(interpolator: interpolator)
+    return rows.plots.heatmap(interpolator: interpolator, style: style)
   }
 }
 
@@ -204,12 +228,17 @@ extension SequencePlots where Base: RandomAccessCollection {
   ///   - width:        The width of the heatmap to generate. Must be greater than 0.
   ///   - interpolator: A function or `KeyPath` which maps values to a continuum between 0 and 1.
   /// - returns: A heatmap plot of the collection's values.
-  public func heatmap(width: Int, interpolator: Interpolator<Base.Element>) -> Heatmap<[Base.SubSequence]> {
+  public func heatmap(
+    width: Int,
+    interpolator: Interpolator<Base.Element>,
+    style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
+  ) -> Heatmap<[Base.SubSequence]> {
+    
     precondition(width > 0, "Cannot build a histogram with zero or negative width")
     let height = Int((Float(base.count) / Float(width)).rounded(.up))
     return (0..<height)
       .map { base._sliceForRow($0, width: width) }
-      .plots.heatmap(interpolator: interpolator)
+      .plots.heatmap(interpolator: interpolator, style: style)
   }
   
   /// Returns a heatmap of this collection's values, generated by the data in to `height` rows.
@@ -217,12 +246,17 @@ extension SequencePlots where Base: RandomAccessCollection {
   ///   - height:        The height of the heatmap to generate. Must be greater than 0.
   ///   - interpolator: A function or `KeyPath` which maps values to a continuum between 0 and 1.
   /// - returns: A heatmap plot of the collection's values.
-  public func heatmap(height: Int, interpolator: Interpolator<Base.Element>) -> Heatmap<[Base.SubSequence]> {
+  public func heatmap(
+    height: Int,
+    interpolator: Interpolator<Base.Element>,
+    style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
+  ) -> Heatmap<[Base.SubSequence]> {
+    
     precondition(height > 0, "Cannot build a histogram with zero or negative height")
     let width = Int((Float(base.count) / Float(height)).rounded(.up))
     return (0..<height)
       .map { base._sliceForRow($0, width: width) }
-      .plots.heatmap(interpolator: interpolator)
+      .plots.heatmap(interpolator: interpolator, style: style)
   }
 }
 

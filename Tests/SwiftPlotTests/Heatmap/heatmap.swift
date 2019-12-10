@@ -12,60 +12,51 @@ struct MyStruct {
   var val: Int
 }
 
+
 @available(tvOS 13.0, watchOS 6.0, *)
 final class HeatmapTests: SwiftPlotTestCase {
   
   func testHeatmap() throws {
-    let fileName = "_____heatmap"
-      
-    var hm = Heatmap<[[Int]]>()
-    hm.values = [
-      (0..<5).map { _ in .random(in: -10...10) },
-      (0..<6).map { _ in .random(in: -10...10) },
-      (0..<10).map { _ in .random(in: -10...10) },
-      (0..<7).map { _ in .random(in: -10...10) },
-      (0..<8).map { _ in .random(in: -10...10) },
-    ]
-    hm.plotTitle.title = "😅"
-    
-    var d = Data(capacity: 10_000)
-    for _ in 0..<10_000 { d.append(.random(in: 0..<255)) }
-//    var hm3 = d.heatmap(width: 100, interpolator: .linear)
-    
-    var hm3 = "THIS IS SWIFPLOT!!!! Woo let's see what this looks like :)"
-      .heatmap(width: 5, interpolator: .linearByKeyPath(\.asciiValue!))
-//    var hm3 = Array(stride(from: Float(0), to: 1, by: 0.001)).heatmap(width: 10, interpolator: .linear)
-//    var hm3 = "😘 you too".utf8.heatmap(width: 5, interpolator: .linear)
-    hm3.colorMap = .viridis
-    
-    
-    var hm2 = Heatmap<[[Int]]>(interpolator: .linear)//.inverted)
-    hm2.values = (0..<10).map { row in
-      (0..<10).map { col in 0 }
+    // Example from:
+    // https://scipython.com/book/chapter-7-matplotlib/examples/a-heatmap-of-boston-temperatures/
+    let data: [[Float]] = median_daily_temp_boston_2012
+    let heatmap = data.plots
+      .heatmap(interpolator: .linear) {
+        $0.plotTitle.title = "Maximum daily temperatures in Boston, 2012"
+        $0.plotLabel.xLabel = "Day of the Month"
+        $0.colorMap = ColorMap.fiveColorHeatMap.lightened(by: 0.35)
+        $0.showGrid = true
+        $0.grid.color = Color.gray.withAlpha(0.65)
     }
-    hm2.values[8][2] = 1
-    hm2.values[8][6] = 1
-    hm2.values[6][2] = 1
-    hm2.values[6][6] = 1
-    hm2.values[5][2...5] = Array(repeating: 1, count: 4)[...]
-    hm2.colorMap = .inferno
+    try renderAndVerify(heatmap, size: Size(width: 900, height: 450))
+  }
+  
+  func testHeatmap2() throws {
     
-    var sub = SubPlot(layout: .horizontal)
-    sub.plots = [hm3]//,  hm2]
-    
-    let svg_renderer = SVGRenderer()
-    try sub.drawGraphAndOutput(fileName: svgOutputDirectory+fileName,
-                               renderer: svg_renderer)
-    #if canImport(AGGRenderer)
-    let aggRenderer = AGGRenderer()
-    try sub.drawGraphAndOutput(fileName: aggOutputDirectory + fileName,
-                               renderer: aggRenderer)
-    #endif
-    #if canImport(QuartzRenderer)
-    let quartz_renderer = QuartzRenderer()
-    try sub.drawGraphAndOutput(fileName: coreGraphicsOutputDirectory+fileName,
-                               renderer: quartz_renderer)
-    verifyImage(name: fileName, renderer: .coreGraphics)
-    #endif
+    let summer = median_daily_temp_boston_2012[5...7].plots
+      .heatmap(interpolator: .linear) {
+        $0.colorMap = ColorMap.viridis//.lightened(by: 0.2)
+        $0.showGrid = true
+    }
+    try renderAndVerify(summer, size: Size(width: 900, height: 450))
   }
 }
+
+
+// Data used to generate Heatmaps.
+
+
+let median_daily_temp_boston_2012: [[Float]] = [
+ /* Jan */ [11.1, 10.2,  1.7, -2.0,  3.9,  8.9, 15.7,  7.3,  4.5,  8.5,  3.6,  5.6, 12.3,  1.3, -7.0,  1.3,  9.0, 11.2,  0.7,  0.1, -4.9, -1.1,  8.4, 13.5,  6.2,  5.1,  7.8,  7.9,  6.3,  4.6,  8.5],
+ /* Feb */ [15.0, 7.4, 3.9, 6.3, 2.4, 10.2, 7.8, 3.5, 8.5, 10.0, 4.0,-0.9, 5.1, 6.7, 6.1, 7.3, 11.8, 8.4, 7.9, 5.1, 6.9, 13.9, 12.8, 5.7, 7.4, 5.1, 11.2, 9.1, 2.3],
+ /* Mar */ [2.8, 1.8, 8.4, 5.7, 3.5, 4.0, 16.9, 20.1, 16.2, 4.6, 14.7, 21.8, 21.9, 14.0, 5.7, 7.9, 9.6, 23.5, 23.4, 19.5, 25.7, 28.4, 24.6, 15.1, 9.0, 10.0, 9.6, 10.1, 7.8, 10.8, 6.2],
+ /* Apr */ [10.6, 11.7, 15.1, 17.9, 11.2, 11.9, 11.2, 10.1, 14.5, 17.3, 12.4, 13.5, 18.6, 21.9, 25.2, 30.7, 29.0, 16.8, 19.0, 25.2, 25.7, 16.7, 17.4, 14.7, 16.7, 17.3, 14.1, 15.7, 15.2, 12.4],
+ /* May */ [10.1, 11.3, 10.0, 13.5, 14.5, 12.4, 15.1, 14.6, 17.3, 19.5, 18.0, 26.8, 26.7, 18.0, 23.0, 22.9, 21.2, 18.5, 18.9, 21.8, 15.1, 17.3, 21.7, 21.7, 23.4, 30.2, 22.3, 20.8, 19.6, 24.1, 28.5],
+ /* Jun */ [18.6, 16.7, 16.7, 11.7, 13.4, 16.3, 18.5, 26.3, 26.2, 24.5, 23.5, 23.5, 18.3, 20.2, 20.7, 18.5, 17.4, 18.0, 24.7, 36.3, 35.8, 35.2, 27.3, 28.9, 22.9, 23.0, 25.1, 28.4, 31.9, 32.3],
+ /* Jul */ [32.9, 29.1, 30.2, 29.0, 28.4, 26.8, 30.1, 31.7, 28.9, 28.5, 26.7, 30.1, 32.4, 32.9, 32.8, 31.2, 36.1, 31.7, 23.5, 21.8, 23.4, 28.9, 30.2, 32.8, 28.4, 29.1, 26.3, 22.4, 23.0, 27.2, 22.8],
+ /* Aug */ [25.6, 30.2, 33.4, 27.8, 31.2, 29.5, 25.1, 28.3, 28.5, 28.9, 27.4, 29.0, 30.0, 28.4, 29.0, 29.6, 30.0, 22.3, 22.9, 23.9, 28.5, 25.6, 30.6, 25.6, 25.2, 24.7, 29.6, 30.1, 24.0, 28.5, 32.4],
+ /* Sep */ [26.7, 22.9, 22.3, 22.8, 27.9, 26.3, 28.0, 27.9, 24.1, 20.6, 22.8, 22.9, 27.9, 27.2, 23.4, 21.7, 21.2, 24.1, 22.4, 16.7, 17.3, 19.6, 21.9, 19.6, 23.0, 23.3, 20.6, 14.7, 14.1, 15.2],
+ /* Oct */ [20.1, 21.8, 17.9, 16.9, 24.7, 25.6, 14.6, 13.4, 14.5, 16.8, 15.2, 12.3, 11.8, 19.5, 23.4, 17.4, 13.4, 15.7, 20.2, 23.5, 17.9, 20.2, 19.7, 12.8, 15.2, 18.9, 15.6, 13.3, 16.3, 17.4, 13.5],
+ /* Nov */ [13.9, 11.2, 11.9, 11.7, 7.4, 5.2, 7.2, 4.7, 11.7, 13.0, 16.1, 19.1, 17.4, 7.3, 5.2, 7.4, 8.5, 8.5, 8.9, 9.1, 9.5, 10.2, 9.6, 9.0, 4.7, 7.9, 4.0, 2.3, 6.3, 3.6],
+ /* Dec */ [0.1, 11.2, 15.1, 14.0, 14.0, 5.1, 6.8, 8.5, 9.6, 15.7, 13.4, 4.6, 5.6, 9.6, 4.5, 3.9, 7.2, 10.1, 7.4, 6.2, 11.3, 3.6, 3.5, 4.6, 1.9, 4.0, 8.4, 2.8, 3.0,-1.1, 1.1]
+]
