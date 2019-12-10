@@ -30,6 +30,23 @@ public struct Color {
     public static let darkGray: Color = Color(0.66, 0.66, 0.66, 1.0)
 }
 
+extension Color {
+  
+  public func withAlpha(_ alpha: Float) -> Color {
+    var color = self
+    color.a = alpha
+    return color
+  }
+  
+  public func linearBlend(with other: Color, offset: Float) -> Color {
+    return Color(
+      (other.r - r) * offset + r,
+      (other.g - g) * offset + g,
+      (other.b - b) * offset + b,
+      (other.a - a) * offset + a)
+  }
+}
+
 #if canImport(CoreGraphics)
 import CoreGraphics
 
