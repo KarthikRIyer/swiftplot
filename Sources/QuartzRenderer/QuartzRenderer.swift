@@ -415,6 +415,9 @@ public class QuartzRenderer: Renderer {
                          angle: Float){
         let x1 = p.x + xOffset
         let y1 = p.y + yOffset
+        // TODO: Implement toggle for font smoothing
+        context.setAllowsFontSmoothing(true)
+        context.setShouldSmoothFonts(true)
         #if canImport(AppKit)
         let font = NSFont.systemFont(ofSize: CGFloat(size))
         let attr = [NSAttributedString.Key.font : font,
