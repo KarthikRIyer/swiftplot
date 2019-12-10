@@ -174,7 +174,7 @@ extension Histogram: HasGraphLayout {
             }
         }
 
-        barWidth = round((size.width - Float(2.0*xMargin))/Float(histogramSeries.bins))
+        barWidth = (size.width - Float(2.0*xMargin))/Float(histogramSeries.bins)
 
         origin = Point((size.width-(2.0*xMargin))/Float(maximumX-minimumX)*Float(T(-1)*minimumX), 0.0)
 

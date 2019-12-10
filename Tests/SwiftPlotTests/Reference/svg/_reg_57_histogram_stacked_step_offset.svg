@@ -45,8 +45,8 @@
 <text font-size="12.0" font-family="Roboto" x="42.24" y="350.45" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,42.24,350.45)">0.5</text>
 <line x1="81.0" y1="103.900024" x2="87.0" y2="103.900024" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:butt" />
 <text font-size="12.0" font-family="Roboto" x="43.2" y="107.900024" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,43.2,107.900024)">1.0</text>
-<polyline points="602.0,103.900024 687.0,103.900024 687.0,589.0" style="stroke:rgb(255.0,164.985,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:butt;fill:none;" />
-<polyline points="517.0,589.0 517.0,103.900024 602.0,103.900024 602.0,589.0" style="stroke:rgb(0.0,0.0,255.0);stroke-width:2.0;opacity:1.0;stroke-linecap:butt;fill:none;" />
+<polyline points="602.6,103.900024 687.7,103.900024 687.7,589.0" style="stroke:rgb(255.0,164.985,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:butt;fill:none;" />
+<polyline points="517.5,589.0 517.5,103.900024 602.6,103.900024 602.6,589.0" style="stroke:rgb(0.0,0.0,255.0);stroke-width:2.0;opacity:1.0;stroke-linecap:butt;fill:none;" />
 <text font-size="20.0" font-family="Roboto" x="423.4" y="34.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,423.4,34.0)">HISTOGRAM STACKED STEP</text>
 <text font-size="15.0" font-family="Roboto" x="502.225" y="650.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-0.0,502.225,650.0)">X</text>
 <text font-size="15.0" font-family="Roboto" x="25.0" y="358.325" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);" transform="rotate(-90.0,25.0,358.325)">Frequency</text>
