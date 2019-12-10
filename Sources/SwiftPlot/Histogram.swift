@@ -249,13 +249,13 @@ extension Histogram: HasGraphLayout {
         }
 
         let nX: Float = v2/scaleX
-        var inc2: Float = nX
+        var inc2: Float = v2
         if(size.width/nX > MAX_DIV){
-            inc2 = (size.height/nX)*inc1/MAX_DIV
+            inc2 = (size.height/v2)*inc1/MAX_DIV
         }
         let xM: Float = xMargin
         let scaleXInv = 1.0/scaleX
-        let xIncrement = inc2*scaleX
+        let xIncrement = inc2
         for i in stride(from: Float(minimumX), through: Float(maximumX), by: xIncrement)  {
             markers.xMarkers.append((i-Float(minimumX))*scaleXInv + xM)
             markers.xMarkersText.append("\(i)")
