@@ -21,13 +21,8 @@ public class QuartzRenderer: Renderer {
     var fontPath = ""
     public var offset = zeroPoint
     
-    private var _fontSmoothing: Bool = false
-    public var fontSmoothing: Bool {
-        get { _fontSmoothing }
-        set {
-            _fontSmoothing = newValue
-            context.setShouldSmoothFonts(newValue)
-        }
+    public var fontSmoothing: Bool = false {
+        didSet { context.setShouldSmoothFonts(fontSmoothing) }
     }
     
     public var imageSize: Size {
@@ -40,7 +35,7 @@ public class QuartzRenderer: Renderer {
                                 bytesPerRow: 0,
                                 space: Self.colorSpace,
                                 bitmapInfo: Self.bitmapInfo)!
-            context.setAllowsFontSmoothing(fontSmoothing)
+            context.setAllowsFontSmoothing(true)
             context.setShouldSmoothFonts(fontSmoothing)
             let rect = CGRect(x: 0,
                               y: 0,
@@ -66,8 +61,8 @@ public class QuartzRenderer: Renderer {
                                  bytesPerRow: 0,
                                  space: Self.colorSpace,
                                  bitmapInfo: Self.bitmapInfo)!
-        self.context.setAllowsFontSmoothing(_fontSmoothing)
-        self.context.setShouldSmoothFonts(_fontSmoothing)
+        self.context.setAllowsFontSmoothing(true)
+        self.context.setShouldSmoothFonts(fontSmoothing)
         self.isExternalContext = false
     }
     
