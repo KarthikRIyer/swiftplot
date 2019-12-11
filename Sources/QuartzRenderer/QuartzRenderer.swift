@@ -21,6 +21,15 @@ public class QuartzRenderer: Renderer {
     var fontPath = ""
     public var offset = zeroPoint
     
+    private var _fontSmoothing: Bool = false
+    public var fontSmoothing: Bool {
+        get { _fontSmoothing }
+        set {
+            _fontSmoothing = newValue
+            context.setShouldSmoothFonts(newValue)
+        }
+    }
+    
     public var imageSize: Size {
         didSet {
             guard !isExternalContext else { return }
@@ -31,6 +40,8 @@ public class QuartzRenderer: Renderer {
                                 bytesPerRow: 0,
                                 space: Self.colorSpace,
                                 bitmapInfo: Self.bitmapInfo)!
+            context.setAllowsFontSmoothing(fontSmoothing)
+            context.setShouldSmoothFonts(fontSmoothing)
             let rect = CGRect(x: 0,
                               y: 0,
                               width: Int(imageSize.width),
@@ -55,6 +66,8 @@ public class QuartzRenderer: Renderer {
                                  bytesPerRow: 0,
                                  space: Self.colorSpace,
                                  bitmapInfo: Self.bitmapInfo)!
+        self.context.setAllowsFontSmoothing(_fontSmoothing)
+        self.context.setShouldSmoothFonts(_fontSmoothing)
         self.isExternalContext = false
     }
     
@@ -415,9 +428,6 @@ public class QuartzRenderer: Renderer {
                          angle: Float){
         let x1 = p.x + xOffset
         let y1 = p.y + yOffset
-        // TODO: Implement toggle for font smoothing
-        context.setAllowsFontSmoothing(true)
-        context.setShouldSmoothFonts(true)
         #if canImport(AppKit)
         let font = NSFont.systemFont(ofSize: CGFloat(size))
         let attr = [NSAttributedString.Key.font : font,
