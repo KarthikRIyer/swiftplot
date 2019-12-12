@@ -277,82 +277,92 @@ extension Histogram: HasGraphLayout {
         }
     }
     
-    /// Draw with rectangles if `histogramType` is `.bar` or with lines if `histogramType` is `.step`
+    /// Draw with rectangles if `histogramType` is `.bar` or with lines if `histogramType` is `.step`.
     public func drawData(markers: PlotMarkers, size: Size, renderer: Renderer) {
         let binCount = histogramSeries.bins
         let allSeries = [histogramSeries] + histogramStackSeries
+        
+        /// 1. Accumulate the frequencies of each series.
+        // One heights array for each series.
+        var seriesHeights: [[Float]] = [[Float](repeating: 0.0, count: binCount + 2)]
+        
+        // Sum the bin frequencies from two series together and append to `seriesHeights`.
+        var currentHeights = seriesHeights[seriesHeights.startIndex]
+        for series in allSeries {
+            for (newHeight, index) in zip(series.scaledBinFrequency, currentHeights.indices.dropFirst().dropLast()) {
+                currentHeights[index] += newHeight
+            }
+            seriesHeights.append(currentHeights)
+        }
+        
+        /// 2. Define the drawing rules based on the histogram type.
+        // Called on each edge of the histogram bins. The current series and the heights of the left/right bins of the back/front series are passed as arguments.
+        var executeAtEdge: (_ series: HistogramSeries<T>, _ x: Float, _ backLeftBinHeight: Float, _ backRightBinHeight: Float, _ frontLeftBinHeight: Float, _ frontRightBinHeight: Float) -> Void
+        
+        // Called at the end of each series, when the iteration over all the bin edges has finished. The current series and renderer are passed as arguments.
+        var executeAtSeriesEnd: ((_ series: HistogramSeries<T>, _ renderer: Renderer) -> Void)?
+        
+        var line = [Point]()
         switch histogramSeries.histogramSeriesOptions.histogramType {
         case .bar:
-            let xStart = Float(xMargin)
-            let xValues = stride(from: xStart, to: xStart + Float(binCount) * barWidth, by: barWidth)
+            // Trace the outline of the back series.
+            executeAtEdge = { series, x, backLeftBinHeight, backRightBinHeight, frontLeftBinHeight, frontRightBinHeight in
+                line.append(contentsOf: [Point(x, backLeftBinHeight), Point(x, backRightBinHeight)])
+            }
             
-            // Get a `Slice` of frequencies for each series so we can take one element from each series for each x value
-            var frequencySlices = allSeries.map { $0.scaledBinFrequency[...] }
-            for x in xValues {
-                var currentHeight: Float = 0.0
-                for (series, index) in zip(allSeries, frequencySlices.indices) {
-                    let height = frequencySlices[index].removeFirst()
-                    let rect = Rect(origin: Point(x, currentHeight), size: Size(width: barWidth, height:
-                        height))
-                    renderer.drawSolidRect(rect, fillColor: series.color, hatchPattern: .none)
-                    currentHeight += height
-                }
-                currentHeight = 0.0
+            // Draw the final polygon.
+            executeAtSeriesEnd = { series, renderer in
+                renderer.drawSolidPolygon(points: line, fillColor: series.color)
+                line.removeAll(keepingCapacity: true)
             }
         case .step:
-            let xStart = Float(xMargin)
-            let xValues = stride(from: xStart, through: xStart + Float(binCount) * barWidth, by: barWidth)
-            
-            // One heights array for each series
-            var seriesHeights: [[Float]] = [[Float](repeating: 0.0, count: binCount + 2)]
-            
-            // Update `currentHeights` with the height from the series and add ìt to `heights`
-            var currentHeights = seriesHeights[seriesHeights.startIndex]
-            for series in allSeries {
-                for (newHeight, index) in zip(series.scaledBinFrequency, currentHeights.indices.dropFirst().dropLast()) {
-                    currentHeights[index] += newHeight
+            // Draw only the line segments that are unobstructed by other lines that will be on top.
+            executeAtEdge = { series, x, backLeftBinHeight, backRightBinHeight, frontLeftBinHeight, frontRightBinHeight in
+                func endLine() {
+                    renderer.drawPlotLines(points: line, strokeWidth: self.strokeWidth,
+                                           strokeColor: series.color, isDashed: false)
+                    line.removeAll(keepingCapacity: true)
                 }
-                seriesHeights.append(currentHeights)
-            }
-            
-            // Draw only the line segments that will actually be visible, unobstructed from other lines that will be on top
-            // We iterate over the series in reverse to draw them from back to front
-            var seriesHeightsSlice = seriesHeights.reversed()[...]
-            var backHeightsSlice = seriesHeightsSlice.removeFirst()[...]
-            for (frontHeights, series) in zip(seriesHeightsSlice, allSeries.reversed()) {
-                var frontHeightsSlice = frontHeights[...]
                 
-                // Iterate over bin edges focusing on the height of the left and right bins of the series on the back and in front
-                var backLeftBinHeight = backHeightsSlice.removeFirst()
-                var frontLeftBinHeight = frontHeightsSlice.removeFirst()
-                var line = [Point]()
-                for ((backRightBinHeight, frontRightBinHeight), x) in zip(zip(backHeightsSlice, frontHeightsSlice), xValues) {
-                    
-                    func endLine() {
-                        renderer.drawPlotLines(points: line, strokeWidth: strokeWidth,
-                                               strokeColor: series.color, isDashed: false)
-                        line.removeAll(keepingCapacity: true)
-                    }
-                    
-                    // Conditions for appending specific points or ending the line at different places based on the relative heights (4 measures)
-                    let c1 = backLeftBinHeight  > frontLeftBinHeight
-                    let c2 = backRightBinHeight > frontRightBinHeight
-                    let c3 = backLeftBinHeight  > frontRightBinHeight
-                    let c4 = backRightBinHeight > frontLeftBinHeight
-                    
-                    if  c1 ||  c3 && c4 { line.append(Point(x, backLeftBinHeight)) }
-                    if !c3              { endLine() }
-                    if  c1 && !c4       { line.append(Point(x, frontLeftBinHeight)) }
-                    if !c4              { endLine() }
-                    if  c2 && !c3       { line.append(Point(x, frontRightBinHeight)) }
-                    if  c2 ||  c3 && c4 { line.append(Point(x, backRightBinHeight)) }
-                    if !c2              { endLine() }
-                    
-                    backLeftBinHeight  = backRightBinHeight
-                    frontLeftBinHeight = frontRightBinHeight
-                }
-                backHeightsSlice = frontHeights[...]
+                // Conditions for appending specific points or ending the line at different places based on the relative heights (4 measures).
+                let c1 = backLeftBinHeight  > frontLeftBinHeight
+                let c2 = backRightBinHeight > frontRightBinHeight
+                let c3 = backLeftBinHeight  > frontRightBinHeight
+                let c4 = backRightBinHeight > frontLeftBinHeight
+                
+                if  c1 ||  c3 && c4 { line.append(Point(x, backLeftBinHeight)) }
+                if !c3              { endLine() }
+                if  c1 && !c4       { line.append(Point(x, frontLeftBinHeight)) }
+                if !c4              { endLine() }
+                if  c2 && !c3       { line.append(Point(x, frontRightBinHeight)) }
+                if  c2 ||  c3 && c4 { line.append(Point(x, backRightBinHeight)) }
+                if !c2              { endLine() }
             }
+        }
+        
+        /// 3. Draw the histogram based on the rules.
+        
+        let xStart = Float(xMargin)
+        let xValues = stride(from: xStart, through: xStart + Float(binCount) * barWidth, by: barWidth)
+        
+        // We iterate over the series in reverse to draw from back to front.
+        var seriesHeightsSlice = seriesHeights.reversed()[...]
+        var backHeightsSlice = seriesHeightsSlice.removeFirst()[...]
+        for (frontHeights, series) in zip(seriesHeightsSlice, allSeries.reversed()) {
+            var frontHeightsSlice = frontHeights[...]
+            
+            // Iterate over bin edges focusing on the height of the left and right bins of the series on the back and in front.
+            var backLeftBinHeight = backHeightsSlice.removeFirst()
+            var frontLeftBinHeight = frontHeightsSlice.removeFirst()
+            for ((backRightBinHeight, frontRightBinHeight), x) in zip(zip(backHeightsSlice, frontHeightsSlice), xValues) {
+                
+                executeAtEdge(series, x, backLeftBinHeight, backRightBinHeight, frontLeftBinHeight, frontRightBinHeight)
+                
+                backLeftBinHeight  = backRightBinHeight
+                frontLeftBinHeight = frontRightBinHeight
+            }
+            executeAtSeriesEnd?(series, renderer)
+            backHeightsSlice = frontHeights[...]
         }
     }
 }
