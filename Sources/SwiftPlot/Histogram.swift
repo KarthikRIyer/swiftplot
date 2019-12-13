@@ -299,24 +299,54 @@ extension Histogram: HasGraphLayout {
         // Called on each edge of the histogram bins. The current series and the heights of the left/right bins of the back/front series are passed as arguments.
         var executeAtEdge: (_ series: HistogramSeries<T>, _ x: Float, _ backLeftBinHeight: Float, _ backRightBinHeight: Float, _ frontLeftBinHeight: Float, _ frontRightBinHeight: Float) -> Void
         
-        // Called at the end of each series, when the iteration over all the bin edges has finished. The current series and renderer are passed as arguments.
-        var executeAtSeriesEnd: ((_ series: HistogramSeries<T>, _ renderer: Renderer) -> Void)?
-        
-        var line = [Point]()
         switch histogramSeries.histogramSeriesOptions.histogramType {
         case .bar:
-            // Trace the outline of the back series.
+            /// Rules for tracing the outline of the histogram series, including only the visible parts and "tucking" the points of the series on the back slightly behind the ones on the front.
+            /// `backLine` stores the points for the series on the background and `frontLine` stores the points for the series on the foreground. These are temporary arrays for storing the points until a polygon can be drawn.
+            var backLine = [Point]()
+            var frontLine = [Point]()
             executeAtEdge = { series, x, backLeftBinHeight, backRightBinHeight, frontLeftBinHeight, frontRightBinHeight in
-                line.append(contentsOf: [Point(x, backLeftBinHeight), Point(x, backRightBinHeight)])
-            }
-            
-            // Draw the final polygon.
-            executeAtSeriesEnd = { series, renderer in
-                renderer.drawSolidPolygon(points: line, fillColor: series.color)
-                line.removeAll(keepingCapacity: true)
+                
+                // Helper functions for ending the polygon and rounding the points' coordinates.
+                func endPolygon() {
+                    renderer.drawSolidPolygon(points: frontLine.reversed() + backLine, fillColor: series.color)
+                    backLine.removeAll(keepingCapacity: true)
+                    frontLine.removeAll(keepingCapacity: true)
+                }
+                func adjustLeft(_ height: Float) -> Point { Point(floor(x), height) }
+                func adjustRight(_ height: Float) -> Point { Point(ceil(x), height) }
+                func adjustDown(_ height: Float) -> Point { Point(x, floor(height)) }
+                func adjustAuto(_ height: Float) -> Point {
+                    if frontLeftBinHeight > frontRightBinHeight {
+                        return Point(floor(x), floor(height))
+                    } else {
+                        return Point(ceil(x), floor(height))
+                    }
+                }
+                // Conditions for appending specific points or ending the lines/polygon at different places based on the relative heights.
+                let c1 = backLeftBinHeight  > frontLeftBinHeight
+                let c2 = backRightBinHeight > frontRightBinHeight
+                let c3 = backLeftBinHeight  > frontRightBinHeight
+                let c4 = backRightBinHeight > frontLeftBinHeight
+                
+                if  c3 &&  (c4 ||  c1) {  backLine.append(Point(x, backLeftBinHeight)) }
+                if  c1 &&  !c3         {  backLine.append(adjustRight(backLeftBinHeight)) }
+                if  c1 &&  !c4         { frontLine.append(adjustDown(frontLeftBinHeight)) }
+                if  c1 &&   c4         { frontLine.append(adjustAuto(frontLeftBinHeight)) }
+                if  c1 && (!c3 || !c4) { endPolygon() }
+                if !c1 &&   c3 &&  c4  { frontLine.append(adjustLeft(frontLeftBinHeight)) }
+                if  c2 &&  !c4         {  backLine.append(adjustLeft(backRightBinHeight)) }
+                if  c4 &&  (c2 ||  c3) {  backLine.append(Point(x, backRightBinHeight)) }
+                if  c2 &&   c3         { frontLine.append(adjustAuto(frontRightBinHeight)) }
+                if  c2 &&  !c3         { frontLine.append(adjustDown(frontRightBinHeight)) }
+                if !c2 &&   c3 &&  c4  {
+                    frontLine.append(adjustRight(frontRightBinHeight))
+                    endPolygon()
+                }
             }
         case .step:
-            // Draw only the line segments that are unobstructed by other lines that will be on top.
+            var line = [Point]()
+            /// Rules for tracing the outline of the background series, including only the parts of the lines that are going to be visible.
             executeAtEdge = { series, x, backLeftBinHeight, backRightBinHeight, frontLeftBinHeight, frontRightBinHeight in
                 func endLine() {
                     renderer.drawPlotLines(points: line, strokeWidth: self.strokeWidth,
@@ -324,34 +354,32 @@ extension Histogram: HasGraphLayout {
                     line.removeAll(keepingCapacity: true)
                 }
                 
-                // Conditions for appending specific points or ending the line at different places based on the relative heights (4 measures).
+                // Conditions for appending specific points or ending the line at different places based on the relative heights.
                 let c1 = backLeftBinHeight  > frontLeftBinHeight
                 let c2 = backRightBinHeight > frontRightBinHeight
                 let c3 = backLeftBinHeight  > frontRightBinHeight
                 let c4 = backRightBinHeight > frontLeftBinHeight
                 
-                if  c1 ||  c3 && c4 { line.append(Point(x, backLeftBinHeight)) }
-                if !c3              { endLine() }
-                if  c1 && !c4       { line.append(Point(x, frontLeftBinHeight)) }
-                if !c4              { endLine() }
-                if  c2 && !c3       { line.append(Point(x, frontRightBinHeight)) }
-                if  c2 ||  c3 && c4 { line.append(Point(x, backRightBinHeight)) }
-                if !c2              { endLine() }
+                if  c1 ||   c3 &&  c4  { line.append(Point(x, backLeftBinHeight)) }
+                if  c1 &&  !c4         { line.append(Point(x, frontLeftBinHeight)) }
+                if  c1 && (!c3 || !c4) { endLine() }
+                if  c2 &&  !c3         { line.append(Point(x, frontRightBinHeight)) }
+                if  c2 ||   c3 &&  c4  { line.append(Point(x, backRightBinHeight)) }
+                if !c2 &&   c3 &&  c4  { endLine() }
             }
         }
         
         /// 3. Draw the histogram based on the rules.
-        
         let xStart = Float(xMargin)
         let xValues = stride(from: xStart, through: xStart + Float(binCount) * barWidth, by: barWidth)
         
-        // We iterate over the series in reverse to draw from back to front.
+        // Iterate over the series in reverse to draw from back to front.
         var seriesHeightsSlice = seriesHeights.reversed()[...]
         var backHeightsSlice = seriesHeightsSlice.removeFirst()[...]
         for (frontHeights, series) in zip(seriesHeightsSlice, allSeries.reversed()) {
             var frontHeightsSlice = frontHeights[...]
             
-            // Iterate over bin edges focusing on the height of the left and right bins of the series on the back and in front.
+            /// Iterate over bin edges focusing on the height of the left and right bins of the series on the back and in front, and call `executeAtEdge`.
             var backLeftBinHeight = backHeightsSlice.removeFirst()
             var frontLeftBinHeight = frontHeightsSlice.removeFirst()
             for ((backRightBinHeight, frontRightBinHeight), x) in zip(zip(backHeightsSlice, frontHeightsSlice), xValues) {
@@ -361,7 +389,6 @@ extension Histogram: HasGraphLayout {
                 backLeftBinHeight  = backRightBinHeight
                 frontLeftBinHeight = frontRightBinHeight
             }
-            executeAtSeriesEnd?(series, renderer)
             backHeightsSlice = frontHeights[...]
         }
     }
