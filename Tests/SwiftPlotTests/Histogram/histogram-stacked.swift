@@ -38,9 +38,13 @@ extension HistogramTests {
     verifyImage(name: fileName, renderer: .coreGraphics)
     #endif
   }
-
+    
+  func testHistogramMultiStackedColorBleed() throws {
+    
+  }
+    
   func testHistogramMultiStacked() throws {
-    let fileName = "_25_histogram_multi_stacked"
+    let fileName = "_26_histogram_multi_stacked"
     
     let x: StrideTo<Float> = stride(from: 0, to: 2 * .pi, by: (2 * .pi)/100)
     let data1: [Float] = x.flatMap { [Float](repeating: $0, count: Int((sin($0) + 1)*10)) }

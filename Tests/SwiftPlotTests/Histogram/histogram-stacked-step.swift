@@ -40,7 +40,7 @@ extension HistogramTests {
   }
 
   func testHistogramStackedStepLineJoins() throws {
-    let fileName = "_27_histogram_stacked_step_line_joins"
+    let fileName = "_28_histogram_stacked_step_line_joins"
     
     let histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
     histogram.addSeries(data: [0, 13, 17, 17, 21, 25, 30, 34, 34, 38, 42, 45], bins: 49, label: "Plot 1", color: .blue, histogramType: .step)
@@ -68,7 +68,7 @@ extension HistogramTests {
   }
 
   func testHistogramMultiStackedStep() throws {
-    let fileName = "_26_histogram_multi_stacked_step"
+    let fileName = "_27_histogram_multi_stacked_step"
     
     let x: StrideTo<Float> = stride(from: 0, to: 2 * .pi, by: (2 * .pi)/100)
     let data1: [Float] = x.flatMap { [Float](repeating: $0, count: Int((sin($0) + 1)*10)) }
