@@ -371,6 +371,7 @@ public class QuartzRenderer: Renderer {
 
     public func drawSolidPolygon(points: [Point],
                                  fillColor: Color) {
+        guard points.count > 2 else { return }
         let polygonPath = CGMutablePath()
         polygonPath.move(to: CGPoint(x: Double(points[0].x + xOffset), y: Double(points[0].y + yOffset)))
         for index in 1..<points.count {

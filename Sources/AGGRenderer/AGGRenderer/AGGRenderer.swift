@@ -145,6 +145,7 @@ public class AGGRenderer: Renderer{
 
     public func drawSolidPolygon(points: [Point],
                                  fillColor: Color) {
+        guard points.count > 2 else { return }
         var x = [Float]()
         var y = [Float]()
         for index in 0..<points.count {
@@ -189,6 +190,7 @@ public class AGGRenderer: Renderer{
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
+        guard p.count > 1 else { return }
         var x = [Float]()
         var y = [Float]()
 

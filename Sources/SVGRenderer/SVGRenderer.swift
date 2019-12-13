@@ -159,6 +159,7 @@ public class SVGRenderer: Renderer{
     
     public func drawSolidPolygon(points: [Point],
                                  fillColor: Color) {
+        guard points.count > 2 else { return }
         let pts = points.map { convertToSVGCoordinates($0) }
         var pointsString = ""
         for index in 0..<pts.count {
