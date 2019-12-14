@@ -103,21 +103,28 @@ public class Histogram<T:FloatConvertible>: Plot {
                          binStart: T,
                          binEnd: T,
                          binInterval: T) {
-    series.binFrequency.removeAll()
+        series.binFrequency = [Float](repeating: 0.0, count: series.bins)
         series.maximumFrequency = 0
-        for start in stride(from: Float(binStart), through: Float(binEnd), by: Float(binInterval)){
-            let end = start + Float(binInterval)
-            var count: Float = 0
-            for d in series.data {
-                if(d < T(end) && d >= T(start)) {
-                    count += 1
+        let lastIndex = series.binFrequency.endIndex - 1
+        for val in series.data {
+            var start = 0
+            var end = lastIndex
+            var current = start + (end - start) / 2
+            while end - start > 1 {
+                if val >= binStart + T(current) * binInterval {
+                    start = current
+                } else {
+                    end = current
                 }
+                current = start + (end - start) / 2
             }
-            if (count > series.maximumFrequency) {
-                series.maximumFrequency = count
+            
+            series.binFrequency[current] += 1
+            if series.binFrequency[current] > series.maximumFrequency {
+                series.maximumFrequency = series.binFrequency[current]
             }
-            series.binFrequency.append(count)
         }
+        
         if (isNormalized) {
             let factor = Float(series.data.count)*Float(binInterval)
             for index in 0..<series.bins {
