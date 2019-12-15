@@ -12,6 +12,7 @@ public struct GraphLayout {
     var backgroundColor: Color = .white
     var plotBackgroundColor: Color?
     var plotTitle = PlotTitle()
+    var plotAnnotation = PlotAnnotation()
     var plotLabel  = PlotLabel()
     var plotLegend = PlotLegend()
     var plotBorder = PlotBorder()
@@ -39,6 +40,7 @@ public struct GraphLayout {
         var yLabelLocation: Point?
         var y2LabelLocation: Point?
         var titleLocation: Point?
+        var annotationLocation: Point?
         
         var plotMarkers = PlotMarkers()
         var xMarkersTextLocation = [Point]()
@@ -200,6 +202,17 @@ public struct GraphLayout {
                               location: titleLocation,
                               textSize: plotTitle.size,
                               color: plotTitle.color,
+                              strokeWidth: 1.2,
+                              angle: 0)
+        }
+    }
+
+    func drawAnnotation(results: Results, renderer: Renderer) {
+        if let annotationLocation = results.annotationLocation {
+            renderer.drawText(text: plotAnnotation.annotation,
+                              location: annotationLocation,
+                              textSize: plotAnnotation.size,
+                              color: plotAnnotation.color,
                               strokeWidth: 1.2,
                               angle: 0)
         }
@@ -392,6 +405,10 @@ extension HasGraphLayout {
         get { layout.plotTitle }
         set { layout.plotTitle = newValue }
     }
+    public var plotAnnotation : PlotAnnotation {
+        get { layout.plotAnnotation }
+        set {layout.plotAnnotation = newValue }
+    }
     public var plotLabel: PlotLabel {
         get { layout.plotLabel }
         set { layout.plotLabel = newValue }
@@ -439,6 +456,7 @@ extension Plot where Self: HasGraphLayout {
             drawData(markers: results.plotMarkers, size: results.plotBorderRect.size, renderer: renderer)
         }
         layout.drawForeground(results: results, renderer: renderer)
+        layout.drawAnnotation(results: results, renderer: renderer)
     }
     
 }

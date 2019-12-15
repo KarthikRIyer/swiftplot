@@ -20,6 +20,15 @@ public struct PlotTitle {
     }
 }
 
+public struct PlotAnnotation {
+    public var annotation = ""
+    public var color = Color.black
+    public var size: Float = 20
+    public init(_ annotation: String = ""){
+        self.annotation = annotation
+    }
+}
+
 public struct PlotLabel {
     public var xLabel = ""
     public var yLabel = ""
