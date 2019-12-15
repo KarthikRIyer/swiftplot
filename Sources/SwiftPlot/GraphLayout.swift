@@ -17,7 +17,8 @@ public struct GraphLayout {
     var plotBorder = PlotBorder()
     var grid = Grid()
     var legendLabels: [(String, LegendIcon)] = []
-    
+    var annotations: [Annotation] = []
+
     var enablePrimaryAxisGrid = true
     var enableSecondaryAxisGrid = true
     var markerTextSize: Float = 12
@@ -192,6 +193,7 @@ public struct GraphLayout {
         drawTitle(results: results, renderer: renderer)
         drawLabels(results: results, renderer: renderer)
         drawLegend(legendLabels, results: results, renderer: renderer)
+        drawAnnotations(renderer: renderer)
     }
     
     func drawTitle(results: Results, renderer: Renderer) {
@@ -363,6 +365,21 @@ public struct GraphLayout {
                               angle: 0)
         }
     }
+
+    mutating func addAnnotation(annotation: Annotation) {
+        annotations.append(annotation)
+    }
+
+    func drawAnnotations(renderer: Renderer) {
+        for annotation in annotations{
+            renderer.drawText(text: annotation.text,
+                              location: annotation.location,
+                              textSize: annotation.size,
+                              color: annotation.color,
+                              strokeWidth: 1.2,
+                              angle: 0)
+        }
+    }
 }
 
 public protocol HasGraphLayout: AnyObject {
@@ -383,6 +400,10 @@ extension HasGraphLayout {
         return []
     }
     
+    public var annotations: [Annotation] {
+        return []
+    }
+
     public var plotSize: Size {
         get { layout.plotSize }
         set { layout.plotSize = newValue }

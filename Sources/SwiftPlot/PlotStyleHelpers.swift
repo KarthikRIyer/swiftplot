@@ -42,3 +42,18 @@ public struct PlotLegend {
     public var textSize: Float = 10
     public init() {}
 }
+
+public protocol Annotation {
+    var text: String { get set }
+    var color: Color { get set }
+    var size: Float { get set }
+    var location: Point {get set }
+}
+
+struct TextAnnotation : Annotation {
+    public var text = ""
+    public var color = Color.black
+    public var size: Float = 15
+    public var location = Point(0.0, 0.0)
+    public init() {}
+}
