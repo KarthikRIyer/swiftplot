@@ -88,6 +88,7 @@ public class Histogram<T:FloatConvertible>: Plot {
             maximumFrequency/=factor
         }
         return HistogramSeries<T>(data: sortedData,
+                                  isSorted: true,
                                   bins: bins,
                                   isNormalized: isNormalized,
                                   label: label,
@@ -105,26 +106,52 @@ public class Histogram<T:FloatConvertible>: Plot {
                          binInterval: T) {
         series.binFrequency = [Float](repeating: 0.0, count: series.bins)
         series.maximumFrequency = 0
-        let lastIndex = series.binFrequency.endIndex - 1
-        for val in series.data {
-            var start = 0
-            var end = lastIndex
-            var current = start + (end - start) / 2
-            while end - start > 1 {
-                if val >= binStart + T(current) * binInterval {
-                    start = current
+        
+        if series.isSorted {
+            var dataTail: Int = 0
+            var dataHead: Int = 0
+            let dataEndIndex = series.data.endIndex
+            var binIndex: Int = 0
+            let binEndIndex = series.binFrequency.endIndex
+            var xUpperLimit = binStart + T(binIndex + 1) * binInterval
+            while true {
+                if dataHead != dataEndIndex && series.data[dataHead] < xUpperLimit {
+                    dataHead += 1
                 } else {
-                    end = current
+                    let count = Float(dataHead - dataTail)
+                    series.binFrequency[binIndex] = count
+                    if count > series.maximumFrequency {
+                        series.maximumFrequency = count
+                    }
+                    dataTail = dataHead
+                    binIndex += 1
+                    if binIndex == binEndIndex {
+                        return
+                    }
+                    xUpperLimit = binStart + T(binIndex + 1) * binInterval
                 }
-                current = start + (end - start) / 2
             }
-            
-            series.binFrequency[current] += 1
-            if series.binFrequency[current] > series.maximumFrequency {
-                series.maximumFrequency = series.binFrequency[current]
+        } else {
+            let lastIndex = series.binFrequency.endIndex - 1
+            for val in series.data {
+                var start = 0
+                var end = lastIndex
+                var current = start + (end - start) / 2
+                while end - start > 1 {
+                    if val >= binStart + T(current) * binInterval {
+                        start = current
+                    } else {
+                        end = current
+                    }
+                    current = start + (end - start) / 2
+                }
+                
+                series.binFrequency[current] += 1
+                if series.binFrequency[current] > series.maximumFrequency {
+                    series.maximumFrequency = series.binFrequency[current]
+                }
             }
         }
-        
         if (isNormalized) {
             let factor = Float(series.data.count)*Float(binInterval)
             for index in 0..<series.bins {

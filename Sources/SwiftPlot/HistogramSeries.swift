@@ -1,5 +1,7 @@
 public class HistogramSeries<T> {
-    public var data = [T]()
+    public var data = [T]() { didSet { isSorted = false } }
+    /// `isSorted`: if `data` is in a sorted state, set to false if the user sets `data` manually.
+    internal var isSorted: Bool = false
     public var bins: Int = 0
     public var binFrequency = [Float]()
     public var scaledBinFrequency = [Float]()
@@ -13,6 +15,7 @@ public class HistogramSeries<T> {
     public var isNormalized = false
     public init() {}
     public init(data: [T],
+                isSorted: Bool,
                 bins: Int,
                 isNormalized: Bool,
                 label: String,
@@ -24,6 +27,7 @@ public class HistogramSeries<T> {
                 maximumX: T,
                 binInterval: T) {
         self.data = data
+        self.isSorted = isSorted
         self.bins = bins
         self.isNormalized = isNormalized
         self.label = label
