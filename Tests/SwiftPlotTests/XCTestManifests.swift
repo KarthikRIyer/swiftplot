@@ -36,10 +36,15 @@ extension HistogramTests {
     // to regenerate.
     static let __allTests__HistogramTests = [
         ("testHistogram", testHistogram),
+        ("testHistogramMultiStacked", testHistogramMultiStacked),
+        ("testHistogramMultiStackedStep", testHistogramMultiStackedStep),
         ("testHistogramStacked", testHistogramStacked),
         ("testHistogramStackedStep", testHistogramStackedStep),
         ("testHistogramStackedStepLineJoins", testHistogramStackedStepLineJoins),
+        ("testHistogramStackedStepOffset", testHistogramStackedStepOffset),
         ("testHistogramStep", testHistogramStep),
+        ("testPerformanceHistogramMethodRecalculateBins", testPerformanceHistogramMethodRecalculateBins),
+        ("testPerformanceHistogramMethodRecalculateBinsSorted", testPerformanceHistogramMethodRecalculateBinsSorted),
     ]
 }
 
