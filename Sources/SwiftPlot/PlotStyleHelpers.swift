@@ -44,7 +44,6 @@ public struct PlotLegend {
 }
 
 public protocol Annotation {
-    var text: String { get set }
     var color: Color { get set }
     var size: Float { get set }
     var location: Point {get set }
