@@ -57,48 +57,26 @@ public class Histogram<T:FloatConvertible>: Plot {
                              label: String,
                              color: Color,
                              histogramType: HistogramSeriesOptions.HistogramType) -> HistogramSeries<T> {
-        var sortedData = data
-        sortedData.sort()
+        let sortedData = data.sorted()
         let minimumX = T(roundFloor10(Float(sortedData[0])))
         let maximumX = T(roundCeil10(Float(sortedData[sortedData.count-1])))
         let binInterval = (maximumX-minimumX)/T(bins)
-        var dataIndex: Int = 0
-        var binStart = minimumX
-        var binEnd = minimumX + binInterval
-        var maximumFrequency: Float = 0
-        var binFrequency = [Float]()
-        for _ in 1...bins {
-            var count: Float = 0
-            while (dataIndex<sortedData.count && sortedData[dataIndex] >= binStart && sortedData[dataIndex] < binEnd) {
-                count+=1
-                dataIndex+=1
-            }
-            if (count > maximumFrequency) {
-                maximumFrequency = count
-            }
-            binFrequency.append(count)
-            binStart = binStart + binInterval
-            binEnd = binEnd + binInterval
-        }
-        if (isNormalized) {
-            let factor = Float(sortedData.count)*Float(binInterval)
-            for index in 0..<bins {
-                binFrequency[index]/=factor
-            }
-            maximumFrequency/=factor
-        }
-        return HistogramSeries<T>(data: sortedData,
-                                  isSorted: true,
-                                  bins: bins,
-                                  isNormalized: isNormalized,
-                                  label: label,
-                                  color: color,
-                                  histogramType: histogramType,
-                                  binFrequency: binFrequency,
-                                  maximumFrequency: maximumFrequency,
-                                  minimumX: minimumX,
-                                  maximumX: maximumX,
-                                  binInterval: binInterval)
+        
+        let histSeries = HistogramSeries<T>()
+        histSeries.data = sortedData
+        histSeries.isSorted = true
+        histSeries.bins = bins
+        histSeries.isNormalized = isNormalized
+        histSeries.label = label
+        histSeries.color = color
+        histSeries.histogramSeriesOptions.histogramType = histogramType
+        histSeries.minimumX = minimumX
+        histSeries.maximumX = maximumX
+        histSeries.binInterval = binInterval
+        
+        recalculateBins(series: histSeries, binStart: minimumX, binEnd: maximumX, binInterval: binInterval)
+        
+        return histSeries
     }
     func recalculateBins(series: HistogramSeries<T>,
                          binStart: T,
