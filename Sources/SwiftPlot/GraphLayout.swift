@@ -366,13 +366,9 @@ public struct GraphLayout {
         }
     }
 
-    mutating func addAnnotation(annotation: Annotation) {
-        annotations.append(annotation)
-    }
-
     func drawAnnotations(renderer: Renderer) {
         for annotation in annotations{
-            annotation.drawAnnotation(renderer: renderer)
+            annotation.draw(renderer: renderer)
         }
     }
 }
@@ -393,17 +389,15 @@ extension HasGraphLayout {
     // Default implementation.
     public var legendLabels: [(String, LegendIcon)] {
         return []
-    }
-    
+    } 
     public var annotations: [Annotation] {
-        return []
+        get { layout.annotations }
+        set { layout.annotations = newValue }
     }
-
     public var plotSize: Size {
         get { layout.plotSize }
         set { layout.plotSize = newValue }
-    }
-    
+    }   
     public var plotTitle: PlotTitle {
         get { layout.plotTitle }
         set { layout.plotTitle = newValue }
@@ -432,7 +426,6 @@ extension HasGraphLayout {
         get { layout.plotBackgroundColor }
         set { layout.plotBackgroundColor = newValue }
     }
-
     public var markerTextSize: Float {
         get { layout.markerTextSize }
         set { layout.markerTextSize = newValue }
@@ -456,5 +449,8 @@ extension Plot where Self: HasGraphLayout {
         }
         layout.drawForeground(results: results, renderer: renderer)
     }
-    
+
+    public func addAnnotation(annotation: Annotation) {
+        layout.annotations.append(annotation)
+    }
 }
