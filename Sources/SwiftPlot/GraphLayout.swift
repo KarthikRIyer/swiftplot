@@ -372,15 +372,7 @@ public struct GraphLayout {
 
     func drawAnnotations(renderer: Renderer) {
         for annotation in annotations{
-            if annotation is TextAnnotation {
-            let textAnnotation = annotation as! TextAnnotation
-            renderer.drawText(text: textAnnotation.text,
-                              location: textAnnotation.location,
-                              textSize: textAnnotation.size,
-                              color: textAnnotation.color,
-                              strokeWidth: 1.2,
-                              angle: 0)
-            }
+            annotation.drawAnnotation(renderer: renderer)
         }
     }
 }

@@ -47,6 +47,7 @@ public protocol Annotation {
     var color: Color { get set }
     var size: Float { get set }
     var location: Point {get set }
+    func drawAnnotation(renderer: Renderer)
 }
 
 struct TextAnnotation : Annotation {
@@ -54,5 +55,13 @@ struct TextAnnotation : Annotation {
     public var color = Color.black
     public var size: Float = 15
     public var location = Point(0.0, 0.0)
+    public func drawAnnotation(renderer: Renderer){
+    renderer.drawText(text: text,
+                      location: location,
+                      textSize: size,
+                      color: color,
+                      strokeWidth: 1.2,
+                      angle: 0)
+    }
     public init() {}
 }
