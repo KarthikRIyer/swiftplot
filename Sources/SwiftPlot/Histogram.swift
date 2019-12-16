@@ -107,9 +107,7 @@ public class Histogram<T:FloatConvertible>: Plot {
                 } else {
                     let count = Float(dataHead - dataTail)
                     series.binFrequency[binIndex] = count
-                    if count > series.maximumFrequency {
-                        series.maximumFrequency = count
-                    }
+                    series.maximumFrequency = max(count, series.maximumFrequency)
                     dataTail = dataHead
                     binIndex += 1
                     if binIndex == binEndIndex {
@@ -123,7 +121,8 @@ public class Histogram<T:FloatConvertible>: Plot {
             ///
             /// Performance:
             ///   This algorithm runs through `data` once and for each value in `data` a binary search is performed on the bins' lower x limits.
-            ///   It increments `binFrequency` and checks if it is the maximum frequency `data.count` amount of times.
+            ///   It runs through `binFrequency` array once to get the maximum frequency.
+            ///   It get/sets `binFrequency` value `data.count` amount of times.
             let lastIndex = series.binFrequency.endIndex - 1
             for value in series.data {
                 var start = 0
@@ -139,10 +138,8 @@ public class Histogram<T:FloatConvertible>: Plot {
                 }
                 
                 series.binFrequency[current] += 1
-                if series.binFrequency[current] > series.maximumFrequency {
-                    series.maximumFrequency = series.binFrequency[current]
-                }
             }
+            series.maximumFrequency = series.binFrequency.max() ?? 0.0
         }
         if (isNormalized) {
             let factor = Float(series.data.count)*Float(binInterval)
