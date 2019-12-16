@@ -56,11 +56,11 @@ struct TextAnnotation : Annotation {
     public var size: Float = 15
     public var location = Point(0.0, 0.0)
     public func drawAnnotation(renderer: Renderer){
-    renderer.drawText(text: text,
-                      location: location,
-                      textSize: size,
-                      color: color,
-                      strokeWidth: 1.2,
-                      angle: 0)
+        renderer.drawText(text: text,
+                          location: location,
+                          textSize: size,
+                          color: color,
+                          strokeWidth: 1.2,
+                          angle: 0)
     }
 }
