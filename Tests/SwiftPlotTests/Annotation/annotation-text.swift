@@ -10,15 +10,15 @@ import QuartzRenderer
 @available(tvOS 13, watchOS 13, *)
 extension AnnotationTests {
 
-  func textAnnotationText() throws {
+  func testAnnotationText() throws {
     
     let fileName = "_29_text_annotation"
 
     let lineGraph = LineGraph<Float, Float>(enablePrimaryAxisGrid: true)
     lineGraph.addAnnotation(annotation: Text(text: "HELLO WORLD",
                                              color: Color(0.0, 0.0, 0.0, 0.5),
-                                             size: 12.0,
-                                             location: Point(0.95, 0.95)))
+                                             size: 25.0,
+                                             location: Point(100, 100)))
 
     let svg_renderer = SVGRenderer()
     try lineGraph.drawGraphAndOutput(fileName: svgOutputDirectory+fileName,

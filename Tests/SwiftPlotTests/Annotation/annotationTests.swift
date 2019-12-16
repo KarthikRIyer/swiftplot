@@ -1,3 +1,3 @@
 import XCTest
 
-final class AnnotationsTests: SwiftPlotTestCase {}
+final class AnnotationTests: SwiftPlotTestCase {}
