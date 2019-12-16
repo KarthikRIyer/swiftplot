@@ -92,7 +92,7 @@ public class Histogram<T:FloatConvertible>: Plot {
             /// When we find the first value that is higher or equal to the current bin's upper x limit, we store the difference between `binHead` and `binTail` into the current bin.
             /// Then we set `binTail` to `binHead`, increment `binIndex` and keep incrementing `binHead` while we don't find values higher than the next bin x upper limit.
             ///
-            /// Performance:
+            /// Performance: O(n + m). n: `data.count`, m: `binFrequency.count`.
             ///   This algorithm iterates through `data` and `binFrequency` only once.
             ///   It sets `binFrequency` and checks if it is the maximum frequency `binFrequency.count` amount of times.
             var dataTail: Int = 0
@@ -119,7 +119,7 @@ public class Histogram<T:FloatConvertible>: Plot {
         } else {
             /// If the data is not sorted, run through each value in `data`, binary search the right bin and increment its frequency.
             ///
-            /// Performance:
+            /// Performance: O(n log(m) + m). n: `data.count`, m: `binFrequency.count`.
             ///   This algorithm runs through `data` once and for each value in `data` a binary search is performed on the bins' lower x limits.
             ///   It runs through `binFrequency` array once to get the maximum frequency.
             ///   It get/sets `binFrequency` value `data.count` amount of times.
