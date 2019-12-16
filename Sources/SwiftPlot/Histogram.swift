@@ -125,12 +125,12 @@ public class Histogram<T:FloatConvertible>: Plot {
             ///   This algorithm runs through `data` once and for each value in `data` a binary search is performed on the bins' lower x limits.
             ///   It increments `binFrequency` and checks if it is the maximum frequency `data.count` amount of times.
             let lastIndex = series.binFrequency.endIndex - 1
-            for val in series.data {
+            for value in series.data {
                 var start = 0
                 var end = lastIndex
                 var current = start + (end - start) / 2
                 while end - start > 1 {
-                    if val >= binStart + T(current) * binInterval {
+                    if value >= binStart + T(current) * binInterval {
                         start = current
                     } else {
                         end = current
