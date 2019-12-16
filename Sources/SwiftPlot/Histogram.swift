@@ -313,14 +313,14 @@ extension Histogram: HasGraphLayout {
                     backLine.removeAll(keepingCapacity: true)
                     frontLine.removeAll(keepingCapacity: true)
                 }
-                func adjustLeft(_ height: Float) -> Point { Point(floor(x), height) }
-                func adjustRight(_ height: Float) -> Point { Point(ceil(x), height) }
-                func adjustDown(_ height: Float) -> Point { Point(x, floor(height)) }
+                func adjustLeft(_ height: Float) -> Point { Point(x.rounded(.down), height) }
+                func adjustRight(_ height: Float) -> Point { Point(x.rounded(.up), height) }
+                func adjustDown(_ height: Float) -> Point { Point(x, height.rounded(.down)) }
                 func adjustAuto(_ height: Float) -> Point {
                     if frontLeftBinHeight > frontRightBinHeight {
-                        return Point(floor(x), floor(height))
+                        return Point(x.rounded(.down), height.rounded(.down))
                     } else {
-                        return Point(ceil(x), floor(height))
+                        return Point(x.rounded(.up), height.rounded(.down))
                     }
                 }
                 // Conditions for appending specific points or ending the lines/polygon at different places based on the relative heights.
