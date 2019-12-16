@@ -78,6 +78,7 @@ public class Histogram<T:FloatConvertible>: Plot {
         
         return histSeries
     }
+    
     func recalculateBins(series: HistogramSeries<T>,
                          binStart: T,
                          binEnd: T,
@@ -86,6 +87,14 @@ public class Histogram<T:FloatConvertible>: Plot {
         series.maximumFrequency = 0
         
         if series.isSorted {
+            /// If `data` is sorted we can keep track of two indices for `data` and one for the `binFrequencies`.
+            /// We run through `data` by incrementing `dataHead` while the value stored at that location is below the current bin's `xUpperLimit`.
+            /// When we find the first value that is higher or equal to the current bin's upper x limit, we store the difference between `binHead` and `binTail` into the current bin.
+            /// Then we set `binTail` to `binHead`, increment `binIndex` and keep incrementing `binHead` while we don't find values higher than the next bin x upper limit.
+            ///
+            /// Performance:
+            ///   This algorithm iterates through `data` and `binFrequency` only once.
+            ///   It sets `binFrequency` and checks if it is the maximum frequency `binFrequency.count` amount of times.
             var dataTail: Int = 0
             var dataHead: Int = 0
             let dataEndIndex = series.data.endIndex
@@ -110,6 +119,11 @@ public class Histogram<T:FloatConvertible>: Plot {
                 }
             }
         } else {
+            /// If the data is not sorted, run through each value in `data`, binary search the right bin and increment its frequency.
+            ///
+            /// Performance:
+            ///   This algorithm runs through `data` once and for each value in `data` a binary search is performed on the bins' lower x limits.
+            ///   It increments `binFrequency` and checks if it is the maximum frequency `data.count` amount of times.
             let lastIndex = series.binFrequency.endIndex - 1
             for val in series.data {
                 var start = 0
