@@ -419,22 +419,21 @@ extension LineGraph: HasGraphLayout {
     //functions to draw the plot
     public func drawData(markers: PlotMarkers, size: Size, renderer: Renderer) {
         for s in primaryAxis.series {
-            var points = [Point]()
-            for p in s.scaledValues {
-                points.append(Point(Float(p.x),Float(p.y)))
-            }
-            renderer.drawPlotLines(points: points,
+            let p1 = s.scaledValues[0]
+            let p2 = s.scaledValues[1]
+            let tail = s.scaledValues[2...].map { Point(Float($0.x), Float($0.y)) }
+            
+            renderer.drawPlotLines(polyline: Polyline(Point(Float(p1.x),Float(p1.y)), Point(Float(p2.x), Float(p2.y)), tail: tail),
                                    strokeWidth: plotLineThickness,
                                    strokeColor: s.color,
                                    isDashed: false)
         }
         if (secondaryAxis != nil) {
             for s in secondaryAxis!.series {
-                var points = [Point]()
-                for p in s.scaledValues {
-                    points.append(Point(Float(p.x),Float(p.y)))
-                }
-                renderer.drawPlotLines(points: points,
+                let p1 = s.scaledValues[0]
+                let p2 = s.scaledValues[1]
+                let tail = s.scaledValues[2...].map { Point(Float($0.x), Float($0.y)) }
+                renderer.drawPlotLines(polyline: Polyline(Point(Float(p1.x),Float(p1.y)), Point(Float(p2.x), Float(p2.y)), tail: tail),
                                        strokeWidth: plotLineThickness,
                                        strokeColor: s.color,
                                        isDashed: true)

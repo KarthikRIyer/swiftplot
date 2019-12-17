@@ -185,21 +185,21 @@ public class AGGRenderer: Renderer{
                   agg_object)
     }
 
-    public func drawPlotLines(points p: [Point],
+    public func drawPlotLines(polyline: Polyline,
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
         var x = [Float]()
         var y = [Float]()
-
-        for index in 0..<p.count {
-            x.append(p[index].x + xOffset)
-            y.append(p[index].y + yOffset)
+        
+        for point in polyline {
+            x.append(point.x + xOffset)
+            y.append(point.y + yOffset)
         }
 
         draw_plot_lines(x,
                         y,
-                        Int32(p.count),
+                        Int32(x.count),
                         thickness,
                         strokeColor.r,
                         strokeColor.g,

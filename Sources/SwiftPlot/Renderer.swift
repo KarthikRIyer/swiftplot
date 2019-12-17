@@ -67,14 +67,14 @@ public protocol Renderer: AnyObject{
                   strokeColor: Color, isDashed: Bool)
 
     /*drawPlotLines()
-    *params: points p: [Point],
+    *params: polyline: Polyline,
     *        strokeWidth thickness: Float,
     *        strokeColor: Color,
     *        isDashed: Bool
     *description: Draws all the line segments in a single data series for a Line Graph.
     *             This function always operates in the coordinate system with the shifted origin.
     */
-    func drawPlotLines(points p: [Point],
+    func drawPlotLines(polyline: Polyline,
                        strokeWidth thickness: Float,
                        strokeColor: Color, isDashed: Bool)
 
@@ -263,3 +263,70 @@ extension Polygon.Iterator: IteratorProtocol {
 }
 
 extension Polygon.Iterator: Sequence {}
+
+/// Polyline structure definition and sequence extension, along with its iterator.
+public struct Polyline {
+    public var p1: Point, p2: Point
+    public var tail: [Point]
+    
+    public init(_ p1: Point, _ p2: Point, tail: [Point] = []) {
+        (self.p1, self.p2) = (p1, p2)
+        self.tail = tail
+    }
+    
+    public init(_ p1: Point, _ p2: Point, tail: ArraySlice<Point>) {
+        self.init(p1, p2, tail: Array(tail))
+    }
+    
+    public init() {
+        self.init(.zero, .zero)
+    }
+    
+    public init?(points: [Point]) {
+        guard points.count >= 2 else { return nil }
+        
+        self = Polyline(points[0], points[1], tail: points[2...])
+    }
+}
+
+extension Polyline: Sequence {
+    public struct Iterator {
+        private var state: State
+        private var tailIterator: Array<Point>.Iterator
+        private let polyline: Polyline
+        
+        private enum State {
+            case p1, p2
+            case tail
+        }
+        
+        public init(polyline: Polyline) {
+            state = .p1
+            tailIterator = polyline.tail.makeIterator()
+            self.polyline = polyline
+        }
+    }
+    
+    public func makeIterator() -> Polyline.Iterator {
+        return Iterator(polyline: self)
+    }
+}
+
+extension Polyline.Iterator: IteratorProtocol {
+    public typealias Element = Point
+    
+    public mutating func next() -> Point? {
+        switch state {
+        case .p1:
+            state = .p2
+            return polyline.p1
+        case .p2:
+            state = .tail
+            return polyline.p2
+        case .tail:
+            return tailIterator.next()
+        }
+    }
+}
+
+extension Polyline.Iterator: Sequence {}

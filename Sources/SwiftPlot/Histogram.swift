@@ -329,7 +329,9 @@ extension Histogram: HasGraphLayout {
                 for ((backRightBinHeight, frontRightBinHeight), x) in zip(zip(backHeightsSlice, frontHeightsSlice), xValues) {
                     
                     func endLine() {
-                        renderer.drawPlotLines(points: line, strokeWidth: strokeWidth,
+                        // This algorithm should never produce lines with less than 2 points
+                        guard let polyline = Polyline(points: line) else { fatalError("drawData: Expecting 2 or more points, got \(line.count) instead") }
+                        renderer.drawPlotLines(polyline: polyline, strokeWidth: strokeWidth,
                                                strokeColor: series.color, isDashed: false)
                         line.removeAll(keepingCapacity: true)
                     }

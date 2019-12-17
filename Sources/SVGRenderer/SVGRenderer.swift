@@ -186,13 +186,11 @@ public class SVGRenderer: Renderer{
         lines.append(line)
     }
 
-    public func drawPlotLines(points p: [Point],
+    public func drawPlotLines(polyline: Polyline,
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
-        guard p.count > 1 else { return }
-        
-        let pointsString = p.lazy.map { point in
+        let pointsString = polyline.lazy.map { point in
             let convertedPoint = self.convertToSVGCoordinates(point)
             return "\(convertedPoint.x),\(convertedPoint.y)"
         }.joined(separator: " ")

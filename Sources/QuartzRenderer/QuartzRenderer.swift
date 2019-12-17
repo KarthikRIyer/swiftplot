@@ -401,19 +401,20 @@ public class QuartzRenderer: Renderer {
         context.setLineDash(phase: 1, lengths: [])
     }
 
-    public func drawPlotLines(points p: [Point],
+    public func drawPlotLines(polyline: Polyline,
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
-        guard !p.isEmpty else { return }
-        let line = CGMutablePath()
-        line.move(to: CGPoint(x: CGFloat(p[0].x + xOffset), y: CGFloat(p[0].y + yOffset)))
-        for point in p[1...] {
-            line.addLine(to: CGPoint(x: CGFloat(point.x + xOffset), y: CGFloat(point.y + yOffset)))
+
+        let linePath = CGMutablePath()
+        linePath.move(to: CGPoint(x: Double(polyline.p1.x + xOffset), y: Double(polyline.p1.y + yOffset)))
+        linePath.addLine(to: CGPoint(x: Double(polyline.p2.x + xOffset), y: Double(polyline.p2.y + yOffset)))
+        for point in polyline.tail {
+            linePath.addLine(to: CGPoint(x: Double(point.x + xOffset), y: Double(point.y + yOffset)))
         }
         context.setStrokeColor(strokeColor.cgColor)
         context.setLineWidth(CGFloat(thickness))
-        context.addPath(line)
+        context.addPath(linePath)
         if(isDashed) {
             let dashes: [ CGFloat ] = [ CGFloat(thickness + 1), CGFloat(thickness + 1) ]
             context.setLineDash(phase: 1, lengths: dashes)
