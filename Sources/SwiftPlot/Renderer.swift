@@ -199,10 +199,6 @@ public struct Polygon {
     public var p1: Point, p2: Point, p3: Point
     public var tail: [Point]
     
-    public init() {
-        self.init(.zero, .zero, .zero)
-    }
-    
     public init(_ p1: Point, _ p2: Point, _ p3: Point, tail: [Point] = []) {
         (self.p1, self.p2, self.p3) = (p1, p2, p3)
         self.tail = tail
@@ -210,6 +206,10 @@ public struct Polygon {
     
     public init(_ p1: Point, _ p2: Point, _ p3: Point, tail: ArraySlice<Point>) {
         self.init(p1, p2, p3, tail: Array(tail))
+    }
+    
+    public init() {
+        self.init(.zero, .zero, .zero)
     }
 }
 
