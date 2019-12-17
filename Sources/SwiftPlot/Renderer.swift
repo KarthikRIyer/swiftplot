@@ -211,6 +211,12 @@ public struct Polygon {
     public init() {
         self.init(.zero, .zero, .zero)
     }
+    
+    public init?(points: [Point]) {
+        guard points.count >= 3 else { return nil }
+        
+        self.init(points[0], points[1], points[2], tail: points[3...])
+    }
 }
 
 extension Polygon: Sequence {
