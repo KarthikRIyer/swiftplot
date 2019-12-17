@@ -366,8 +366,8 @@ extension ScatterPlot: HasGraphLayout {
                         tR = rotatePoint(point: tR, center: p, angleDegrees: 45.0)
                         bL = rotatePoint(point: bL, center: p, angleDegrees: 45.0)
                         bR = rotatePoint(point: bR, center: p, angleDegrees: 45.0)
-                        let diamondPoints: [Point] = [tL, tR, bR, bL]
-                        renderer.drawSolidPolygon(points: diamondPoints,
+                        let diamond = Polygon(tL, tR, bR, tail: [bL])
+                        renderer.drawSolidPolygon(polygon: diamond,
                                                   fillColor: s.color)
                     }
                   case .hexagon:
@@ -387,7 +387,8 @@ extension ScatterPlot: HasGraphLayout {
                                                          angleDegrees: 60.0)
                               hexagonPoints.append(hexagonPoint)
                           }
-                          renderer.drawSolidPolygon(points: hexagonPoints,
+                          let hexagon = Polygon(hexagonPoints[0], hexagonPoints[1], hexagonPoints[2], tail: hexagonPoints[3...])
+                          renderer.drawSolidPolygon(polygon: hexagon,
                                                     fillColor: s.color)
                       }
                   case .pentagon:
@@ -407,7 +408,8 @@ extension ScatterPlot: HasGraphLayout {
                                                           angleDegrees: 72.0)
                               pentagonPoints.append(pentagonPoint)
                           }
-                          renderer.drawSolidPolygon(points: pentagonPoints,
+                          let pentagon = Polygon(pentagonPoints[0], pentagonPoints[1], pentagonPoints[2], tail: pentagonPoints[3...])
+                          renderer.drawSolidPolygon(polygon: pentagon,
                                                     fillColor: s.color)
                       }
                   case .star:
@@ -435,7 +437,8 @@ extension ScatterPlot: HasGraphLayout {
                               starPoints.append(starOuterPoint)
                               starPoints.append(starInnerPoint)
                           }
-                          renderer.drawSolidPolygon(points: starPoints,
+                          let star = Polygon(starPoints[0], starPoints[1], starPoints[2], tail: starPoints[3...])
+                          renderer.drawSolidPolygon(polygon: star,
                                                     fillColor: s.color)
                       }
             }
@@ -485,8 +488,8 @@ extension ScatterPlotSeriesOptions.ScatterPattern {
             let p2 = rotatePoint(point: tR, center: c, angleDegrees: 45.0)
             let p3 = rotatePoint(point: bR, center: c, angleDegrees: 45.0)
             let p4 = rotatePoint(point: bL, center: c, angleDegrees: 45.0)
-            let diamondPoints: [Point] = [p1, p2, p3, p4]
-            renderer.drawSolidPolygon(points: diamondPoints,
+            let diamond = Polygon(p1, p2, p3, tail: [p4])
+            renderer.drawSolidPolygon(polygon: diamond,
                                       fillColor: color)
         case .hexagon:
             let c = Point((tL.x+bR.x)*Float(0.5),
@@ -500,7 +503,8 @@ extension ScatterPlotSeriesOptions.ScatterPattern {
                                            angleDegrees: 60.0)
                 hexagonPoints.append(hexagonPoint)
             }
-            renderer.drawSolidPolygon(points: hexagonPoints,
+            let hexagon = Polygon(hexagonPoints[0], hexagonPoints[1], hexagonPoints[2], tail: hexagonPoints[3...])
+            renderer.drawSolidPolygon(polygon: hexagon,
                                       fillColor: color)
         case .pentagon:
             let c = Point((tL.x+bR.x)*Float(0.5),
@@ -514,7 +518,8 @@ extension ScatterPlotSeriesOptions.ScatterPattern {
                                             angleDegrees: 72.0)
                 pentagonPoints.append(pentagonPoint)
             }
-            renderer.drawSolidPolygon(points: pentagonPoints,
+            let pentagon = Polygon(pentagonPoints[0], pentagonPoints[1], pentagonPoints[2], tail: pentagonPoints[3...])
+            renderer.drawSolidPolygon(polygon: pentagon,
                                       fillColor: color)
         case .star:
             let c = Point((tL.x+bR.x)*Float(0.5),
@@ -536,7 +541,8 @@ extension ScatterPlotSeriesOptions.ScatterPattern {
                 starPoints.append(starOuterPoint)
                 starPoints.append(starInnerPoint)
             }
-            renderer.drawSolidPolygon(points: starPoints,
+            let star = Polygon(starPoints[0], starPoints[1], starPoints[2], tail: starPoints[3...])
+            renderer.drawSolidPolygon(polygon: star,
                                       fillColor: color)
         }
     }

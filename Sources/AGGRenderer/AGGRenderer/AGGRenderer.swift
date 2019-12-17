@@ -143,17 +143,17 @@ public class AGGRenderer: Renderer{
                           agg_object);
     }
 
-    public func drawSolidPolygon(points: [Point],
+    public func drawSolidPolygon(polygon: SwiftPlot.Polygon,
                                  fillColor: Color) {
         var x = [Float]()
         var y = [Float]()
-        for index in 0..<points.count {
-            x.append(points[index].x + xOffset)
-            y.append(points[index].y + yOffset)
+        for point in polygon {
+            x.append(point.x + xOffset)
+            y.append(point.y + yOffset)
         }
         draw_solid_polygon(x,
                            y,
-                           Int32(points.count),
+                           Int32(x.count),
                            fillColor.r,
                            fillColor.g,
                            fillColor.b,

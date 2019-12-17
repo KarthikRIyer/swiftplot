@@ -157,15 +157,16 @@ public class SVGRenderer: Renderer{
         lines.append(triangle)
     }
     
-    public func drawSolidPolygon(points: [Point],
+    public func drawSolidPolygon(polygon: SwiftPlot.Polygon,
                                  fillColor: Color) {
-        let pts = points.map { convertToSVGCoordinates($0) }
         var pointsString = ""
-        for index in 0..<pts.count {
-            pointsString = pointsString + "\(pts[index].x),\(pts[index].y) "
+        for point in polygon {
+            let convertedPoint = convertToSVGCoordinates(point)
+            pointsString.append("\(convertedPoint.x),\(convertedPoint.y) ")
         }
-        let polygon = #"<polygon points="\#(pointsString)" style="fill:\#(fillColor.svgColorString);opacity:\#(fillColor.a)" />"#
-        lines.append(polygon)
+        
+        let polygonString = #"<polygon points="\#(pointsString)" style="fill:\#(fillColor.svgColorString);opacity:\#(fillColor.a)" />"#
+        lines.append(polygonString)
     }
 
     public func drawLine(startPoint p1: Point,

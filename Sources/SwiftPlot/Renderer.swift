@@ -153,7 +153,7 @@ public protocol Renderer: AnyObject{
     *             without shifted origin.
     *             This is decided by the boolean parameter isOriginShifted.
     */
-    func drawSolidPolygon(points: [Point],
+    func drawSolidPolygon(polygon: Polygon,
                           fillColor: Color)
 
     /*getTextWidth()
@@ -193,3 +193,67 @@ extension Renderer {
         (self.xOffset, self.yOffset) = oldOffset
     }
 }
+
+/// Polygon structure definition and sequence extension, along with its iterator.
+public struct Polygon {
+    public var p1: Point, p2: Point, p3: Point
+    public var tail: [Point]
+    
+    public init() {
+        self.init(.zero, .zero, .zero)
+    }
+    
+    public init(_ p1: Point, _ p2: Point, _ p3: Point, tail: [Point] = []) {
+        (self.p1, self.p2, self.p3) = (p1, p2, p3)
+        self.tail = tail
+    }
+    
+    public init(_ p1: Point, _ p2: Point, _ p3: Point, tail: ArraySlice<Point>) {
+        self.init(p1, p2, p3, tail: Array(tail))
+    }
+}
+
+extension Polygon: Sequence {
+    public struct Iterator {
+        private var state: State
+        private var tailIterator: Array<Point>.Iterator
+        private let polygon: Polygon
+        
+        private enum State {
+            case p1, p2, p3
+            case tail
+        }
+        
+        public init(polygon: Polygon) {
+            state = .p1
+            tailIterator = polygon.tail.makeIterator()
+            self.polygon = polygon
+        }
+    }
+    
+    public func makeIterator() -> Polygon.Iterator {
+        return Iterator(polygon: self)
+    }
+}
+
+extension Polygon.Iterator: IteratorProtocol {
+    public typealias Element = Point
+    
+    public mutating func next() -> Point? {
+        switch state {
+        case .p1:
+            state = .p2
+            return polygon.p1
+        case .p2:
+            state = .p3
+            return polygon.p2
+        case .p3:
+            state = .tail
+            return polygon.p3
+        case .tail:
+            return tailIterator.next()
+        }
+    }
+}
+
+extension Polygon.Iterator: Sequence {}
