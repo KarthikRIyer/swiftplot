@@ -159,7 +159,8 @@ public class SVGRenderer: Renderer{
     
     public func drawSolidPolygon(points: [Point],
                                  fillColor: Color) {
-        guard points.count > 2 else { return }
+        precondition(points.count > 2, "drawSolidPolygon: Cannot draw a polygon with \(points.count) points.")
+        
         let pts = points.map { convertToSVGCoordinates($0) }
         var pointsString = ""
         for index in 0..<pts.count {
@@ -190,7 +191,7 @@ public class SVGRenderer: Renderer{
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
-        guard p.count > 1 else { return }
+        precondition(p.count > 1, "drawPlotLines: Cannot draw lines with \(p.count) points.")
         
         let pointsString = p.lazy.map { point in
             let convertedPoint = self.convertToSVGCoordinates(point)

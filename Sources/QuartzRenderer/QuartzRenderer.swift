@@ -371,7 +371,8 @@ public class QuartzRenderer: Renderer {
 
     public func drawSolidPolygon(points: [Point],
                                  fillColor: Color) {
-        guard points.count > 2 else { return }
+        precondition(points.count > 2, "drawSolidPolygon: Cannot draw a polygon with \(points.count) points.")
+        
         let polygonPath = CGMutablePath()
         polygonPath.move(to: CGPoint(x: Double(points[0].x + xOffset), y: Double(points[0].y + yOffset)))
         for index in 1..<points.count {
@@ -406,7 +407,8 @@ public class QuartzRenderer: Renderer {
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
-        guard !p.isEmpty else { return }
+        precondition(p.count > 1, "drawPlotLines: Cannot draw lines with \(p.count) points.")
+        
         for i in 0..<p.count-1 {
             drawLine(startPoint: p[i],
                      endPoint: p[i+1],
