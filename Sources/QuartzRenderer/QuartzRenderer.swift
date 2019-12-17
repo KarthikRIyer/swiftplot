@@ -408,13 +408,20 @@ public class QuartzRenderer: Renderer {
                               strokeColor: Color,
                               isDashed: Bool) {
         guard !p.isEmpty else { return }
-        for i in 0..<p.count-1 {
-            drawLine(startPoint: p[i],
-                     endPoint: p[i+1],
-                     strokeWidth: thickness,
-                     strokeColor: strokeColor,
-                     isDashed: isDashed)
+        let line = CGMutablePath()
+        line.move(to: CGPoint(x: CGFloat(p[0].x + xOffset), y: CGFloat(p[0].y + yOffset)))
+        for point in p[1...] {
+            line.addLine(to: CGPoint(x: CGFloat(point.x + xOffset), y: CGFloat(point.y + yOffset)))
         }
+        context.setStrokeColor(strokeColor.cgColor)
+        context.setLineWidth(CGFloat(thickness))
+        context.addPath(line)
+        if(isDashed) {
+            let dashes: [ CGFloat ] = [ CGFloat(thickness + 1), CGFloat(thickness + 1) ]
+            context.setLineDash(phase: 1, lengths: dashes)
+        }
+        context.strokePath()
+        context.setLineDash(phase: 1, lengths: [])
     }
 
     public func drawText(text s: String,
