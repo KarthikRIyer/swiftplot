@@ -145,10 +145,10 @@ public protocol Renderer: AnyObject{
                            fillColor: Color)
 
     /*drawSolidPolygon()
-    *params: points: [Point],
-    *                 fillColor: Color,
-    *                 isOriginShifted: Bool
-    *description: Draws a polygon with specified fill color from an array of Points
+    *params: polygon: Polygon,
+    *        fillColor: Color,
+    *        isOriginShifted: Bool
+    *description: Draws a polygon with specified fill color from a Polygon struct
     *             This function can operate in both coordinate systems with and
     *             without shifted origin.
     *             This is decided by the boolean parameter isOriginShifted.
