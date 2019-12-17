@@ -24,7 +24,7 @@ public class SVGRenderer: Renderer{
     static let gridHatch: String = #"<defs><pattern id="gridHatch" width="10" height="10" patternUnits="userSpaceOnUse"><line x1="0" y1="5" x2="10" y2="5" style="stroke:black; stroke-width:1" /><line x1="5" y1="0" x2="5" y2="10" style="stroke:black; stroke-width:1" /></pattern></defs>"#
     static let crossHatch: String = #"<defs><pattern id="crossHatch" width="10" height="10" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="10" y2="10" style="stroke:black; stroke-width:1" /><line x1="0" y1="10" x2="10" y2="0" style="stroke:black; stroke-width:1" /></pattern></defs>"#
     
-    public var offset = zeroPoint
+    public var offset: Point = .zero
     public var imageSize: Size
 
     var hatchingIncluded = Array(repeating: false,

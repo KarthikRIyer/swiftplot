@@ -18,8 +18,8 @@ public class BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
     var stackSeries = [Series<T,U>]()
     var scaleY: Float = 1
     var scaleX: Float = 1
-    var barWidth : Int = 0
-    var origin = zeroPoint
+    var barWidth: Int = 0
+    var origin: Point = .zero
 
     public init(enableGrid: Bool = false){
         self.enableGrid = enableGrid
@@ -123,7 +123,7 @@ extension BarGraph: HasGraphLayout {
             }
 
             if (minimumY >= U(0)) {
-                origin = zeroPoint
+                origin = .zero
                 minimumY = U(0)
             }
             else{
@@ -208,7 +208,7 @@ extension BarGraph: HasGraphLayout {
             }
 
             if minimumX >= U(0) {
-                origin = zeroPoint
+                origin = .zero
                 minimumX = U(0)
             }
             else{

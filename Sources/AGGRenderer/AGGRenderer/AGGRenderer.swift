@@ -4,7 +4,7 @@ import SwiftPlot
 
 public class AGGRenderer: Renderer{
 
-    public var offset = zeroPoint
+    public var offset: Point = .zero
     public var imageSize: Size {
         willSet {
           delete_plot(agg_object);

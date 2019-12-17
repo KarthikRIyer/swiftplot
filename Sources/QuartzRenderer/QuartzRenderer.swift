@@ -19,7 +19,7 @@ public class QuartzRenderer: Renderer {
     /// Whether or not this context was given to us. If `true`, we should never re-make `context`
     let isExternalContext: Bool
     var fontPath = ""
-    public var offset = zeroPoint
+    public var offset: Point = .zero
     
     public var fontSmoothing: Bool = false {
         didSet { context.setShouldSmoothFonts(fontSmoothing) }

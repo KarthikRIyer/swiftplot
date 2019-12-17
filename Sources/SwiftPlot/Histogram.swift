@@ -16,7 +16,7 @@ public class Histogram<T:FloatConvertible>: Plot {
     var scaleX: Float = 1
     var barWidth: Float = 0
     var xMargin: Float = 5
-    var origin = zeroPoint
+    var origin: Point = .zero
 
     public init(isNormalized: Bool = false,
                 enableGrid: Bool = false){
