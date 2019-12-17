@@ -281,115 +281,72 @@ extension Histogram: HasGraphLayout {
     public func drawData(markers: PlotMarkers, size: Size, renderer: Renderer) {
         let binCount = histogramSeries.bins
         let allSeries = [histogramSeries] + histogramStackSeries
-        
-        /// 1. Accumulate the frequencies of each series.
-        // One heights array for each series.
-        var seriesHeights: [[Float]] = [[Float](repeating: 0.0, count: binCount + 2)]
-        
-        // Sum the bin frequencies from two series together and append to `seriesHeights`.
-        var currentHeights = seriesHeights[seriesHeights.startIndex]
-        for series in allSeries {
-            for (newHeight, index) in zip(series.scaledBinFrequency, currentHeights.indices.dropFirst().dropLast()) {
-                currentHeights[index] += newHeight
-            }
-            seriesHeights.append(currentHeights)
-        }
-        
-        /// 2. Define the drawing rules based on the histogram type.
-        // Called on each edge of the histogram bins. The current series and the heights of the left/right bins of the back/front series are passed as arguments.
-        var executeAtEdge: (_ series: HistogramSeries<T>, _ x: Float, _ backLeftBinHeight: Float, _ backRightBinHeight: Float, _ frontLeftBinHeight: Float, _ frontRightBinHeight: Float) -> Void
+        let xStart = Float(xMargin)
         
         switch histogramSeries.histogramSeriesOptions.histogramType {
         case .bar:
-            /// Rules for tracing the outline of the histogram series, including only the visible parts and "tucking" the points of the series on the back slightly behind the ones on the front.
-            /// `backLine` stores the points for the series on the background and `frontLine` stores the points for the series on the foreground. These are temporary arrays for storing the points until a polygon can be drawn.
-            var backLine = [Point]()
-            var frontLine = [Point]()
-            executeAtEdge = { series, x, backLeftBinHeight, backRightBinHeight, frontLeftBinHeight, frontRightBinHeight in
-                
-                // Helper functions for ending the polygon and rounding the points' coordinates.
-                func endPolygon() {
-                    renderer.drawSolidPolygon(points: frontLine.reversed() + backLine, fillColor: series.color)
-                    backLine.removeAll(keepingCapacity: true)
-                    frontLine.removeAll(keepingCapacity: true)
-                }
-                func adjustLeft(_ height: Float) -> Point { Point(x.rounded(.down), height) }
-                func adjustRight(_ height: Float) -> Point { Point(x.rounded(.up), height) }
-                func adjustDown(_ height: Float) -> Point { Point(x, height.rounded(.down)) }
-                func adjustAuto(_ height: Float) -> Point {
-                    if frontLeftBinHeight > frontRightBinHeight {
-                        return Point(x.rounded(.down), height.rounded(.down))
-                    } else {
-                        return Point(x.rounded(.up), height.rounded(.down))
-                    }
-                }
-                // Conditions for appending specific points or ending the lines/polygon at different places based on the relative heights.
-                let c1 = backLeftBinHeight  > frontLeftBinHeight
-                let c2 = backRightBinHeight > frontRightBinHeight
-                let c3 = backLeftBinHeight  > frontRightBinHeight
-                let c4 = backRightBinHeight > frontLeftBinHeight
-                
-                if  c3 &&  (c4 ||  c1) {  backLine.append(Point(x, backLeftBinHeight)) }
-                if  c1 &&  !c3         {  backLine.append(adjustRight(backLeftBinHeight)) }
-                if  c1 &&  !c4         { frontLine.append(adjustDown(frontLeftBinHeight)) }
-                if  c1 &&   c4         { frontLine.append(adjustAuto(frontLeftBinHeight)) }
-                if  c1 && (!c3 || !c4) { endPolygon() }
-                if !c1 &&   c3 &&  c4  { frontLine.append(adjustLeft(frontLeftBinHeight)) }
-                if  c2 &&  !c4         {  backLine.append(adjustLeft(backRightBinHeight)) }
-                if  c4 &&  (c2 ||  c3) {  backLine.append(Point(x, backRightBinHeight)) }
-                if  c2 &&   c3         { frontLine.append(adjustAuto(frontRightBinHeight)) }
-                if  c2 &&  !c3         { frontLine.append(adjustDown(frontRightBinHeight)) }
-                if !c2 &&   c3 &&  c4  {
-                    frontLine.append(adjustRight(frontRightBinHeight))
-                    endPolygon()
+            let xValues = stride(from: xStart, to: xStart + Float(binCount) * barWidth, by: barWidth)
+            
+            // Iterate through each bar stacking the corresponding bar of each series.
+            for (x, binIndex) in zip(xValues, 0..<binCount) {
+                var currentHeight: Float = 0.0
+                for series in allSeries {
+                    let height = series.scaledBinFrequency[binIndex]
+                    let rect = Rect(origin: Point(x, currentHeight), size: Size(width: barWidth, height: height))
+                    renderer.drawSolidRect(rect, fillColor: series.color, hatchPattern: .none)
+                    currentHeight += height
                 }
             }
         case .step:
-            var line = [Point]()
-            /// Rules for tracing the outline of the background series, including only the parts of the lines that are going to be visible.
-            executeAtEdge = { series, x, backLeftBinHeight, backRightBinHeight, frontLeftBinHeight, frontRightBinHeight in
-                func endLine() {
-                    renderer.drawPlotLines(points: line, strokeWidth: self.strokeWidth,
-                                           strokeColor: series.color, isDashed: false)
-                    line.removeAll(keepingCapacity: true)
-                }
-                
-                // Conditions for appending specific points or ending the line at different places based on the relative heights.
-                let c1 = backLeftBinHeight  > frontLeftBinHeight
-                let c2 = backRightBinHeight > frontRightBinHeight
-                let c3 = backLeftBinHeight  > frontRightBinHeight
-                let c4 = backRightBinHeight > frontLeftBinHeight
-                
-                if  c1 ||   c3 &&  c4  { line.append(Point(x, backLeftBinHeight)) }
-                if  c1 &&  !c4         { line.append(Point(x, frontLeftBinHeight)) }
-                if  c1 && (!c3 || !c4) { endLine() }
-                if  c2 &&  !c3         { line.append(Point(x, frontRightBinHeight)) }
-                if  c2 ||   c3 &&  c4  { line.append(Point(x, backRightBinHeight)) }
-                if !c2 &&   c3 &&  c4  { endLine() }
-            }
-        }
-        
-        /// 3. Draw the histogram based on the rules.
-        let xStart = Float(xMargin)
-        let xValues = stride(from: xStart, through: xStart + Float(binCount) * barWidth, by: barWidth)
-        
-        // Iterate over the series in reverse to draw from back to front.
-        var seriesHeightsSlice = seriesHeights.reversed()[...]
-        var backHeightsSlice = seriesHeightsSlice.removeFirst()[...]
-        for (frontHeights, series) in zip(seriesHeightsSlice, allSeries.reversed()) {
-            var frontHeightsSlice = frontHeights[...]
+            /// Accumulate the frequencies of each series.
+            // One heights array for each series.
+            var seriesHeights: [[Float]] = [[Float](repeating: 0.0, count: binCount + 2)]
             
-            /// Iterate over bin edges focusing on the height of the left and right bins of the series on the back and in front, and call `executeAtEdge`.
-            var backLeftBinHeight = backHeightsSlice.removeFirst()
-            var frontLeftBinHeight = frontHeightsSlice.removeFirst()
-            for ((backRightBinHeight, frontRightBinHeight), x) in zip(zip(backHeightsSlice, frontHeightsSlice), xValues) {
-                
-                executeAtEdge(series, x, backLeftBinHeight, backRightBinHeight, frontLeftBinHeight, frontRightBinHeight)
-                
-                backLeftBinHeight  = backRightBinHeight
-                frontLeftBinHeight = frontRightBinHeight
+            // Sum the bin frequencies from two series together and append to `seriesHeights`.
+            var currentHeights = seriesHeights[seriesHeights.startIndex]
+            for series in allSeries {
+                for (newHeight, index) in zip(series.scaledBinFrequency, currentHeights.indices.dropFirst().dropLast()) {
+                    currentHeights[index] += newHeight
+                }
+                seriesHeights.append(currentHeights)
             }
-            backHeightsSlice = frontHeights[...]
+            let xValues = stride(from: xStart, through: xStart + Float(binCount) * barWidth, by: barWidth)
+            
+            // Iterate over the series in reverse to draw from back to front.
+            var seriesHeightsSlice = seriesHeights.reversed()[...]
+            var backHeightsSlice = seriesHeightsSlice.removeFirst()[...]
+            for (frontHeights, series) in zip(seriesHeightsSlice, allSeries.reversed()) {
+                var frontHeightsSlice = frontHeights[...]
+                
+                /// Iterate over bin edges focusing on the height of the left and right bins of the series on the back and in front.
+                var line = [Point]()
+                var backLeftBinHeight = backHeightsSlice.removeFirst()
+                var frontLeftBinHeight = frontHeightsSlice.removeFirst()
+                for ((backRightBinHeight, frontRightBinHeight), x) in zip(zip(backHeightsSlice, frontHeightsSlice), xValues) {
+                    func endLine() {
+                        renderer.drawPlotLines(points: line, strokeWidth: self.strokeWidth,
+                                               strokeColor: series.color, isDashed: false)
+                        line.removeAll(keepingCapacity: true)
+                    }
+                    
+                    // Conditions for appending specific points or ending the line at different places based on the relative heights.
+                    let c1 = backLeftBinHeight  > frontLeftBinHeight
+                    let c2 = backRightBinHeight > frontRightBinHeight
+                    let c3 = backLeftBinHeight  > frontRightBinHeight
+                    let c4 = backRightBinHeight > frontLeftBinHeight
+                    
+                    if  c1 ||   c3 &&  c4  { line.append(Point(x, backLeftBinHeight)) }
+                    if  c1 &&  !c4         { line.append(Point(x, frontLeftBinHeight)) }
+                    if  c1 && (!c3 || !c4) { endLine() }
+                    if  c2 &&  !c3         { line.append(Point(x, frontRightBinHeight)) }
+                    if  c2 ||   c3 &&  c4  { line.append(Point(x, backRightBinHeight)) }
+                    if !c2 &&   c3 &&  c4  { endLine() }
+                    
+                    backLeftBinHeight  = backRightBinHeight
+                    frontLeftBinHeight = frontRightBinHeight
+                }
+                backHeightsSlice = frontHeights[...]
+            }
         }
     }
 }
