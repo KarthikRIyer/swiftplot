@@ -372,12 +372,10 @@ public class QuartzRenderer: Renderer {
     public func drawSolidPolygon(polygon: SwiftPlot.Polygon,
                                  fillColor: Color) {
         let polygonPath = CGMutablePath()
-        var points = polygon.makeIterator()
-        let p1 = points.next()!
-        polygonPath.move(to: CGPoint(x: Double(p1.x + xOffset), y: Double(p1.y + yOffset)))
-        for point in points {
-            polygonPath.addLine(to: CGPoint(x: Double(point.x + xOffset), y: Double(point.y + yOffset)))
-        }
+        polygonPath.move(to: CGPoint(x: Double(polygon.p1.x + xOffset), y: Double(polygon.p1.y + yOffset)))
+        polygonPath.addLine(to: CGPoint(x: Double(polygon.p2.x + xOffset), y: Double(polygon.p2.y + yOffset)))
+        polygonPath.addLine(to: CGPoint(x: Double(polygon.p3.x + xOffset), y: Double(polygon.p3.y + yOffset)))
+        polygon.tail.forEach { polygonPath.addLine(to: CGPoint(x: Double($0.x + xOffset), y: Double($0.y + yOffset)))}
         polygonPath.closeSubpath()
         context.setFillColor(fillColor.cgColor)
         context.addPath(polygonPath)
