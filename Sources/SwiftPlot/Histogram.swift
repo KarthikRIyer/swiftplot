@@ -340,13 +340,12 @@ extension Histogram: HasGraphLayout {
                     let c3 = backLeftBinHeight  > frontRightBinHeight
                     let c4 = backRightBinHeight > frontLeftBinHeight
                     
-                    if  c1 ||  c3 && c4 { line.append(Point(x, backLeftBinHeight)) }
-                    if !c3              { endLine() }
-                    if  c1 && !c4       { line.append(Point(x, frontLeftBinHeight)) }
-                    if !c4              { endLine() }
-                    if  c2 && !c3       { line.append(Point(x, frontRightBinHeight)) }
-                    if  c2 ||  c3 && c4 { line.append(Point(x, backRightBinHeight)) }
-                    if !c2              { endLine() }
+                    if  c1 ||   c3 &&  c4  { line.append(Point(x, backLeftBinHeight)) }
+                    if  c1 &&  !c4         { line.append(Point(x, frontLeftBinHeight)) }
+                    if  c1 && (!c3 || !c4) { endLine() }
+                    if  c2 &&  !c3         { line.append(Point(x, frontRightBinHeight)) }
+                    if  c2 ||   c3 &&  c4  { line.append(Point(x, backRightBinHeight)) }
+                    if !c2 &&   c3 &&  c4  { endLine() }
                     
                     backLeftBinHeight  = backRightBinHeight
                     frontLeftBinHeight = frontRightBinHeight
