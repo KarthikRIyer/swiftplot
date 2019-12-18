@@ -42,3 +42,28 @@ public struct PlotLegend {
     public var textSize: Float = 10
     public init() {}
 }
+
+public protocol Annotation {
+    func draw(renderer: Renderer)
+}
+
+struct Text : Annotation {
+    public var text = ""
+    public var color = Color.black
+    public var size: Float = 15
+    public var location = Point(0.0, 0.0)
+    public func draw(renderer: Renderer){
+        renderer.drawText(text: text,
+                          location: location,
+                          textSize: size,
+                          color: color,
+                          strokeWidth: 1.2,
+                          angle: 0)
+    }
+    public init(text: String = "", color: Color = .black, size: Float = 15, location: Point = Point(0.0, 0.0)) {
+        self.text = text
+        self.color = color
+        self.size = size
+        self.location = location
+    }
+}

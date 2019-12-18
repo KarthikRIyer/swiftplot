@@ -17,7 +17,8 @@ public struct GraphLayout {
     var plotBorder = PlotBorder()
     var grid = Grid()
     var legendLabels: [(String, LegendIcon)] = []
-    
+    var annotations: [Annotation] = []
+
     var enablePrimaryAxisGrid = true
     var enableSecondaryAxisGrid = true
     var markerTextSize: Float = 12
@@ -192,6 +193,7 @@ public struct GraphLayout {
         drawTitle(results: results, renderer: renderer)
         drawLabels(results: results, renderer: renderer)
         drawLegend(legendLabels, results: results, renderer: renderer)
+        drawAnnotations(renderer: renderer)
     }
     
     func drawTitle(results: Results, renderer: Renderer) {
@@ -363,6 +365,12 @@ public struct GraphLayout {
                               angle: 0)
         }
     }
+
+    func drawAnnotations(renderer: Renderer) {
+        for annotation in annotations{
+            annotation.draw(renderer: renderer)
+        }
+    }
 }
 
 public protocol HasGraphLayout: AnyObject {
@@ -381,13 +389,15 @@ extension HasGraphLayout {
     // Default implementation.
     public var legendLabels: [(String, LegendIcon)] {
         return []
+    } 
+    public var annotations: [Annotation] {
+        get { layout.annotations }
+        set { layout.annotations = newValue }
     }
-    
     public var plotSize: Size {
         get { layout.plotSize }
         set { layout.plotSize = newValue }
-    }
-    
+    }   
     public var plotTitle: PlotTitle {
         get { layout.plotTitle }
         set { layout.plotTitle = newValue }
@@ -416,7 +426,6 @@ extension HasGraphLayout {
         get { layout.plotBackgroundColor }
         set { layout.plotBackgroundColor = newValue }
     }
-
     public var markerTextSize: Float {
         get { layout.markerTextSize }
         set { layout.markerTextSize = newValue }
@@ -440,5 +449,8 @@ extension Plot where Self: HasGraphLayout {
         }
         layout.drawForeground(results: results, renderer: renderer)
     }
-    
+
+    public func addAnnotation(annotation: Annotation) {
+        layout.annotations.append(annotation)
+    }
 }
