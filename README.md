@@ -29,9 +29,10 @@ The existing Swift plotting frameworks (such as CorePlot) run only on iOS or Mac
 The idea behind SwiftPlot is to create a cross-platform library that runs on iOS, Mac, Linux and Windows.
 </br>
 </br>
-SwiftPlot currently uses two rendering backends to generate plots:
+SwiftPlot currently uses three rendering backends to generate plots:
 - Anti-Grain Geometry(AGG) C++ rendering library
 - A simple SVG Renderer
+- A Core Graphics renderer with support for macOS, iOS, watchOS and tvOS
 
 To encode the plots as PNG images it uses the [lodepng](https://github.com/lvandeve/lodepng) library.
 </br>
