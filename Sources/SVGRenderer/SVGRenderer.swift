@@ -14,7 +14,7 @@ extension Character {
 public class SVGRenderer: Renderer{
 
     static let LCARS_CHAR_SIZE_ARRAY: [Int] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 26, 46, 63, 42, 105, 45, 20, 25, 25, 47, 39, 21, 34, 26, 36, 36, 28, 36, 36, 36, 36, 36, 36, 36, 36, 27, 27, 36, 35, 36, 35, 65, 42, 43, 42, 44, 35, 34, 43, 46, 25, 39, 40, 31, 59, 47, 43, 41, 43, 44, 39, 28, 44, 43, 65, 37, 39, 34, 37, 42, 37, 50, 37, 32, 43, 43, 39, 43, 40, 30, 42, 45, 23, 25, 39, 23, 67, 45, 41, 43, 42, 30, 40, 28, 45, 33, 52, 33, 36, 31, 39, 26, 39, 55]
-    
+
     static let forwardSlashHatch: String = #"<defs><pattern id="forwardSlashHatch" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="10" style="stroke:black; stroke-width:1" /></pattern></defs>"#
     static let backwardSlashHatch: String = #"<defs><pattern id="backwardSlashHatch" width="10" height="10" patternTransform="rotate(-45 0 0)" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="0" y2="10" style="stroke:black; stroke-width:1" /></pattern></defs>"#
     static let hollowCircleHatch: String = #"<defs><pattern id="hollowCircleHatch" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="3" stroke="black" stroke-width="1" fill="none"/></pattern></defs>"#
@@ -23,7 +23,7 @@ public class SVGRenderer: Renderer{
     static let horizontalHatch: String = #"<defs><pattern id="horizontalHatch" width="10" height="10" patternUnits="userSpaceOnUse"><line x1="0" y1="5" x2="10" y2="5" style="stroke:black; stroke-width:1" /></pattern></defs>"#
     static let gridHatch: String = #"<defs><pattern id="gridHatch" width="10" height="10" patternUnits="userSpaceOnUse"><line x1="0" y1="5" x2="10" y2="5" style="stroke:black; stroke-width:1" /><line x1="5" y1="0" x2="5" y2="10" style="stroke:black; stroke-width:1" /></pattern></defs>"#
     static let crossHatch: String = #"<defs><pattern id="crossHatch" width="10" height="10" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="10" y2="10" style="stroke:black; stroke-width:1" /><line x1="0" y1="10" x2="10" y2="0" style="stroke:black; stroke-width:1" /></pattern></defs>"#
-    
+
     public var offset = zeroPoint
     public var imageSize: Size
 
@@ -32,7 +32,7 @@ public class SVGRenderer: Renderer{
 
     var lines: [String] = []
     var fontFamily: String = "Roboto"
-    
+
     public init(width w: Float = 1000, height h: Float = 660, fontFamily: String = "Roboto") {
         self.imageSize = Size(width: w, height: h)
         self.fontFamily = fontFamily
@@ -156,7 +156,7 @@ public class SVGRenderer: Renderer{
         let triangle = #"<polygon points="\#(p1.x),\#(p1.y) \#(p2.x),\#(p2.y) \#(p3.x),\#(p3.y)" style="fill:\#(fillColor.svgColorString);opacity:\#(fillColor.a)" />"#
         lines.append(triangle)
     }
-    
+
     public func drawSolidPolygon(points: [Point],
                                  fillColor: Color) {
         let pts = points.map { convertToSVGCoordinates($0) }
@@ -190,14 +190,14 @@ public class SVGRenderer: Renderer{
                               strokeColor: Color,
                               isDashed: Bool) {
         guard p.count > 1 else { return }
-        
+
         let pointsString = p.lazy.map { point in
             let convertedPoint = self.convertToSVGCoordinates(point)
             return "\(convertedPoint.x),\(convertedPoint.y)"
         }.joined(separator: " ")
-        
+
         let dashedString = isDashed ? "stroke-dasharray:4 1;" : ""
-        
+
         lines.append(#"<polyline points="\#(pointsString)" style="stroke:\#(strokeColor.svgColorString);stroke-width:\#(thickness);opacity:\#(strokeColor.a);stroke-linecap:butt;fill:none;\#(dashedString)" />"#)
     }
 
@@ -208,7 +208,7 @@ public class SVGRenderer: Renderer{
                          strokeWidth thickness: Float,
                          angle: Float){
         let p = convertToSVGCoordinates(p)
-        let text = #"<text font-size="\#(size)" font-family="\#(fontFamily)" x="\#(p.x)" y="\#(p.y)" style="stroke:\#(color.svgColorString);stroke-width:\#(thickness/4);fill:\#(color.svgColorString);" transform="rotate(\#(-angle),\#(p.x),\#(p.y))">\#(s)</text>"#
+        let text = #"<text font-size="\#(size)" font-family="\#(fontFamily)" x="\#(p.x)" y="\#(p.y)" style="stroke:\#(color.svgColorString);stroke-width:\#(thickness/4);fill:\#(color.svgColorString);opacity:\#(color.a);" transform="rotate(\#(-angle),\#(p.x),\#(p.y))">\#(s)</text>"#
         lines.append(text)
     }
 
@@ -234,7 +234,7 @@ public class SVGRenderer: Renderer{
             + "\n" + #"<rect width="100%" height="100%" fill="white"/>"#
         let font = #"<defs><style>@import url("https://fonts.googleapis.com/css?family=\#(fontFamily)");</style></defs>"#
         let image = header + "\n" + font + "\n" + lines.joined(separator: "\n") + "\n</svg>"
-        
+
         let url = URL(fileURLWithPath: "\(name).svg")
         try image.write(to: url, atomically: true, encoding: .utf8)
     }
