@@ -52,7 +52,7 @@ struct Text : Annotation {
     public var color = Color.black
     public var size: Float = 15
     public var location = Point(0.0, 0.0)
-    public func draw(renderer: Renderer){
+    public func draw(renderer: Renderer) {
         renderer.drawText(text: text,
                           location: location,
                           textSize: size,
@@ -65,5 +65,50 @@ struct Text : Annotation {
         self.color = color
         self.size = size
         self.location = location
+    }
+}
+
+struct Arrow : Annotation {
+    public var color = Color.black
+    public var start = Point(0.0, 0.0)
+    public var end = Point(0.0, 0.0)
+    public var width: Float = 5
+    public var headLength: Float = 10
+    public var headAngle: Float = 15
+    public func draw(renderer: Renderer) {
+        // Draws arrow body.
+        renderer.drawLine(startPoint: start,
+                          endPoint: end,
+                          strokeWidth: width,
+                          strokeColor: color,
+                          isDashed: false)
+
+        // Calculates arrow head points.
+        var p1 = start + Point(cos(headAngle)*headLength, sin(headAngle)*headLength)
+        var p2 = start + Point(cos(headAngle)*headLength, -sin(headAngle)*headLength)
+
+        let rotateAngle = -atan2(end.x - start.x, end.y - start.y)
+        p1 = rotatePoint(point: p1, center: start, angleRadians: rotateAngle + 0.5 * Float.pi)
+        p2 = rotatePoint(point: p2, center: start, angleRadians: rotateAngle + 0.5 * Float.pi)
+
+        // Draws arrow head points.
+        renderer.drawLine(startPoint: start,
+                          endPoint: p1,
+                          strokeWidth: width,
+                          strokeColor: color,
+                          isDashed: false)
+        renderer.drawLine(startPoint: start,
+                          endPoint: p2,
+                          strokeWidth: width,
+                          strokeColor: color,
+                          isDashed: false)
+    }
+    public init(color: Color = .black, start: Point = Point(0.0, 0.0), end: Point = Point(0.0, 0.0), width: Float = 5, headLength: Float = 10, headAngle: Float = 15) {
+        self.color = color
+        self.start = start
+        self.end = end
+        self.width = width
+        self.headLength = headLength
+        self.headAngle = headAngle * Float.pi / 180
     }
 }
