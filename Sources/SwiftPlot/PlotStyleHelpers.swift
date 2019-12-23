@@ -72,42 +72,45 @@ struct Arrow : Annotation {
     public var color = Color.black
     public var start = Point(0.0, 0.0)
     public var end = Point(0.0, 0.0)
-    public var width: Float = 5
+    public var strokeWidth: Float = 10
     public var headLength: Float = 10
-    public var headAngle: Float = 15
+    public var headAngle: Float = 20
     public func draw(renderer: Renderer) {
         // Draws arrow body.
+
+        //TODO: scale points to be plotted according to plot size
+        
         renderer.drawLine(startPoint: start,
                           endPoint: end,
-                          strokeWidth: width,
+                          strokeWidth: strokeWidth,
                           strokeColor: color,
                           isDashed: false)
 
         // Calculates arrow head points.
-        var p1 = start + Point(cos(headAngle)*headLength, sin(headAngle)*headLength)
-        var p2 = start + Point(cos(headAngle)*headLength, -sin(headAngle)*headLength)
+        var p1 = end + Point(cos(headAngle)*headLength, sin(headAngle)*headLength)
+        var p2 = end + Point(cos(headAngle)*headLength, -sin(headAngle)*headLength)
 
-        let rotateAngle = -atan2(end.x - start.x, end.y - start.y)
-        p1 = rotatePoint(point: p1, center: start, angleRadians: rotateAngle + 0.5 * Float.pi)
-        p2 = rotatePoint(point: p2, center: start, angleRadians: rotateAngle + 0.5 * Float.pi)
+        let rotateAngle = -atan2(start.x - end.x, start.y - end.y)
+        p1 = rotatePoint(point: p1, center: end, angleRadians: rotateAngle + 0.5 * Float.pi)
+        p2 = rotatePoint(point: p2, center: end, angleRadians: rotateAngle + 0.5 * Float.pi)
 
         // Draws arrow head points.
-        renderer.drawLine(startPoint: start,
+        renderer.drawLine(startPoint: end,
                           endPoint: p1,
-                          strokeWidth: width,
+                          strokeWidth: strokeWidth,
                           strokeColor: color,
                           isDashed: false)
-        renderer.drawLine(startPoint: start,
+        renderer.drawLine(startPoint: end,
                           endPoint: p2,
-                          strokeWidth: width,
+                          strokeWidth: strokeWidth,
                           strokeColor: color,
                           isDashed: false)
     }
-    public init(color: Color = .black, start: Point = Point(0.0, 0.0), end: Point = Point(0.0, 0.0), width: Float = 5, headLength: Float = 10, headAngle: Float = 15) {
+    public init(color: Color = .black, start: Point = Point(0.0, 0.0), end: Point = Point(0.0, 0.0), strokeWidth: Float = 10, headLength: Float = 10, headAngle: Float = 15) {
         self.color = color
         self.start = start
         self.end = end
-        self.width = width
+        self.strokeWidth = strokeWidth
         self.headLength = headLength
         self.headAngle = headAngle * Float.pi / 180
     }
