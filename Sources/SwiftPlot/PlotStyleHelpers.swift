@@ -52,7 +52,12 @@ struct Text : Annotation {
     public var color = Color.black
     public var size: Float = 15
     public var location = Point(0.0, 0.0)
+    public var bbox: Bool = false
+    public var bboxColor = Color.white
     public func draw(renderer: Renderer){
+        if bbox {
+            renderer.draw
+        }
         renderer.drawText(text: text,
                           location: location,
                           textSize: size,
