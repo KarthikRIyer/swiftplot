@@ -27,7 +27,9 @@ extension AnnotationTests {
     lineGraph.addAnnotation(annotation: Text(text: "HELLO WORLD",
                                              color: Color(0.0, 0.0, 0.0, 0.5),
                                              size: 50.0,
-                                             location: Point(300, 300)))
+                                             location: Point(300, 300),
+                                             bbox: true,
+                                             bboxColor: Color.green))
 
     let svg_renderer = SVGRenderer()
     try lineGraph.drawGraphAndOutput(fileName: svgOutputDirectory+fileName,

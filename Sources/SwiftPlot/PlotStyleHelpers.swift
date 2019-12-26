@@ -53,10 +53,18 @@ struct Text : Annotation {
     public var size: Float = 15
     public var location = Point(0.0, 0.0)
     public var bbox: Bool = false
+    public var bboxBorderSize: Float = 5
     public var bboxColor = Color.white
     public func draw(renderer: Renderer){
         if bbox {
-            renderer.draw
+            var bboxSize = renderer.getTextLayoutSize(text: text, textSize: size)
+            bboxSize.width += 2 * bboxBorderSize
+            bboxSize.height += 2 * bboxBorderSize
+            let bboxRect = Rect(origin: Point(location.x - bboxBorderSize, location.y - bboxBorderSize),
+                            size: bboxSize)
+            renderer.drawSolidRect(bboxRect,
+                                   fillColor: bboxColor,
+                                   hatchPattern: BarGraphSeriesOptions.Hatching.none)
         }
         renderer.drawText(text: text,
                           location: location,
@@ -65,10 +73,13 @@ struct Text : Annotation {
                           strokeWidth: 1.2,
                           angle: 0)
     }
-    public init(text: String = "", color: Color = .black, size: Float = 15, location: Point = Point(0.0, 0.0)) {
+    public init(text: String = "", color: Color = .black, size: Float = 15, location: Point = Point(0.0, 0.0), bbox: Bool = false, bboxBorderSize: Float = 5, bboxColor: Color = .white) {
         self.text = text
         self.color = color
         self.size = size
         self.location = location
+        self.bbox = bbox
+        self.bboxBorderSize = bboxBorderSize
+        self.bboxColor = bboxColor
     }
 }
