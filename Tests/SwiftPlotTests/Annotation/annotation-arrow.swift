@@ -23,9 +23,9 @@ extension AnnotationTests {
     lineGraph.plotLineThickness = 3.0
 
     lineGraph.addAnnotation(annotation: Arrow(start: Point(400.0, 585.0),
-                                              end: Point(585.0, 585.0)))
-    lineGraph.addAnnotation(annotation: Text(text: "relative maxima",
-                                             location: Point(285.0, 582.0)))
+                                              end: Point(585.0, 585.0),
+                                              text: "relative maxima",
+                                              textAnchor: "west"))
 
     let svg_renderer = SVGRenderer()
     try lineGraph.drawGraphAndOutput(fileName: svgOutputDirectory+fileName,
