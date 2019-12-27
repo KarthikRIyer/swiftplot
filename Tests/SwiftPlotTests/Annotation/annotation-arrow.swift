@@ -13,7 +13,7 @@ extension AnnotationTests {
 
   func testAnnotationArrow() throws {
 
-    let fileName = "_30_arrow_annotation"
+    let fileName = "_31_arrow_annotation"
 
     let lineGraph = LineGraph<Float, Float>(enablePrimaryAxisGrid: true)
     lineGraph.addFunction(sin, minX: -5.0, maxX: 5.0, label: "sin(x)", color: .lightBlue)
@@ -24,8 +24,8 @@ extension AnnotationTests {
 
     lineGraph.addAnnotation(annotation: Arrow(start: Point(400.0, 585.0),
                                               end: Point(585.0, 585.0),
-                                              text: "relative maxima",
-                                              textAnchor: "west"))
+                                              startAnnotation: Text(text: "relative maxima",
+                                                                    location: Point(280.0, 585.0))))
 
     let svg_renderer = SVGRenderer()
     try lineGraph.drawGraphAndOutput(fileName: svgOutputDirectory+fileName,

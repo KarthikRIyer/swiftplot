@@ -77,11 +77,8 @@ struct Arrow : Annotation {
     public var headAngle: Float = 20
     public var isDashed: Bool = false
     public var isFilled: Bool = false
-    public var text = ""
-    public var textAnchor = "north"
-    public var textBuffer: Float = 5
-    public var textColor = Color.black
-    public var textSize: Float = 15
+    public var startAnnotation: Annotation?
+    public var endAnnotation: Annotation?
     public func draw(renderer: Renderer) {
         // Draws arrow body.
         renderer.drawPlotLines(points: [start, end],
@@ -108,31 +105,12 @@ struct Arrow : Annotation {
                                    isDashed: false)
         }
 
-        // Draws text annotation if specified.
-        if text != "" {
-            var location = Point(0.0, 0.0)
-            let textWidth = renderer.getTextWidth(text: text, textSize: textSize)
-            if textAnchor == "north" {
-                location = Point(start.x + strokeWidth/2 - textWidth/2, start.y + textBuffer)
-            }
-            else if textAnchor == "east" {
-                location = Point(start.x + textBuffer, start.y + strokeWidth/2 - textSize/2)
-            }
-            else if textAnchor == "south" {
-                location = Point(start.x + strokeWidth/2 - textWidth/2, start.y - textSize - textBuffer)
-            }
-            else {
-                location = Point(start.x - textWidth - textBuffer, start.y + strokeWidth/2 - textSize/2)
-            }
-            renderer.drawText(text: text,
-                              location: location,
-                              textSize: textSize,
-                              color: textColor,
-                              strokeWidth: 1.2,
-                              angle: 0)
-        }
+        //Draws start and end annotations if specified.
+        startAnnotation?.draw(renderer: renderer)
+        endAnnotation?.draw(renderer: renderer)
+
     }
-    public init(color: Color = .black, start: Point = Point(0.0, 0.0), end: Point = Point(0.0, 0.0), strokeWidth: Float = 5, headLength: Float = 10, headAngle: Float = 20, isDashed: Bool = false, isFilled: Bool = false, text: String = "", textAnchor: String = "north") {
+    public init(color: Color = .black, start: Point = Point(0.0, 0.0), end: Point = Point(0.0, 0.0), strokeWidth: Float = 5, headLength: Float = 10, headAngle: Float = 20, isDashed: Bool = false, isFilled: Bool = false, startAnnotation: Annotation? = nil, endAnnotation: Annotation? = nil) {
         self.color = color
         self.start = start
         self.end = end
@@ -141,7 +119,7 @@ struct Arrow : Annotation {
         self.headAngle = headAngle * Float.pi / 180
         self.isDashed = isDashed
         self.isFilled = isFilled
-        self.text = text
-        self.textAnchor = textAnchor
+        self.startAnnotation = startAnnotation
+        self.endAnnotation = endAnnotation
     }
 }
