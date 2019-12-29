@@ -28,9 +28,8 @@ extension AnnotationTests {
                                              color: Color(0.0, 0.0, 0.0, 0.5),
                                              size: 50.0,
                                              location: Point(300, 300),
-                                             boundingBox: Box(color: .green,
-                                                              location: Point(290, 290),
-                                                              size: Size(width: 350.0, height: 50.0))))
+                                             boundingBox: Box(color: .pink),
+                                             borderWidth: 5.0))
 
     let svg_renderer = SVGRenderer()
     try lineGraph.drawGraphAndOutput(fileName: svgOutputDirectory+fileName,

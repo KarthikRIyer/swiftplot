@@ -44,7 +44,7 @@ public struct PlotLegend {
 }
 
 public protocol Annotation {
-    func draw(renderer: Renderer)
+    mutating func draw(renderer: Renderer)
 }
 
 struct Box: Annotation {
@@ -69,8 +69,16 @@ struct Text : Annotation {
     public var size: Float = 15
     public var location = Point(0.0, 0.0)
     public var boundingBox: Box?
-    public func draw(renderer: Renderer) {
-        boundingBox?.draw(renderer: renderer)
+    public var borderWidth: Float = 5
+    public mutating func draw(renderer: Renderer) {
+        if boundingBox != nil {
+            var bboxSize = renderer.getTextLayoutSize(text: text, textSize: size)
+            bboxSize.width += 2 * borderWidth
+            bboxSize.height += 2 * borderWidth
+            boundingBox?.location = Point(location.x - borderWidth, location.y - borderWidth)
+            boundingBox?.size = bboxSize
+            boundingBox?.draw(renderer: renderer)
+        }
         renderer.drawText(text: text,
                           location: location,
                           textSize: size,
@@ -78,7 +86,7 @@ struct Text : Annotation {
                           strokeWidth: 1.2,
                           angle: 0)
     }
-    public init(text: String = "", color: Color = .black, size: Float = 15, location: Point = Point(0.0, 0.0), boundingBox: Box? = nil) {
+    public init(text: String = "", color: Color = .black, size: Float = 15, location: Point = Point(0.0, 0.0), boundingBox: Box? = nil, borderWidth: Float = 5) {
         self.text = text
         self.color = color
         self.size = size

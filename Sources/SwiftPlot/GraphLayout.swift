@@ -367,7 +367,7 @@ public struct GraphLayout {
     }
 
     func drawAnnotations(renderer: Renderer) {
-        for annotation in annotations{
+        for var annotation in annotations{
             annotation.draw(renderer: renderer)
         }
     }
