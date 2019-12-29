@@ -92,6 +92,7 @@ struct Text : Annotation {
         self.size = size
         self.location = location
         self.boundingBox = boundingBox
+        self.borderWidth = borderWidth
     }
 }
 
