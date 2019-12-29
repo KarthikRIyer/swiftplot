@@ -86,3 +86,59 @@ struct Text : Annotation {
         self.boundingBox = boundingBox
     }
 }
+
+struct Arrow : Annotation {
+    public var color = Color.black
+    public var start = Point(0.0, 0.0)
+    public var end = Point(0.0, 0.0)
+    public var strokeWidth: Float = 5
+    public var headLength: Float = 10
+    public var headAngle: Float = 20
+    public var isDashed: Bool = false
+    public var isFilled: Bool = false
+    public var startAnnotation: Annotation?
+    public var endAnnotation: Annotation?
+    public func draw(renderer: Renderer) {
+        // Draws arrow body.
+        renderer.drawPlotLines(points: [start, end],
+                               strokeWidth: strokeWidth,
+                               strokeColor: color,
+                               isDashed: isDashed)
+
+        // Calculates arrow head points.
+        var p1 = end + Point(cos(headAngle)*headLength, sin(headAngle)*headLength)
+        var p2 = end + Point(cos(headAngle)*headLength, -sin(headAngle)*headLength)
+        let rotateAngle = -atan2(start.x - end.x, start.y - end.y)
+        p1 = rotatePoint(point: p1, center: end, angleRadians: rotateAngle + 0.5 * Float.pi)
+        p2 = rotatePoint(point: p2, center: end, angleRadians: rotateAngle + 0.5 * Float.pi)
+
+        // Draws arrow head points.
+        if isFilled {
+            renderer.drawSolidPolygon(points: [p1, end, p2],
+                                      fillColor: color)
+        }
+        else {
+            renderer.drawPlotLines(points: [p1, end, p2],
+                                   strokeWidth: strokeWidth,
+                                   strokeColor: color,
+                                   isDashed: false)
+        }
+
+        //Draws start and end annotations if specified.
+        startAnnotation?.draw(renderer: renderer)
+        endAnnotation?.draw(renderer: renderer)
+
+    }
+    public init(color: Color = .black, start: Point = Point(0.0, 0.0), end: Point = Point(0.0, 0.0), strokeWidth: Float = 5, headLength: Float = 10, headAngle: Float = 20, isDashed: Bool = false, isFilled: Bool = false, startAnnotation: Annotation? = nil, endAnnotation: Annotation? = nil) {
+        self.color = color
+        self.start = start
+        self.end = end
+        self.strokeWidth = strokeWidth
+        self.headLength = headLength
+        self.headAngle = headAngle * Float.pi / 180
+        self.isDashed = isDashed
+        self.isFilled = isFilled
+        self.startAnnotation = startAnnotation
+        self.endAnnotation = endAnnotation
+    }
+}
