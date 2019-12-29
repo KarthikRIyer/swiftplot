@@ -10,9 +10,9 @@ import QuartzRenderer
 @available(tvOS 13, watchOS 13, *)
 extension AnnotationTests {
 
-  func testAnnotationTextBackgroundRect() throws {
+  func testAnnotationTextBoundingBox() throws {
     
-    let fileName = "_30_text_backround_rect_annotation"
+    let fileName = "_30_text_bounding_box_annotation"
 
     let x:[Float] = [10,100,263,489]
     let y:[Float] = [10,120,500,800]
@@ -28,8 +28,9 @@ extension AnnotationTests {
                                              color: Color(0.0, 0.0, 0.0, 0.5),
                                              size: 50.0,
                                              location: Point(300, 300),
-                                             drawBackgroundRect: true,
-                                             backgroundRectColor: Color.green))
+                                             boundingBox: Box(color: .green,
+                                                              location: Point(290, 290),
+                                                              size: Size(width: 350.0, height: 50.0))))
 
     let svg_renderer = SVGRenderer()
     try lineGraph.drawGraphAndOutput(fileName: svgOutputDirectory+fileName,

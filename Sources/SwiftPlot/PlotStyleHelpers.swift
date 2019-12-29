@@ -47,25 +47,30 @@ public protocol Annotation {
     func draw(renderer: Renderer)
 }
 
+struct Box: Annotation {
+    public var color = Color.black
+    public var location = Point(0.0, 0.0)
+    public var size = Size(width: 0.0, height: 0.0)
+    public func draw(renderer: Renderer) {
+        renderer.drawSolidRect(Rect(origin: location, size: size),
+                               fillColor: color,
+                               hatchPattern: .none)
+    }
+    public init(color: Color = .black, location: Point = Point(0.0, 0.0), size: Size = Size(width: 0.0, height: 0.0)) {
+        self.color = color
+        self.location = location
+        self.size = size
+    }
+}
+
 struct Text : Annotation {
     public var text = ""
     public var color = Color.black
     public var size: Float = 15
     public var location = Point(0.0, 0.0)
-    public var drawBackgroundRect: Bool = false
-    public var backgroundRectBorderSize: Float = 5
-    public var backgroundRectColor = Color.white
-    public func draw(renderer: Renderer){
-        if drawBackgroundRect {
-            var backgroundRectSize = renderer.getTextLayoutSize(text: text, textSize: size)
-            backgroundRectSize.width += 2 * backgroundRectBorderSize
-            backgroundRectSize.height += 2 * backgroundRectBorderSize
-            let backgroundRectRect = Rect(origin: Point(location.x - backgroundRectBorderSize, location.y - backgroundRectBorderSize),
-                            size: backgroundRectSize)
-            renderer.drawSolidRect(backgroundRectRect,
-                                   fillColor: backgroundRectColor,
-                                   hatchPattern: .none)
-        }
+    public var boundingBox: Box?
+    public func draw(renderer: Renderer) {
+        boundingBox?.draw(renderer: renderer)
         renderer.drawText(text: text,
                           location: location,
                           textSize: size,
@@ -73,13 +78,11 @@ struct Text : Annotation {
                           strokeWidth: 1.2,
                           angle: 0)
     }
-    public init(text: String = "", color: Color = .black, size: Float = 15, location: Point = Point(0.0, 0.0), drawBackgroundRect: Bool = false, backgroundRectBorderSize: Float = 5, backgroundRectColor: Color = .white) {
+    public init(text: String = "", color: Color = .black, size: Float = 15, location: Point = Point(0.0, 0.0), boundingBox: Box? = nil) {
         self.text = text
         self.color = color
         self.size = size
         self.location = location
-        self.drawBackgroundRect = drawBackgroundRect
-        self.backgroundRectBorderSize = backgroundRectBorderSize
-        self.backgroundRectColor = backgroundRectColor
+        self.boundingBox = boundingBox
     }
 }

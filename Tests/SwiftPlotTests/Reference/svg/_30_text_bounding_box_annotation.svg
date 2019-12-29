@@ -55,6 +55,6 @@
 <rect x="107.0" y="70.0" width="77.8" height="30.0" style="fill:rgb(255.0,255.0,255.0);stroke-width:2.0;stroke:rgb(0.0,0.0,0.0);opacity:0.7" />
 <rect x="117.0" y="80.0" width="10.0" height="10.0" style="fill:rgb(134.89499,206.04001,235.11);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
 <text font-size="10.0" font-family="Roboto" x="137.0" y="90.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,137.0,90.0)">Plot 1</text>
-<rect x="295.0" y="305.0" width="250.0" height="60.0" style="fill:rgb(0.0,127.5,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
+<rect x="290.0" y="320.0" width="350.0" height="50.0" style="fill:rgb(0.0,127.5,0.0);stroke-width:0;stroke:rgb(0,0,0);opacity:1.0" />
 <text font-size="50.0" font-family="Roboto" x="300.0" y="360.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);opacity:0.5;" transform="rotate(-0.0,300.0,360.0)">HELLO WORLD</text>
 </svg>
