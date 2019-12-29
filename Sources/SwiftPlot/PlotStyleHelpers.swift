@@ -106,7 +106,7 @@ struct Arrow : Annotation {
     public var isFilled: Bool = false
     public var startAnnotation: Annotation?
     public var endAnnotation: Annotation?
-    public func draw(renderer: Renderer) {
+    public mutating func draw(renderer: Renderer) {
         // Draws arrow body.
         renderer.drawPlotLines(points: [start, end],
                                strokeWidth: strokeWidth,
