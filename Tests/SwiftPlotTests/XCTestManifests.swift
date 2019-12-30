@@ -16,6 +16,7 @@ extension AnnotationTests {
     // to regenerate.
     static let __allTests__AnnotationTests = [
         ("testAnnotationText", testAnnotationText),
+        ("testAnnotationTextBoundingBox", testAnnotationTextBoundingBox),
         ("testAnnotationArrow", testAnnotationArrow),
     ]
 }

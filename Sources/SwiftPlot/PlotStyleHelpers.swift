@@ -44,7 +44,23 @@ public struct PlotLegend {
 }
 
 public protocol Annotation {
-    func draw(renderer: Renderer)
+    mutating func draw(renderer: Renderer)
+}
+
+struct Box: Annotation {
+    public var color = Color.black
+    public var location = Point(0.0, 0.0)
+    public var size = Size(width: 0.0, height: 0.0)
+    public func draw(renderer: Renderer) {
+        renderer.drawSolidRect(Rect(origin: location, size: size),
+                               fillColor: color,
+                               hatchPattern: .none)
+    }
+    public init(color: Color = .black, location: Point = Point(0.0, 0.0), size: Size = Size(width: 0.0, height: 0.0)) {
+        self.color = color
+        self.location = location
+        self.size = size
+    }
 }
 
 struct Text : Annotation {
@@ -52,7 +68,17 @@ struct Text : Annotation {
     public var color = Color.black
     public var size: Float = 15
     public var location = Point(0.0, 0.0)
-    public func draw(renderer: Renderer) {
+    public var boundingBox: Box?
+    public var borderWidth: Float = 5
+    public mutating func draw(renderer: Renderer) {
+        if boundingBox != nil {
+            var bboxSize = renderer.getTextLayoutSize(text: text, textSize: size)
+            bboxSize.width += 2 * borderWidth
+            bboxSize.height += 2 * borderWidth
+            boundingBox?.location = Point(location.x - borderWidth, location.y - borderWidth)
+            boundingBox?.size = bboxSize
+            boundingBox?.draw(renderer: renderer)
+        }
         renderer.drawText(text: text,
                           location: location,
                           textSize: size,
@@ -60,11 +86,13 @@ struct Text : Annotation {
                           strokeWidth: 1.2,
                           angle: 0)
     }
-    public init(text: String = "", color: Color = .black, size: Float = 15, location: Point = Point(0.0, 0.0)) {
+    public init(text: String = "", color: Color = .black, size: Float = 15, location: Point = Point(0.0, 0.0), boundingBox: Box? = nil, borderWidth: Float = 5) {
         self.text = text
         self.color = color
         self.size = size
         self.location = location
+        self.boundingBox = boundingBox
+        self.borderWidth = borderWidth
     }
 }
 
@@ -79,7 +107,7 @@ struct Arrow : Annotation {
     public var isFilled: Bool = false
     public var startAnnotation: Annotation?
     public var endAnnotation: Annotation?
-    public func draw(renderer: Renderer) {
+    public mutating func draw(renderer: Renderer) {
         // Draws arrow body.
         renderer.drawPlotLines(points: [start, end],
                                strokeWidth: strokeWidth,
