@@ -25,7 +25,7 @@ extension AnnotationTests {
     lineGraph.plotLineThickness = 3.0
 
     lineGraph.addAnnotation(annotation: Text(text: "HELLO WORLD",
-                                             color: Color(0.0, 0.0, 0.0, 0.5),
+                                             color: .black,
                                              size: 50.0,
                                              location: Point(300, 300),
                                              boundingBox: Box(color: .pink),
