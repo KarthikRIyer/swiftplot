@@ -97,9 +97,9 @@ namespace CPPAGGRenderer{
     agg::int8u*           m_pattern;
     agg::rendering_buffer m_pattern_rbuf;
     renderer_base_pre rb_pre;
-    
+
   public:
-    
+
     Plot(float width, float height, const char* fontPathPtr) :
     m_feng(),
     m_fman(m_feng),
@@ -119,7 +119,7 @@ namespace CPPAGGRenderer{
         fontPath = dir_path.append("/Roboto-Regular.ttf");
       }
     }
-    
+
     ~Plot() {
       delete [] buffer;
     }
