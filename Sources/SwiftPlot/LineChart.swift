@@ -182,6 +182,8 @@ extension LineGraph {
     
     var scaleX: Float = 1
     var scaleY: Float = 1
+    // The "origin" is just a known value at a known location,
+    // used for calculating where other points are located.
     var origin: Point = zeroPoint
     var originValue = Pair(T(0), U(0))
     
@@ -225,7 +227,6 @@ extension LineGraph {
     private mutating func calculateOrigin() {
       let originLocX: Float
       let originLocY: Float
-      // TODO: Snap origins with small offset to zero?
       if Float(bounds.x.lowerBound) >= 0, Float(bounds.x.upperBound) >= 0 {
         // All points on positive X axis.
         originLocX = rightMargin
@@ -254,6 +255,17 @@ extension LineGraph {
         originValue.y = U(0)
       }
       origin = Pair(originLocX, originLocY)
+      
+      // If the zero-coordinate is already in view, snap the origin to it.
+      let zeroLocation = convertCoordinate(fromData: Pair(T(0), U(0)))
+      if (0...size.width).contains(zeroLocation.x) {
+        origin.x = zeroLocation.x
+        originValue.x = T(0)
+      }
+      if (0...size.height).contains(zeroLocation.y) {
+        origin.y = zeroLocation.y
+        originValue.y = U(0)
+      }
     }
     
     func calculateMarkers() -> (x: [Float], xLabels: [String], y: [Float], yLabels: [String]) {
