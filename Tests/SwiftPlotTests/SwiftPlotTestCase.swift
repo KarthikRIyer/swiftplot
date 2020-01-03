@@ -39,7 +39,9 @@ enum KnownRenderer {
 }
 
 // TODO: Possibly allow setting this via a command-line flag?
-fileprivate let outputDirectoryRoot: String = "./output/"
+fileprivate let outputDirectoryRoot: String = { () -> String? in
+  ProcessInfo.processInfo.environment["SWIFTPLOT_TEST_OUTPUT"]
+}() ?? "./output/"
 
 fileprivate let referenceDirectoryRoot: URL = {
   // #file = SwiftPlotTests/swiftPlotTestCase.swift
