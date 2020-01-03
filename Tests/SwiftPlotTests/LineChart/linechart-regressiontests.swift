@@ -20,7 +20,7 @@ extension LineChartTests {
   func testLineChart_positiveYOrigin_secondary() throws {
     let x:[Float] = [0, 1, 2, 3]
     let y:[Float] = [70, 80, 95, 100]
-    let y2: [Float] = [800, 900, 800, 1000]
+    let y2: [Float] = [-800, -900, -800, -1000]
 
     var lineGraph = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
     lineGraph.addSeries(x, y, label: "Plot 1", color: .lightBlue)

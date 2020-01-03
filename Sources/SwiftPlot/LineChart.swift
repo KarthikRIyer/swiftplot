@@ -269,7 +269,6 @@ extension LineGraph {
     }
     
     func calculateMarkers() -> (x: [Float], xLabels: [String], y: [Float], yLabels: [String]) {
-      //calculations for primary axis
       var yIncrement: Float = -1
       var xIncrement: Float = -1
       var xIncRound: Int   = 1

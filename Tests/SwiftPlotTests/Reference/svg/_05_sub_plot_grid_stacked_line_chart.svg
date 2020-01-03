@@ -33,7 +33,7 @@
 <text font-size="10.0" font-family="Roboto" x="36.0" y="467.7" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,36.0,467.7)">200.0</text>
 <line x1="78.0" y1="402.95" x2="84.0" y2="402.95" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:butt" />
 <text font-size="10.0" font-family="Roboto" x="36.0" y="406.95" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,36.0,406.95)">300.0</text>
-<polyline points="102.2,585.2 169.19386,390.8 278.39386,396.875 429.8,481.925" style="stroke:rgb(134.89499,206.04001,235.11);stroke-width:1.5;opacity:1.0;stroke-linecap:butt;fill:none;" />
+<polyline points="102.2,585.2 169.19386,390.8 278.39386,396.875 429.80002,481.925" style="stroke:rgb(134.89499,206.04001,235.11);stroke-width:1.5;opacity:1.0;stroke-linecap:butt;fill:none;" />
 <text font-size="20.0" font-family="Roboto" x="234.7" y="364.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,234.7,364.0)">PLOT 1</text>
 <text font-size="12.0" font-family="Roboto" x="240.66" y="650.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,240.66,650.0)">X-AXIS</text>
 <text font-size="12.0" font-family="Roboto" x="22.0" y="513.45996" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-90.0,22.0,513.45996)">Y-AXIS</text>
@@ -72,7 +72,7 @@
 <text font-size="10.0" font-family="Roboto" x="536.0" y="467.7" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,536.0,467.7)">200.0</text>
 <line x1="578.0" y1="402.95" x2="584.0" y2="402.95" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:butt" />
 <text font-size="10.0" font-family="Roboto" x="536.0" y="406.95" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,536.0,406.95)">300.0</text>
-<polyline points="602.2,585.2 669.19385,390.8 778.39386,396.875 929.8,481.925" style="stroke:rgb(255.0,164.985,0.0);stroke-width:1.5;opacity:1.0;stroke-linecap:butt;fill:none;" />
+<polyline points="602.2,585.2 669.19385,390.8 778.39386,396.875 929.80005,481.925" style="stroke:rgb(255.0,164.985,0.0);stroke-width:1.5;opacity:1.0;stroke-linecap:butt;fill:none;" />
 <text font-size="20.0" font-family="Roboto" x="733.9" y="364.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,733.9,364.0)">PLOT 2</text>
 <text font-size="12.0" font-family="Roboto" x="740.66003" y="650.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,740.66003,650.0)">X-AXIS</text>
 <text font-size="12.0" font-family="Roboto" x="522.0" y="513.45996" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-90.0,522.0,513.45996)">Y-AXIS</text>
@@ -111,7 +111,7 @@
 <text font-size="10.0" font-family="Roboto" x="36.0" y="137.70001" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,36.0,137.70001)">200.0</text>
 <line x1="78.0" y1="72.95001" x2="84.0" y2="72.95001" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:butt" />
 <text font-size="10.0" font-family="Roboto" x="36.0" y="76.95001" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,36.0,76.95001)">300.0</text>
-<polyline points="102.2,255.20001 169.19386,60.799988 278.39386,66.875 429.8,151.92499" style="stroke:rgb(137.70001,68.850006,25.5);stroke-width:1.5;opacity:1.0;stroke-linecap:butt;fill:none;" />
+<polyline points="102.2,255.20001 169.19386,60.799988 278.39386,66.875 429.80002,151.92499" style="stroke:rgb(137.70001,68.850006,25.5);stroke-width:1.5;opacity:1.0;stroke-linecap:butt;fill:none;" />
 <text font-size="20.0" font-family="Roboto" x="233.9" y="34.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,233.9,34.0)">PLOT 3</text>
 <text font-size="12.0" font-family="Roboto" x="240.66" y="320.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,240.66,320.0)">X-AXIS</text>
 <text font-size="12.0" font-family="Roboto" x="22.0" y="183.45999" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-90.0,22.0,183.45999)">Y-AXIS</text>
@@ -150,7 +150,7 @@
 <text font-size="10.0" font-family="Roboto" x="536.0" y="137.70001" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,536.0,137.70001)">200.0</text>
 <line x1="578.0" y1="72.95001" x2="584.0" y2="72.95001" style="stroke:rgb(0.0,0.0,0.0);stroke-width:2.0;opacity:1.0;stroke-linecap:butt" />
 <text font-size="10.0" font-family="Roboto" x="536.0" y="76.95001" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.175;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,536.0,76.95001)">300.0</text>
-<polyline points="602.2,255.20001 669.19385,60.799988 778.39386,66.875 929.8,151.92499" style="stroke:rgb(0.0,127.5,0.0);stroke-width:1.5;opacity:1.0;stroke-linecap:butt;fill:none;" />
+<polyline points="602.2,255.20001 669.19385,60.799988 778.39386,66.875 929.80005,151.92499" style="stroke:rgb(0.0,127.5,0.0);stroke-width:1.5;opacity:1.0;stroke-linecap:butt;fill:none;" />
 <text font-size="20.0" font-family="Roboto" x="733.9" y="34.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,733.9,34.0)">PLOT 4</text>
 <text font-size="12.0" font-family="Roboto" x="740.66003" y="320.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,740.66003,320.0)">X-AXIS</text>
 <text font-size="12.0" font-family="Roboto" x="522.0" y="183.45999" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-90.0,522.0,183.45999)">Y-AXIS</text>
