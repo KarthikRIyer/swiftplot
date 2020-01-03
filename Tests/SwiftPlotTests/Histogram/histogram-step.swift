@@ -14,7 +14,7 @@ extension HistogramTests {
     
     let fileName = "_22_histogram_step"
     
-    let histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
+    var histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
     histogram.addSeries(data: histogram_step_values,
                         bins: 50,
                         label: "Plot 1",

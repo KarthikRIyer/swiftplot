@@ -17,7 +17,7 @@ extension AnnotationTests {
     let x:[Float] = [10,100,263,489]
     let y:[Float] = [10,120,500,800]
 
-    let lineGraph = LineGraph<Float, Float>(enablePrimaryAxisGrid: true)
+    var lineGraph = LineGraph<Float, Float>(enablePrimaryAxisGrid: true)
     lineGraph.addSeries(x, y, label: "Plot 1", color: .lightBlue)
     lineGraph.plotTitle.title = "SINGLE SERIES"
     lineGraph.plotLabel.xLabel = "X-AXIS"

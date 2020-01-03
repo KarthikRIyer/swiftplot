@@ -15,7 +15,7 @@ extension AnnotationTests {
 
     let fileName = "_31_arrow_annotation"
 
-    let lineGraph = LineGraph<Float, Float>(enablePrimaryAxisGrid: true)
+    var lineGraph = LineGraph<Float, Float>(enablePrimaryAxisGrid: true)
     lineGraph.addFunction(sin, minX: -5.0, maxX: 5.0, label: "sin(x)", color: .lightBlue)
     lineGraph.plotTitle.title = "FUNCTION"
     lineGraph.plotLabel.xLabel = "X-AXIS"

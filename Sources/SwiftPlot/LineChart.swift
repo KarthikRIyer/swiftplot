@@ -1,44 +1,37 @@
 import Foundation
 
-// class defining a lineGraph and all its logic
-public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
+fileprivate let MAX_DIV: Float = 50
 
-    let MAX_DIV: Float = 50
+// class defining a lineGraph and all its logic
+public struct LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     public var layout = GraphLayout()
-    
-    public var plotLineThickness: Float = 1.5
-
+    // Data.
     var primaryAxis = Axis<T,U>()
     var secondaryAxis: Axis<T,U>? = nil
-
-    public convenience init(points : [Pair<T,U>],
-                enablePrimaryAxisGrid: Bool = false,
-                enableSecondaryAxisGrid: Bool = false){
-        self.init(enablePrimaryAxisGrid: enablePrimaryAxisGrid, enableSecondaryAxisGrid: enableSecondaryAxisGrid)
-
-        let s = Series<T,U>(values: points,label: "Plot")
-        primaryAxis.series.append(s)
-    }
-
+    // Linegraph layout properties.
+    public var plotLineThickness: Float = 1.5
+    
     public init(enablePrimaryAxisGrid: Bool = false,
                 enableSecondaryAxisGrid: Bool = false){
         self.enablePrimaryAxisGrid = enablePrimaryAxisGrid
         self.enableSecondaryAxisGrid = enableSecondaryAxisGrid
     }
     
-    public var enablePrimaryAxisGrid: Bool {
-        get { layout.enablePrimaryAxisGrid }
-        set { layout.enablePrimaryAxisGrid = newValue }
+    public init(points : [Pair<T,U>],
+                enablePrimaryAxisGrid: Bool = false,
+                enableSecondaryAxisGrid: Bool = false){
+        self.init(enablePrimaryAxisGrid: enablePrimaryAxisGrid, enableSecondaryAxisGrid: enableSecondaryAxisGrid)
+        primaryAxis.series.append(Series(values: points, label: "Plot"))
     }
-    
-    public var enableSecondaryAxisGrid: Bool {
-        get { layout.enableSecondaryAxisGrid }
-        set { layout.enableSecondaryAxisGrid = newValue }
-    }
+}
+
+// Setting data.
+
+extension LineGraph {
 
     // functions to add series
-    public func addSeries(_ s: Series<T,U>,
+    public mutating func addSeries(_ s: Series<T,U>,
                           axisType: Axis<T,U>.Location = .primaryAxis){
         switch axisType {
         case .primaryAxis:
@@ -50,13 +43,13 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
             secondaryAxis!.series.append(s)
         }
     }
-    public func addSeries(points : [Pair<T,U>],
+    public mutating func addSeries(points : [Pair<T,U>],
                           label: String, color: Color = Color.lightBlue,
                           axisType: Axis<T,U>.Location = .primaryAxis){
         let s = Series<T,U>(values: points,label: label, color: color)
         addSeries(s, axisType: axisType)
     }
-    public func addSeries(_ y: [U],
+    public mutating func addSeries(_ y: [U],
                           label: String,
                           color: Color = Color.lightBlue,
                         axisType: Axis<T,U>.Location = .primaryAxis){
@@ -67,7 +60,7 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
         let s = Series<T,U>(values: points, label: label, color: color)
         addSeries(s, axisType: axisType)
     }
-    public func addSeries(_ x: [T],
+    public mutating func addSeries(_ x: [T],
                           _ y: [U],
                           label: String,
                           color: Color = .lightBlue,
@@ -79,7 +72,7 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
         let s = Series<T,U>(values: points, label: label, color: color)
         addSeries(s, axisType: axisType)
     }
-    public func addFunction(_ function: (T)->U,
+    public mutating func addFunction(_ function: (T)->U,
                             minX: T,
                             maxX: T,
                             numberOfSamples: Int = 400,
@@ -102,7 +95,23 @@ public class LineGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
     }
 }
 
-// extension containing drawing logic
+// Layout properties.
+
+extension LineGraph {
+    
+    public var enablePrimaryAxisGrid: Bool {
+        get { layout.enablePrimaryAxisGrid }
+        set { layout.enablePrimaryAxisGrid = newValue }
+    }
+    
+    public var enableSecondaryAxisGrid: Bool {
+        get { layout.enableSecondaryAxisGrid }
+        set { layout.enableSecondaryAxisGrid = newValue }
+    }
+}
+
+// Layout and drawing of data.
+
 extension LineGraph: HasGraphLayout {
 
     public var legendLabels: [(String, LegendIcon)] {
@@ -112,10 +121,22 @@ extension LineGraph: HasGraphLayout {
         }
         return allSeries.map { ($0.label, .square($0.color)) }
     }
+    
+    public struct DrawingData {
+        var primaryAxis_scaleX: Float = 1
+        var primaryAxis_scaleY: Float = 1
+        var primaryAxis_series_scaledValues = [[Pair<T, U>]]()
+        
+        var secondaryAxis_scaleX: Float = 1
+        var secondaryAxis_scaleY: Float = 1
+        var secondaryAxis_series_scaledValues = [[Pair<T, U>]]()
+    }
 
     // functions implementing plotting logic
-    public func calculateScaleAndMarkerLocations(markers: inout PlotMarkers, size: Size, renderer: Renderer) {
-        guard !primaryAxis.series.isEmpty, !primaryAxis.series[0].values.isEmpty else { return }
+    public func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers?) {
+        var results = DrawingData()
+        var markers = PlotMarkers()
+        guard !primaryAxis.series.isEmpty, !primaryAxis.series[0].values.isEmpty else { return (results, markers) }
         var maximumXPrimary: T = maxX(points: primaryAxis.series[0].values)
         var maximumYPrimary: U = maxY(points: primaryAxis.series[0].values)
         var minimumXPrimary: T = minX(points: primaryAxis.series[0].values)
@@ -189,8 +210,8 @@ extension LineGraph: HasGraphLayout {
             originPrimaryY+=topScaleMargin
         }
         let originPrimary = Point(originPrimaryX, originPrimaryY)
-        primaryAxis.scaleX = Float(maximumXPrimary - minimumXPrimary) / (size.width - 2*rightScaleMargin);
-        primaryAxis.scaleY = Float(maximumYPrimary - minimumYPrimary) / (size.height - 2*topScaleMargin);
+        results.primaryAxis_scaleX = Float(maximumXPrimary - minimumXPrimary) / (size.width - 2*rightScaleMargin);
+        results.primaryAxis_scaleY = Float(maximumYPrimary - minimumYPrimary) / (size.height - 2*topScaleMargin);
 
         var originSecondary: Point? = nil
         if (secondaryAxis != nil) {
@@ -203,8 +224,8 @@ extension LineGraph: HasGraphLayout {
                 originSecondaryY+=topScaleMargin
             }
             originSecondary = Point(originSecondaryX, originSecondaryY)
-            secondaryAxis!.scaleX = Float(maximumXSecondary - minimumXSecondary) / (size.width - 2*rightScaleMargin);
-            secondaryAxis!.scaleY = Float(maximumYSecondary - minimumYSecondary) / (size.height - 2*topScaleMargin);
+            results.secondaryAxis_scaleX = Float(maximumXSecondary - minimumXSecondary) / (size.width - 2*rightScaleMargin);
+            results.secondaryAxis_scaleY = Float(maximumYSecondary - minimumYSecondary) / (size.height - 2*topScaleMargin);
         }
 
         //calculations for primary axis
@@ -221,7 +242,7 @@ extension LineGraph: HasGraphLayout {
           while(abs(inc1Primary)*pow(10.0,Float(c))<1.0) {
             c+=1
           }
-          inc1Primary = inc1Primary/primaryAxis.scaleY
+          inc1Primary = inc1Primary/results.primaryAxis_scaleY
           yIncRoundPrimary = c+1
         }
         else if(Float(maximumYPrimary-minimumYPrimary)<1.0) {
@@ -231,7 +252,7 @@ extension LineGraph: HasGraphLayout {
           while(abs(inc1Primary)*pow(10.0,Float(c))<1.0) {
             c+=1
           }
-          inc1Primary = inc1Primary/primaryAxis.scaleY
+          inc1Primary = inc1Primary/results.primaryAxis_scaleY
           yIncRoundPrimary = c+1
         }
         if(Float(maximumXPrimary-minimumXPrimary)<=2.0 && Float(maximumXPrimary-minimumXPrimary)>=1.0) {
@@ -241,7 +262,7 @@ extension LineGraph: HasGraphLayout {
           while(abs(inc2Primary)*pow(10.0,Float(c))<1.0) {
             c+=1
           }
-          inc2Primary = inc1Primary/primaryAxis.scaleX
+          inc2Primary = inc1Primary/results.primaryAxis_scaleX
           xIncRound = c+1
         }
         if(Float(maximumXPrimary-minimumXPrimary)<1.0) {
@@ -251,7 +272,7 @@ extension LineGraph: HasGraphLayout {
           while(abs(inc2Primary)*pow(10.0,Float(c))<1.0) {
             c+=1
           }
-          inc2Primary = inc1Primary/primaryAxis.scaleX
+          inc2Primary = inc1Primary/results.primaryAxis_scaleX
           xIncRound = c+1
         }
         var nD1: Int = max(getNumberOfDigits(Float(maximumYPrimary)), getNumberOfDigits(Float(minimumYPrimary)))
@@ -263,7 +284,7 @@ extension LineGraph: HasGraphLayout {
         } else {
             v1 = Float(pow(Float(10), Float(0)))
         }
-        var nY: Float = v1/primaryAxis.scaleY
+        var nY: Float = v1/results.primaryAxis_scaleY
         if(inc1Primary == -1) {
             inc1Primary = nY
             if(size.height/nY > MAX_DIV){
@@ -281,7 +302,7 @@ extension LineGraph: HasGraphLayout {
             v2 = Float(pow(Float(10), Float(0)))
         }
 
-        let nX: Float = v2/primaryAxis.scaleX
+        let nX: Float = v2/results.primaryAxis_scaleX
         if(inc2Primary == -1) {
             inc2Primary = nX
             var noXD: Float = size.width/nX
@@ -299,7 +320,7 @@ extension LineGraph: HasGraphLayout {
                     continue
                 }
                 markers.xMarkers.append(xM)
-                markers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
+                markers.xMarkersText.append("\(roundToN(results.primaryAxis_scaleX*(xM-originPrimary.x), xIncRound))")
                 xM = xM + inc2Primary
             }
 
@@ -310,7 +331,7 @@ extension LineGraph: HasGraphLayout {
                     continue
                 }
                 markers.xMarkers.append(xM)
-                markers.xMarkersText.append("\(roundToN(primaryAxis.scaleX*(xM-originPrimary.x), xIncRound))")
+                markers.xMarkersText.append("\(roundToN(results.primaryAxis_scaleX*(xM-originPrimary.x), xIncRound))")
                 xM = xM - inc2Primary
             }
         }
@@ -323,13 +344,13 @@ extension LineGraph: HasGraphLayout {
                     continue
                 }
                 markers.yMarkers.append(yM)
-                markers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
+                markers.yMarkersText.append("\(roundToN(results.primaryAxis_scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
                 yM = yM + inc1Primary
             }
             yM = originPrimary.y - inc1Primary
             while yM>0.0 {
                 markers.yMarkers.append(yM)
-                markers.yMarkersText.append("\(roundToN(primaryAxis.scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
+                markers.yMarkersText.append("\(roundToN(results.primaryAxis_scaleY*(yM-originPrimary.y), yIncRoundPrimary))")
                 yM = yM - inc1Primary
             }
         }
@@ -337,16 +358,17 @@ extension LineGraph: HasGraphLayout {
 
 
         // scale points to be plotted according to plot size
-        let scaleXInvPrimary: Float = 1.0/primaryAxis.scaleX;
-        let scaleYInvPrimary: Float = 1.0/primaryAxis.scaleY
-        for i in 0..<primaryAxis.series.count {
-            primaryAxis.series[i].scaledValues.removeAll();
-            for j in 0..<primaryAxis.series[i].count {
-                let scaledPair = Pair<T,U>(((primaryAxis.series[i])[j].x)*T(scaleXInvPrimary) + T(originPrimary.x),
-                                           ((primaryAxis.series[i])[j].y)*U(scaleYInvPrimary) + U(originPrimary.y))
-                if Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= size.width && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= size.height {
-                    primaryAxis.series[i].scaledValues.append(scaledPair)
+        let scaleXInvPrimary: Float = 1.0/results.primaryAxis_scaleX;
+        let scaleYInvPrimary: Float = 1.0/results.primaryAxis_scaleY
+        results.primaryAxis_series_scaledValues = primaryAxis.series.map { series in
+            series.values.compactMap { value in
+                let scaledPair = Pair<T,U>(value.x * T(scaleXInvPrimary) + T(originPrimary.x),
+                                           value.y * U(scaleYInvPrimary) + U(originPrimary.y))
+                guard Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= size.width
+                    && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= size.height else {
+                    return nil
                 }
+                return scaledPair
             }
         }
 
@@ -360,7 +382,7 @@ extension LineGraph: HasGraphLayout {
               while(abs(inc1Secondary)*pow(10.0,Float(c))<1.0){
                 c+=1
               }
-              inc1Secondary = inc1Secondary/secondaryAxis!.scaleY
+              inc1Secondary = inc1Secondary/results.secondaryAxis_scaleY
               yIncRoundSecondary = c+1
             }
 
@@ -373,7 +395,7 @@ extension LineGraph: HasGraphLayout {
                 v1 = Float(pow(Float(10), Float(0)))
             }
 
-            nY = v1/secondaryAxis!.scaleY
+            nY = v1/results.secondaryAxis_scaleY
             if(inc1Secondary == -1) {
                 inc1Secondary = nY
                 if(size.height/nY > MAX_DIV){
@@ -388,52 +410,52 @@ extension LineGraph: HasGraphLayout {
                     continue
                 }
                 markers.y2Markers.append(yM)
-                markers.y2MarkersText.append("\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))")
+                markers.y2MarkersText.append("\(roundToN(results.secondaryAxis_scaleY*(yM-originSecondary!.y), yIncRoundSecondary))")
                 yM = yM + inc1Secondary
             }
             yM = originSecondary!.y - inc1Secondary
             while yM>0.0 {
                 markers.y2Markers.append(yM)
-                markers.y2MarkersText.append("\(roundToN(secondaryAxis!.scaleY*(yM-originSecondary!.y), yIncRoundSecondary))")
+                markers.y2MarkersText.append("\(roundToN(results.secondaryAxis_scaleY*(yM-originSecondary!.y), yIncRoundSecondary))")
                 yM = yM - inc1Secondary
             }
 
 
 
             // scale points to be plotted according to plot size
-            let scaleYInvSecondary: Float = 1.0/secondaryAxis!.scaleY
-            for i in 0..<secondaryAxis!.series.count {
-                // let pairs = secondaryAxis!.series[i].pairs
-                secondaryAxis!.series[i].scaledValues.removeAll();
-                for j in 0..<secondaryAxis!.series[i].count {
-                    let scaledPair = Pair<T,U>(((secondaryAxis!.series[i])[j].x)*T(scaleXInvPrimary) + T(originPrimary.x),
-                                               ((secondaryAxis!.series[i])[j].y)*U(scaleYInvSecondary) + U(originSecondary!.y))
-                    if (Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= size.width && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= size.height) {
-                        secondaryAxis!.series[i].scaledValues.append(scaledPair)
+            let scaleYInvSecondary: Float = 1.0/results.secondaryAxis_scaleY
+            results.secondaryAxis_series_scaledValues = secondaryAxis!.series.map { series in
+                series.values.compactMap { value in
+                    let scaledPair = Pair<T,U>(value.x * T(scaleXInvPrimary) + T(originPrimary.x),
+                                               value.y * U(scaleYInvSecondary) + U(originSecondary!.y))
+                    guard Float(scaledPair.x) >= 0.0 && Float(scaledPair.x) <= size.width
+                        && Float(scaledPair.y) >= 0.0 && Float(scaledPair.y) <= size.height else {
+                        return nil
                     }
+                    return scaledPair
                 }
             }
         }
+        
+        return (results, markers)
     }
 
     //functions to draw the plot
-    public func drawData(markers: PlotMarkers, size: Size, renderer: Renderer) {
-        for s in primaryAxis.series {
-            var points = [Point]()
-            for p in s.scaledValues {
-                points.append(Point(Float(p.x),Float(p.y)))
-            }
+    public func drawData(_ data: DrawingData, size: Size, renderer: Renderer) {
+        for i in 0..<primaryAxis.series.count {
+            let s = primaryAxis.series[i]
+            let scaledValues = data.primaryAxis_series_scaledValues[i]
+            let points: [Point] = scaledValues.map { Point(Float($0.x), Float($0.y)) }
             renderer.drawPlotLines(points: points,
                                    strokeWidth: plotLineThickness,
                                    strokeColor: s.color,
                                    isDashed: false)
         }
-        if (secondaryAxis != nil) {
-            for s in secondaryAxis!.series {
-                var points = [Point]()
-                for p in s.scaledValues {
-                    points.append(Point(Float(p.x),Float(p.y)))
-                }
+        if let secondaryAxis = secondaryAxis {
+            for i in 0..<secondaryAxis.series.count {
+                let s = secondaryAxis.series[i]
+                let scaledValues = data.secondaryAxis_series_scaledValues[i]
+                let points: [Point] = scaledValues.map { Point(Float($0.x), Float($0.y)) }
                 renderer.drawPlotLines(points: points,
                                        strokeWidth: plotLineThickness,
                                        strokeColor: s.color,

@@ -14,7 +14,7 @@ extension HistogramTests {
   func testHistogramStackedStepOffset() throws {
     let fileName = "_reg_57_histogram_stacked_step_offset"
     
-    let histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
+    var histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
     histogram.addSeries(data: [5], bins: 10, label: "Plot 1", color: .blue, histogramType: .step)
     histogram.addStackSeries(data: [6], label: "Plot 2", color: .orange)
     histogram.plotTitle = PlotTitle("HISTOGRAM STACKED STEP")

@@ -1,4 +1,4 @@
-public class SubPlot: Plot {
+public struct SubPlot: Plot {
 
     public enum StackPattern {
         case vertical

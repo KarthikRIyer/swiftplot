@@ -1,4 +1,4 @@
-public class BarGraphSeriesOptions {
+public struct BarGraphSeriesOptions {
     public enum Hatching: Int, CaseIterable{
         case none = 0
         case forwardSlash = 1
