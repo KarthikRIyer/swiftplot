@@ -109,7 +109,7 @@ public func lerp(startColor: Color, endColor: Color, _ t: Float) -> Color {
 
 public func rotatePoint(point: Point,
                         center: Point,
-                      angleDegrees: Float) -> Point{
+                        angleDegrees: Float) -> Point{
     let angle = angleDegrees * .pi/180.0
     let s = sin(angle)
     let c = cos(angle)
@@ -125,7 +125,7 @@ public func rotatePoint(point: Point,
 
 public func rotatePoint(point: Point,
                         center: Point,
-                      angleRadians: Float) -> Point{
+                        angleRadians: Float) -> Point{
     let s = sin(angleRadians)
     let c = cos(angleRadians)
     var rotatedPoint = Point(point.x, point.y)
