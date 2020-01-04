@@ -36,7 +36,7 @@ SwiftPlot currently uses three rendering backends to generate plots:
 
 To encode the plots as PNG images it uses the [lodepng](https://github.com/lvandeve/lodepng) library.
 </br>
-SwiftPlot can also be used in Jupyter Notebooks.
+SwiftPlot can also be used in Jupyter Notebooks, with ongoing development for Google Colab.
 </br>
 
 Examples, demonstrating all the features, have been included with the repository under the `Tests/SwiftPlotTests` directory. To run the examples, clone the repository, and run the `swift test` command from the package directory.
@@ -84,6 +84,9 @@ In order to display the generated plot in the notebook, add this line to a new c
 ```swift
 %include "EnableJupyterDisplay.swift"
 ```
+## How to include the library in a Google Colab environment
+
+See https://colab.research.google.com/drive/13iMA72WQyFwMiarrCJqfxkxCTxxUxsiq for information regarding Google Colab support.
 
 ## Examples
 Here are some examples to provide you with a headstart to using this library. Here we will be looking at plots using only the AGGRenderer, but the procedure will remain the same for SVGRenderer.
