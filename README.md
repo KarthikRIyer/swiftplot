@@ -86,7 +86,7 @@ In order to display the generated plot in the notebook, add this line to a new c
 ```
 ## How to include the library in a Google Colab environment
 
-See https://colab.research.google.com/drive/13iMA72WQyFwMiarrCJqfxkxCTxxUxsiq for information regarding Google Colab support.
+See [here](https://colab.research.google.com/drive/13iMA72WQyFwMiarrCJqfxkxCTxxUxsiq) for information regarding Google Colab support.
 
 ## Examples
 Here are some examples to provide you with a headstart to using this library. Here we will be looking at plots using only the AGGRenderer, but the procedure will remain the same for SVGRenderer.
