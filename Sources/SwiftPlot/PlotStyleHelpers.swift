@@ -43,6 +43,15 @@ public struct PlotLegend {
     public init() {}
 }
 
+public struct Coordinate {
+    public enum CoordinateSpace {
+        case originShifted
+        case originUnshifted
+    }
+    public var coordinateSpace: CoordinateSpace = .originShifted
+    public var point: Point = Point(0.0, 0.0)
+}
+
 public protocol Annotation {
     mutating func draw(renderer: Renderer)
 }
