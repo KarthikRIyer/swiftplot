@@ -84,9 +84,18 @@ In order to display the generated plot in the notebook, add this line to a new c
 ```swift
 %include "EnableJupyterDisplay.swift"
 ```
-## How to include the library in a Google Colab environment
-
-See [here](https://colab.research.google.com/drive/13iMA72WQyFwMiarrCJqfxkxCTxxUxsiq) for information regarding Google Colab support.
+If you wish to display the generated plot in a Google Colab environment, add these lines to a new cell instead:
+```swift
+import Python
+%include "EnableIPythonDisplay.swift"
+func display(base64EncodedPNG: String) {
+  let displayImage = Python.import("IPython.display")
+  let codecs = Python.import("codecs")
+  let imageData = codecs.decode(Python.bytes(base64EncodedPNG, encoding: "utf8"), encoding: "base64")
+  displayImage.Image(data: imageData, format: "png").display()
+}
+```
+Note that because Google Colab doesn't natively support Swift libraries that produce rich output, we use Swift's Python interop as a workaround.
 
 ## Examples
 Here are some examples to provide you with a headstart to using this library. Here we will be looking at plots using only the AGGRenderer, but the procedure will remain the same for SVGRenderer.
