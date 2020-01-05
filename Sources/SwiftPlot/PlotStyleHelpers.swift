@@ -53,6 +53,7 @@ public struct Coordinate {
 }
 
 public protocol Annotation {
+	var coordinates: [Coordinate] { get set }
     mutating func draw(renderer: Renderer)
 }
 
@@ -60,7 +61,8 @@ struct Box: Annotation {
     public var color = Color.black
     public var location = Point(0.0, 0.0)
     public var size = Size(width: 0.0, height: 0.0)
-    public func draw(renderer: Renderer) {
+    public var coordinates: [Coordinate] = []
+    public mutating func draw(renderer: Renderer) {
         renderer.drawSolidRect(Rect(origin: location, size: size),
                                fillColor: color,
                                hatchPattern: .none)
@@ -69,6 +71,7 @@ struct Box: Annotation {
         self.color = color
         self.location = location
         self.size = size
+        self.coordinates.append(Coordinate(point: location))
     }
 }
 
@@ -79,17 +82,18 @@ struct Text : Annotation {
     public var location = Point(0.0, 0.0)
     public var boundingBox: Box?
     public var borderWidth: Float = 5
+    public var coordinates: [Coordinate] = []
     public mutating func draw(renderer: Renderer) {
         if boundingBox != nil {
             var bboxSize = renderer.getTextLayoutSize(text: text, textSize: size)
             bboxSize.width += 2 * borderWidth
             bboxSize.height += 2 * borderWidth
-            boundingBox?.location = Point(location.x - borderWidth, location.y - borderWidth)
+            boundingBox?.location = Point(coordinates[0].point.x - borderWidth, coordinates[0].point.y - borderWidth)
             boundingBox?.size = bboxSize
             boundingBox?.draw(renderer: renderer)
         }
         renderer.drawText(text: text,
-                          location: location,
+                          location: coordinates[0].point,
                           textSize: size,
                           color: color,
                           strokeWidth: 1.2,
@@ -102,6 +106,7 @@ struct Text : Annotation {
         self.location = location
         self.boundingBox = boundingBox
         self.borderWidth = borderWidth
+        self.coordinates.append(Coordinate(point: location))
     }
 }
 
@@ -116,9 +121,10 @@ struct Arrow : Annotation {
     public var isFilled: Bool = false
     public var startAnnotation: Annotation?
     public var endAnnotation: Annotation?
+    public var coordinates: [Coordinate] = []
     public mutating func draw(renderer: Renderer) {
         // Draws arrow body.
-        renderer.drawPlotLines(points: [start, end],
+        renderer.drawPlotLines(points: [coordinates[0].point, coordinates[1].point],
                                strokeWidth: strokeWidth,
                                strokeColor: color,
                                isDashed: isDashed)
@@ -126,17 +132,17 @@ struct Arrow : Annotation {
         // Calculates arrow head points.
         var p1 = end + Point(cos(headAngle)*headLength, sin(headAngle)*headLength)
         var p2 = end + Point(cos(headAngle)*headLength, -sin(headAngle)*headLength)
-        let rotateAngle = -atan2(start.x - end.x, start.y - end.y)
-        p1 = rotatePoint(point: p1, center: end, angleRadians: rotateAngle + 0.5 * Float.pi)
-        p2 = rotatePoint(point: p2, center: end, angleRadians: rotateAngle + 0.5 * Float.pi)
+        let rotateAngle = -atan2(coordinates[0].point.x - end.x, coordinates[0].point.y - end.y)
+        p1 = rotatePoint(point: p1, center: coordinates[1].point, angleRadians: rotateAngle + 0.5 * Float.pi)
+        p2 = rotatePoint(point: p2, center: coordinates[1].point, angleRadians: rotateAngle + 0.5 * Float.pi)
 
         // Draws arrow head points.
         if isFilled {
-            renderer.drawSolidPolygon(points: [p1, end, p2],
+            renderer.drawSolidPolygon(points: [p1, coordinates[1].point, p2],
                                       fillColor: color)
         }
         else {
-            renderer.drawPlotLines(points: [p1, end, p2],
+            renderer.drawPlotLines(points: [p1, coordinates[1].point, p2],
                                    strokeWidth: strokeWidth,
                                    strokeColor: color,
                                    isDashed: false)
@@ -158,5 +164,7 @@ struct Arrow : Annotation {
         self.isFilled = isFilled
         self.startAnnotation = startAnnotation
         self.endAnnotation = endAnnotation
+        self.coordinates.append(Coordinate(point: start))
+        self.coordinates.append(Coordinate(point: end))
     }
 }
