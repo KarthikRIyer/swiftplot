@@ -401,7 +401,7 @@ public class QuartzRenderer: Renderer {
         context.setLineDash(phase: 1, lengths: [])
     }
 
-    public func drawPlotLines(polyline: Polyline,
+    public func drawPolyline(_ polyline: Polyline,
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {

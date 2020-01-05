@@ -186,7 +186,7 @@ public class SVGRenderer: Renderer{
         lines.append(line)
     }
 
-    public func drawPlotLines(polyline: Polyline,
+    public func drawPolyline(_ polyline: Polyline,
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {

@@ -66,7 +66,7 @@ public protocol Renderer: AnyObject{
                   strokeWidth thickness: Float,
                   strokeColor: Color, isDashed: Bool)
 
-    /*drawPlotLines()
+    /*drawPolyline()
     *params: polyline: Polyline,
     *        strokeWidth thickness: Float,
     *        strokeColor: Color,
@@ -74,9 +74,9 @@ public protocol Renderer: AnyObject{
     *description: Draws all the line segments in a single data series for a Line Graph.
     *             This function always operates in the coordinate system with the shifted origin.
     */
-    func drawPlotLines(polyline: Polyline,
-                       strokeWidth thickness: Float,
-                       strokeColor: Color, isDashed: Bool)
+    func drawPolyline(_ polyline: Polyline,
+                      strokeWidth thickness: Float,
+                      strokeColor: Color, isDashed: Bool)
 
     /*drawText()
     *params: text s: String,
