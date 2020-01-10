@@ -20,6 +20,8 @@
     * [Bar Graphs](#bar-graphs)
       * [Simple Bar Graph](#simple-bar-graph)
       * [Stacked Bar Graph](#stacked-bar-graph)
+      * [Horizontal Bar Graph](#horizontal-bar-graph)
+      * [Hatched Bar Graph](#hatched-bar-graph)
     * [Displaying plots in Jupyter Notebook](#displaying-plots-in-jupyter-notebook)
   * [How does this work ?](#how-does-this-work)
   * [Documentation](#documentation)
@@ -269,6 +271,52 @@ barGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
 barGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
 ```
 <img src="Tests/SwiftPlotTests/Reference/agg/_18_bar_chart_vertical_stacked.png" width="500">
+
+#### Horizontal Bar Graph
+
+```swift
+import SwiftPlot
+import AGGRenderer
+
+let x:[String] = ["2008","2009","2010","2011"]
+let y:[Float] = [320,-100,420,500]
+
+var barGraph = BarGraph<String,Float>(enableGrid: true)
+barGraph.addSeries(x, y, label: "Plot 1", color: .orange, graphOrientation: .horizontal)
+barGraph.plotTitle = PlotTitle("BAR CHART")
+barGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
+barGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
+```
+<img src="Tests/SwiftPlotTests/Reference/agg/_09_bar_chart_orientation_horizontal.png" width="500">
+
+#### Hatched Bar Graph
+
+```swift
+import SwiftPlot
+import AGGRenderer
+
+let x:[String] = ["2008","2009","2010","2011"]
+let y:[Float] = [320,-100,420,500]
+
+var barGraph = BarGraph<String,Float>(enableGrid: true)
+barGraph.addSeries(x, y, label: "Plot 1", color: .orange, hatchPattern: .grid)
+barGraph.plotTitle = PlotTitle("HATCHED BAR CHART")
+barGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
+barGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
+```
+
+<img src="Tests/SwiftPlotTests/Reference/agg/_14_bar_chart_grid_hatched.png" width="500">
+
+There are many hatched patterns, namely
+- backwardSlash
+- forwardSlash
+- filledCircle
+- hollowCircle
+- cross
+- grid
+- horizontal
+- vertical
+
 
 #### Displaying plots in Jupyter Notebook
 
