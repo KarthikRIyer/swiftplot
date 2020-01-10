@@ -11,11 +11,12 @@
   * [How to include the library in your package](#how-to-include-the-library-in-your-package)
   * [How to include the library in your Jupyter Notebook](#how-to-include-the-library-in-your-jupyter-notebook)
   * [Examples](#examples)
-    * [Simple Line Graph](#simple-line-graph)
-    * [Line Graph with multiple series of data](#line-graph-with-multiple-series-of-data)
-    * [Line Graph with Sub Plots stacked horizontally](#line-graph-with-sub-plots-stacked-horizontally)
-    * [Plot functions using LineGraph](#plot-functions-using-linegraph)
-    * [Using a secondary axis in LineGraph](#using-a-secondary-axis-in-linegraph)
+    * [Line Graphs](#line-graphs)
+      * [Simple Line Graph](#simple-line-graph)
+      * [Line Graph with multiple series of data](#line-graph-with-multiple-series-of-data)
+      * [Line Graph with Sub Plots stacked horizontally](#line-graph-with-sub-plots-stacked-horizontally)
+      * [Plot functions using LineGraph](#plot-functions-using-linegraph)
+      * [Using a secondary axis in LineGraph](#using-a-secondary-axis-in-linegraph)
     * [Displaying plots in Jupyter Notebook](#displaying-plots-in-jupyter-notebook)
   * [How does this work ?](#how-does-this-work)
   * [Documentation](#documentation)
@@ -100,6 +101,9 @@ Note that because Google Colab doesn't natively support Swift libraries that pro
 ## Examples
 Here are some examples to provide you with a headstart to using this library. Here we will be looking at plots using only the AGGRenderer, but the procedure will remain the same for SVGRenderer.
 To use the library in your package, include it as a dependency to your target, in the Package.swift file.
+
+## Line Graphs
+Some sample line graphs
 
 #### Simple Line Graph
 
