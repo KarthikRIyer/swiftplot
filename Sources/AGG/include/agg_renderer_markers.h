@@ -46,9 +46,7 @@ namespace agg
         marker_x,
         marker_dash,
         marker_dot,
-        marker_pixel,
-        
-        end_of_markers
+        marker_pixel
     };
 
 
