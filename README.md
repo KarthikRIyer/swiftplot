@@ -17,6 +17,9 @@
       * [Line Graph with Sub Plots stacked horizontally](#line-graph-with-sub-plots-stacked-horizontally)
       * [Plot functions using LineGraph](#plot-functions-using-linegraph)
       * [Using a secondary axis in LineGraph](#using-a-secondary-axis-in-linegraph)
+    * [Bar Graphs](#bar-graphs)
+      * [Simple Bar Graph](#simple-bar-graph)
+      * [Stacked Bar Graph](#stacked-bar-graph)
     * [Displaying plots in Jupyter Notebook](#displaying-plots-in-jupyter-notebook)
   * [How does this work ?](#how-does-this-work)
   * [Documentation](#documentation)
@@ -102,7 +105,7 @@ Note that because Google Colab doesn't natively support Swift libraries that pro
 Here are some examples to provide you with a headstart to using this library. Here we will be looking at plots using only the AGGRenderer, but the procedure will remain the same for SVGRenderer.
 To use the library in your package, include it as a dependency to your target, in the Package.swift file.
 
-## Line Graphs
+### Line Graphs
 Some sample line graphs
 
 #### Simple Line Graph
@@ -227,6 +230,45 @@ lineGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_r
 The series plotted on the secondary axis are drawn dashed.
 
 <img src="Tests/SwiftPlotTests/Reference/agg/_07_secondary_axis_line_chart.png" width="500">
+
+### Bar Graphs
+Some sample bar graphs
+
+#### Simple Bar Graph
+
+```swift
+import SwiftPlot
+import AGGRenderer
+
+let x:[String] = ["2008","2009","2010","2011"]
+let y:[Float] = [320,-100,420,500]
+
+var barGraph = BarGraph<String,Float>(enableGrid: true)
+barGraph.addSeries(x, y, label: "Plot 1", color: .orange)
+barGraph.plotTitle = PlotTitle("BAR CHART")
+barGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
+barGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
+```
+<img src="Tests/SwiftPlotTests/Reference/agg/_08_bar_chart.png" width="500">
+
+#### Stacked Bar Graph
+
+```swift
+import SwiftPlot
+import AGGRenderer
+
+let x:[String] = ["2008","2009","2010","2011"]
+let y:[Float] = [320,-100,420,500]
+let y1:[Float] = [100,100,220,245]
+
+var barGraph = BarGraph<String,Float>(enableGrid: true)
+barGraph.addSeries(x, y, label: "Plot 1", color: .orange)
+barGraph.addStackSeries(y1, label: "Plot 2", color: .blue)
+barGraph.plotTitle = PlotTitle("BAR CHART")
+barGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
+barGraph.drawGraphAndOutput(fileName: filePath+"agg/"+fileName, renderer: agg_renderer)
+```
+<img src="Tests/SwiftPlotTests/Reference/agg/_18_bar_chart_vertical_stacked.png" width="500">
 
 #### Displaying plots in Jupyter Notebook
 
