@@ -27,11 +27,7 @@
 #include <cstring>
 #include "agg_basics.h"
 #include "agg_array.h"
-
-extern "C" 
-{ 
 #include "gpc.h" 
-}
 
 namespace agg
 {
