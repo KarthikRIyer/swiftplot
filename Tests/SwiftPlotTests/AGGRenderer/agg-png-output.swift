@@ -20,7 +20,7 @@ extension AGGRendererTests {
     let renderer = AGGRenderer()
     barGraph.drawGraph(renderer: renderer)
     let outputBase64 = renderer.base64Png()
-    XCTAssertEqual(outputBase64.count, 47104)
+    XCTAssertEqual(outputBase64.count, 47108)
     
     // First, sanity check: ensure *we* can decode the string.
     guard let _ = Data(base64Encoded: outputBase64, options: .ignoreUnknownCharacters) else {
