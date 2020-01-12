@@ -101,6 +101,8 @@ Note that because Google Colab doesn't natively support Swift libraries that pro
 Here are some examples to provide you with a headstart to using this library. Here we will be looking at plots using only the AGGRenderer, but the procedure will remain the same for SVGRenderer.
 To use the library in your package, include it as a dependency to your target, in the Package.swift file.
 
+More tests can be found in the [SwiftPlotTests](Tests/SwiftPlotTests) folder
+
 #### Simple Line Graph
 
 ```swift
