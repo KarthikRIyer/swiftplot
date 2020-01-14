@@ -52,7 +52,7 @@ public struct GraphLayout {
         var legendLabels: [(String, LegendIcon)] = []
         var legendRect: Rect?
 
-        func resolve(_coordinate: Coordinate) -> Point {
+        func resolve(_ coordinate: Coordinate) -> Point {
             switch(coordinate.coordinateSpace){
                 case .ndc:
                     return Point(0.0, 0.0)
@@ -213,7 +213,7 @@ public struct GraphLayout {
         drawTitle(results: results, renderer: renderer)
         drawLabels(results: results, renderer: renderer)
         drawLegend(results.legendLabels, results: results, renderer: renderer)
-        drawAnnotations(renderer: renderer)
+        drawAnnotations(resolver: results, renderer: renderer)
     }
     
     private func drawTitle(results: Results, renderer: Renderer) {
@@ -386,9 +386,9 @@ public struct GraphLayout {
         }
     }
 
-    func drawAnnotations(renderer: Renderer) {
+    func drawAnnotations(resolver: CoordinateResolver, renderer: Renderer) {
         for var annotation in annotations{
-            annotation.draw(results: results, renderer: renderer)
+            annotation.draw(resolver: resolver, renderer: renderer)
         }
     }
 }

@@ -51,15 +51,19 @@ public struct Coordinate {
     public var point: Point = Point(0.0, 0.0)
 }
 
+public protocol CoordinateResolver {
+	func resolve(_ coordinate: Coordinate) -> Point
+}
+
 public protocol Annotation {
-    mutating func draw(results: Results, renderer: Renderer)
+    mutating func draw(resolver: CoordinateResolver, renderer: Renderer)
 }
 
 struct Box: Annotation {
     public var color = Color.black
     public var location = Point(0.0, 0.0)
     public var size = Size(width: 0.0, height: 0.0)
-    public func draw(results: Results, renderer: Renderer) {
+    public func draw(resolver: CoordinateResolver, renderer: Renderer) {
         renderer.drawSolidRect(Rect(origin: location, size: size),
                                fillColor: color,
                                hatchPattern: .none)
@@ -78,14 +82,14 @@ struct Text : Annotation {
     public var location = Point(0.0, 0.0)
     public var boundingBox: Box?
     public var borderWidth: Float = 5
-    public mutating func draw(results: Results, renderer: Renderer) {
+    public mutating func draw(resolver: CoordinateResolver, renderer: Renderer) {
         if boundingBox != nil {
             var bboxSize = renderer.getTextLayoutSize(text: text, textSize: size)
             bboxSize.width += 2 * borderWidth
             bboxSize.height += 2 * borderWidth
             boundingBox?.location = Point(location.x - borderWidth, location.y - borderWidth)
             boundingBox?.size = bboxSize
-            boundingBox?.draw(renderer: renderer)
+            boundingBox?.draw(resolver: resolver, renderer: renderer)
         }
         renderer.drawText(text: text,
                           location: location,
@@ -115,7 +119,7 @@ struct Arrow : Annotation {
     public var isFilled: Bool = false
     public var startAnnotation: Annotation?
     public var endAnnotation: Annotation?
-    public mutating func draw(results: Results, renderer: Renderer) {
+    public mutating func draw(resolver: CoordinateResolver, renderer: Renderer) {
         // Draws arrow body.
         renderer.drawPlotLines(points: [start, end],
                                strokeWidth: strokeWidth,
@@ -142,8 +146,8 @@ struct Arrow : Annotation {
         }
 
         //Draws start and end annotations if specified.
-        startAnnotation?.draw(renderer: renderer)
-        endAnnotation?.draw(renderer: renderer)
+        startAnnotation?.draw(resolver: resolver, renderer: renderer)
+        endAnnotation?.draw(resolver: resolver, renderer: renderer)
 
     }
     public init(color: Color = .black, start: Point = Point(0.0, 0.0), end: Point = Point(0.0, 0.0), strokeWidth: Float = 5, headLength: Float = 10, headAngle: Float = 20, isDashed: Bool = false, isFilled: Bool = false, startAnnotation: Annotation? = nil, endAnnotation: Annotation? = nil) {
