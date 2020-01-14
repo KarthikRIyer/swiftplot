@@ -22,7 +22,7 @@ public struct GraphLayout {
     /// The amount of (horizontal) space to reserve for markers on the Y-axis.
     var yMarkerMaxWidth: Float = 40
     
-    struct Results {
+    struct Results : CoordinateResolver {
         /// The size these results have been calculated for; the entire size of the plot.
         let totalSize: Size
         
@@ -51,6 +51,13 @@ public struct GraphLayout {
         
         var legendLabels: [(String, LegendIcon)] = []
         var legendRect: Rect?
+
+        func resolve(_coordinate: Coordinate) -> Point {
+            switch(coordinate.coordinateSpace){
+                case .ndc:
+                    return Point(0.0, 0.0)
+            }
+        }
     }
     
     // Layout.
@@ -205,7 +212,7 @@ public struct GraphLayout {
     func drawForeground(results: Results, renderer: Renderer) {
         drawTitle(results: results, renderer: renderer)
         drawLabels(results: results, renderer: renderer)
-        drawLegend(results.legendLabels, results: results, renderer: renderer)
+        drawLegend(results.legendLabels, resulsts: results, renderer: renderer)
         drawAnnotations(renderer: renderer)
     }
     
@@ -381,7 +388,7 @@ public struct GraphLayout {
 
     func drawAnnotations(renderer: Renderer) {
         for var annotation in annotations{
-            annotation.draw(renderer: renderer)
+            annotation.draw(results: results, renderer: renderer)
         }
     }
 }
