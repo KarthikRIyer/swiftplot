@@ -212,7 +212,7 @@ public struct GraphLayout {
     func drawForeground(results: Results, renderer: Renderer) {
         drawTitle(results: results, renderer: renderer)
         drawLabels(results: results, renderer: renderer)
-        drawLegend(results.legendLabels, resulsts: results, renderer: renderer)
+        drawLegend(results.legendLabels, results: results, renderer: renderer)
         drawAnnotations(renderer: renderer)
     }
     
