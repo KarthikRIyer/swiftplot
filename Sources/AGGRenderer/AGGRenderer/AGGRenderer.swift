@@ -95,16 +95,17 @@ public class AGGRenderer: Renderer{
         y.append(pts.bR.y + yOffset)
         y.append(pts.bL.y + yOffset)
 
-        draw_solid_rect_with_border(x,
+        draw_solid_rect_with_border(
+                        x,
                         y,
-                        fillColor.r_fill,
-                        fillColor.g_fill,
-                        fillColor.b_fill,
-                        fillColor.a_fill,
-                        fillColor.r_stroke,
-                        fillColor.g_stroke,
-                        fillColor.b_stroke,
-                        fillColor.a_stroke,
+                        fillColor.r,
+                        fillColor.g,
+                        fillColor.b,
+                        fillColor.a,
+                        fillColor.r,
+                        fillColor.g,
+                        fillColor.b,
+                        fillColor.a,
                         agg_object)
     }
 
