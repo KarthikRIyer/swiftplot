@@ -81,8 +81,7 @@ public class AGGRenderer: Renderer{
     public func drawSolidRectWithBorder(_ rect: Rect,
                                         strokeWidth thickness: Float,
                                         fillColor: Color = Color.white,
-                                        borderColor: Color = Color.black,
-                                        hatchPattern hatch_pattern: Int8) {
+                                        borderColor: Color = Color.black) {
         var x = [Float]()
         var y = [Float]()
 
@@ -106,7 +105,7 @@ public class AGGRenderer: Renderer{
                         fillColor.g_stroke,
                         fillColor.b_stroke,
                         fillColor.a_stroke,
-                        hatchPattern.hatch_pattern,
+                        0,
                         agg_object)
     }
 
