@@ -69,6 +69,15 @@ public class SVGRenderer: Renderer{
         lines.append(rectStr)
         drawHatchingRect(rect, hatchPattern: hatchPattern)
     }
+    
+    public func drawSolidRectWithBorder(_ rect: Rect,
+                                 strokeWidth thickness: Float,
+                                 fillColor: Color = Color.white,
+                                 borderColor: Color = Color.black) {
+    let rect = convertToSVGCoordinates(rect)
+    let rectStr = #"<rect x="\#(rect.origin.x)" y="\#(rect.origin.y)" width="\#(rect.size.width)" height="\#(rect.size.height)" style="fill:\#(fillColor.svgColorString);stroke-width:\#(thickness);stroke:\#(strokeColor.svgColorString);opacity:\#(fillColor.a)" />"#
+    lines.append(rectStr)
+    }    
 
     func drawHatchingRect(_ rect: Rect,
                           hatchPattern: BarGraphSeriesOptions.Hatching) {
