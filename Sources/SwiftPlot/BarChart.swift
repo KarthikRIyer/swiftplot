@@ -16,7 +16,7 @@ public struct BarGraph<T:LosslessStringConvertible,U:FloatConvertible>: Plot {
     }
     public var graphOrientation: GraphOrientation = .vertical
     public var space: Int = 20
-    
+
     public init(enableGrid: Bool = false){
         self.enableGrid = enableGrid
     }
@@ -29,7 +29,7 @@ extension BarGraph {
     public mutating func addSeries(_ s: Series<T,U>){
         series = s
     }
-    
+
     public mutating func addStackSeries(_ s: Series<T,U>) {
         precondition(series.count != 0 && series.count == s.count,
                      "Stack point count does not match the Series point count.")
@@ -72,7 +72,7 @@ extension BarGraph {
 // Layout properties.
 
 extension BarGraph {
-    
+
     public var enableGrid: Bool {
         get { layout.enablePrimaryAxisGrid }
         set { layout.enablePrimaryAxisGrid = newValue }
@@ -82,13 +82,13 @@ extension BarGraph {
 // Layout and drawing of data.
 
 extension BarGraph: HasGraphLayout {
-    
+
     public var legendLabels: [(String, LegendIcon)] {
         var legendSeries = stackSeries.map { ($0.label, LegendIcon.square($0.color)) }
         legendSeries.insert((series.label, .square(series.color)), at: 0)
         return legendSeries
     }
-    
+
     public struct DrawingData {
         var series_scaledValues = [Pair<Float,Float>]()
         var stackSeries_scaledValues = [[Pair<Float,Float>]]()
@@ -97,13 +97,13 @@ extension BarGraph: HasGraphLayout {
         var barWidth : Int = 0
         var origin = zeroPoint
     }
-    
+
     // functions implementing plotting logic
     public func layoutData(size: Size, renderer: Renderer) -> (DrawingData, PlotMarkers?) {
-        
+
         var results = DrawingData()
         var markers = PlotMarkers()
-        
+
         var maximumY: U = U(0)
         var minimumY: U = U(0)
         var maximumX: U = U(0)
@@ -179,7 +179,7 @@ extension BarGraph: HasGraphLayout {
                 markers.yMarkersText.append("\(round(results.scaleY*(yM-results.origin.y)))")
                 yM = yM - inc1
             }
-            
+
             func xMarkerLocationForBar(_ index: Int) -> Float {
                 Float(index*results.barWidth) + Float(results.barWidth)*Float(0.5)
             }
@@ -279,7 +279,7 @@ extension BarGraph: HasGraphLayout {
                 markers.yMarkers.append(yMarkerLocationForBar(i))
                 markers.yMarkersText.append("\(series[i].x)")
             }
-            
+
             // scale points to be plotted according to plot size
             let scaleXInv: Float = 1.0/results.scaleX
             results.series_scaledValues = (0..<series.values.count).map { i in
@@ -351,8 +351,10 @@ extension BarGraph: HasGraphLayout {
                 else {
                     currentWidthNegative = rect.size.width
                 }
-                renderer.drawSolidRect(rect,
+                renderer.drawSolidRectWithBorder(rect,
+                                       strokeWidth: 2.0,
                                        fillColor: series.color,
+                                       borderColor: series.color,
                                        hatchPattern: series.barGraphSeriesOptions.hatchPattern)
                 for i in 0..<stackSeries.count {
                     let stackValue = Float(data.stackSeries_scaledValues[i][index].x)
