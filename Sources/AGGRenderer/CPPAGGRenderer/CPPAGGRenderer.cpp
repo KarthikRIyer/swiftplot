@@ -299,12 +299,12 @@ namespace CPPAGGRenderer{
       agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>> stroke(curve);
       stroke.width(thickness);
       m_ras.add_path(stroke);
-      Color c(r_stroke, g_stroke, b_stroke, a_stroke);
-      ren_aa.color(c);
+      Color c1(r_stroke, g_stroke, b_stroke, a_stroke);
+      ren_aa.color(c1);
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
-      Color c(r_fill, g_fill, b_fill, a_fill);
+      Color c2(r_fill, g_fill, b_fill, a_fill);
       m_ras.add_path(trans);
-      ren_aa.color(c);
+      ren_aa.color(c2);
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
     }
 
