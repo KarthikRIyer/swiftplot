@@ -317,8 +317,7 @@ extension BarGraph: HasGraphLayout {
                 renderer.drawSolidRectWithBorder(rect,
                                        strokeWidth : 2.0,
                                        fillColor: series.color,
-                                       borderColor: Color.black,
-                                       hatchPattern: series.barGraphSeriesOptions.hatchPattern)
+                                       borderColor: Color.black)
                 for i in 0..<data.stackSeries_scaledValues.count {
                     let stackValue = Float(data.stackSeries_scaledValues[i][index].y)
                     if (stackValue - data.origin.y >= 0) {
@@ -334,8 +333,7 @@ extension BarGraph: HasGraphLayout {
                 renderer.drawSolidRectWithBorder(rect,
                                        strokeWidth : 2.0,
                                        fillColor: series.color,
-                                       borderColor: Color.black,
-                                       hatchPattern: series.barGraphSeriesOptions.hatchPattern)
+                                       borderColor: Color.black)
                 }
             }
         }
@@ -358,8 +356,7 @@ extension BarGraph: HasGraphLayout {
                 renderer.drawSolidRectWithBorder(rect,
                                        strokeWidth : 2.0,
                                        fillColor: series.color,
-                                       borderColor: Color.black,
-                                       hatchPattern: series.barGraphSeriesOptions.hatchPattern)
+                                       borderColor: Color.black)
                 for i in 0..<stackSeries.count {
                     let stackValue = Float(data.stackSeries_scaledValues[i][index].x)
                     if (stackValue - data.origin.x >= 0) {
@@ -375,8 +372,7 @@ extension BarGraph: HasGraphLayout {
                 renderer.drawSolidRectWithBorder(rect,
                                        strokeWidth : 2.0,
                                        fillColor: series.color,
-                                       borderColor: Color.black,
-                                       hatchPattern: series.barGraphSeriesOptions.hatchPattern)
+                                       borderColor: Color.black)
                 }
             }
         }
