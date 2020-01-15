@@ -114,7 +114,7 @@ public protocol Renderer: AnyObject{
                                  strokeWidth thickness: Float,
                                  fillColor: Color,
                                  borderColor: Color,
-                                 hatchPattern hatch_pattern: Int8)
+                                 hatchPattern: BarGraphSeriesOptions.Hatching)
 
     /*drawSolidCircle()
     *params: center c: Point,
