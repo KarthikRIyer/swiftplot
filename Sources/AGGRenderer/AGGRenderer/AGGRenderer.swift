@@ -81,7 +81,7 @@ public class AGGRenderer: Renderer{
     public func drawSolidRectWithBorder(_ rect: Rect,
                                         strokeWidth thickness: Float,
                                         fillColor: Color = Color.white,
-                                        borderColor: Color = Color.black
+                                        borderColor: Color = Color.black,
                                         hatchPattern: BarGraphSeriesOptions.Hatching) {
         var x = [Float]()
         var y = [Float]()
