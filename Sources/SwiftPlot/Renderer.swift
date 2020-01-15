@@ -113,8 +113,7 @@ public protocol Renderer: AnyObject{
     func drawSolidRectWithBorder(_ rect: Rect,
                                  strokeWidth thickness: Float,
                                  fillColor: Color,
-                                 borderColor: Color,
-                                 hatchPattern: BarGraphSeriesOptions.Hatching)
+                                 borderColor: Color)
 
     /*drawSolidCircle()
     *params: center c: Point,
