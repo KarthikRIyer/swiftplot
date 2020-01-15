@@ -112,8 +112,8 @@ public protocol Renderer: AnyObject{
     */
     func drawSolidRectWithBorder(_ rect: Rect,
                                  strokeWidth thickness: Float,
-                                 fillColor: Color = Color.white,
-                                 borderColor: Color = Color.black,
+                                 fillColor: Color,
+                                 borderColor: Color,
                                  hatchPattern hatch_pattern: Int8)
 
     /*drawSolidCircle()
