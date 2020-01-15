@@ -318,7 +318,7 @@ extension BarGraph: HasGraphLayout {
                                        strokeWidth: 2.0,
                                        fillColor: series.color,
                                        borderColor: series.color,
-                                       hatchPattern: series.barGraphSeriesOptions.hatchPattern)
+                                       hatchPattern: stackSeries[i].barGraphSeriesOptions.hatchPattern)
                 for i in 0..<data.stackSeries_scaledValues.count {
                     let stackValue = Float(data.stackSeries_scaledValues[i][index].y)
                     if (stackValue - data.origin.y >= 0) {
@@ -335,7 +335,7 @@ extension BarGraph: HasGraphLayout {
                                        strokeWidth: 2.0,
                                        fillColor: series.color,
                                        borderColor: series.color,
-                                       hatchPattern: series.barGraphSeriesOptions.hatchPattern)
+                                       hatchPattern: stackSeries[i].barGraphSeriesOptions.hatchPattern)
                 }
             }
         }
@@ -359,7 +359,7 @@ extension BarGraph: HasGraphLayout {
                                        strokeWidth: 2.0,
                                        fillColor: series.color,
                                        borderColor: series.color,
-                                       hatchPattern: series.barGraphSeriesOptions.hatchPattern)
+                                       hatchPattern: stackSeries[i].barGraphSeriesOptions.hatchPattern)
                 for i in 0..<stackSeries.count {
                     let stackValue = Float(data.stackSeries_scaledValues[i][index].x)
                     if (stackValue - data.origin.x >= 0) {
@@ -376,7 +376,7 @@ extension BarGraph: HasGraphLayout {
                                        strokeWidth: 2.0,
                                        fillColor: series.color,
                                        borderColor: series.color,
-                                       hatchPattern: series.barGraphSeriesOptions.hatchPattern)
+                                       hatchPattern: stackSeries[i].barGraphSeriesOptions.hatchPattern)
                 }
             }
         }
