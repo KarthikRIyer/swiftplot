@@ -99,14 +99,14 @@ public class AGGRenderer: Renderer{
                         x,
                         y,
                         thickness,
-                        borderColor.r,
-                        borderColor.g,
-                        borderColor.b,
-                        borderColor.a,
                         fillColor.r,
                         fillColor.g,
                         fillColor.b,
                         fillColor.a,
+                        borderColor.r,
+                        borderColor.g,
+                        borderColor.b,
+                        borderColor.a,
                         agg_object)
     }
 
