@@ -18,8 +18,8 @@ void draw_solid_rect(const float *x, const float *y, float r, float g, float b, 
   CPPAGGRenderer::draw_solid_rect(x, y, r, g, b, a, hatch_pattern, object);
 }
 
-void draw_solid_rect_with_border(const float *x, const float *y, float thickness, float r_fill, float g_fill, float b_fill, float a_fill, float r_stroke, float g_stroke, float b_stroke, float a_stroke, int hatch_pattern, const void *object){
-  CPPAGGRenderer::draw_solid_rect_with_border(x, y, thickness, r_fill, g_fill, b_fill, a_fill, r_stroke, g_stroke, b_stroke, a_stroke, hatch_pattern, object);
+void draw_solid_rect_with_border(const float *x, const float *y, float thickness, float r_fill, float g_fill, float b_fill, float a_fill, float r_stroke, float g_stroke, float b_stroke, float a_stroke, const void *object){
+  CPPAGGRenderer::draw_solid_rect_with_border(x, y, thickness, r_fill, g_fill, b_fill, a_fill, r_stroke, g_stroke, b_stroke, a_stroke, object);
 }
 
 void draw_solid_circle(float cx, float cy, float radius, float r, float g, float b, float a, const void *object){
