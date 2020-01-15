@@ -98,6 +98,7 @@ public class AGGRenderer: Renderer{
         draw_solid_rect_with_border(
                         x,
                         y,
+                        thickness,
                         fillColor.r,
                         fillColor.g,
                         fillColor.b,
