@@ -314,10 +314,9 @@ extension BarGraph: HasGraphLayout {
                 else {
                     currentHeightNegative = rect.size.height
                 }
-                renderer.drawSolidRectWithBorder(rect,
-                                       strokeWidth : 2.0,
+                renderer.drawSolidRect(rect,
                                        fillColor: series.color,
-                                       borderColor: Color.black)
+                                       hatchPattern: series.barGraphSeriesOptions.hatchPattern)
                 for i in 0..<data.stackSeries_scaledValues.count {
                     let stackValue = Float(data.stackSeries_scaledValues[i][index].y)
                     if (stackValue - data.origin.y >= 0) {
@@ -330,10 +329,9 @@ extension BarGraph: HasGraphLayout {
                         rect.size.height = stackValue - data.origin.y
                         currentHeightNegative += stackValue
                     }
-                renderer.drawSolidRectWithBorder(rect,
-                                       strokeWidth : 2.0,
-                                       fillColor: series.color,
-                                       borderColor: Color.black)
+                    renderer.drawSolidRect(rect,
+                                           fillColor: stackSeries[i].color,
+                                           hatchPattern: stackSeries[i].barGraphSeriesOptions.hatchPattern)
                 }
             }
         }
@@ -353,10 +351,9 @@ extension BarGraph: HasGraphLayout {
                 else {
                     currentWidthNegative = rect.size.width
                 }
-                renderer.drawSolidRectWithBorder(rect,
-                                       strokeWidth : 2.0,
+                renderer.drawSolidRect(rect,
                                        fillColor: series.color,
-                                       borderColor: Color.black)
+                                       hatchPattern: series.barGraphSeriesOptions.hatchPattern)
                 for i in 0..<stackSeries.count {
                     let stackValue = Float(data.stackSeries_scaledValues[i][index].x)
                     if (stackValue - data.origin.x >= 0) {
@@ -369,10 +366,9 @@ extension BarGraph: HasGraphLayout {
                         rect.size.width = stackValue - data.origin.x
                         currentWidthNegative += stackValue
                     }
-                renderer.drawSolidRectWithBorder(rect,
-                                       strokeWidth : 2.0,
-                                       fillColor: series.color,
-                                       borderColor: Color.black)
+                    renderer.drawSolidRect(rect,
+                                           fillColor: stackSeries[i].color,
+                                           hatchPattern: stackSeries[i].barGraphSeriesOptions.hatchPattern)
                 }
             }
         }
