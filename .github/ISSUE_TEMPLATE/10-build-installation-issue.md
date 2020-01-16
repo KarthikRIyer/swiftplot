@@ -1,6 +1,6 @@
 ---
 name: Build/Installation Issue
-about: Use this template for reporting a bug or a performance issue.
+about: Use this template for reporting a build or a installation issue.
 
 ---
 
