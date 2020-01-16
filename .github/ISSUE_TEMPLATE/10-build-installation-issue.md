@@ -4,7 +4,7 @@ about: Use this template for reporting a build or a installation issue.
 
 ---
 
-<em>Please make sure that this is a build/installation. We only address code/doc bugs, performance issues, feature requests and build/installation issues on GitHub.</em>
+<em>Please make sure that this is a build/installation issue. We only address code/doc bugs, performance issues, feature requests and build/installation issues on GitHub.</em>
 
 **System information**
 - Have I written custom code (as opposed to using a stock example script provided in Swiftplot):
