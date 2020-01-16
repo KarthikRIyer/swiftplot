@@ -53,8 +53,14 @@ public struct GraphLayout {
         var legendRect: Rect?
 
         func resolve(_ coordinate: Coordinate) -> Point {
-            switch(coordinate.coordinateSpace){
-                case .ndc:
+            let x = coordinate.point.x
+            let y = coordinate.point.y
+            switch(coordinate.coordinateSpace) {
+                case .figurePoints:
+                    return Point(x, y)
+                case .axesPoints:
+                    return Point(x, y) + plotBorderRect.origin
+                default:
                     return Point(0.0, 0.0)
             }
         }

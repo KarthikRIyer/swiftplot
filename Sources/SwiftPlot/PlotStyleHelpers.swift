@@ -45,9 +45,13 @@ public struct PlotLegend {
 
 public struct Coordinate {
     public enum CoordinateSpace {
-        case ndc
+        case figurePoints
+        case figureFraction
+        case axesPoints
+        case axesFraction
+        case data
     }
-    public var coordinateSpace: CoordinateSpace = .ndc
+    public var coordinateSpace: CoordinateSpace = .data
     public var point: Point = Point(0.0, 0.0)
 }
 
