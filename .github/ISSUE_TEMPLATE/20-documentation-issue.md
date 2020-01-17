@@ -7,9 +7,9 @@ about: Use this template for documentation related
 <em>Please make sure that this is a documentation issue. We only address code/doc bugs, performance issues, feature requests and build/installation issues on GitHub.</em>
 
 **System information**
-- Have I written custom code (as opposed to using a stock example script provided in Swiftplot):
+- Have I written custom code (as opposed to using a stock example script provided in SwiftPlot):
 - OS Platform and Distribution (e.g., Linux Ubuntu 18.04):
-- Swift for TensorFlow version:
+- Swift version:
 
 
 ## Description of issue (what needs changing):
