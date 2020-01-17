@@ -295,17 +295,18 @@ namespace CPPAGGRenderer{
       agg::trans_affine matrix;
       matrix *= agg::trans_affine_translation(0, 0);
       agg::conv_transform<agg::path_storage, agg::trans_affine> trans(rect_path, matrix);
+      Color c1(r_fill, g_fill, b_fill, a_fill);
+      m_ras.add_path(trans);
+      ren_aa.color(c1);
+      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
       agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>> curve(trans);
       agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>> stroke(curve);
       stroke.width(thickness);
       m_ras.add_path(stroke);
-      Color c1(r_stroke, g_stroke, b_stroke, a_stroke);
-      ren_aa.color(c1);
-      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
-      Color c2(r_fill, g_fill, b_fill, a_fill);
-      m_ras.add_path(trans);
+      Color c2(r_stroke, g_stroke, b_stroke, a_stroke);
       ren_aa.color(c2);
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
+
     }
 
     void draw_solid_circle(float cx, float cy, float radius, float r, float g, float b, float a) {
