@@ -9,7 +9,6 @@ extension AGGRendererTests {
   /// a PNG buffer (no files), then verifying the base64-encoded data matches that from
   /// the reference file.
   func testBase64Encoding() throws {
-    
     let x:[String] = ["2008","2009","2010","2011"]
     let y:[Float] = [320,-100,420,500]
     var barGraph = BarGraph<String,Float>(enableGrid: true)

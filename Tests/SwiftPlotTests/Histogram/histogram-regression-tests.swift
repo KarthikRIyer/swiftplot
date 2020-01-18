@@ -19,7 +19,12 @@ extension HistogramTests {
     histogram.addStackSeries(data: [6], label: "Plot 2", color: .orange)
     histogram.plotTitle = PlotTitle("HISTOGRAM STACKED STEP")
     histogram.plotLabel = PlotLabel(xLabel: "X", yLabel: "Frequency")
-      
+    
+    // Note: This does not use renderAndVerify because it is explicitly testing
+    //       rendering the plot a second time.
+    
+    // TODO: Replace AGG/Quartz renderers with 2 SVG renders.
+    
     let svg_renderer = SVGRenderer()
     try histogram.drawGraphAndOutput(fileName: svgOutputDirectory+fileName,
                                      renderer: svg_renderer)
