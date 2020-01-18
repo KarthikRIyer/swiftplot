@@ -15,9 +15,9 @@ extension AnnotationTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__AnnotationTests = [
+        ("testAnnotationArrow", testAnnotationArrow),
         ("testAnnotationText", testAnnotationText),
         ("testAnnotationTextBoundingBox", testAnnotationTextBoundingBox),
-        ("testAnnotationArrow", testAnnotationArrow),
     ]
 }
 
@@ -62,6 +62,16 @@ extension LineChartTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__LineChartTests = [
+        ("testLineChart_crossBothAxes", testLineChart_crossBothAxes),
+        ("testLineChart_crossX", testLineChart_crossX),
+        ("testLineChart_crossY", testLineChart_crossY),
+        ("testLineChart_negativeXOrigin_unsorted", testLineChart_negativeXOrigin_unsorted),
+        ("testLineChart_negativeXOrigin", testLineChart_negativeXOrigin),
+        ("testLineChart_negativeYOrigin", testLineChart_negativeYOrigin),
+        ("testLineChart_positiveXOrigin_secondary", testLineChart_positiveXOrigin_secondary),
+        ("testLineChart_positiveXOrigin", testLineChart_positiveXOrigin),
+        ("testLineChart_positiveYOrigin_secondary", testLineChart_positiveYOrigin_secondary),
+        ("testLineChart_positiveYOrigin", testLineChart_positiveYOrigin),
         ("testLineChartFunctionPlot", testLineChartFunctionPlot),
         ("testLineChartMultipleSeries", testLineChartMultipleSeries),
         ("testLineChartSecondaryAxis", testLineChartSecondaryAxis),
