@@ -414,6 +414,28 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |---------------------------------------------------|
 |cgColor: CGColor (return the corresponding CGColor)|
 
+|Built-In Colors  |
+|-----------------|
+|transparent      |
+|black            |
+|white            |
+|transluscentWhite|
+|purple           |
+|lightBlue        |
+|blue             |
+|darkBlue         |
+|green            |
+|darkGreen        |
+|yellow           |
+|gold             |
+|orange           |
+|red              |
+|darkRed          |
+|brown            |
+|pink             |
+|gray             |
+|darkGray         |
+
 
 ### PlotLabel
 
