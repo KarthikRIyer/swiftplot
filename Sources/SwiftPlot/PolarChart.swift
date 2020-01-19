@@ -94,15 +94,16 @@ extension PolarGraph {
                             color: Color = Color.lightBlue,
                             axisType: Axis<T,U>.Location = .primaryAxis) {
         
-        let step = Float(maxX - minX)/Float(numberOfSamples)
-        let points = stride(from: Float(minX), through: Float(maxX), by: step).compactMap { i -> Pair<T,U>? in
-            let result = function(T(i))
-            guard Float(result).isFinite else { return nil }
-            if let clampY = clampY, !clampY.contains(result) {
-                return nil
-            }
-            return Pair(T(i), result)
+        let theta = linspace(start: minX.toFloat(), end: maxX.toFloat(), num: numberOfSamples)
+        let r = theta.map{val in function(x: val)}
+        
+        var x = theta.map{angle in r[theta.firstIndex(of: angle)!].toFloat() * cos(angle.toFloat())}
+        var y = theta.map{angle in r[theta.firstIndex(of: angle)!].toFloat() * sin(angle.toFloat())}
+        
+        for i in 0..<x.count {
+            points.append(Pair<T,U>(T(x[i]), U(y[i])))
         }
+        
         let s = Series<T,U>(values: points, label: label, color: color)
         addSeries(s, axisType: axisType)
     }
