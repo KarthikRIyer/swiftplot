@@ -69,7 +69,7 @@ public class SVGRenderer: Renderer{
         lines.append(rectStr)
         drawHatchingRect(rect, hatchPattern: hatchPattern)
     }
-
+    
     func drawHatchingRect(_ rect: Rect,
                           hatchPattern: BarGraphSeriesOptions.Hatching) {
         let patternName: String
