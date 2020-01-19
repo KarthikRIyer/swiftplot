@@ -19,7 +19,7 @@ public class AGGRenderer: Renderer{
         self.imageSize = Size(width: w, height: h)
         self.agg_object = initializePlot(imageSize.width, imageSize.height, fontPath)
     }
-    
+
     func getPoints(from rect: Rect) -> (tL: Point, tR: Point, bL: Point, bR: Point) {
         let rect = rect.normalized
         return (
@@ -95,22 +95,19 @@ public class AGGRenderer: Renderer{
         y.append(pts.bR.y + yOffset)
         y.append(pts.bL.y + yOffset)
 
-        draw_solid_rect(x,
+        draw_solid_rect_with_border(
+                        x,
                         y,
+                        thickness,
                         fillColor.r,
                         fillColor.g,
                         fillColor.b,
                         fillColor.a,
-                        0,
+                        borderColor.r,
+                        borderColor.g,
+                        borderColor.b,
+                        borderColor.a,
                         agg_object)
-        draw_rect(x,
-                  y,
-                  thickness,
-                  borderColor.r,
-                  borderColor.g,
-                  borderColor.b,
-                  borderColor.a,
-                  agg_object)
     }
 
     public func drawSolidCircle(center c: Point,
@@ -233,7 +230,7 @@ public class AGGRenderer: Renderer{
         get_text_size(text, size, &width, &height, agg_object)
         return Size(width: width, height: height)
     }
-    
+
     struct DrawOutputError: Error, CustomStringConvertible {
         let errorCode: UInt32
         let description: String
@@ -251,7 +248,7 @@ public class AGGRenderer: Renderer{
       var _bufferPtr: UnsafeMutablePointer<UInt8>?
       var errorDescPtr: UnsafePointer<Int8>?
       var bufferSize = 0
-      
+
       let err = create_png_buffer(&_bufferPtr, &bufferSize, &errorDescPtr, agg_object)
       guard let bufferPtr = _bufferPtr, err == 0 else {
         // We'll probably never make this throwing, but log the error all the same.
@@ -261,13 +258,13 @@ public class AGGRenderer: Renderer{
         )
         return ""
       }
-      
+
       let base64String = Data(
         bytesNoCopy: UnsafeMutableRawPointer(mutating: bufferPtr),
         count: bufferSize,
         deallocator: .none
       ).base64EncodedString()
-      
+
       free_png_buffer(&_bufferPtr)
       return base64String
     }
