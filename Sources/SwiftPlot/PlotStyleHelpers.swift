@@ -47,29 +47,73 @@ public protocol Annotation {
     mutating func draw(renderer: Renderer)
 }
 
-struct Box: Annotation {
+public enum Direction {
+    case north
+    case east
+    case south
+    case west
+}
+
+public protocol Anchor : Annotation {
+    var direction: Direction { get set }
+    var buffer: Float { get set }
+    mutating func resolve(renderer: Renderer, center: Point)
+}
+
+struct Box: Annotation, Anchor {
     public var color = Color.black
     public var location = Point(0.0, 0.0)
     public var size = Size(width: 0.0, height: 0.0)
+    public var direction  = Direction.north
+    public var buffer: Float = 5
+    public mutating func resolve(renderer: Renderer, center: Point) {
+        switch(direction) {
+            case .north:
+                location = Point(center.x - size.width/2, center.y + buffer)
+            case .east:
+                location = Point(center.x + buffer, center.y - size.height/2)
+            case .south:
+                location = Point(center.x - size.width/2, center.y - size.height - buffer)
+            case .west:
+                location = Point(center.x - size.width - buffer, center.y - size.height/2)
+        }
+    }
     public func draw(renderer: Renderer) {
         renderer.drawSolidRect(Rect(origin: location, size: size),
                                fillColor: color,
                                hatchPattern: .none)
     }
-    public init(color: Color = .black, location: Point = Point(0.0, 0.0), size: Size = Size(width: 0.0, height: 0.0)) {
+    public init(color: Color = .black, location: Point = Point(0.0, 0.0), size: Size = Size(width: 0.0, height: 0.0), direction: Direction = .north, buffer: Float = 5) {
         self.color = color
         self.location = location
         self.size = size
+        self.direction = direction
+        self.buffer = buffer
     }
 }
 
-struct Text : Annotation {
+struct Text : Annotation, Anchor {
     public var text = ""
     public var color = Color.black
     public var size: Float = 15
     public var location = Point(0.0, 0.0)
     public var boundingBox: Box?
     public var borderWidth: Float = 5
+    public var direction  = Direction.north
+    public var buffer: Float = 5
+    public mutating func resolve(renderer: Renderer, center: Point) {
+        let width = renderer.getTextWidth(text: text, textSize: size)
+        switch(direction) {
+            case .north:
+                location = Point(center.x - width/2, center.y + buffer)
+            case .east:
+                location = Point(center.x + buffer, center.y - size/2)
+            case .south:
+                location = Point(center.x - width/2, center.y - size - buffer)
+            case .west:
+                location = Point(center.x - width - buffer, center.y - size/2)
+        }
+    }
     public mutating func draw(renderer: Renderer) {
         if boundingBox != nil {
             var bboxSize = renderer.getTextLayoutSize(text: text, textSize: size)
@@ -86,13 +130,15 @@ struct Text : Annotation {
                           strokeWidth: 1.2,
                           angle: 0)
     }
-    public init(text: String = "", color: Color = .black, size: Float = 15, location: Point = Point(0.0, 0.0), boundingBox: Box? = nil, borderWidth: Float = 5) {
+    public init(text: String = "", color: Color = .black, size: Float = 15, location: Point = Point(0.0, 0.0), boundingBox: Box? = nil, borderWidth: Float = 5, direction: Direction = .north, buffer: Float = 5) {
         self.text = text
         self.color = color
         self.size = size
         self.location = location
         self.boundingBox = boundingBox
         self.borderWidth = borderWidth
+        self.direction = direction
+        self.buffer = buffer
     }
 }
 
@@ -107,6 +153,7 @@ struct Arrow : Annotation {
     public var isFilled: Bool = false
     public var startAnnotation: Annotation?
     public var endAnnotation: Annotation?
+    public var overrideAnchor: Bool = false
     public mutating func draw(renderer: Renderer) {
         // Draws arrow body.
         renderer.drawPlotLines(points: [start, end],
@@ -134,11 +181,26 @@ struct Arrow : Annotation {
         }
 
         //Draws start and end annotations if specified.
-        startAnnotation?.draw(renderer: renderer)
-        endAnnotation?.draw(renderer: renderer)
-
+        if var startAnchor = startAnnotation as? Anchor {
+            if !overrideAnchor {
+                startAnchor.resolve(renderer: renderer, center: start)
+            }
+            startAnchor.draw(renderer: renderer)
+        }
+        else {
+            startAnnotation?.draw(renderer: renderer)
+        }
+        if var endAnchor = endAnnotation as? Anchor {
+            if !overrideAnchor {
+            endAnchor.resolve(renderer: renderer, center: end)
+            }
+            endAnchor.draw(renderer: renderer)
+        }
+        else {
+            endAnnotation?.draw(renderer: renderer)
+        }
     }
-    public init(color: Color = .black, start: Point = Point(0.0, 0.0), end: Point = Point(0.0, 0.0), strokeWidth: Float = 5, headLength: Float = 10, headAngle: Float = 20, isDashed: Bool = false, isFilled: Bool = false, startAnnotation: Annotation? = nil, endAnnotation: Annotation? = nil) {
+    public init(color: Color = .black, start: Point = Point(0.0, 0.0), end: Point = Point(0.0, 0.0), strokeWidth: Float = 5, headLength: Float = 10, headAngle: Float = 20, isDashed: Bool = false, isFilled: Bool = false, startAnnotation: Annotation? = nil, endAnnotation: Annotation? = nil, overrideAnchor: Bool = false) {
         self.color = color
         self.start = start
         self.end = end
@@ -149,5 +211,6 @@ struct Arrow : Annotation {
         self.isFilled = isFilled
         self.startAnnotation = startAnnotation
         self.endAnnotation = endAnnotation
+        self.overrideAnchor = overrideAnchor
     }
 }
