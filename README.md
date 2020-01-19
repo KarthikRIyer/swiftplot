@@ -414,7 +414,7 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |---------------------------------------------------|
 |cgColor: CGColor (return the corresponding CGColor)|
 
-Built-in Colors can be found [here](https://github.com/Qwerty71/swiftplot/blob/master/Sources/SwiftPlot/Color.swift).
+Built-in Colors can be found [here](https://github.com/KarthikRIyer/swiftplot/blob/master/Sources/SwiftPlot/Color.swift).
 
 
 ### PlotLabel
