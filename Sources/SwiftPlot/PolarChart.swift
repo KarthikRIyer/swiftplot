@@ -1,15 +1,17 @@
 import Foundation
 
+// This code is identical to LineChart.swift, with a few minor adjustments.
+
 fileprivate let MAX_DIV: Float = 50
 
-// class defining a lineGraph and all its logic
+// class defining a polarGraph and all its logic
 public struct PolarGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     public var layout = GraphLayout()
     // Data.
     var primaryAxis = Axis<T,U>()
     var secondaryAxis: Axis<T,U>? = nil
-    // Linegraph layout properties.
+    // Polargraph layout properties.
     public var plotLineThickness: Float = 1.5
     
     public init(enablePrimaryAxisGrid: Bool = false,
