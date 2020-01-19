@@ -60,8 +60,14 @@ public struct GraphLayout {
                     return Point(x, y)
                 case .axesPoints:
                     return Point(x, y) + plotBorderRect.origin
-                default:
-                    return Point(0.0, 0.0)
+                case .figureFraction:
+                    let maxX = plotBorderRect.origin.x + plotBorderRect.size.width
+                    let maxY = plotBorderRect.origin.y + plotBorderRect.size.height
+                    return Point(x * maxX, y * maxY)
+                case .axesFraction:
+                    let maxX = plotBorderRect.size.width
+                    let maxY =  plotBorderRect.size.height
+                    return Point(x * maxX, y * maxY) + plotBorderRect.origin
             }
         }
     }

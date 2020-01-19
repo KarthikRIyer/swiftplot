@@ -49,9 +49,8 @@ public struct Coordinate {
         case figureFraction
         case axesPoints
         case axesFraction
-        case data
     }
-    public var coordinateSpace: CoordinateSpace = .data
+    public var coordinateSpace: CoordinateSpace = .figurePoints
     public var point: Point = Point(0.0, 0.0)
 }
 
