@@ -86,8 +86,8 @@ extension PolarGraph {
         addSeries(s, axisType: axisType)
     }
     public mutating func addFunction(_ function: (T)->U,
-                            minX: T,
-                            maxX: T,
+                            minX: T = T(0),
+                            maxX: T = T(2*Float.pi),
                             numberOfSamples: Int = 400,
                             clampY: ClosedRange<U>? = nil,
                             label: String,
