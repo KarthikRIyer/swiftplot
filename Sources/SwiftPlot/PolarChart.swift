@@ -95,7 +95,7 @@ extension PolarGraph {
                             axisType: Axis<T,U>.Location = .primaryAxis) {
         
         let theta = linspace(start: minX.toFloat(), end: maxX.toFloat(), num: numberOfSamples)
-        let r = theta.map{val in function(x: val)}
+        let r = theta.map{val in function(T(val))}
         
         var x = theta.map{angle in r[theta.firstIndex(of: angle)!].toFloat() * cos(angle.toFloat())}
         var y = theta.map{angle in r[theta.firstIndex(of: angle)!].toFloat() * sin(angle.toFloat())}
