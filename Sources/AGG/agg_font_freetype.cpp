@@ -2,8 +2,8 @@
 // Anti-Grain Geometry - Version 2.4
 // Copyright (C) 2002-2005 Maxim Shemanarev (http://www.antigrain.com)
 //
-// Permission to copy, use, modify, sell and distribute this software
-// is granted provided this copyright notice appears in all copies.
+// Permission to copy, use, modify, sell and distribute this software 
+// is granted provided this copyright notice appears in all copies. 
 // This software is provided "as is" without express or implied
 // warranty, and with no claim as to its suitability for any purpose.
 //
@@ -14,7 +14,8 @@
 //----------------------------------------------------------------------------
 
 
-#include <stdio.h>
+#include <cstdio>
+#include <cstring>
 #include "agg_font_freetype.h"
 #include "agg_bitset_iterator.h"
 #include "agg_renderer_scanline.h"
@@ -37,7 +38,7 @@ namespace agg
     //
     //------------------------------------------------------------------------------
 
-    static const unsigned crc32tab[256] =
+    static const unsigned crc32tab[256] = 
     {
        0x00000000, 0x77073096, 0xee0e612c, 0x990951ba,
        0x076dc419, 0x706af48f, 0xe963a535, 0x9e6495a3,
@@ -112,10 +113,10 @@ namespace agg
     {
         unsigned crc = (unsigned)~0;
         const unsigned char* p;
-        unsigned len = 0;
+        unsigned len = 0; 
         unsigned nr = size;
 
-        for (len += nr, p = buf; nr--; ++p)
+        for (len += nr, p = buf; nr--; ++p) 
         {
             crc = (crc >> 8) ^ crc32tab[(crc ^ *p) & 0xff];
         }
@@ -147,7 +148,7 @@ namespace agg
                               bool flip_y,
                               const trans_affine& mtx,
                               PathStorage& path)
-    {
+    {   
         typedef typename PathStorage::value_type value_type;
 
         FT_Vector   v_last;
@@ -212,7 +213,7 @@ namespace agg
             y1 = int26p6_to_dbl(v_start.y);
             if(flip_y) y1 = -y1;
             mtx.transform(&x1, &y1);
-            path.move_to(value_type(dbl_to_int26p6(x1)),
+            path.move_to(value_type(dbl_to_int26p6(x1)), 
                          value_type(dbl_to_int26p6(y1)));
 
             while(point < limit)
@@ -229,7 +230,7 @@ namespace agg
                         y1 = int26p6_to_dbl(point->y);
                         if(flip_y) y1 = -y1;
                         mtx.transform(&x1, &y1);
-                        path.line_to(value_type(dbl_to_int26p6(x1)),
+                        path.line_to(value_type(dbl_to_int26p6(x1)), 
                                      value_type(dbl_to_int26p6(y1)));
                         //path.line_to(conv(point->x), flip_y ? -conv(point->y) : conv(point->y));
                         continue;
@@ -262,9 +263,9 @@ namespace agg
                                 if(flip_y) { y1 = -y1; y2 = -y2; }
                                 mtx.transform(&x1, &y1);
                                 mtx.transform(&x2, &y2);
-                                path.curve3(value_type(dbl_to_int26p6(x1)),
+                                path.curve3(value_type(dbl_to_int26p6(x1)), 
                                             value_type(dbl_to_int26p6(y1)),
-                                            value_type(dbl_to_int26p6(x2)),
+                                            value_type(dbl_to_int26p6(x2)), 
                                             value_type(dbl_to_int26p6(y2)));
                                 continue;
                             }
@@ -281,14 +282,14 @@ namespace agg
                             if(flip_y) { y1 = -y1; y2 = -y2; }
                             mtx.transform(&x1, &y1);
                             mtx.transform(&x2, &y2);
-                            path.curve3(value_type(dbl_to_int26p6(x1)),
+                            path.curve3(value_type(dbl_to_int26p6(x1)), 
                                         value_type(dbl_to_int26p6(y1)),
-                                        value_type(dbl_to_int26p6(x2)),
+                                        value_type(dbl_to_int26p6(x2)), 
                                         value_type(dbl_to_int26p6(y2)));
 
-                            //path.curve3(conv(v_control.x),
-                            //            flip_y ? -conv(v_control.y) : conv(v_control.y),
-                            //            conv(v_middle.x),
+                            //path.curve3(conv(v_control.x), 
+                            //            flip_y ? -conv(v_control.y) : conv(v_control.y), 
+                            //            conv(v_middle.x), 
                             //            flip_y ? -conv(v_middle.y) : conv(v_middle.y));
 
                             v_control = vec;
@@ -302,14 +303,14 @@ namespace agg
                         if(flip_y) { y1 = -y1; y2 = -y2; }
                         mtx.transform(&x1, &y1);
                         mtx.transform(&x2, &y2);
-                        path.curve3(value_type(dbl_to_int26p6(x1)),
+                        path.curve3(value_type(dbl_to_int26p6(x1)), 
                                     value_type(dbl_to_int26p6(y1)),
-                                    value_type(dbl_to_int26p6(x2)),
+                                    value_type(dbl_to_int26p6(x2)), 
                                     value_type(dbl_to_int26p6(y2)));
 
-                        //path.curve3(conv(v_control.x),
-                        //            flip_y ? -conv(v_control.y) : conv(v_control.y),
-                        //            conv(v_start.x),
+                        //path.curve3(conv(v_control.x), 
+                        //            flip_y ? -conv(v_control.y) : conv(v_control.y), 
+                        //            conv(v_start.x), 
                         //            flip_y ? -conv(v_start.y) : conv(v_start.y));
                         goto Close;
                     }
@@ -323,9 +324,9 @@ namespace agg
                             return false;
                         }
 
-                        vec1.x = point[0].x;
+                        vec1.x = point[0].x; 
                         vec1.y = point[0].y;
-                        vec2.x = point[1].x;
+                        vec2.x = point[1].x; 
                         vec2.y = point[1].y;
 
                         point += 2;
@@ -348,18 +349,18 @@ namespace agg
                             mtx.transform(&x1, &y1);
                             mtx.transform(&x2, &y2);
                             mtx.transform(&x3, &y3);
-                            path.curve4(value_type(dbl_to_int26p6(x1)),
+                            path.curve4(value_type(dbl_to_int26p6(x1)), 
                                         value_type(dbl_to_int26p6(y1)),
-                                        value_type(dbl_to_int26p6(x2)),
+                                        value_type(dbl_to_int26p6(x2)), 
                                         value_type(dbl_to_int26p6(y2)),
-                                        value_type(dbl_to_int26p6(x3)),
+                                        value_type(dbl_to_int26p6(x3)), 
                                         value_type(dbl_to_int26p6(y3)));
 
-                            //path.curve4(conv(vec1.x),
-                            //            flip_y ? -conv(vec1.y) : conv(vec1.y),
-                            //            conv(vec2.x),
+                            //path.curve4(conv(vec1.x), 
+                            //            flip_y ? -conv(vec1.y) : conv(vec1.y), 
+                            //            conv(vec2.x), 
                             //            flip_y ? -conv(vec2.y) : conv(vec2.y),
-                            //            conv(vec.x),
+                            //            conv(vec.x), 
                             //            flip_y ? -conv(vec.y) : conv(vec.y));
                             continue;
                         }
@@ -374,18 +375,18 @@ namespace agg
                         mtx.transform(&x1, &y1);
                         mtx.transform(&x2, &y2);
                         mtx.transform(&x3, &y3);
-                        path.curve4(value_type(dbl_to_int26p6(x1)),
+                        path.curve4(value_type(dbl_to_int26p6(x1)), 
                                     value_type(dbl_to_int26p6(y1)),
-                                    value_type(dbl_to_int26p6(x2)),
+                                    value_type(dbl_to_int26p6(x2)), 
                                     value_type(dbl_to_int26p6(y2)),
-                                    value_type(dbl_to_int26p6(x3)),
+                                    value_type(dbl_to_int26p6(x3)), 
                                     value_type(dbl_to_int26p6(y3)));
 
-                        //path.curve4(conv(vec1.x),
-                        //            flip_y ? -conv(vec1.y) : conv(vec1.y),
-                        //            conv(vec2.x),
+                        //path.curve4(conv(vec1.x), 
+                        //            flip_y ? -conv(vec1.y) : conv(vec1.y), 
+                        //            conv(vec2.x), 
                         //            flip_y ? -conv(vec2.y) : conv(vec2.y),
-                        //            conv(v_start.x),
+                        //            conv(v_start.x), 
                         //            flip_y ? -conv(v_start.y) : conv(v_start.y));
                         goto Close;
                     }
@@ -395,7 +396,7 @@ namespace agg
             path.close_polygon();
 
        Close:
-            first = last + 1;
+            first = last + 1; 
         }
 
         return true;
@@ -510,7 +511,7 @@ namespace agg
 
 
     //------------------------------------------------------------------------
-    font_engine_freetype_base::font_engine_freetype_base(bool flag32,
+    font_engine_freetype_base::font_engine_freetype_base(bool flag32, 
                                                          unsigned max_faces) :
         m_flag32(flag32),
         m_change_stamp(0),
@@ -559,8 +560,8 @@ namespace agg
 
 
     //------------------------------------------------------------------------
-    void font_engine_freetype_base::resolution(unsigned dpi)
-    {
+    void font_engine_freetype_base::resolution(unsigned dpi) 
+    { 
         m_resolution = dpi;
         update_char_size();
     }
@@ -572,7 +573,7 @@ namespace agg
         unsigned i;
         for(i = 0; i < m_num_faces; ++i)
         {
-            if(strcmp(face_name, m_face_names[i]) == 0) return i;
+            if(std::strcmp(face_name, m_face_names[i]) == 0) return i;
         }
         return -1;
     }
@@ -600,10 +601,10 @@ namespace agg
 
 
     //------------------------------------------------------------------------
-    bool font_engine_freetype_base::load_font(const char* font_name,
+    bool font_engine_freetype_base::load_font(const char* font_name, 
                                               unsigned face_index,
                                               glyph_rendering ren_type,
-                                              const char* font_mem,
+                                              const char* font_mem, 
                                               const long font_mem_size)
     {
         bool ret = false;
@@ -624,21 +625,21 @@ namespace agg
                 {
                     delete [] m_face_names[0];
                     FT_Done_Face(m_faces[0]);
-                    memcpy(m_faces,
-                           m_faces + 1,
+                    std::memcpy(m_faces, 
+                           m_faces + 1, 
                            (m_max_faces - 1) * sizeof(FT_Face));
-                    memcpy(m_face_names,
-                           m_face_names + 1,
+                    std::memcpy(m_face_names, 
+                           m_face_names + 1, 
                            (m_max_faces - 1) * sizeof(char*));
                     m_num_faces = m_max_faces - 1;
                 }
 
                 if (font_mem && font_mem_size)
                 {
-                    m_last_error = FT_New_Memory_Face(m_library,
-                                                      (const FT_Byte*)font_mem,
-                                                      font_mem_size,
-                                                      face_index,
+                    m_last_error = FT_New_Memory_Face(m_library, 
+                                                      (const FT_Byte*)font_mem, 
+                                                      font_mem_size, 
+                                                      face_index, 
                                                       &m_faces[m_num_faces]);
                 }
                 else
@@ -651,8 +652,8 @@ namespace agg
 
                 if(m_last_error == 0)
                 {
-                    m_face_names[m_num_faces] = new char [strlen(font_name) + 1];
-                    strcpy(m_face_names[m_num_faces], font_name);
+                    m_face_names[m_num_faces] = new char [std::strlen(font_name) + 1];
+                    std::strcpy(m_face_names[m_num_faces], font_name);
                     m_cur_face = m_faces[m_num_faces];
                     m_name     = m_face_names[m_num_faces];
                     ++m_num_faces;
@@ -669,7 +670,7 @@ namespace agg
             if(m_last_error == 0)
             {
                 ret = true;
-
+                
                 switch(ren_type)
                 {
                 case glyph_ren_native_mono:
@@ -742,13 +743,14 @@ namespace agg
     }
 
     //------------------------------------------------------------------------
-    bool font_engine_freetype_base::char_map(FT_Encoding char_map)
+    bool font_engine_freetype_base::char_map(FT_Encoding map)
     {
         if(m_cur_face)
         {
-            m_last_error = FT_Select_Charmap(m_cur_face, m_char_map);
+            m_last_error = FT_Select_Charmap(m_cur_face, map);
             if(m_last_error == 0)
             {
+                m_char_map = map;
                 update_signature();
                 return true;
             }
@@ -782,8 +784,8 @@ namespace agg
 
     //------------------------------------------------------------------------
     void font_engine_freetype_base::hinting(bool h)
-    {
-        m_hinting = h;
+    { 
+        m_hinting = h; 
         if(m_cur_face)
         {
             update_signature();
@@ -792,8 +794,8 @@ namespace agg
 
     //------------------------------------------------------------------------
     void font_engine_freetype_base::flip_y(bool f)
-    {
-        m_flip_y = f;
+    { 
+        m_flip_y = f; 
         if(m_cur_face)
         {
             update_signature();
@@ -815,7 +817,7 @@ namespace agg
     {
         if(m_cur_face && m_name)
         {
-            unsigned name_len = strlen(m_name);
+            unsigned name_len = std::strlen(m_name);
             if(name_len > m_name_len)
             {
                 delete [] m_signature;
@@ -825,7 +827,7 @@ namespace agg
 
             unsigned gamma_hash = 0;
             if(m_glyph_rendering == glyph_ren_native_gray8 ||
-               m_glyph_rendering == glyph_ren_agg_mono ||
+               m_glyph_rendering == glyph_ren_agg_mono || 
                m_glyph_rendering == glyph_ren_agg_gray8)
             {
                 unsigned char gamma_table[rasterizer_scanline_aa<>::aa_scale];
@@ -837,8 +839,8 @@ namespace agg
                 gamma_hash = calc_crc32(gamma_table, sizeof(gamma_table));
             }
 
-            sprintf(m_signature,
-                    "%s,%u,%d,%d,%d:%dx%d,%d,%d,%08X",
+            std::sprintf(m_signature, 
+                    "%s,%u,%d,%d,%d:%dx%d,%d,%d,%08X", 
                     m_name,
                     m_char_map,
                     m_face_index,
@@ -856,14 +858,14 @@ namespace agg
                 double mtx[6];
                 char buf[100];
                 m_affine.store_to(mtx);
-                sprintf(buf, ",%08X%08X%08X%08X%08X%08X",
-                    dbl_to_plain_fx(mtx[0]),
-                    dbl_to_plain_fx(mtx[1]),
-                    dbl_to_plain_fx(mtx[2]),
-                    dbl_to_plain_fx(mtx[3]),
-                    dbl_to_plain_fx(mtx[4]),
+                std::sprintf(buf, ",%08X%08X%08X%08X%08X%08X", 
+                    dbl_to_plain_fx(mtx[0]), 
+                    dbl_to_plain_fx(mtx[1]), 
+                    dbl_to_plain_fx(mtx[2]), 
+                    dbl_to_plain_fx(mtx[3]), 
+                    dbl_to_plain_fx(mtx[4]), 
                     dbl_to_plain_fx(mtx[5]));
-                strcat(m_signature, buf);
+                std::strcat(m_signature, buf);
             }
             ++m_change_stamp;
         }
@@ -877,15 +879,15 @@ namespace agg
         {
             if(m_resolution)
             {
-                FT_Set_Char_Size(m_cur_face,
+                FT_Set_Char_Size(m_cur_face, 
                                  m_width,       // char_width in 1/64th of points
                                  m_height,      // char_height in 1/64th of points
-                                 m_resolution,  // horizontal device resolution
-                                 m_resolution); // vertical device resolution
+                                 m_resolution,  // horizontal device resolution 
+                                 m_resolution); // vertical device resolution 
             }
             else
             {
-                FT_Set_Pixel_Sizes(m_cur_face,
+                FT_Set_Pixel_Sizes(m_cur_face,    
                                    m_width >> 6,    // pixel_width
                                    m_height >> 6);  // pixel_height
             }
@@ -901,8 +903,8 @@ namespace agg
     bool font_engine_freetype_base::prepare_glyph(unsigned glyph_code)
     {
         m_glyph_index = FT_Get_Char_Index(m_cur_face, glyph_code);
-        m_last_error = FT_Load_Glyph(m_cur_face,
-                                     m_glyph_index,
+        m_last_error = FT_Load_Glyph(m_cur_face, 
+                                     m_glyph_index, 
                                      m_hinting ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
 //                                     m_hinting ? FT_LOAD_FORCE_AUTOHINT : FT_LOAD_NO_HINTING);
         if(m_last_error == 0)
@@ -913,9 +915,9 @@ namespace agg
                 m_last_error = FT_Render_Glyph(m_cur_face->glyph, FT_RENDER_MODE_MONO);
                 if(m_last_error == 0)
                 {
-                    decompose_ft_bitmap_mono(m_cur_face->glyph->bitmap,
+                    decompose_ft_bitmap_mono(m_cur_face->glyph->bitmap, 
                                              m_cur_face->glyph->bitmap_left,
-                                             m_flip_y ? -m_cur_face->glyph->bitmap_top :
+                                             m_flip_y ? -m_cur_face->glyph->bitmap_top : 
                                                          m_cur_face->glyph->bitmap_top,
                                              m_flip_y,
                                              m_scanline_bin,
@@ -924,7 +926,7 @@ namespace agg
                     m_bounds.y1 = m_scanlines_bin.min_y();
                     m_bounds.x2 = m_scanlines_bin.max_x() + 1;
                     m_bounds.y2 = m_scanlines_bin.max_y() + 1;
-                    m_data_size = m_scanlines_bin.byte_size();
+                    m_data_size = m_scanlines_bin.byte_size(); 
                     m_data_type = glyph_data_mono;
                     m_advance_x = int26p6_to_dbl(m_cur_face->glyph->advance.x);
                     m_advance_y = int26p6_to_dbl(m_cur_face->glyph->advance.y);
@@ -937,9 +939,9 @@ namespace agg
                 m_last_error = FT_Render_Glyph(m_cur_face->glyph, FT_RENDER_MODE_NORMAL);
                 if(m_last_error == 0)
                 {
-                    decompose_ft_bitmap_gray8(m_cur_face->glyph->bitmap,
+                    decompose_ft_bitmap_gray8(m_cur_face->glyph->bitmap, 
                                               m_cur_face->glyph->bitmap_left,
-                                              m_flip_y ? -m_cur_face->glyph->bitmap_top :
+                                              m_flip_y ? -m_cur_face->glyph->bitmap_top : 
                                                           m_cur_face->glyph->bitmap_top,
                                               m_flip_y,
                                               m_rasterizer,
@@ -949,7 +951,7 @@ namespace agg
                     m_bounds.y1 = m_scanlines_aa.min_y();
                     m_bounds.x2 = m_scanlines_aa.max_x() + 1;
                     m_bounds.y2 = m_scanlines_aa.max_y() + 1;
-                    m_data_size = m_scanlines_aa.byte_size();
+                    m_data_size = m_scanlines_aa.byte_size(); 
                     m_data_type = glyph_data_gray8;
                     m_advance_x = int26p6_to_dbl(m_cur_face->glyph->advance.x);
                     m_advance_y = int26p6_to_dbl(m_cur_face->glyph->advance.y);
@@ -965,7 +967,7 @@ namespace agg
                     {
                         m_path32.remove_all();
                         if(decompose_ft_outline(m_cur_face->glyph->outline,
-                                                m_flip_y,
+                                                m_flip_y, 
                                                 m_affine,
                                                 m_path32))
                         {
@@ -986,7 +988,7 @@ namespace agg
                     {
                         m_path16.remove_all();
                         if(decompose_ft_outline(m_cur_face->glyph->outline,
-                                                m_flip_y,
+                                                m_flip_y, 
                                                 m_affine,
                                                 m_path16))
                         {
@@ -1014,7 +1016,7 @@ namespace agg
                     {
                         m_path32.remove_all();
                         decompose_ft_outline(m_cur_face->glyph->outline,
-                                             m_flip_y,
+                                             m_flip_y, 
                                              m_affine,
                                              m_path32);
                         m_rasterizer.add_path(m_curves32);
@@ -1023,18 +1025,18 @@ namespace agg
                     {
                         m_path16.remove_all();
                         decompose_ft_outline(m_cur_face->glyph->outline,
-                                             m_flip_y,
+                                             m_flip_y, 
                                              m_affine,
                                              m_path16);
                         m_rasterizer.add_path(m_curves16);
                     }
-                    m_scanlines_bin.prepare(); // Remove all
+                    m_scanlines_bin.prepare(); // Remove all 
                     render_scanlines(m_rasterizer, m_scanline_bin, m_scanlines_bin);
                     m_bounds.x1 = m_scanlines_bin.min_x();
                     m_bounds.y1 = m_scanlines_bin.min_y();
                     m_bounds.x2 = m_scanlines_bin.max_x() + 1;
                     m_bounds.y2 = m_scanlines_bin.max_y() + 1;
-                    m_data_size = m_scanlines_bin.byte_size();
+                    m_data_size = m_scanlines_bin.byte_size(); 
                     m_data_type = glyph_data_mono;
                     m_advance_x = int26p6_to_dbl(m_cur_face->glyph->advance.x);
                     m_advance_y = int26p6_to_dbl(m_cur_face->glyph->advance.y);
@@ -1052,7 +1054,7 @@ namespace agg
                     {
                         m_path32.remove_all();
                         decompose_ft_outline(m_cur_face->glyph->outline,
-                                             m_flip_y,
+                                             m_flip_y, 
                                              m_affine,
                                              m_path32);
                         m_rasterizer.add_path(m_curves32);
@@ -1061,18 +1063,18 @@ namespace agg
                     {
                         m_path16.remove_all();
                         decompose_ft_outline(m_cur_face->glyph->outline,
-                                             m_flip_y,
+                                             m_flip_y, 
                                              m_affine,
                                              m_path16);
                         m_rasterizer.add_path(m_curves16);
                     }
-                    m_scanlines_aa.prepare(); // Remove all
+                    m_scanlines_aa.prepare(); // Remove all 
                     render_scanlines(m_rasterizer, m_scanline_aa, m_scanlines_aa);
                     m_bounds.x1 = m_scanlines_aa.min_x();
                     m_bounds.y1 = m_scanlines_aa.min_y();
                     m_bounds.x2 = m_scanlines_aa.max_x() + 1;
                     m_bounds.y2 = m_scanlines_aa.max_y() + 1;
-                    m_data_size = m_scanlines_aa.byte_size();
+                    m_data_size = m_scanlines_aa.byte_size(); 
                     m_data_type = glyph_data_gray8;
                     m_advance_x = int26p6_to_dbl(m_cur_face->glyph->advance.x);
                     m_advance_y = int26p6_to_dbl(m_cur_face->glyph->advance.y);
@@ -1098,7 +1100,7 @@ namespace agg
             default: return;
             case glyph_data_mono:    m_scanlines_bin.serialize(data); break;
             case glyph_data_gray8:   m_scanlines_aa.serialize(data);  break;
-            case glyph_data_outline:
+            case glyph_data_outline: 
                 if(m_flag32)
                 {
                     m_path32.serialize(data);
@@ -1143,3 +1145,5 @@ namespace agg
 
 
 }
+
+

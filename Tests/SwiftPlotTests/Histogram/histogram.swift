@@ -10,8 +10,7 @@ import QuartzRenderer
 @available(tvOS 13, watchOS 13, *)
 extension HistogramTests {
   
-  func testHistogram() throws {
-    
+  func testHistogram() throws {    
     let fileName = "_21_histogram"
     
     var histogram = Histogram<Float>(isNormalized: false, enableGrid: true)

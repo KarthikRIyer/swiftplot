@@ -112,3 +112,41 @@ func verifyImage(name: String, renderer: KnownRenderer) {
   // TODO: If the test fails, take a visual diff.
   // In the mean time, https://www.diffchecker.com/image-diff seems pretty good.
 }
+
+// Render-and-verify helper for non-example testcases.
+
+import SVGRenderer
+#if canImport(AGGRenderer)
+import AGGRenderer
+#endif
+#if canImport(QuartzRenderer)
+import QuartzRenderer
+#endif
+
+extension SwiftPlotTestCase {
+  
+  func renderAndVerify(_ plot: Plot, size: Size = Size(width: 1000, height: 660),
+                       fileName: String = #function) throws {
+    var fileName = fileName
+    if fileName.hasSuffix("()") { fileName.removeLast(2) }
+    let svg_renderer = SVGRenderer()
+    try plot.drawGraphAndOutput(size: size,
+                                fileName: svgOutputDirectory+fileName,
+                                renderer: svg_renderer)
+    verifyImage(name: fileName, renderer: .svg)
+    #if canImport(AGGRenderer)
+    let agg_renderer = AGGRenderer()
+    try plot.drawGraphAndOutput(size: size,
+                                fileName: aggOutputDirectory+fileName,
+                                renderer: agg_renderer)
+    verifyImage(name: fileName, renderer: .agg)
+    #endif
+    #if canImport(QuartzRenderer)
+    let quartz_renderer = QuartzRenderer()
+    try plot.drawGraphAndOutput(size: size,
+                                fileName: coreGraphicsOutputDirectory+fileName,
+                                renderer: quartz_renderer)
+    verifyImage(name: fileName, renderer: .coreGraphics)
+    #endif
+  }
+}

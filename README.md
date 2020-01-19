@@ -36,7 +36,7 @@ SwiftPlot currently uses three rendering backends to generate plots:
 
 To encode the plots as PNG images it uses the [lodepng](https://github.com/lvandeve/lodepng) library.
 </br>
-SwiftPlot can also be used in Jupyter Notebooks.
+SwiftPlot can also be used in Jupyter Notebooks, with Python interop support for Google Colab.
 </br>
 
 Examples, demonstrating all the features, have been included with the repository under the `Tests/SwiftPlotTests` directory. To run the examples, clone the repository, and run the `swift test` command from the package directory.
@@ -84,10 +84,24 @@ In order to display the generated plot in the notebook, add this line to a new c
 ```swift
 %include "EnableJupyterDisplay.swift"
 ```
+If you wish to display the generated plot in a Google Colab environment, add these lines to a new cell instead:
+```swift
+import Python
+%include "EnableIPythonDisplay.swift"
+func display(base64EncodedPNG: String) {
+  let displayImage = Python.import("IPython.display")
+  let codecs = Python.import("codecs")
+  let imageData = codecs.decode(Python.bytes(base64EncodedPNG, encoding: "utf8"), encoding: "base64")
+  displayImage.Image(data: imageData, format: "png").display()
+}
+```
+Note that because Google Colab doesn't natively support Swift libraries that produce rich output, we use Swift's Python interop as a workaround.
 
 ## Examples
 Here are some examples to provide you with a headstart to using this library. Here we will be looking at plots using only the AGGRenderer, but the procedure will remain the same for SVGRenderer.
 To use the library in your package, include it as a dependency to your target, in the Package.swift file.
+
+More tests can be found in the [SwiftPlotTests](Tests/SwiftPlotTests) folder.
 
 #### Simple Line Graph
 
@@ -199,6 +213,7 @@ let y:[Float] = [10,120,500,800]
 let x1:[Float] = [100,200,361,672]
 let y1:[Float] = [150,250,628,800]
 
+var agg_renderer = AGGRenderer = AGGRenderer() 
 var lineGraph = LineGraph<Float,Float>()
 lineGraph.addSeries(x1, y1, label: "Plot 1", color: .lightBlue, axisType: .primaryAxis)
 lineGraph.addSeries(x, y, label: "Plot 2", color: .orange, axisType: .secondaryAxis)

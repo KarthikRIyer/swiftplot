@@ -9,7 +9,6 @@ extension AGGRendererTests {
   /// a PNG buffer (no files), then verifying the base64-encoded data matches that from
   /// the reference file.
   func testBase64Encoding() throws {
-    
     let x:[String] = ["2008","2009","2010","2011"]
     let y:[Float] = [320,-100,420,500]
     var barGraph = BarGraph<String,Float>(enableGrid: true)
@@ -20,7 +19,7 @@ extension AGGRendererTests {
     let renderer = AGGRenderer()
     barGraph.drawGraph(renderer: renderer)
     let outputBase64 = renderer.base64Png()
-    XCTAssertEqual(outputBase64.count, 47104)
+    XCTAssertEqual(outputBase64.count, 47108)
     
     // First, sanity check: ensure *we* can decode the string.
     guard let _ = Data(base64Encoded: outputBase64, options: .ignoreUnknownCharacters) else {
