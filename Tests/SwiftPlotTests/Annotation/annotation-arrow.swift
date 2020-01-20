@@ -25,7 +25,7 @@ extension AnnotationTests {
     lineGraph.addAnnotation(annotation: Arrow(start: Point(400.0, 585.0),
                                               end: Point(585.0, 585.0),
                                               startAnnotation: Text(text: "relative maxima",
-                                                                    location: Point(280.0, 585.0))))
+                                                                    direction: .west)))
 
     let svg_renderer = SVGRenderer()
     try lineGraph.drawGraphAndOutput(fileName: svgOutputDirectory+fileName,
@@ -37,11 +37,13 @@ extension AnnotationTests {
                                      renderer: agg_renderer)
     verifyImage(name: fileName, renderer: .agg)
     #endif
+    /*
     #if canImport(QuartzRenderer)
     let quartz_renderer = QuartzRenderer()
     try lineGraph.drawGraphAndOutput(fileName: coreGraphicsOutputDirectory+fileName,
                                      renderer: quartz_renderer)
     verifyImage(name: fileName, renderer: .coreGraphics)
     #endif
+    */
   }
 }
