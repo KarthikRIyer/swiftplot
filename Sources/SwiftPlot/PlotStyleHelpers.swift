@@ -54,28 +54,28 @@ public enum Direction {
     case west
 }
 
-public protocol Anchor : Annotation {
+public protocol AnchorableAnnotation : Annotation {
     var direction: Direction { get set }
-    var buffer: Float { get set }
+    var margin: Float { get set }
     mutating func resolve(renderer: Renderer, center: Point)
 }
 
-struct Box: Annotation, Anchor {
+struct Box: Annotation, AnchorableAnnotation {
     public var color = Color.black
     public var location = Point(0.0, 0.0)
     public var size = Size(width: 0.0, height: 0.0)
     public var direction  = Direction.north
-    public var buffer: Float = 5
+    public var margin: Float = 5
     public mutating func resolve(renderer: Renderer, center: Point) {
         switch(direction) {
             case .north:
-                location = Point(center.x - size.width/2, center.y + buffer)
+                location = Point(center.x - size.width/2, center.y + margin)
             case .east:
-                location = Point(center.x + buffer, center.y - size.height/2)
+                location = Point(center.x + margin, center.y - size.height/2)
             case .south:
-                location = Point(center.x - size.width/2, center.y - size.height - buffer)
+                location = Point(center.x - size.width/2, center.y - size.height - margin)
             case .west:
-                location = Point(center.x - size.width - buffer, center.y - size.height/2)
+                location = Point(center.x - size.width - margin, center.y - size.height/2)
         }
     }
     public func draw(renderer: Renderer) {
@@ -83,16 +83,16 @@ struct Box: Annotation, Anchor {
                                fillColor: color,
                                hatchPattern: .none)
     }
-    public init(color: Color = .black, location: Point = Point(0.0, 0.0), size: Size = Size(width: 0.0, height: 0.0), direction: Direction = .north, buffer: Float = 5) {
+    public init(color: Color = .black, location: Point = Point(0.0, 0.0), size: Size = Size(width: 0.0, height: 0.0), direction: Direction = .north, margin: Float = 5) {
         self.color = color
         self.location = location
         self.size = size
         self.direction = direction
-        self.buffer = buffer
+        self.margin = margin
     }
 }
 
-struct Text : Annotation, Anchor {
+struct Text : Annotation, AnchorableAnnotation {
     public var text = ""
     public var color = Color.black
     public var size: Float = 15
@@ -100,18 +100,18 @@ struct Text : Annotation, Anchor {
     public var boundingBox: Box?
     public var borderWidth: Float = 5
     public var direction  = Direction.north
-    public var buffer: Float = 5
+    public var margin: Float = 5
     public mutating func resolve(renderer: Renderer, center: Point) {
         let width = renderer.getTextWidth(text: text, textSize: size)
         switch(direction) {
             case .north:
-                location = Point(center.x - width/2, center.y + buffer)
+                location = Point(center.x - width/2, center.y + margin)
             case .east:
-                location = Point(center.x + buffer, center.y - size/2)
+                location = Point(center.x + margin, center.y - size/2)
             case .south:
-                location = Point(center.x - width/2, center.y - size - buffer)
+                location = Point(center.x - width/2, center.y - size - margin)
             case .west:
-                location = Point(center.x - width - buffer, center.y - size/2)
+                location = Point(center.x - width - margin, center.y - size/2)
         }
     }
     public mutating func draw(renderer: Renderer) {
@@ -130,7 +130,7 @@ struct Text : Annotation, Anchor {
                           strokeWidth: 1.2,
                           angle: 0)
     }
-    public init(text: String = "", color: Color = .black, size: Float = 15, location: Point = Point(0.0, 0.0), boundingBox: Box? = nil, borderWidth: Float = 5, direction: Direction = .north, buffer: Float = 5) {
+    public init(text: String = "", color: Color = .black, size: Float = 15, location: Point = Point(0.0, 0.0), boundingBox: Box? = nil, borderWidth: Float = 5, direction: Direction = .north, margin: Float = 5) {
         self.text = text
         self.color = color
         self.size = size
@@ -138,7 +138,7 @@ struct Text : Annotation, Anchor {
         self.boundingBox = boundingBox
         self.borderWidth = borderWidth
         self.direction = direction
-        self.buffer = buffer
+        self.margin = margin
     }
 }
 
@@ -181,18 +181,26 @@ struct Arrow : Annotation {
         }
 
         //Draws start and end annotations if specified.
-        if var startAnchor = startAnnotation as? Anchor {
+        if var startAnchor = startAnnotation as? AnchorableAnnotation {
             if !overrideAnchor {
-                startAnchor.resolve(renderer: renderer, center: start)
+                // Calculate anchor point
+                var startAnchorPoint = start + Point(0.0, strokeWidth/2)
+                let startAnchorRotateAngle = -atan2(end.x - start.x, end.y - start.y)
+                startAnchorPoint = rotatePoint(point: startAnchorPoint, center: start, angleRadians: startAnchorRotateAngle + 0.5 * Float.pi)
+                startAnchor.resolve(renderer: renderer, center: startAnchorPoint)
             }
             startAnchor.draw(renderer: renderer)
         }
         else {
             startAnnotation?.draw(renderer: renderer)
         }
-        if var endAnchor = endAnnotation as? Anchor {
+        if var endAnchor = endAnnotation as? AnchorableAnnotation {
             if !overrideAnchor {
-            endAnchor.resolve(renderer: renderer, center: end)
+                // Calculate anchor point
+                var endAnchorPoint = end + Point(0.0, strokeWidth/2)
+                let endAnchorRotateAngle = -atan2(start.x - end.x, start.y - end.y)
+                endAnchorPoint = rotatePoint(point: endAnchorPoint, center: end, angleRadians: endAnchorRotateAngle + 0.5 * Float.pi)
+                endAnchor.resolve(renderer: renderer, center: endAnchorPoint)
             }
             endAnchor.draw(renderer: renderer)
         }
