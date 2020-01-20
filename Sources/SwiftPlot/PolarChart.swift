@@ -8,7 +8,7 @@ fileprivate let MAX_DIV: Float = 50
 public struct PolarGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     public var layout = GraphLayout()
-    self.maximum = Float(0.0)
+    public var self.maximum = Float(0.0)
     // Data.
     var primaryAxis = Axis<T,U>()
     var secondaryAxis: Axis<T,U>? = nil
