@@ -149,7 +149,7 @@ public class SVGRenderer: Renderer{
     public func drawEmptyCircle(center c: Point,
                                 radius r: Float) {
         let c = convertToSVGCoordinates(c)
-        let color = "grey"
+        let color = "red"
         let circle: String = #"<circle cx="\#(c.x)" cy="\#(c.y)" r="\#(r)"  stroke="\#(color)" fill-opacity="\#(0.0)" />"#
         lines.append(circle)
     }
