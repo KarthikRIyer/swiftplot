@@ -9,7 +9,7 @@ public struct PolarGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     public var layout = GraphLayout()
     public var maximum = Float(0.0)
-    public var origin = Pair<T,U>(T(0.0), U(0.0))
+    public var origin = Pair<Float,Float>(Float(0.0), Float(0.0))
     // Data.
     var primaryAxis = Axis<T,U>()
     var secondaryAxis: Axis<T,U>? = nil
