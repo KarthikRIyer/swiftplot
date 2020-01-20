@@ -10,6 +10,7 @@
   * [License](#license)
   * [How to include the library in your package](#how-to-include-the-library-in-your-package)
   * [How to include the library in your Jupyter Notebook](#how-to-include-the-library-in-your-jupyter-notebook)
+  * [How to setup Docker instance for SwiftPlot](#how-to-setup-docker-instance-for-swiftplot)
   * [Examples](#examples)
     * [Simple Line Graph](#simple-line-graph)
     * [Line Graph with multiple series of data](#line-graph-with-multiple-series-of-data)
@@ -95,7 +96,10 @@ func display(base64EncodedPNG: String) {
   displayImage.Image(data: imageData, format: "png").display()
 }
 ```
-Note that because Google Colab doesn't natively support Swift libraries that produce rich output, we use Swift's Python interop as a workaround.
+Note that because Google Colab doesn't natively support Swift libraries that produce rich output, we use Swift's Python interop as a workaround. 
+
+## How to setup Docker instance for SwiftPlot
+For computers running MacOS or Windows, Docker instance is to easy to setup and use `swift-jupyter`. Please refer [SwiftPlot_Docker_setup.md](https://github.com/KarthikRIyer/swiftplot/blob/master/Swiftplot_Docker_setup.md) for setup instructions.
 
 ## Examples
 Here are some examples to provide you with a headstart to using this library. Here we will be looking at plots using only the AGGRenderer, but the procedure will remain the same for SVGRenderer.
@@ -413,6 +417,8 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |Property(only on macOS and iOS)                    |
 |---------------------------------------------------|
 |cgColor: CGColor (return the corresponding CGColor)|
+
+Built-in Colors can be found [here](https://github.com/KarthikRIyer/swiftplot/blob/master/Sources/SwiftPlot/Color.swift).
 
 
 ### PlotLabel
