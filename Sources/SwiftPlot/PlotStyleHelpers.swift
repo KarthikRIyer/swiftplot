@@ -123,27 +123,33 @@ struct Arrow : Annotation {
     public enum HeadStyle {
         case skeletal
         case filled
+        case wedge
+        case dart
     }
     public var headStyle = HeadStyle.skeletal
-    public var linePoints: [Point] = []
     public var startAnnotation: Annotation?
     public var endAnnotation: Annotation?
     public func drawBody(renderer: Renderer) {
-        var points: [Point] = []
-        points.append(start)
-        for point in linePoints {
-            points.append(point)
+        switch headStyle {
+            case .wedge:
+                var p1 = start + Point(0.0, -strokeWidth/2)
+                var p2 = start + Point(0.0, strokeWidth/2)
+                let wedgeRotateAngle = -atan2(end.x - start.x, end.y - start.y)
+                p1 = rotatePoint(point: p1, center: start, angleRadians: wedgeRotateAngle + 0.5 * Float.pi)
+                p2 = rotatePoint(point: p2, center: start, angleRadians: wedgeRotateAngle + 0.5 * Float.pi)
+                renderer.drawSolidPolygon(points: [p1, p2, end],
+                                          fillColor: color)
+            default:
+                renderer.drawPlotLines(points: [start, end],
+                                       strokeWidth: strokeWidth,
+                                       strokeColor: color,
+                                       isDashed: isDashed)
         }
-        points.append(end)
-        renderer.drawPlotLines(points: points,
-                               strokeWidth: strokeWidth,
-                               strokeColor: color,
-                               isDashed: isDashed)
     }
     public func drawHead(renderer: Renderer, a: Point, b: Point) {
         // Calculates arrow head points.
-        var p1 = end + Point(cos(headAngle)*headLength, sin(headAngle)*headLength)
-        var p2 = end + Point(cos(headAngle)*headLength, -sin(headAngle)*headLength)
+        var p1 = b + Point(cos(headAngle)*headLength, sin(headAngle)*headLength)
+        var p2 = b + Point(cos(headAngle)*headLength, -sin(headAngle)*headLength)
         let rotateAngle = -atan2(a.x - b.x, a.y - b.y)
         p1 = rotatePoint(point: p1, center: b, angleRadians: rotateAngle + 0.5 * Float.pi)
         p2 = rotatePoint(point: p2, center: b, angleRadians: rotateAngle + 0.5 * Float.pi)
@@ -151,13 +157,20 @@ struct Arrow : Annotation {
         // Draws arrow head points.
         switch headStyle {
             case .skeletal:
-                renderer.drawPlotLines(points: [p1, end, p2],
+                renderer.drawPlotLines(points: [p1, b, p2],
                                        strokeWidth: strokeWidth,
                                        strokeColor: color,
                                        isDashed: isDashed)
             case .filled:
-                renderer.drawSolidPolygon(points: [p1, end, p2],
+                renderer.drawSolidPolygon(points: [p1, b, p2],
                                           fillColor: color)
+            case .dart:
+                var p3 = end + Point(-headLength/2, 0.0)
+                p3 = rotatePoint(point: p3, center: b, angleRadians: rotateAngle + 0.5 * Float.pi)
+                renderer.drawSolidPolygon(points: [p1, p3, p2, b],
+                                          fillColor: color)
+            default:
+                break
         }
     }
     public mutating func draw(resolver: CoordinateResolver, renderer: Renderer) {
