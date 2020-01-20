@@ -42,7 +42,7 @@ docker ps
 It will show all the docker instances running currently and choose the container id.  Using the following command:
 
 ````
-# 6c4ecaa31e1f is example ID and needs to be replaced with specific container ID
+# 6c4ecaa31e1f is an example id and needs to be replaced with specific container ID
 docker exec -it 6c4ecaa31e1f bash
 ````
 After getting into specific docker container, following statement will install required libraries:
