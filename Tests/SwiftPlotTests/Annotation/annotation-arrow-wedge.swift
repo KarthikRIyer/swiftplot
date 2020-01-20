@@ -22,12 +22,12 @@ extension AnnotationTests {
     lineGraph.plotLabel.yLabel = "Y-AXIS"
     lineGraph.plotLineThickness = 3.0
 
-    lineGraph.addAnnotation(annotation: Arrow(start: Point(400.0, 585.0),
+    lineGraph.addAnnotation(annotation: Arrow(start: Point(500.0, 585.0),
                                               end: Point(585.0, 585.0),
-                                              strokeWidth: 10,
+                                              strokeWidth: 5,
                                               headStyle: .wedge,
                                               startAnnotation: Text(text: "relative maxima",
-                                                                    location: Point(280.0, 585.0))))
+                                                                    direction: .west)))
 
     let svg_renderer = SVGRenderer()
     try lineGraph.drawGraphAndOutput(fileName: svgOutputDirectory+fileName,

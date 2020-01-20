@@ -72,5 +72,5 @@
 <text font-size="10.0" font-family="Roboto" x="137.0" y="90.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,137.0,90.0)">sin(x)</text>
 <polyline points="400.0,75.0 585.0,75.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:5.0;opacity:1.0;stroke-linecap:butt;fill:none;" />
 <polygon points="567.6795,85.0 595.0,75.0 567.6795,65.0 585.0,75.0 " style="fill:rgb(0.0,0.0,0.0);opacity:1.0" />
-<text font-size="15.0" font-family="Roboto" x="280.0" y="75.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,280.0,75.0)">relative maxima</text>
+<text font-size="15.0" font-family="Roboto" x="287.05" y="80.0" style="stroke:rgb(0.0,0.0,0.0);stroke-width:0.3;fill:rgb(0.0,0.0,0.0);opacity:1.0;" transform="rotate(-0.0,287.05,80.0)">relative maxima</text>
 </svg>

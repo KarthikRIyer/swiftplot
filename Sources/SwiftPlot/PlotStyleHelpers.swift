@@ -258,7 +258,7 @@ struct Arrow : Annotation {
             endAnnotation?.draw(resolver: resolver, renderer: renderer)
         }
     }
-    public init(color: Color = .black, start: Point = Point(0.0, 0.0), end: Point = Point(0.0, 0.0), strokeWidth: Float = 5, headLength: Float = 10, headAngle: Float = 20, isDashed: Bool = false, isFilled: Bool = false, headStyle: HeadStyle = .skeletal, startAnnotation: Annotation? = nil, endAnnotation: Annotation? = nil, overrideAnchor: Bool = false) {
+    public init(color: Color = .black, start: Point = Point(0.0, 0.0), end: Point = Point(0.0, 0.0), strokeWidth: Float = 5, headLength: Float = 10, headAngle: Float = 20, isDashed: Bool = false, isDoubleHeaded: Bool = false, headStyle: HeadStyle = .skeletal, startAnnotation: Annotation? = nil, endAnnotation: Annotation? = nil, overrideAnchor: Bool = false) {
         self.color = color
         self.start = start
         self.end = end

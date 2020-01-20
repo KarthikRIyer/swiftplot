@@ -28,7 +28,7 @@ extension AnnotationTests {
                                               headAngle: 30,
                                               headStyle: .dart,
                                               startAnnotation: Text(text: "relative maxima",
-                                                                    location: Point(280.0, 585.0))))
+                                                                    direction: .west)))
 
     let svg_renderer = SVGRenderer()
     try lineGraph.drawGraphAndOutput(fileName: svgOutputDirectory+fileName,
