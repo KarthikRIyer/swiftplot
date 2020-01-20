@@ -81,7 +81,7 @@ extension PolarGraph {
                           axisType: Axis<T,U>.Location = .primaryAxis){
         var x = theta.map{angle in r[theta.firstIndex(of: angle)!].toFloat() * cos(angle.toFloat())}
         var y = theta.map{angle in r[theta.firstIndex(of: angle)!].toFloat() * sin(angle.toFloat())}
-        maximum = max(r.max().toFloat()!, maximum)
+
         var points = [Pair<T,U>]()
         for i in 0..<x.count {
             points.append(Pair<T,U>(T(x[i]), U(y[i])))
@@ -100,8 +100,6 @@ extension PolarGraph {
         
         let theta = linspace(start: minX.toFloat(), end: maxX.toFloat(), num: numberOfSamples)
         let r = theta.map{val in function(T(val))}
-        
-        maximum = max(r.max().toFloat()!, maximum)
         
         var points = [Pair<T,U>]()
         
@@ -178,6 +176,7 @@ extension PolarGraph: HasGraphLayout {
                                strokeWidth: plotLineThickness,
                                strokeColor: dataset.color,
                                isDashed: false)
+        renderer.drawEmptyCircle(c: Pair<T, U>(T(0.0), U(0.0)), r: Float(2.0))
       }
     }
     if let secondaryAxis = secondaryAxis, let axisInfo = data.secondaryAxisInfo {
