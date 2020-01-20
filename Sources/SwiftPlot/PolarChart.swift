@@ -9,6 +9,7 @@ public struct PolarGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     public var layout = GraphLayout()
     public var maximum = Float(0.0)
+    public var origin = Pair<T,U>(T(0.0), U(0.0))
     // Data.
     var primaryAxis = Axis<T,U>()
     var secondaryAxis: Axis<T,U>? = nil
@@ -176,7 +177,7 @@ extension PolarGraph: HasGraphLayout {
                                strokeWidth: plotLineThickness,
                                strokeColor: dataset.color,
                                isDashed: false)
-        renderer.drawEmptyCircle(c: Pair<T, U>(T(0.0), U(0.0)), r: Float(2.0))
+        renderer.drawEmptyCircle(c: origin, r: Float(2.0))
       }
     }
     if let secondaryAxis = secondaryAxis, let axisInfo = data.secondaryAxisInfo {
