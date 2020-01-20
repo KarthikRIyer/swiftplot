@@ -279,6 +279,36 @@ namespace CPPAGGRenderer{
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
     }
 
+    void draw_solid_rect_with_border(const float *x, const float *y, float thickness, float r_fill, float g_fill, float b_fill, float a_fill, float r_stroke, float g_stroke, float b_stroke, float a_stroke){
+      agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
+      pixfmt pixf = pixfmt(rbuf);
+      renderer_base rb = renderer_base(pixf);
+      ren_aa = renderer_aa(rb);
+      pixfmt_pre pixf_pre(rbuf);
+      renderer_base_pre rb_pre(pixf_pre);
+      agg::path_storage rect_path;
+      rect_path.move_to(*x, *y);
+      for (int i = 1; i < 4; i++) {
+        rect_path.line_to(*(x+i),*(y+i));
+      }
+      rect_path.close_polygon();
+      agg::trans_affine matrix;
+      matrix *= agg::trans_affine_translation(0, 0);
+      agg::conv_transform<agg::path_storage, agg::trans_affine> trans(rect_path, matrix);
+      Color c1(r_fill, g_fill, b_fill, a_fill);
+      m_ras.add_path(trans);
+      ren_aa.color(c1);
+      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
+      agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>> curve(trans);
+      agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>> stroke(curve);
+      stroke.width(thickness);
+      m_ras.add_path(stroke);
+      Color c2(r_stroke, g_stroke, b_stroke, a_stroke);
+      ren_aa.color(c2);
+      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
+
+    }
+
     void draw_solid_circle(float cx, float cy, float radius, float r, float g, float b, float a) {
       agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
       pixfmt pixf = pixfmt(rbuf);
@@ -497,6 +527,11 @@ namespace CPPAGGRenderer{
   void draw_solid_rect(const float *x, const float *y, float r, float g, float b, float a, int hatch_pattern, const void *object){
     Plot *plot = (Plot *)object;
     plot -> draw_solid_rect(x, y, r, g, b, a, hatch_pattern);
+  }
+
+  void draw_solid_rect_with_border(const float *x, const float *y, float thickness, float r_fill, float g_fill, float b_fill, float a_fill, float r_stroke, float g_stroke, float b_stroke, float a_stroke, const void *object){
+    Plot *plot = (Plot *)object;
+    plot -> draw_solid_rect_with_border(x, y, thickness, r_fill, g_fill, b_fill, a_fill, r_stroke, g_stroke, b_stroke, a_stroke);
   }
 
   void draw_solid_circle(float cx, float cy, float radius, float r, float g, float b, float a, const void *object){

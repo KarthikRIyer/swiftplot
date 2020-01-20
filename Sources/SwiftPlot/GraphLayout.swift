@@ -22,7 +22,7 @@ public struct GraphLayout {
     /// The amount of (horizontal) space to reserve for markers on the Y-axis.
     var yMarkerMaxWidth: Float = 40
     
-    struct Results {
+    struct Results : CoordinateResolver {
         /// The size these results have been calculated for; the entire size of the plot.
         let totalSize: Size
         
@@ -51,6 +51,25 @@ public struct GraphLayout {
         
         var legendLabels: [(String, LegendIcon)] = []
         var legendRect: Rect?
+
+        func resolve(_ coordinate: Coordinate) -> Point {
+            let x = coordinate.point.x
+            let y = coordinate.point.y
+            switch(coordinate.coordinateSpace) {
+                case .figurePoints:
+                    return Point(x, y)
+                case .axesPoints:
+                    return Point(x, y) + plotBorderRect.origin
+                case .figureFraction:
+                    let maxX = plotBorderRect.origin.x + plotBorderRect.size.width
+                    let maxY = plotBorderRect.origin.y + plotBorderRect.size.height
+                    return Point(x * maxX, y * maxY)
+                case .axesFraction:
+                    let maxX = plotBorderRect.size.width
+                    let maxY =  plotBorderRect.size.height
+                    return Point(x * maxX, y * maxY) + plotBorderRect.origin
+            }
+        }
     }
     
     // Layout.
@@ -206,7 +225,7 @@ public struct GraphLayout {
         drawTitle(results: results, renderer: renderer)
         drawLabels(results: results, renderer: renderer)
         drawLegend(results.legendLabels, results: results, renderer: renderer)
-        drawAnnotations(renderer: renderer)
+        drawAnnotations(resolver: results, renderer: renderer)
     }
     
     private func drawTitle(results: Results, renderer: Renderer) {
@@ -379,9 +398,9 @@ public struct GraphLayout {
         }
     }
 
-    func drawAnnotations(renderer: Renderer) {
+    func drawAnnotations(resolver: CoordinateResolver, renderer: Renderer) {
         for var annotation in annotations{
-            annotation.draw(renderer: renderer)
+            annotation.draw(resolver: resolver, renderer: renderer)
         }
     }
 }
