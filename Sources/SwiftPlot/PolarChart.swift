@@ -8,7 +8,7 @@ fileprivate let MAX_DIV: Float = 50
 public struct PolarGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     public var layout = GraphLayout()
-    public var self.maximum = Float(0.0)
+    public var maximum = Float(0.0)
     // Data.
     var primaryAxis = Axis<T,U>()
     var secondaryAxis: Axis<T,U>? = nil
@@ -81,7 +81,7 @@ extension PolarGraph {
                           axisType: Axis<T,U>.Location = .primaryAxis){
         var x = theta.map{angle in r[theta.firstIndex(of: angle)!].toFloat() * cos(angle.toFloat())}
         var y = theta.map{angle in r[theta.firstIndex(of: angle)!].toFloat() * sin(angle.toFloat())}
-        self.maximum = max(r.max()!, self.maximum)
+        maximum = max(r.max()!, maximum)
         var points = [Pair<T,U>]()
         for i in 0..<x.count {
             points.append(Pair<T,U>(T(x[i]), U(y[i])))
@@ -101,7 +101,7 @@ extension PolarGraph {
         let theta = linspace(start: minX.toFloat(), end: maxX.toFloat(), num: numberOfSamples)
         let r = theta.map{val in function(T(val))}
         
-        self.maximum = max(r.max()!, self.maximum)
+        maximum = max(r.max()!, maximum)
         
         var points = [Pair<T,U>]()
         
