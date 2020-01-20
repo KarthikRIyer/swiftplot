@@ -165,34 +165,69 @@ struct Arrow : Annotation {
     public var headLength: Float = 10
     public var headAngle: Float = 20
     public var isDashed: Bool = false
-    public var isFilled: Bool = false
+    public var isDoubleHeaded: Bool = false
+    public enum HeadStyle {
+        case skeletal
+        case filled
+        case wedge
+        case dart
+    }
+    public var headStyle = HeadStyle.skeletal
     public var startAnnotation: Annotation?
     public var endAnnotation: Annotation?
     public var overrideAnchor: Bool = false
-    public mutating func draw(resolver: CoordinateResolver, renderer: Renderer) {
-        // Draws arrow body.
-        renderer.drawPlotLines(points: [start, end],
-                               strokeWidth: strokeWidth,
-                               strokeColor: color,
-                               isDashed: isDashed)
-
+    public func drawBody(renderer: Renderer) {
+        switch headStyle {
+            case .wedge:
+                var p1 = start + Point(0.0, -strokeWidth/2)
+                var p2 = start + Point(0.0, strokeWidth/2)
+                let wedgeRotateAngle = -atan2(end.x - start.x, end.y - start.y)
+                p1 = rotatePoint(point: p1, center: start, angleRadians: wedgeRotateAngle + 0.5 * Float.pi)
+                p2 = rotatePoint(point: p2, center: start, angleRadians: wedgeRotateAngle + 0.5 * Float.pi)
+                renderer.drawSolidPolygon(points: [p1, p2, end],
+                                          fillColor: color)
+            default:
+                renderer.drawPlotLines(points: [start, end],
+                                       strokeWidth: strokeWidth,
+                                       strokeColor: color,
+                                       isDashed: isDashed)
+        }
+    }
+    public func drawHead(renderer: Renderer, a: Point, b: Point) {
         // Calculates arrow head points.
-        var p1 = end + Point(cos(headAngle)*headLength, sin(headAngle)*headLength)
-        var p2 = end + Point(cos(headAngle)*headLength, -sin(headAngle)*headLength)
-        let rotateAngle = -atan2(start.x - end.x, start.y - end.y)
-        p1 = rotatePoint(point: p1, center: end, angleRadians: rotateAngle + 0.5 * Float.pi)
-        p2 = rotatePoint(point: p2, center: end, angleRadians: rotateAngle + 0.5 * Float.pi)
+        var p1 = b + Point(cos(headAngle)*headLength, sin(headAngle)*headLength)
+        var p2 = b + Point(cos(headAngle)*headLength, -sin(headAngle)*headLength)
+        let rotateAngle = -atan2(a.x - b.x, a.y - b.y)
+        p1 = rotatePoint(point: p1, center: b, angleRadians: rotateAngle + 0.5 * Float.pi)
+        p2 = rotatePoint(point: p2, center: b, angleRadians: rotateAngle + 0.5 * Float.pi)
 
         // Draws arrow head points.
-        if isFilled {
-            renderer.drawSolidPolygon(points: [p1, end, p2],
-                                      fillColor: color)
+        switch headStyle {
+            case .skeletal:
+                renderer.drawPlotLines(points: [p1, b, p2],
+                                       strokeWidth: strokeWidth,
+                                       strokeColor: color,
+                                       isDashed: isDashed)
+            case .filled:
+                renderer.drawSolidPolygon(points: [p1, b, p2],
+                                          fillColor: color)
+            case .dart:
+                var p3 = end + Point(-headLength/2, 0.0)
+                p3 = rotatePoint(point: p3, center: b, angleRadians: rotateAngle + 0.5 * Float.pi)
+                renderer.drawSolidPolygon(points: [p1, p3, p2, b],
+                                          fillColor: color)
+            default:
+                break
         }
-        else {
-            renderer.drawPlotLines(points: [p1, end, p2],
-                                   strokeWidth: strokeWidth,
-                                   strokeColor: color,
-                                   isDashed: false)
+    }
+    public mutating func draw(resolver: CoordinateResolver, renderer: Renderer) {
+        // Draws arrow body.
+        drawBody(renderer: renderer)
+
+        // Draws arrow head(s).
+        drawHead(renderer: renderer, a: start, b: end)
+        if isDoubleHeaded {
+            drawHead(renderer: renderer, a: end, b: start)
         }
 
         //Draws start and end annotations if specified.
@@ -223,7 +258,7 @@ struct Arrow : Annotation {
             endAnnotation?.draw(resolver: resolver, renderer: renderer)
         }
     }
-    public init(color: Color = .black, start: Point = Point(0.0, 0.0), end: Point = Point(0.0, 0.0), strokeWidth: Float = 5, headLength: Float = 10, headAngle: Float = 20, isDashed: Bool = false, isFilled: Bool = false, startAnnotation: Annotation? = nil, endAnnotation: Annotation? = nil, overrideAnchor: Bool = false) {
+    public init(color: Color = .black, start: Point = Point(0.0, 0.0), end: Point = Point(0.0, 0.0), strokeWidth: Float = 5, headLength: Float = 10, headAngle: Float = 20, isDashed: Bool = false, isDoubleHeaded: Bool = false, headStyle: HeadStyle = .skeletal, startAnnotation: Annotation? = nil, endAnnotation: Annotation? = nil, overrideAnchor: Bool = false) {
         self.color = color
         self.start = start
         self.end = end
@@ -231,7 +266,8 @@ struct Arrow : Annotation {
         self.headLength = headLength
         self.headAngle = headAngle * Float.pi / 180
         self.isDashed = isDashed
-        self.isFilled = isFilled
+        self.isDoubleHeaded = isDoubleHeaded
+        self.headStyle = headStyle
         self.startAnnotation = startAnnotation
         self.endAnnotation = endAnnotation
         self.overrideAnchor = overrideAnchor
