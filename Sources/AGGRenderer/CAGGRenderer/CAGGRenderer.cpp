@@ -22,6 +22,10 @@ void draw_solid_circle(float cx, float cy, float radius, float r, float g, float
   CPPAGGRenderer::draw_solid_circle(cx, cy, radius, r, g, b, a, object);
 }
 
+void draw_solid_circle(float cx, float cy, float radius, const void *object){
+  CPPAGGRenderer::draw_empty_circle(cx, cy, radius, object);
+}
+
 void draw_solid_triangle(float x1, float x2, float x3, float y1, float y2, float y3, float r, float g, float b, float a, const void *object){
   CPPAGGRenderer::draw_solid_triangle(x1, x2, x3, y1, y2, y3, r, g, b, a, object);
 }
