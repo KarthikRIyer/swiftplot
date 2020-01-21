@@ -22,7 +22,7 @@ void draw_solid_circle(float cx, float cy, float radius, float r, float g, float
   CPPAGGRenderer::draw_solid_circle(cx, cy, radius, r, g, b, a, object);
 }
 
-void draw_solid_circle(float cx, float cy, float radius, const void *object){
+void draw_empty_circle(float cx, float cy, float radius, const void *object){
   CPPAGGRenderer::draw_empty_circle(cx, cy, radius, object);
 }
 
