@@ -86,6 +86,10 @@ namespace CPPAGGRenderer{
     int font_weight = 0;
     int font_height = 0;
     int font_width = 0;
+    float r_empty = 255.0;
+    float g_empty = 255.0;
+    float b_empty = 255.0;
+    float a_empty = 0.0;
     bool font_hinting = false;
     bool font_kerning = true;
     string fontPath = "";
@@ -300,7 +304,7 @@ namespace CPPAGGRenderer{
       renderer_base rb = renderer_base(pixf);
       ren_aa = renderer_aa(rb);
       agg::ellipse circle(cx, cy, radius, radius, 100);
-      Color c(Float(255), Float(255), Float(255), Float(0.0));
+      Color c(r_empty, g_empty, b_empty, a_empty);
       agg::trans_affine matrix;
       matrix *= agg::trans_affine_translation(0, 0);
       agg::conv_transform<agg::ellipse, agg::trans_affine> trans(circle, matrix);
