@@ -293,6 +293,21 @@ namespace CPPAGGRenderer{
       ren_aa.color(c);
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
     }
+    
+    void draw_empty_circle(float cx, float cy, float radius) {
+      agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
+      pixfmt pixf = pixfmt(rbuf);
+      renderer_base rb = renderer_base(pixf);
+      ren_aa = renderer_aa(rb);
+      agg::ellipse circle(cx, cy, radius, radius, 100);
+      Color c(Float(255), Float(255), Float(255), Float(0.0));
+      agg::trans_affine matrix;
+      matrix *= agg::trans_affine_translation(0, 0);
+      agg::conv_transform<agg::ellipse, agg::trans_affine> trans(circle, matrix);
+      m_ras.add_path(trans);
+      ren_aa.color(c);
+      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
+    }
 
     void draw_solid_triangle(float x1, float x2, float x3, float y1, float y2, float y3, float r, float g, float b, float a) {
       agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
