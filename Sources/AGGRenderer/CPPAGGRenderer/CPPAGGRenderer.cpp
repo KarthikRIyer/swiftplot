@@ -304,7 +304,7 @@ namespace CPPAGGRenderer{
       matrix *= agg::trans_affine_translation(0, 0);
       agg::conv_transform<agg::ellipse, agg::trans_affine> trans(circle, matrix);
       m_ras.add_path(trans);
-      ren_aa.color(white_transluscent);
+      ren_aa.color(white_translucent);
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
     }
 
