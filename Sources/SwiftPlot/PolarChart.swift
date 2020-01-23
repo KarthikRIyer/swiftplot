@@ -8,7 +8,7 @@ fileprivate let MAX_DIV: Float = 50
 public struct PolarGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
 
     public var layout = GraphLayout()
-    public var maximum = Float(0.0)
+    public var maxRadii = Float(0.0)
     public var origin = Pair<T,U>(T(Float(0.0)), U(Float(0.0)))
     public var reference = Pair<T, U>(T(Float(1.0)), U(Float(1.0)))
     // Data.
@@ -83,8 +83,6 @@ extension PolarGraph {
                           axisType: Axis<T,U>.Location = .primaryAxis){
         var x = theta.map{angle in r[theta.firstIndex(of: angle)!].toFloat() * cos(angle.toFloat())}
         var y = theta.map{angle in r[theta.firstIndex(of: angle)!].toFloat() * sin(angle.toFloat())}
-        
-        var maximum = max(maximum, r.max()!)
 
         var points = [Pair<T,U>]()
         for i in 0..<x.count {
@@ -175,7 +173,6 @@ extension PolarGraph: HasGraphLayout {
   public func drawData(_ data: DrawingData, size: Size, renderer: Renderer) {
     if let axisInfo = data.primaryAxisInfo {
       for dataset in primaryAxis.series {
-        let maxRadii = points.values.map{pair in pair.x}.max()!
         let points = dataset.values.map { axisInfo.convertCoordinate(fromData: $0) }
         var pointOrigin = axisInfo.convertCoordinate(fromData: origin)
         var referenceRadius = axisInfo.convertCoordinate(fromData: reference)
@@ -183,7 +180,8 @@ extension PolarGraph: HasGraphLayout {
                                strokeWidth: plotLineThickness,
                                strokeColor: dataset.color,
                                isDashed: false)
-        for i in 1...Int(d){
+        let maxRadii = points.values.map{pair in pair.x}.max()!
+        for i in 1...Int(maxRadii){
             renderer.drawEmptyCircle(center: pointOrigin, radius: Float(i)*Float(referenceRadius.x-pointOrigin.x), radius2: Float(i)*Float(referenceRadius.y-pointOrigin.y))
         }
       }
