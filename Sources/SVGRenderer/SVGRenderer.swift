@@ -69,7 +69,7 @@ public class SVGRenderer: Renderer{
         lines.append(rectStr)
         drawHatchingRect(rect, hatchPattern: hatchPattern)
     }
-    
+
     func drawHatchingRect(_ rect: Rect,
                           hatchPattern: BarGraphSeriesOptions.Hatching) {
         let patternName: String
@@ -143,6 +143,15 @@ public class SVGRenderer: Renderer{
                                 fillColor: Color) {
         let c = convertToSVGCoordinates(c)
         let circle: String = #"<circle cx="\#(c.x)" cy="\#(c.y)" r="\#(r)"  style="fill:\#(fillColor.svgColorString);opacity:\#(fillColor.a)" />"#
+        lines.append(circle)
+    }
+
+    public func drawSolidEllipse(center c: Point,
+                                 radius rx: Float,
+                                 radius ry: Float,
+                                 fillColor: Color) {
+        let c = convertToSVGCoordinates(c)
+        let circle: String = #"<circle cx="\#(c.x)" cy="\#(c.y)" rx="\#(rx)" ry="\#(ry)" style="fill:\#(fillColor.svgColorString);opacity:\#(fillColor.a)" />"#
         lines.append(circle)
     }
 
