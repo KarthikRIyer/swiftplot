@@ -303,8 +303,8 @@ namespace CPPAGGRenderer{
       agg::trans_affine matrix;
       matrix *= agg::trans_affine_translation(0, 0);
       agg::conv_transform<agg::ellipse, agg::trans_affine> trans(circle, matrix);
-      agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>> curve(trans);
-      agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::path_storage, agg::trans_affine>>> stroke(curve);
+      agg::conv_curve<agg::conv_transform<agg::ellipse, agg::trans_affine>> curve(trans);
+      agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::ellipse, agg::trans_affine>>> stroke(curve);
       stroke.width(1);
       m_ras.add_path(trans);
       ren_aa.color(white_translucent);
