@@ -44,7 +44,7 @@ typedef agg::rgba Color;
 const Color black(0.0,0.0,0.0,1.0);
 const Color blue_light(0.529,0.808,0.922,1.0);
 const Color white(1.0,1.0,1.0,1.0);
-const Color white_translucent(1.0,1.0,1.0,0.8);
+const Color gray_translucent(0.66,0.66,0.66,0.2);
 
 namespace CPPAGGRenderer{
 
@@ -307,7 +307,7 @@ namespace CPPAGGRenderer{
       agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::ellipse, agg::trans_affine>>> stroke(curve);
       stroke.width(1);
       m_ras.add_path(trans);
-      ren_aa.color(white_translucent);
+      ren_aa.color(gray_translucent);
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
     }
 
