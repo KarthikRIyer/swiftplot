@@ -173,6 +173,7 @@ extension PolarGraph: HasGraphLayout {
     if let axisInfo = data.primaryAxisInfo {
       for dataset in primaryAxis.series {
         let points = dataset.values.map { axisInfo.convertCoordinate(fromData: $0) }
+        var point = axisInfo.convertCoordinate(fromData: origin)
         renderer.drawPlotLines(points: points,
                                strokeWidth: plotLineThickness,
                                strokeColor: dataset.color,
