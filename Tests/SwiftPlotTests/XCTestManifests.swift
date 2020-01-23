@@ -21,6 +21,7 @@ extension AnnotationTests {
         ("testAnnotationArrowDoubleHeaded", testAnnotationArrowDoubleHeaded),
         ("testAnnotationText", testAnnotationText),
         ("testAnnotationTextBoundingBox", testAnnotationTextBoundingBox),
+        ("testAnnotationBracket", testAnnotationBracket),
     ]
 }
 

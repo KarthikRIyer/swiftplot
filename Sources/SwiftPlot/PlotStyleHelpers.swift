@@ -55,7 +55,7 @@ public struct Coordinate {
 }
 
 public protocol CoordinateResolver {
-	func resolve(_ coordinate: Coordinate) -> Point
+    func resolve(_ coordinate: Coordinate) -> Point
 }
 
 public protocol Annotation {
@@ -69,7 +69,7 @@ public enum Direction {
     case west
 }
 
-public protocol AnchorableAnnotation : Annotation {
+public protocol AnchorableAnnotation: Annotation {
     var direction: Direction { get set }
     var margin: Float { get set }
     mutating func resolve(renderer: Renderer, center: Point)
@@ -107,7 +107,7 @@ struct Box: Annotation, AnchorableAnnotation {
     }
 }
 
-struct Text : Annotation, AnchorableAnnotation {
+struct Text: Annotation, AnchorableAnnotation {
     public var text = ""
     public var color = Color.black
     public var size: Float = 15
@@ -157,7 +157,7 @@ struct Text : Annotation, AnchorableAnnotation {
     }
 }
 
-struct Arrow : Annotation {
+struct Arrow: Annotation {
     public var color = Color.black
     public var start = Point(0.0, 0.0)
     public var end = Point(0.0, 0.0)
@@ -271,5 +271,45 @@ struct Arrow : Annotation {
         self.startAnnotation = startAnnotation
         self.endAnnotation = endAnnotation
         self.overrideAnchor = overrideAnchor
+    }
+}
+
+struct Bracket: Annotation {
+    public var color = Color.black
+    public var start = Point(0.0, 0.0)
+    public var end = Point(0.0, 0.0)
+    public var strokeWidth: Float = 3
+    public var isDashed: Bool = false
+    public var legLength: Float = 15
+    public var anchorableAnnotation: AnchorableAnnotation?
+    public mutating func draw(resolver: CoordinateResolver, renderer: Renderer) {
+        // Calculate leg points.
+        var startLegPoint = start + Point(0.0, -strokeWidth/2-legLength)
+        let startLegRotateAngle = -atan2(end.x - start.x, end.y - start.y)
+        startLegPoint = rotatePoint(point: startLegPoint, center: start, angleRadians: startLegRotateAngle + 0.5 * Float.pi)
+        var endLegPoint = end + Point(0.0, -strokeWidth/2-legLength)
+        endLegPoint = rotatePoint(point: endLegPoint, center: end, angleRadians: startLegRotateAngle + 0.5 * Float.pi)
+        
+        // Draws bracket.
+        renderer.drawPlotLines(points: [startLegPoint, start, end, endLegPoint],
+                               strokeWidth: strokeWidth,
+                               strokeColor: color,
+                               isDashed: isDashed)
+
+        // Calculate anchor point.
+        let anchorPoint = Point((start.x + end.x)/2, (start.y + end.y)/2)
+
+        // Draws AnchorableAnnotation if specified.
+        anchorableAnnotation?.resolve(renderer: renderer, center: anchorPoint)
+        anchorableAnnotation?.draw(resolver: resolver, renderer: renderer)
+    }
+    public init(color: Color = .black, start: Point = Point(0.0, 0.0), end: Point = Point(0.0, 0.0), strokeWidth: Float = 5, isDashed: Bool = false, legLength: Float = 15, anchorableAnnotation: AnchorableAnnotation? = nil) {
+        self.color = color
+        self.start = start
+        self.end = end
+        self.strokeWidth = strokeWidth
+        self.isDashed = isDashed
+        self.legLength = legLength
+        self.anchorableAnnotation = anchorableAnnotation
     }
 }
