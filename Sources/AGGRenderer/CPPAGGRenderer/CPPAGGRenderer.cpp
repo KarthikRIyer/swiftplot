@@ -299,7 +299,7 @@ namespace CPPAGGRenderer{
       pixfmt pixf = pixfmt(rbuf);
       renderer_base rb = renderer_base(pixf);
       ren_aa = renderer_aa(rb);
-      agg::ellipse circle(cx, cy, radius, radius, 100);
+      agg::ellipse circle(cx, cy, rx, ry, 100);
       agg::trans_affine matrix;
       matrix *= agg::trans_affine_translation(0, 0);
       agg::conv_transform<agg::ellipse, agg::trans_affine> trans(circle, matrix);
@@ -523,7 +523,7 @@ namespace CPPAGGRenderer{
   
   void draw_empty_circle(float cx, float cy, float rx, float ry, const void *object){
     Plot *plot = (Plot *)object;
-    plot -> draw_empty_circle(cx, cy, radius);
+    plot -> draw_empty_circle(cx, cy, rx, ry);
   }
 
   void draw_solid_triangle(float x1, float x2, float x3, float y1, float y2, float y3, float r, float g, float b, float a, const void *object){
