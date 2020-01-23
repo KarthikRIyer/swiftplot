@@ -127,10 +127,12 @@ public class AGGRenderer: Renderer{
     }
     
     public func drawEmptyCircle(center c: Point,
-                                radius r: Float) {
+                                radius rx: Float,
+                                radius2 ry: Float) {
       draw_empty_circle(c.x + xOffset,
                         c.y + yOffset,
-                        r,
+                        rx,
+                        ry,
                         agg_object)
     }
 
