@@ -10,6 +10,7 @@ public struct PolarGraph<T:FloatConvertible,U:FloatConvertible>: Plot {
     public var layout = GraphLayout()
     public var maximum = Float(0.0)
     public var origin = Pair<Float,Float>(Float(0.0), Float(0.0))
+    public var reference = Pair<Float, Float>(Float(0.0), Float(1.0))
     // Data.
     var primaryAxis = Axis<T,U>()
     var secondaryAxis: Axis<T,U>? = nil
@@ -173,12 +174,13 @@ extension PolarGraph: HasGraphLayout {
     if let axisInfo = data.primaryAxisInfo {
       for dataset in primaryAxis.series {
         let points = dataset.values.map { axisInfo.convertCoordinate(fromData: $0) }
-        var point = axisInfo.convertCoordinate(fromData: origin)
+        var pointOrigin = axisInfo.convertCoordinate(fromData: origin)
+        var referenceRadius = axisInfo.convertCoordinate(fromData: reference)
         renderer.drawPlotLines(points: points,
                                strokeWidth: plotLineThickness,
                                strokeColor: dataset.color,
                                isDashed: false)
-        renderer.drawEmptyCircle(center: origin, radius: Float(2.0))
+        renderer.drawEmptyCircle(center: pointOrigin, radius: Float(2.0)*referenceRadius.y)
       }
     }
     if let secondaryAxis = secondaryAxis, let axisInfo = data.secondaryAxisInfo {
