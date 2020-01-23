@@ -180,7 +180,7 @@ extension PolarGraph: HasGraphLayout {
                                strokeWidth: plotLineThickness,
                                strokeColor: dataset.color,
                                isDashed: false)
-        let maxRadii = points.map{pair in pair.x}.max()!
+        let maxRadii = dataset.values.map{pair in pair.x}.max()!
         for i in 1...Int(maxRadii){
             renderer.drawEmptyCircle(center: pointOrigin, radius: Float(i)*Float(referenceRadius.x-pointOrigin.x), radius2: Float(i)*Float(referenceRadius.y-pointOrigin.y))
         }
