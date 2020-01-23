@@ -294,7 +294,7 @@ namespace CPPAGGRenderer{
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
     }
     
-    void draw_empty_circle(float cx, float cy, float radius) {
+    void draw_empty_circle(float cx, float cy, float rx, float ry) {
       agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
       pixfmt pixf = pixfmt(rbuf);
       renderer_base rb = renderer_base(pixf);
@@ -521,7 +521,7 @@ namespace CPPAGGRenderer{
     plot -> draw_solid_circle(cx, cy, radius, r, g, b, a);
   }
   
-  void draw_empty_circle(float cx, float cy, float radius, const void *object){
+  void draw_empty_circle(float cx, float cy, float rx, float ry, const void *object){
     Plot *plot = (Plot *)object;
     plot -> draw_empty_circle(cx, cy, radius);
   }
