@@ -518,7 +518,7 @@ namespace CPPAGGRenderer{
     plot -> draw_solid_circle(cx, cy, radius, r, g, b, a);
   }
   
-  void draw_solid_circle(float cx, float cy, float radius, const void *object){
+  void draw_empty_circle(float cx, float cy, float radius, const void *object){
     Plot *plot = (Plot *)object;
     plot -> draw_empty_circle(cx, cy, radius);
   }
