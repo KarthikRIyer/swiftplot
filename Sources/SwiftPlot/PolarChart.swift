@@ -180,7 +180,7 @@ extension PolarGraph: HasGraphLayout {
                                strokeWidth: plotLineThickness,
                                strokeColor: dataset.color,
                                isDashed: false)
-        renderer.drawEmptyCircle(center: pointOrigin, radius: Float(2.0)*Float(referenceRadius.y))
+        renderer.drawEmptyCircle(center: pointOrigin, radius: Float(2.0)*Float(referenceRadius.y-pointOrigin.y))
       }
     }
     if let secondaryAxis = secondaryAxis, let axisInfo = data.secondaryAxisInfo {
