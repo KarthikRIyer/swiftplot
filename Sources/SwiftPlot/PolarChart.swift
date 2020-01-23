@@ -83,6 +83,8 @@ extension PolarGraph {
                           axisType: Axis<T,U>.Location = .primaryAxis){
         var x = theta.map{angle in r[theta.firstIndex(of: angle)!].toFloat() * cos(angle.toFloat())}
         var y = theta.map{angle in r[theta.firstIndex(of: angle)!].toFloat() * sin(angle.toFloat())}
+        
+        var maximum = max(maximum, r.max()!)
 
         var points = [Pair<T,U>]()
         for i in 0..<x.count {
@@ -173,6 +175,7 @@ extension PolarGraph: HasGraphLayout {
   public func drawData(_ data: DrawingData, size: Size, renderer: Renderer) {
     if let axisInfo = data.primaryAxisInfo {
       for dataset in primaryAxis.series {
+        let maxRadii = points.values.map{pair in pair.x}.max()!
         let points = dataset.values.map { axisInfo.convertCoordinate(fromData: $0) }
         var pointOrigin = axisInfo.convertCoordinate(fromData: origin)
         var referenceRadius = axisInfo.convertCoordinate(fromData: reference)
@@ -180,7 +183,9 @@ extension PolarGraph: HasGraphLayout {
                                strokeWidth: plotLineThickness,
                                strokeColor: dataset.color,
                                isDashed: false)
-        renderer.drawEmptyCircle(center: pointOrigin, radius: Float(2.0)*Float(referenceRadius.x-pointOrigin.x), radius2: Float(2.0)*Float(referenceRadius.y-pointOrigin.y))
+        for i in 1...Int(d){
+            renderer.drawEmptyCircle(center: pointOrigin, radius: Float(i)*Float(referenceRadius.x-pointOrigin.x), radius2: Float(i)*Float(referenceRadius.y-pointOrigin.y))
+        }
       }
     }
     if let secondaryAxis = secondaryAxis, let axisInfo = data.secondaryAxisInfo {
