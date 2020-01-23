@@ -137,7 +137,8 @@ public protocol Renderer: AnyObject{
     *             This is decided by the boolean parameter isOriginShifted.
     */
     func drawEmptyCircle(center c: Point,
-                         radius r: Float)
+                         radius rx: Float,
+                         radius2 ry: Float)
 
     /*drawSolidTriangle()
     *params: point1: Point,
