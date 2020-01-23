@@ -12,7 +12,7 @@ namespace CPPAGGRenderer{
 
   void draw_solid_circle(float cx, float cy, float radius, float r, float g, float b, float a, const void *object);
   
-  void draw_empty_circle(float cx, float cy, float radius, const void *object);
+  void draw_empty_circle(float cx, float cy, float rx, float ry, const void *object);
 
   void draw_solid_triangle(float x1, float x2, float x3, float y1, float y2, float y3, float r, float g, float b, float a, const void *object);
 
