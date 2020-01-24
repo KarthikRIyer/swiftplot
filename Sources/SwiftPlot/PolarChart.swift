@@ -427,6 +427,9 @@ extension PolarGraph {
         let offsetValue = scaleY * (offset - origin.y)
         return "\(roundToN(offsetValue + Float(originValue.y), yIncRound))"
       }
+        
+      print(xMarkerLocations.count)
+      print(yMarkerLocations.count)
       
       return (x: xMarkerLocations, xLabels: xMarkerLabels,
               y: yMarkerLocations, yLabels: yMarkerLabels)
