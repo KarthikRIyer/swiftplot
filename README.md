@@ -217,7 +217,7 @@ let y:[Float] = [10,120,500,800]
 let x1:[Float] = [100,200,361,672]
 let y1:[Float] = [150,250,628,800]
 
-var agg_renderer = AGGRenderer = AGGRenderer() 
+var agg_renderer: AGGRenderer = AGGRenderer() 
 var lineGraph = LineGraph<Float,Float>()
 lineGraph.addSeries(x1, y1, label: "Plot 1", color: .lightBlue, axisType: .primaryAxis)
 lineGraph.addSeries(x, y, label: "Plot 2", color: .orange, axisType: .secondaryAxis)
