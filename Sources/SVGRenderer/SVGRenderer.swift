@@ -151,7 +151,7 @@ public class SVGRenderer: Renderer{
                                 radius2 ry: Float) {
         let c = convertToSVGCoordinates(c)
         let color = "gray"
-        let circle: String = #"<circle cx="\#(c.x)" cy="\#(c.y)" rx="\#(rx)" ry="\#(ry)" stroke="\#(color)" fill-opacity="\#(0.2)" />"#
+        let circle: String = #"<ellipse cx="\#(c.x)" cy="\#(c.y)" rx="\#(rx)" ry="\#(ry)" stroke="\#(color)" fill-opacity="\#(0.2)" />"#
         lines.append(circle)
     }
 
