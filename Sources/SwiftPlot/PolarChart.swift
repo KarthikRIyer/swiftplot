@@ -429,7 +429,9 @@ extension PolarGraph {
       }
         
       print(xMarkerLocations.count)
+      print(xMarkerLocations)
       print(yMarkerLocations.count)
+      print(yMarkerLocations)
       
       return (x: xMarkerLocations, xLabels: xMarkerLabels,
               y: yMarkerLocations, yLabels: yMarkerLabels)
