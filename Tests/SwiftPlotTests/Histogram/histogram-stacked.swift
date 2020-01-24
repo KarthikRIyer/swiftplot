@@ -12,37 +12,21 @@ import QuartzRenderer
 extension HistogramTests {
   
   func testHistogramStacked() throws {
-    
     let fileName = "_23_histogram_stacked"
     
-    let histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
+    var histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
     histogram.addSeries(data: histogram_stacked_values, bins: 50, label: "Plot 1", color: .blue)
     histogram.addStackSeries(data: histogram_stacked_values_2, label: "Plot 2", color: .orange)
     histogram.plotTitle = PlotTitle("HISTOGRAM STACKED")
     histogram.plotLabel = PlotLabel(xLabel: "X", yLabel: "Frequency")
     
-    let svg_renderer = SVGRenderer()
-    try histogram.drawGraphAndOutput(fileName: svgOutputDirectory+fileName,
-                                     renderer: svg_renderer)
-    verifyImage(name: fileName, renderer: .svg)
-    #if canImport(AGGRenderer)
-    let agg_renderer = AGGRenderer()
-    try histogram.drawGraphAndOutput(fileName: aggOutputDirectory+fileName,
-                                     renderer: agg_renderer)
-    verifyImage(name: fileName, renderer: .agg)
-    #endif
-    #if canImport(QuartzRenderer)
-    let quartz_renderer = QuartzRenderer()
-    try histogram.drawGraphAndOutput(fileName: coreGraphicsOutputDirectory+fileName,
-                                     renderer: quartz_renderer)
-    verifyImage(name: fileName, renderer: .coreGraphics)
-    #endif
+    try renderAndVerify(histogram, fileName: fileName)
   }
     
   func testHistogramMultiStackedColorBleed() throws {
       let fileName = "_25_histogram_multi_stacked_color_bleed"
       
-      let histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
+      var histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
       histogram.addSeries(data: [5, 6, 7, 8, 9, 10, 15, 18], bins: 21, label: "Plot 1", color: .yellow, histogramType: .bar)
       histogram.addStackSeries(data: [4, 5, 6, 7, 8, 9, 15, 18], label: "Plot 2", color: .orange)
       histogram.addStackSeries(data: [3, 4, 5, 6, 7, 8, 15, 16], label: "Plot 3", color: .green)
@@ -81,7 +65,7 @@ extension HistogramTests {
     let data3: [Float] = x.flatMap { [Float](repeating: $0, count: Int((sin($0 + .pi) + 1)*10)) }
     let data4: [Float] = x.flatMap { [Float](repeating: $0, count: Int((cos($0 + .pi) + 1)*10)) }
     
-    let histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
+    var histogram = Histogram<Float>(isNormalized: false, enableGrid: true)
     histogram.addSeries(data: data1, bins: 40, label: "Plot 1", color: .blue, histogramType: .bar)
     histogram.addStackSeries(data: data2, label: "Plot 2", color: .orange)
     histogram.addStackSeries(data: data3, label: "Plot 3", color: .purple)
@@ -90,22 +74,6 @@ extension HistogramTests {
     histogram.plotTitle = PlotTitle("HISTOGRAM MULTI STACKED")
     histogram.plotLabel = PlotLabel(xLabel: "X", yLabel: "Frequency")
     
-    
-    let svg_renderer = SVGRenderer()
-    try histogram.drawGraphAndOutput(fileName: svgOutputDirectory+fileName,
-                                     renderer: svg_renderer)
-    verifyImage(name: fileName, renderer: .svg)
-    #if canImport(AGGRenderer)
-    let agg_renderer = AGGRenderer()
-    try histogram.drawGraphAndOutput(fileName: aggOutputDirectory+fileName,
-                                     renderer: agg_renderer)
-    verifyImage(name: fileName, renderer: .agg)
-    #endif
-    #if canImport(QuartzRenderer)
-    let quartz_renderer = QuartzRenderer()
-    try histogram.drawGraphAndOutput(fileName: coreGraphicsOutputDirectory+fileName,
-                                     renderer: quartz_renderer)
-    verifyImage(name: fileName, renderer: .coreGraphics)
-    #endif
+    try renderAndVerify(histogram, fileName: fileName)
   }
 }
