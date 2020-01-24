@@ -142,6 +142,8 @@ public class AGGRenderer: Renderer{
 
     public func drawSolidPolygon(points: [Point],
                                  fillColor: Color) {
+        precondition(points.count > 2, "drawSolidPolygon: Cannot draw a polygon with \(points.count) points.")
+        
         var x = [Float]()
         var y = [Float]()
         for index in 0..<points.count {
@@ -186,6 +188,8 @@ public class AGGRenderer: Renderer{
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
+        precondition(p.count > 1, "drawPlotLines: Cannot draw lines with \(p.count) points.")
+        
         var x = [Float]()
         var y = [Float]()
 
