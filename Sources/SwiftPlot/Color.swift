@@ -45,6 +45,11 @@ extension Color {
       (other.b - b) * offset + b,
       (other.a - a) * offset + a)
   }
+    
+    public static func random() -> Color {
+        return Color(.random(in: 0...1.0), .random(in: 0...1.0),
+                     .random(in: 0...1.0), .random(in: 0...1.0))
+    }
 }
 
 #if canImport(CoreGraphics)

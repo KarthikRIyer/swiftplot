@@ -40,6 +40,18 @@ final class HeatmapTests: SwiftPlotTestCase {
     }
     try renderAndVerify(summer, size: Size(width: 900, height: 450))
   }
+  
+  func testHeatmap3() {
+    var x = TestObj()
+    print(x.propOne)
+    x.propOne = -1
+    print(x.propOne)
+    var y = x
+    print(y.propOne)
+    y._storage.propOne = 666
+    print(y.propOne)
+    print(x.propOne)
+  }
 }
 
 
