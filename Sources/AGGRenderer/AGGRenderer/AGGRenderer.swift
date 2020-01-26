@@ -123,6 +123,22 @@ public class AGGRenderer: Renderer{
                         agg_object)
     }
 
+   public func drawSolidEllipse(center c: Point,
+                                radius rx: Float,
+                                radius ry: Float,
+                                fillColor: Color) {
+      draw_solid_ellipse(c.x + xOffset,
+                        c.y + yOffset,
+                        rx,
+                        ry,
+                        fillColor.r,
+                        fillColor.g,
+                        fillColor.b,
+                        fillColor.a,
+                        agg_object)
+    }
+
+
     public func drawSolidTriangle(point1: Point,
                                   point2: Point,
                                   point3: Point,

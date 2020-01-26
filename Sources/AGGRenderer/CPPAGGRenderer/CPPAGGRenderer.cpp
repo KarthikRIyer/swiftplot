@@ -324,6 +324,21 @@ namespace CPPAGGRenderer{
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
     }
 
+    void draw_solid_ellipse(float cx, float cy, float rx, float ry, float r, float g, float b, float a) {
+      agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
+      pixfmt pixf = pixfmt(rbuf);
+      renderer_base rb = renderer_base(pixf);
+      ren_aa = renderer_aa(rb);
+      agg::ellipse ellipse(cx, cy, rx, ry, 100);
+      Color c(r, g, b, a);
+      agg::trans_affine matrix;
+      matrix *= agg::trans_affine_translation(0, 0);
+      agg::conv_transform<agg::ellipse, agg::trans_affine> trans(ellipse, matrix);
+      m_ras.add_path(trans);
+      ren_aa.color(c);
+      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
+    }
+
     void draw_solid_triangle(float x1, float x2, float x3, float y1, float y2, float y3, float r, float g, float b, float a) {
       agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
       pixfmt pixf = pixfmt(rbuf);
