@@ -97,13 +97,15 @@ var coreGraphicsOutputDirectory: String {
 func verifyImage(name: String, renderer: KnownRenderer) {
   let outputFile = outputDirectory(for: renderer)
     .appendingPathComponent(name).appendingPathExtension(renderer.fileExtension)
-  XCTAssertTrue(FileManager.default.fileExists(atPath: outputFile.path),
-                "🤷‍♂️ Could not find output file: \(outputFile.path)")
+  let outputExists = FileManager.default.fileExists(atPath: outputFile.path)
+  XCTAssertTrue(outputExists, "🤷‍♂️ Could not find output file: \(outputFile.path)")
   
   let referenceFile = referenceDirectory(for: renderer)
     .appendingPathComponent(name).appendingPathExtension(renderer.fileExtension)
-  XCTAssertTrue(FileManager.default.fileExists(atPath: referenceFile.path),
-                "🤷‍♂️ Could not find reference file: \(referenceFile.path)")
+  let referenceExists = FileManager.default.fileExists(atPath: referenceFile.path)
+  XCTAssertTrue(referenceExists, "🤷‍♂️ Could not find reference file: \(referenceFile.path)")
+  
+    guard outputExists && referenceExists else { return }
   
   XCTAssertTrue(
     FileManager.default.contentsEqual(atPath: outputFile.path, andPath: referenceFile.path),
