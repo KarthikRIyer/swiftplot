@@ -1,4 +1,4 @@
-public class HistogramSeriesOptions {
+public struct HistogramSeriesOptions {
     public enum HistogramType: CaseIterable{
         case bar
         case step

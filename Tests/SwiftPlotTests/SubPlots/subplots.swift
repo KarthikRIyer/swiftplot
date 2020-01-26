@@ -13,12 +13,12 @@ extension SubPlotTests {
     
     func testNestedSubplots() throws {
         
-        let fileName = "_28_nested_subplots"
+        let fileName = "_29_nested_subplots"
         
         // ScatterPlot.
         let xValues = Array(-50...50).map { Float($0) }
         let yValues = xValues.map { $0 + (5 * sin($0)) }
-        let scatterPlot = ScatterPlot<Float,Float>(enableGrid: true)
+        var scatterPlot = ScatterPlot<Float,Float>(enableGrid: true)
         scatterPlot.addSeries(xValues, yValues, label: "Plot 1",
                               startColor: .gold, endColor: .blue, scatterPattern: .circle)
         scatterPlot.addSeries(xValues, yValues.map { 2 * $0 + (5 * sin($0)) }, label: "Plot 2",
@@ -29,7 +29,7 @@ extension SubPlotTests {
         
         // LineGraph (function).
         func someFunction(_ x: Float) -> Float { x * x * x }
-        let lineGraph_func = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
+        var lineGraph_func = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
         lineGraph_func.addFunction(someFunction,
                               minX: -4.0,
                               maxX: 4.0,
@@ -43,7 +43,7 @@ extension SubPlotTests {
         // LineGraph (data).
         let x:[Float] = [0,100,263,489]
         let y:[Float] = [0,320,310,170]
-        let lineGraph_data = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
+        var lineGraph_data = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
         lineGraph_data.addSeries(x, y, label: "Plot 1", color: .lightBlue)
         lineGraph_data.plotTitle.title = "PLOT 1"
         lineGraph_data.plotLabel.xLabel = "X-AXIS"

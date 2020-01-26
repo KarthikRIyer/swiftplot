@@ -24,14 +24,10 @@
 #ifndef AGG_CONV_GPC_INCLUDED
 #define AGG_CONV_GPC_INCLUDED
 
-#include <math.h>
+#include <cstring>
 #include "agg_basics.h"
 #include "agg_array.h"
-
-extern "C" 
-{ 
 #include "gpc.h" 
-}
 
 namespace agg
 {
@@ -84,9 +80,9 @@ namespace agg
             m_contour(-1),
             m_operation(op)
         {
-            memset(&m_poly_a, 0, sizeof(m_poly_a));
-            memset(&m_poly_b, 0, sizeof(m_poly_b));
-            memset(&m_result, 0, sizeof(m_result));
+            std::memset(&m_poly_a, 0, sizeof(m_poly_a));
+            std::memset(&m_poly_b, 0, sizeof(m_poly_b));
+            std::memset(&m_result, 0, sizeof(m_result));
         }
 
         void attach1(VSA& source) { m_src_a = &source; }
@@ -195,7 +191,7 @@ namespace agg
                                                   p.contour[i].num_vertices);
         }
         pod_allocator<gpc_vertex_list>::deallocate(p.contour, p.num_contours);
-        memset(&p, 0, sizeof(gpc_polygon));
+        std::memset(&p, 0, sizeof(gpc_polygon));
     }
 
 
@@ -207,7 +203,7 @@ namespace agg
         {
             gpc_free_polygon(&m_result);
         }
-        memset(&m_result, 0, sizeof(m_result));
+        std::memset(&m_result, 0, sizeof(m_result));
     }
 
 
@@ -226,7 +222,7 @@ namespace agg
     void conv_gpc<VSA, VSB>::start_contour()
     {
         contour_header_type h;
-        memset(&h, 0, sizeof(h));
+        std::memset(&h, 0, sizeof(h));
         m_contour_accumulator.add(h);
         m_vertex_accumulator.remove_all();
     }
@@ -245,7 +241,7 @@ namespace agg
 
     //------------------------------------------------------------------------
     template<class VSA, class VSB> 
-    void conv_gpc<VSA, VSB>::end_contour(unsigned orientation)
+    void conv_gpc<VSA, VSB>::end_contour(unsigned /*orientation*/)
     {
         if(m_contour_accumulator.size())
         {

@@ -18,7 +18,7 @@ extension LineChartTests {
     
     let fileName = "_06_function_plot_line_chart"
     
-    let lineGraph = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
+    var lineGraph = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
     lineGraph.addFunction(function,
                           minX: -5.0,
                           maxX: 5.0,

@@ -111,7 +111,8 @@ public protocol Renderer: AnyObject{
     *             This is decided by the boolean parameter isOriginShifted.
     */
     func drawSolidRectWithBorder(_ rect: Rect,
-                                 strokeWidth thickness: Float, fillColor: Color,
+                                 strokeWidth thickness: Float,
+                                 fillColor: Color,
                                  borderColor: Color)
 
     /*drawSolidCircle()
@@ -172,7 +173,7 @@ public protocol Renderer: AnyObject{
 }
 
 extension Renderer {
-    
+
     public var xOffset: Float {
         get { return offset.x }
         set { offset.x = newValue}
@@ -184,7 +185,7 @@ extension Renderer {
     func getTextWidth(text: String, textSize size: Float) -> Float {
         return getTextLayoutSize(text: text, textSize: size).width
     }
-    
+
     public func withAdditionalOffset(_ offset: Point, _ perform: (Self) throws -> Void) rethrows {
         let oldOffset = (self.xOffset, self.yOffset)
         self.xOffset += offset.x
