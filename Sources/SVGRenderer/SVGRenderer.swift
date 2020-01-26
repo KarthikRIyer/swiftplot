@@ -147,8 +147,8 @@ public class SVGRenderer: Renderer{
     }
 
     public func drawSolidEllipse(center c: Point,
-                                 radius rx: Float,
-                                 radius ry: Float,
+                                 radiusX rx: Float,
+                                 radiusY ry: Float,
                                  fillColor: Color) {
         let c = convertToSVGCoordinates(c)
         let circle: String = #"<circle cx="\#(c.x)" cy="\#(c.y)" rx="\#(rx)" ry="\#(ry)" style="fill:\#(fillColor.svgColorString);opacity:\#(fillColor.a)" />"#

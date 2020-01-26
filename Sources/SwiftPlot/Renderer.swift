@@ -142,8 +142,8 @@ public protocol Renderer: AnyObject{
     *             This is decided by the boolean parameter isOriginShifted.
     */
     func drawSolidEllipse(center c: Point,
-                          radius rx: Float,
-                          radius ry: Float,
+                          radiusX rx: Float,
+                          radiusY ry: Float,
                           fillColor: Color)
 
     /*drawSolidTriangle()
