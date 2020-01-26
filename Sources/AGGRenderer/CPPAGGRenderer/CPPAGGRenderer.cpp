@@ -554,6 +554,11 @@ namespace CPPAGGRenderer{
     plot -> draw_solid_circle(cx, cy, radius, r, g, b, a);
   }
 
+  void draw_solid_ellipse(float cx, float cy, float rx, float ry, float r, float g, float b, float a, const void *object){
+    Plot *plot = (Plot *)object;
+    plot -> draw_solid_ellipse(cx, cy, rx, ry, r, g, b, a);
+  }
+
   void draw_solid_triangle(float x1, float x2, float x3, float y1, float y2, float y3, float r, float g, float b, float a, const void *object){
     Plot *plot = (Plot *)object;
     plot -> draw_solid_triangle(x1, x2, x3, y1, y2, y3, r, g, b, a);

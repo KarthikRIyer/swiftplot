@@ -124,8 +124,8 @@ public class AGGRenderer: Renderer{
     }
 
    public func drawSolidEllipse(center c: Point,
-                                radius rx: Float,
-                                radius ry: Float,
+                                radiusX rx: Float,
+                                radiusY ry: Float,
                                 fillColor: Color) {
       draw_solid_ellipse(c.x + xOffset,
                         c.y + yOffset,
