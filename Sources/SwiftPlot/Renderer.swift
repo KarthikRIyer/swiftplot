@@ -128,6 +128,18 @@ public protocol Renderer: AnyObject{
     func drawSolidCircle(center c: Point,
                          radius r: Float,
                          fillColor: Color)
+    
+    /*drawEmptyCircle()
+    *params: center c: Point,
+    *        radius r: Float
+    *description: Draws a circle with specified fill color, center and radius
+    *             This function can operate in both coordinate systems with and
+    *             without shifted origin.
+    *             This is decided by the boolean parameter isOriginShifted.
+    */
+    func drawEmptyCircle(center c: Point,
+                         radius rx: Float,
+                         radius2 ry: Float)
 
     /*drawSolidTriangle()
     *params: point1: Point,

@@ -44,7 +44,7 @@ typedef agg::rgba Color;
 const Color black(0.0,0.0,0.0,1.0);
 const Color blue_light(0.529,0.808,0.922,1.0);
 const Color white(1.0,1.0,1.0,1.0);
-const Color white_translucent(1.0,1.0,1.0,0.8);
+const Color gray_translucent(0.66,0.66,0.66,0.2);
 
 namespace CPPAGGRenderer{
 
@@ -323,6 +323,23 @@ namespace CPPAGGRenderer{
       ren_aa.color(c);
       agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
     }
+    
+    void draw_empty_circle(float cx, float cy, float rx, float ry) {
+      agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
+      pixfmt pixf = pixfmt(rbuf);
+      renderer_base rb = renderer_base(pixf);
+      ren_aa = renderer_aa(rb);
+      agg::ellipse circle(cx, cy, rx, ry, 100);
+      agg::trans_affine matrix;
+      matrix *= agg::trans_affine_translation(0, 0);
+      agg::conv_transform<agg::ellipse, agg::trans_affine> trans(circle, matrix);
+      agg::conv_curve<agg::conv_transform<agg::ellipse, agg::trans_affine>> curve(trans);
+      agg::conv_stroke<agg::conv_curve<agg::conv_transform<agg::ellipse, agg::trans_affine>>> stroke(curve);
+      stroke.width(1);
+      m_ras.add_path(stroke);
+      ren_aa.color(gray_translucent);
+      agg::render_scanlines(m_ras, m_sl_p8, ren_aa);
+    }
 
     void draw_solid_triangle(float x1, float x2, float x3, float y1, float y2, float y3, float r, float g, float b, float a) {
       agg::rendering_buffer rbuf = agg::rendering_buffer(buffer, frame_width, frame_height, -frame_width*3);
@@ -537,6 +554,11 @@ namespace CPPAGGRenderer{
   void draw_solid_circle(float cx, float cy, float radius, float r, float g, float b, float a, const void *object){
     Plot *plot = (Plot *)object;
     plot -> draw_solid_circle(cx, cy, radius, r, g, b, a);
+  }
+  
+  void draw_empty_circle(float cx, float cy, float rx, float ry, const void *object){
+    Plot *plot = (Plot *)object;
+    plot -> draw_empty_circle(cx, cy, rx, ry);
   }
 
   void draw_solid_triangle(float x1, float x2, float x3, float y1, float y2, float y3, float r, float g, float b, float a, const void *object){

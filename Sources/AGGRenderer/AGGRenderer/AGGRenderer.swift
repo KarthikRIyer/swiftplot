@@ -122,6 +122,16 @@ public class AGGRenderer: Renderer{
                         fillColor.a,
                         agg_object)
     }
+    
+    public func drawEmptyCircle(center c: Point,
+                                radius rx: Float,
+                                radius2 ry: Float) {
+      draw_empty_circle(c.x + xOffset,
+                        c.y + yOffset,
+                        rx,
+                        ry,
+                        agg_object)
+    }
 
     public func drawSolidTriangle(point1: Point,
                                   point2: Point,

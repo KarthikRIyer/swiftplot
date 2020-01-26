@@ -145,6 +145,15 @@ public class SVGRenderer: Renderer{
         let circle: String = #"<circle cx="\#(c.x)" cy="\#(c.y)" r="\#(r)"  style="fill:\#(fillColor.svgColorString);opacity:\#(fillColor.a)" />"#
         lines.append(circle)
     }
+    
+    public func drawEmptyCircle(center c: Point,
+                                radius rx: Float,
+                                radius2 ry: Float) {
+        let c = convertToSVGCoordinates(c)
+        let color = "gray"
+        let circle: String = #"<ellipse cx="\#(c.x)" cy="\#(c.y)" rx="\#(rx)" ry="\#(ry)" stroke="\#(color)" stroke-width="\#(0.5)" fill-opacity="\#(0.0)" />"#
+        lines.append(circle)
+    }
 
     public func drawSolidTriangle(point1: Point,
                                   point2: Point,
