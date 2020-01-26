@@ -154,8 +154,8 @@ extension LineGraph: HasGraphLayout {
     if let axisInfo = data.primaryAxisInfo {
       for dataset in primaryAxis.series {
         let points = dataset.values.map { axisInfo.convertCoordinate(fromData: $0) }
-        guard let polyline = Polyline(points: points) else {
-            fatalError("drawData: Expecting 2 or more points, got \(points.count) instead")
+        guard let polyline = Polyline(points) else {
+            fatalError("LineChart.drawData: Expecting 2 or more points, got \(points.count) instead")
         }
         renderer.drawPolyline(polyline,
                               strokeWidth: plotLineThickness,
@@ -166,8 +166,8 @@ extension LineGraph: HasGraphLayout {
     if let secondaryAxis = secondaryAxis, let axisInfo = data.secondaryAxisInfo {
       for dataset in secondaryAxis.series {
         let points = dataset.values.map { axisInfo.convertCoordinate(fromData: $0) }
-        guard let polyline = Polyline(points: points) else {
-            fatalError("drawData: Expecting 2 or more points, got \(points.count) instead")
+        guard let polyline = Polyline(points) else {
+            fatalError("LineChart.drawData: Expecting 2 or more points, got \(points.count) instead")
         }
         renderer.drawPolyline(polyline,
                               strokeWidth: plotLineThickness,

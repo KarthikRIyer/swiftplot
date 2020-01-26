@@ -372,10 +372,8 @@ public class QuartzRenderer: Renderer {
     public func drawSolidPolygon(polygon: SwiftPlot.Polygon,
                                  fillColor: Color) {
         let polygonPath = CGMutablePath()
-        polygonPath.move(to: CGPoint(x: Double(polygon.p1.x + xOffset), y: Double(polygon.p1.y + yOffset)))
-        polygonPath.addLine(to: CGPoint(x: Double(polygon.p2.x + xOffset), y: Double(polygon.p2.y + yOffset)))
-        polygonPath.addLine(to: CGPoint(x: Double(polygon.p3.x + xOffset), y: Double(polygon.p3.y + yOffset)))
-        polygon.tail.forEach { polygonPath.addLine(to: CGPoint(x: Double($0.x + xOffset), y: Double($0.y + yOffset)))}
+        polygonPath.addLines(between: polygon.points.map { CGPoint(x: CGFloat($0.x), y: CGFloat($0.y)) },
+                             transform: CGAffineTransform(translationX: CGFloat(xOffset), y: CGFloat(yOffset)))
         polygonPath.closeSubpath()
         context.setFillColor(fillColor.cgColor)
         context.addPath(polygonPath)
@@ -407,11 +405,8 @@ public class QuartzRenderer: Renderer {
                               isDashed: Bool) {
 
         let linePath = CGMutablePath()
-        linePath.move(to: CGPoint(x: Double(polyline.p1.x + xOffset), y: Double(polyline.p1.y + yOffset)))
-        linePath.addLine(to: CGPoint(x: Double(polyline.p2.x + xOffset), y: Double(polyline.p2.y + yOffset)))
-        for point in polyline.tail {
-            linePath.addLine(to: CGPoint(x: Double(point.x + xOffset), y: Double(point.y + yOffset)))
-        }
+        linePath.addLines(between: polyline.points.map { CGPoint(x: CGFloat($0.x), y: CGFloat($0.y)) },
+                          transform: CGAffineTransform(translationX: CGFloat(xOffset), y: CGFloat(yOffset)))
         context.setStrokeColor(strokeColor.cgColor)
         context.setLineWidth(CGFloat(thickness))
         context.addPath(linePath)

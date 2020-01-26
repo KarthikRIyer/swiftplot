@@ -195,139 +195,34 @@ extension Renderer {
     }
 }
 
-/// Polygon structure definition and sequence extension, along with its iterator.
+/// Polygon structure definition
 public struct Polygon {
-    public var p1: Point, p2: Point, p3: Point
-    public var tail: [Point]
-    
-    public init(_ p1: Point, _ p2: Point, _ p3: Point, tail: [Point] = []) {
-        (self.p1, self.p2, self.p3) = (p1, p2, p3)
-        self.tail = tail
+    public var points: [Point] {
+        didSet {
+            let count = points.count
+            precondition(count >= 2, "Polygon: points array should always contain at least 3 points, it now has \(count).")
+        }
     }
-    
-    public init(_ p1: Point, _ p2: Point, _ p3: Point, tail: ArraySlice<Point>) {
-        self.init(p1, p2, p3, tail: Array(tail))
-    }
-    
-    public init() {
-        self.init(.zero, .zero, .zero)
-    }
-    
-    public init?(points: [Point]) {
+
+    public init?(_ points: [Point]) {
         guard points.count >= 3 else { return nil }
         
-        self.init(points[0], points[1], points[2], tail: points[3...])
+        self.points = points
     }
 }
 
-extension Polygon: Sequence {
-    public struct Iterator {
-        private var state: State
-        private var tailIterator: Array<Point>.Iterator
-        private let polygon: Polygon
-        
-        private enum State {
-            case p1, p2, p3
-            case tail
-        }
-        
-        public init(polygon: Polygon) {
-            state = .p1
-            tailIterator = polygon.tail.makeIterator()
-            self.polygon = polygon
-        }
-    }
-    
-    public func makeIterator() -> Polygon.Iterator {
-        return Iterator(polygon: self)
-    }
-}
-
-extension Polygon.Iterator: IteratorProtocol {
-    public typealias Element = Point
-    
-    public mutating func next() -> Point? {
-        switch state {
-        case .p1:
-            state = .p2
-            return polygon.p1
-        case .p2:
-            state = .p3
-            return polygon.p2
-        case .p3:
-            state = .tail
-            return polygon.p3
-        case .tail:
-            return tailIterator.next()
-        }
-    }
-}
-
-extension Polygon.Iterator: Sequence {}
-
-/// Polyline structure definition and sequence extension, along with its iterator.
+/// Polyline structure definition
 public struct Polyline {
-    public var p1: Point, p2: Point
-    public var tail: [Point]
-    
-    public init(_ p1: Point, _ p2: Point, tail: [Point] = []) {
-        (self.p1, self.p2) = (p1, p2)
-        self.tail = tail
+    public var points: [Point] {
+        didSet {
+            let count = points.count
+            precondition(count >= 2, "Polyline: points array should always contain at least 2 points, it now has \(count).")
+        }
     }
-    
-    public init(_ p1: Point, _ p2: Point, tail: ArraySlice<Point>) {
-        self.init(p1, p2, tail: Array(tail))
-    }
-    
-    public init() {
-        self.init(.zero, .zero)
-    }
-    
-    public init?(points: [Point]) {
+
+    public init?(_ points: [Point]) {
         guard points.count >= 2 else { return nil }
         
-        self = Polyline(points[0], points[1], tail: points[2...])
+        self.points = points
     }
 }
-
-extension Polyline: Sequence {
-    public struct Iterator {
-        private var state: State
-        private var tailIterator: Array<Point>.Iterator
-        private let polyline: Polyline
-        
-        private enum State {
-            case p1, p2
-            case tail
-        }
-        
-        public init(polyline: Polyline) {
-            state = .p1
-            tailIterator = polyline.tail.makeIterator()
-            self.polyline = polyline
-        }
-    }
-    
-    public func makeIterator() -> Polyline.Iterator {
-        return Iterator(polyline: self)
-    }
-}
-
-extension Polyline.Iterator: IteratorProtocol {
-    public typealias Element = Point
-    
-    public mutating func next() -> Point? {
-        switch state {
-        case .p1:
-            state = .p2
-            return polyline.p1
-        case .p2:
-            state = .tail
-            return polyline.p2
-        case .tail:
-            return tailIterator.next()
-        }
-    }
-}
-
-extension Polyline.Iterator: Sequence {}

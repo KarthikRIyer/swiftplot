@@ -144,7 +144,7 @@ public class AGGRenderer: Renderer{
                                  fillColor: Color) {
         var x = [Float]()
         var y = [Float]()
-        for point in polygon {
+        for point in polygon.points {
             x.append(point.x + xOffset)
             y.append(point.y + yOffset)
         }
@@ -189,7 +189,7 @@ public class AGGRenderer: Renderer{
         var x = [Float]()
         var y = [Float]()
         
-        for point in polyline {
+        for point in polyline.points {
             x.append(point.x + xOffset)
             y.append(point.y + yOffset)
         }

@@ -159,7 +159,7 @@ public class SVGRenderer: Renderer{
     public func drawSolidPolygon(polygon: SwiftPlot.Polygon,
                                  fillColor: Color) {
         var pointsString = ""
-        for point in polygon {
+        for point in polygon.points {
             let convertedPoint = convertToSVGCoordinates(point)
             pointsString.append("\(convertedPoint.x),\(convertedPoint.y) ")
         }
@@ -189,7 +189,7 @@ public class SVGRenderer: Renderer{
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
-        let pointsString = polyline.lazy.map { point in
+        let pointsString = polyline.points.lazy.map { point in
             let convertedPoint = self.convertToSVGCoordinates(point)
             return "\(convertedPoint.x),\(convertedPoint.y)"
         }.joined(separator: " ")

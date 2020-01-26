@@ -184,11 +184,11 @@ struct Arrow : Annotation {
                 let wedgeRotateAngle = -atan2(end.x - start.x, end.y - start.y)
                 p1 = rotatePoint(point: p1, center: start, angleRadians: wedgeRotateAngle + 0.5 * Float.pi)
                 p2 = rotatePoint(point: p2, center: start, angleRadians: wedgeRotateAngle + 0.5 * Float.pi)
-                let head = Polygon(p1, p2, end)
+                let head = Polygon([p1, p2, end])!
                 renderer.drawSolidPolygon(polygon: head,
                                           fillColor: color)
             default:
-                renderer.drawPolyline(Polyline(start, end),
+                renderer.drawPolyline(Polyline([start, end])!,
                                       strokeWidth: strokeWidth,
                                       strokeColor: color,
                                       isDashed: isDashed)
@@ -205,19 +205,19 @@ struct Arrow : Annotation {
         // Draws arrow head points.
         switch headStyle {
             case .skeletal:
-                let head = Polyline(p1, b, tail: [p2])
+                let head = Polyline([p1, b, p2])!
                 renderer.drawPolyline(head,
                                       strokeWidth: strokeWidth,
                                       strokeColor: color,
                                       isDashed: isDashed)
             case .filled:
-                let head = Polygon(p1, b, p2)
+                let head = Polygon([p1, b, p2])!
                 renderer.drawSolidPolygon(polygon: head,
                                           fillColor: color)
             case .dart:
                 var p3 = end + Point(-headLength/2, 0.0)
                 p3 = rotatePoint(point: p3, center: b, angleRadians: rotateAngle + 0.5 * Float.pi)
-                let head = Polygon(p1, p3, p2, tail: [b])
+                let head = Polygon([p1, p3, p2, b])!
                 renderer.drawSolidPolygon(polygon: head,
                                           fillColor: color)
             default:

@@ -368,7 +368,7 @@ extension ScatterPlot: HasGraphLayout {
                     tR = rotatePoint(point: tR, center: p, angleDegrees: 45.0)
                     bL = rotatePoint(point: bL, center: p, angleDegrees: 45.0)
                     bR = rotatePoint(point: bR, center: p, angleDegrees: 45.0)
-                    let diamond = Polygon(tL, tR, bR, tail: [bL])
+                    let diamond = Polygon([tL, tR, bR, bL])!
                     renderer.drawSolidPolygon(polygon: diamond,
                                               fillColor: color)
                 case .hexagon:
@@ -381,7 +381,7 @@ extension ScatterPlot: HasGraphLayout {
                                                    angleDegrees: 60.0)
                         hexagonPoints.append(hexagonPoint)
                     }
-                    let hexagon = Polygon(hexagonPoints[0], hexagonPoints[1], hexagonPoints[2], tail: hexagonPoints[3...])
+                    let hexagon = Polygon(hexagonPoints)!
                     renderer.drawSolidPolygon(polygon: hexagon,
                                               fillColor: color)
                 case .pentagon:
@@ -394,7 +394,7 @@ extension ScatterPlot: HasGraphLayout {
                                                     angleDegrees: 72.0)
                         pentagonPoints.append(pentagonPoint)
                     }
-                    let pentagon = Polygon(pentagonPoints[0], pentagonPoints[1], pentagonPoints[2], tail: pentagonPoints[3...])
+                    let pentagon = Polygon(pentagonPoints)!
                     renderer.drawSolidPolygon(polygon: pentagon,
                                               fillColor: color)
 
@@ -416,7 +416,7 @@ extension ScatterPlot: HasGraphLayout {
                         starPoints.append(starOuterPoint)
                         starPoints.append(starInnerPoint)
                     }
-                    let star = Polygon(starPoints[0], starPoints[1], starPoints[2], tail: starPoints[3...])
+                    let star = Polygon(starPoints)!
                     renderer.drawSolidPolygon(polygon: star,
                                               fillColor: color)
                 }
@@ -465,7 +465,7 @@ extension ScatterPlotSeriesOptions.ScatterPattern {
             let p2 = rotatePoint(point: tR, center: c, angleDegrees: 45.0)
             let p3 = rotatePoint(point: bR, center: c, angleDegrees: 45.0)
             let p4 = rotatePoint(point: bL, center: c, angleDegrees: 45.0)
-            let diamond = Polygon(p1, p2, p3, tail: [p4])
+            let diamond = Polygon([p1, p2, p3, p4])!
             renderer.drawSolidPolygon(polygon: diamond,
                                       fillColor: color)
         case .hexagon:
@@ -480,7 +480,7 @@ extension ScatterPlotSeriesOptions.ScatterPattern {
                                            angleDegrees: 60.0)
                 hexagonPoints.append(hexagonPoint)
             }
-            let hexagon = Polygon(hexagonPoints[0], hexagonPoints[1], hexagonPoints[2], tail: hexagonPoints[3...])
+            let hexagon = Polygon(hexagonPoints)!
             renderer.drawSolidPolygon(polygon: hexagon,
                                       fillColor: color)
         case .pentagon:
@@ -495,7 +495,7 @@ extension ScatterPlotSeriesOptions.ScatterPattern {
                                             angleDegrees: 72.0)
                 pentagonPoints.append(pentagonPoint)
             }
-            let pentagon = Polygon(pentagonPoints[0], pentagonPoints[1], pentagonPoints[2], tail: pentagonPoints[3...])
+            let pentagon = Polygon(pentagonPoints)!
             renderer.drawSolidPolygon(polygon: pentagon,
                                       fillColor: color)
         case .star:
@@ -518,7 +518,7 @@ extension ScatterPlotSeriesOptions.ScatterPattern {
                 starPoints.append(starOuterPoint)
                 starPoints.append(starInnerPoint)
             }
-            let star = Polygon(starPoints[0], starPoints[1], starPoints[2], tail: starPoints[3...])
+            let star = Polygon(starPoints)!
             renderer.drawSolidPolygon(polygon: star,
                                       fillColor: color)
         }
