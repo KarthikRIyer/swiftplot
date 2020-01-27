@@ -18,7 +18,7 @@ extension BarchartTests {
     let y:[Float] = [320,-100,420,500]
     let y1:[Float] = [100,100,220,245]
 
-    let barGraph = BarGraph<String,Float>(enableGrid: true)
+    var barGraph = BarGraph<String,Float>(enableGrid: true)
     barGraph.addSeries(x, y, label: "Plot 1", color: .orange)
     barGraph.addStackSeries(y1, label: "Plot 2", color: .blue)
     barGraph.plotTitle = PlotTitle("BAR CHART")

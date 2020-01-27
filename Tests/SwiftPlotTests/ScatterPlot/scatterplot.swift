@@ -14,7 +14,7 @@ extension ScatterPlotTests {
 
     let fileName = "_20_scatter_plot"
  
-    let scatterPlot = ScatterPlot<Float,Float>(enableGrid: true)
+    var scatterPlot = ScatterPlot<Float,Float>(enableGrid: true)
     scatterPlot.addSeries(scatterplot_x, scatterplot_y, label: "Plot 1", startColor: .gold, endColor: .blue, scatterPattern: .circle)
     scatterPlot.addSeries(scatterplot_x, scatterplot_y1, label: "Plot 2", color: .green, scatterPattern: .star)
     scatterPlot.plotTitle = PlotTitle("SCATTER PLOT")

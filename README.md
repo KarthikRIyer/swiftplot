@@ -10,6 +10,7 @@
   * [License](#license)
   * [How to include the library in your package](#how-to-include-the-library-in-your-package)
   * [How to include the library in your Jupyter Notebook](#how-to-include-the-library-in-your-jupyter-notebook)
+  * [How to setup Docker instance for SwiftPlot](#how-to-setup-docker-instance-for-swiftplot)
   * [Examples](#examples)
     * [Simple Line Graph](#simple-line-graph)
     * [Line Graph with multiple series of data](#line-graph-with-multiple-series-of-data)
@@ -29,13 +30,14 @@ The existing Swift plotting frameworks (such as CorePlot) run only on iOS or Mac
 The idea behind SwiftPlot is to create a cross-platform library that runs on iOS, Mac, Linux and Windows.
 </br>
 </br>
-SwiftPlot currently uses two rendering backends to generate plots:
+SwiftPlot currently uses three rendering backends to generate plots:
 - Anti-Grain Geometry(AGG) C++ rendering library
 - A simple SVG Renderer
+- A Core Graphics renderer with support for macOS, iOS, watchOS and tvOS
 
 To encode the plots as PNG images it uses the [lodepng](https://github.com/lvandeve/lodepng) library.
 </br>
-SwiftPlot can also be used in Jupyter Notebooks.
+SwiftPlot can also be used in Jupyter Notebooks, with Python interop support for Google Colab.
 </br>
 
 Examples, demonstrating all the features, have been included with the repository under the `Tests/SwiftPlotTests` directory. To run the examples, clone the repository, and run the `swift test` command from the package directory.
@@ -83,10 +85,27 @@ In order to display the generated plot in the notebook, add this line to a new c
 ```swift
 %include "EnableJupyterDisplay.swift"
 ```
+If you wish to display the generated plot in a Google Colab environment, add these lines to a new cell instead:
+```swift
+import Python
+%include "EnableIPythonDisplay.swift"
+func display(base64EncodedPNG: String) {
+  let displayImage = Python.import("IPython.display")
+  let codecs = Python.import("codecs")
+  let imageData = codecs.decode(Python.bytes(base64EncodedPNG, encoding: "utf8"), encoding: "base64")
+  displayImage.Image(data: imageData, format: "png").display()
+}
+```
+Note that because Google Colab doesn't natively support Swift libraries that produce rich output, we use Swift's Python interop as a workaround. 
+
+## How to setup Docker instance for SwiftPlot
+For computers running MacOS or Windows, Docker instance is to easy to setup and use `swift-jupyter`. Please refer [SwiftPlot_Docker_setup.md](https://github.com/KarthikRIyer/swiftplot/blob/master/Swiftplot_Docker_setup.md) for setup instructions.
 
 ## Examples
 Here are some examples to provide you with a headstart to using this library. Here we will be looking at plots using only the AGGRenderer, but the procedure will remain the same for SVGRenderer.
 To use the library in your package, include it as a dependency to your target, in the Package.swift file.
+
+More tests can be found in the [SwiftPlotTests](Tests/SwiftPlotTests) folder.
 
 #### Simple Line Graph
 
@@ -198,6 +217,7 @@ let y:[Float] = [10,120,500,800]
 let x1:[Float] = [100,200,361,672]
 let y1:[Float] = [150,250,628,800]
 
+var agg_renderer: AGGRenderer = AGGRenderer() 
 var lineGraph = LineGraph<Float,Float>()
 lineGraph.addSeries(x1, y1, label: "Plot 1", color: .lightBlue, axisType: .primaryAxis)
 lineGraph.addSeries(x, y, label: "Plot 2", color: .orange, axisType: .secondaryAxis)
@@ -397,6 +417,8 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 |Property(only on macOS and iOS)                    |
 |---------------------------------------------------|
 |cgColor: CGColor (return the corresponding CGColor)|
+
+Built-in Colors can be found [here](https://github.com/KarthikRIyer/swiftplot/blob/master/Sources/SwiftPlot/Color.swift).
 
 
 ### PlotLabel
