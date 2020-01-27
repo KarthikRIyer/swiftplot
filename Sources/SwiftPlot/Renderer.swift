@@ -132,8 +132,8 @@ public protocol Renderer: AnyObject{
 
     /*drawSolidEllipse()
     *params: center c: Point,
-    *        radius rx: Float,
-    *        radius rx: Float,
+    *        radiusX rx: Float,
+    *        radiusY rx: Float,
     *        fillColor: Color,
     *        isOriginShifted: Bool
     *description: Draws an ellipse with specified fill color, center and radii
