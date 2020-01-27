@@ -129,6 +129,23 @@ public protocol Renderer: AnyObject{
                          radius r: Float,
                          fillColor: Color)
 
+
+    /*drawSolidEllipse()
+    *params: center c: Point,
+    *        radius rx: Float,
+    *        radius rx: Float,
+    *        fillColor: Color,
+    *        isOriginShifted: Bool
+    *description: Draws an ellipse with specified fill color, center and radii
+    *             This function can operate in both coordinate systems with and
+    *             without shifted origin.
+    *             This is decided by the boolean parameter isOriginShifted.
+    */
+    func drawSolidEllipse(center c: Point,
+                          radiusX rx: Float,
+                          radiusY ry: Float,
+                          fillColor: Color)
+
     /*drawSolidTriangle()
     *params: point1: Point,
     *        point2: Point,
