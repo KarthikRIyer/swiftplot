@@ -29,7 +29,7 @@ extension HistogramTests {
         
         histogram.addSeries(data: histogram_step_values, bins: 50, label: "HISTOGRAM PERFORMANCE `recalculateBins`")
         
-        histogram.histogramSeries.data = histogram_step_values
+        histogram.histogramSeries.data = histogram_step_values // Sets `isSorted` to false internaly
         measure {
             histogram.testRecalculateBins(series: histogram.histogramSeries, binStart: 40, binEnd: 160, binInterval: (160-40)/Float(histogram.histogramSeries.bins))
         }
