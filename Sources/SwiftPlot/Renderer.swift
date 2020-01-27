@@ -154,7 +154,7 @@ public protocol Renderer: AnyObject{
     *             without shifted origin.
     *             This is decided by the boolean parameter isOriginShifted.
     */
-    func drawSolidPolygon(polygon: Polygon,
+    func drawSolidPolygon(_ polygon: Polygon,
                           fillColor: Color)
 
     /*getTextWidth()
@@ -200,7 +200,8 @@ public struct Polygon {
     public var points: [Point] {
         didSet {
             let count = points.count
-            precondition(count >= 2, "Polygon: points array should always contain at least 3 points, it now has \(count).")
+            precondition(count >= 3,
+                         "Polygon: points array should always contain at least 3 points, it now has \(count).")
         }
     }
 
@@ -209,6 +210,8 @@ public struct Polygon {
         
         self.points = points
     }
+    
+    public init?(_ points: Point...) { self.init(points) }
 }
 
 /// Polyline structure definition
@@ -216,7 +219,8 @@ public struct Polyline {
     public var points: [Point] {
         didSet {
             let count = points.count
-            precondition(count >= 2, "Polyline: points array should always contain at least 2 points, it now has \(count).")
+            precondition(count >= 2,
+                         "Polyline: points array should always contain at least 2 points, it now has \(count).")
         }
     }
 
@@ -225,4 +229,6 @@ public struct Polyline {
         
         self.points = points
     }
+    
+    public init?(_ points: Point...) { self.init(points) }
 }

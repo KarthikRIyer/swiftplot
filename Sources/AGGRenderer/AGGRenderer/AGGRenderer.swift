@@ -140,7 +140,7 @@ public class AGGRenderer: Renderer{
                           agg_object);
     }
 
-    public func drawSolidPolygon(polygon: SwiftPlot.Polygon,
+    public func drawSolidPolygon(_ polygon: SwiftPlot.Polygon,
                                  fillColor: Color) {
         var x = [Float]()
         var y = [Float]()

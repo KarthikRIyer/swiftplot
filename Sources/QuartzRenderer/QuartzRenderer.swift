@@ -369,7 +369,7 @@ public class QuartzRenderer: Renderer {
         context.fillPath()
     }
 
-    public func drawSolidPolygon(polygon: SwiftPlot.Polygon,
+    public func drawSolidPolygon(_ polygon: SwiftPlot.Polygon,
                                  fillColor: Color) {
         let polygonPath = CGMutablePath()
         polygonPath.addLines(between: polygon.points.map { CGPoint(x: CGFloat($0.x), y: CGFloat($0.y)) },

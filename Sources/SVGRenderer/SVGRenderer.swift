@@ -156,7 +156,7 @@ public class SVGRenderer: Renderer{
         lines.append(triangle)
     }
     
-    public func drawSolidPolygon(polygon: SwiftPlot.Polygon,
+    public func drawSolidPolygon(_ polygon: SwiftPlot.Polygon,
                                  fillColor: Color) {
         var pointsString = ""
         for point in polygon.points {
