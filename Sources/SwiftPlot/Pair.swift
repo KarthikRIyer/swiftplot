@@ -20,6 +20,10 @@ extension Point {
 public func + (lhs: Point, rhs: Point) -> Point {
     return Point(lhs.x + rhs.x, lhs.y + rhs.y)
 }
+public func += (lhs: inout Point, rhs: Point) {
+    lhs.x += rhs.x
+    lhs.y += rhs.y
+}
 
 public struct Size: Hashable {
     public var width: Float
@@ -90,7 +94,7 @@ extension Rect {
   
     public init(size: Size, centeredOn center: Point) {
         self = Rect(
-            origin: Point(center.x - size.width/2, center.y - size.height/2),
+            origin: Point(center.x - (size.width/2), center.y - (size.height/2)),
             size: size
         )
     }
@@ -136,7 +140,7 @@ extension Rect {
       origin.x.round(.up)
       origin.y.round(.up)
       size.width.round(.down)
-      size.width.round(.down)
+      size.height.round(.down)
     }
     
     // Subtraction operations.
