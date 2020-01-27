@@ -17,8 +17,8 @@ extension AnnotationTests {
     static let __allTests__AnnotationTests = [
         ("testAnnotationArrow", testAnnotationArrow),
         ("testAnnotationArrowDart", testAnnotationArrowDart),
-        ("testAnnotationArrowWedge", testAnnotationArrowWedge),
         ("testAnnotationArrowDoubleHeaded", testAnnotationArrowDoubleHeaded),
+        ("testAnnotationArrowWedge", testAnnotationArrowWedge),
         ("testAnnotationText", testAnnotationText),
         ("testAnnotationTextBoundingBox", testAnnotationTextBoundingBox),
     ]
@@ -51,6 +51,7 @@ extension HistogramTests {
     static let __allTests__HistogramTests = [
         ("testHistogram", testHistogram),
         ("testHistogramMultiStacked", testHistogramMultiStacked),
+        ("testHistogramMultiStackedColorBleed", testHistogramMultiStackedColorBleed),
         ("testHistogramMultiStackedStep", testHistogramMultiStackedStep),
         ("testHistogramStacked", testHistogramStacked),
         ("testHistogramStackedStep", testHistogramStackedStep),

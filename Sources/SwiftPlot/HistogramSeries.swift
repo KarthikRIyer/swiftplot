@@ -1,4 +1,4 @@
-public class HistogramSeries<T> where T: Comparable {
+public struct HistogramSeries<T> where T: Comparable {
     public var data = [T]() { didSet { isSorted = false } }
     /// `isSorted`: if `data` is in a sorted. Set to false if the user sets `data` manually.
     internal var isSorted: Bool = false
