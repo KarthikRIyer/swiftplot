@@ -22,12 +22,12 @@ extension AnnotationTests {
     lineGraph.plotLabel.yLabel = "Y-AXIS"
     lineGraph.plotLineThickness = 3.0
 
-    lineGraph.addAnnotation(annotation: Bracket(start: Point(150.0, 607.0),
-                                                end: Point(630.0, 607.0),
+    lineGraph.addAnnotation(annotation: Bracket(start: Coordinate(point: Point(150.0, 607.0)),
+                                                end: Coordinate(point: Point(630.0, 607.0)),
                                                 anchorableAnnotation: Text(text: "Period",
                                                                            direction: .south)))
-    lineGraph.addAnnotation(annotation: Bracket(start: Point(900, 585.0),
-                                                end: Point(900, 340.0),
+    lineGraph.addAnnotation(annotation: Bracket(start: Coordinate(point: Point(900, 585.0)),
+                                                end: Coordinate(point: Point(900, 340.0)),
                                                 anchorableAnnotation: Text(text: "Amplitude",
                                                                            direction: .east)))
     let svg_renderer = SVGRenderer()

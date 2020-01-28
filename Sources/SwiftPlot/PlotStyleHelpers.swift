@@ -276,34 +276,35 @@ struct Arrow: Annotation {
 
 struct Bracket: Annotation {
     public var color = Color.black
-    public var start = Point(0.0, 0.0)
-    public var end = Point(0.0, 0.0)
+    public var start = Coordinate()
+    public var end = Coordinate()
     public var strokeWidth: Float = 3
     public var isDashed: Bool = false
     public var legLength: Float = 15
     public var anchorableAnnotation: AnchorableAnnotation?
     public mutating func draw(resolver: CoordinateResolver, renderer: Renderer) {
         // Calculate leg points.
-        var startLegPoint = start + Point(0.0, -strokeWidth/2-legLength)
-        let startLegRotateAngle = -atan2(end.x - start.x, end.y - start.y)
-        startLegPoint = rotatePoint(point: startLegPoint, center: start, angleRadians: startLegRotateAngle + 0.5 * Float.pi)
-        var endLegPoint = end + Point(0.0, -strokeWidth/2-legLength)
-        endLegPoint = rotatePoint(point: endLegPoint, center: end, angleRadians: startLegRotateAngle + 0.5 * Float.pi)
+        let startPoint = resolver.resolve(start), endPoint = resolver.resolve(end)
+        var startLegPoint = startPoint + Point(0.0, -strokeWidth/2-legLength)
+        let startLegRotateAngle = -atan2(endPoint.x - startPoint.x, endPoint.y - startPoint.y)
+        startLegPoint = rotatePoint(point: startLegPoint, center: startPoint, angleRadians: startLegRotateAngle + 0.5 * Float.pi)
+        var endLegPoint = endPoint + Point(0.0, -strokeWidth/2-legLength)
+        endLegPoint = rotatePoint(point: endLegPoint, center: endPoint, angleRadians: startLegRotateAngle + 0.5 * Float.pi)
         
         // Draws bracket.
-        renderer.drawPlotLines(points: [startLegPoint, start, end, endLegPoint],
+        renderer.drawPlotLines(points: [startLegPoint, startPoint, endPoint, endLegPoint],
                                strokeWidth: strokeWidth,
                                strokeColor: color,
                                isDashed: isDashed)
 
         // Calculate anchor point.
-        let anchorPoint = Point((start.x + end.x)/2, (start.y + end.y)/2)
+        let anchorPoint = Point((startPoint.x + endPoint.x)/2, (startPoint.y + endPoint.y)/2)
 
         // Draws AnchorableAnnotation if specified.
         anchorableAnnotation?.resolve(renderer: renderer, center: anchorPoint)
         anchorableAnnotation?.draw(resolver: resolver, renderer: renderer)
     }
-    public init(color: Color = .black, start: Point = Point(0.0, 0.0), end: Point = Point(0.0, 0.0), strokeWidth: Float = 5, isDashed: Bool = false, legLength: Float = 15, anchorableAnnotation: AnchorableAnnotation? = nil) {
+    public init(color: Color = .black, start: Coordinate = Coordinate(), end: Coordinate = Coordinate(), strokeWidth: Float = 5, isDashed: Bool = false, legLength: Float = 15, anchorableAnnotation: AnchorableAnnotation? = nil) {
         self.color = color
         self.start = start
         self.end = end
