@@ -119,7 +119,7 @@ public struct GraphLayout {
     /// Calculates the region of the plot which is used for displaying the plot's data (inside all of the chrome).
     private func calcBorder(totalSize: Size, labelSizes: Results.LabelSizes, renderer: Renderer) -> Rect {
         var borderRect = Rect(
-            origin: zeroPoint,
+            origin: .zero,
             size: totalSize
         )
         if let xLabel = labelSizes.xLabelSize {
@@ -211,7 +211,7 @@ public struct GraphLayout {
     // Drawing.
     
     func drawBackground(results: Results, renderer: Renderer) {
-        renderer.drawSolidRect(Rect(origin: zeroPoint, size: results.totalSize),
+        renderer.drawSolidRect(Rect(origin: .zero, size: results.totalSize),
                                fillColor: backgroundColor, hatchPattern: .none)
         if let plotBackgroundColor = plotBackgroundColor {
             renderer.drawSolidRect(results.plotBorderRect, fillColor: plotBackgroundColor, hatchPattern: .none)

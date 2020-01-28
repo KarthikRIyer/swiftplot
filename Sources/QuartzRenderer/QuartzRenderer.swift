@@ -19,7 +19,7 @@ public class QuartzRenderer: Renderer {
     /// Whether or not this context was given to us. If `true`, we should never re-make `context`
     let isExternalContext: Bool
     var fontPath = ""
-    public var offset = zeroPoint
+    public var offset: Point = .zero
     
     public var fontSmoothing: Bool = false {
         didSet { context.setShouldSmoothFonts(fontSmoothing) }
@@ -381,15 +381,11 @@ public class QuartzRenderer: Renderer {
         context.fillPath()
     }
 
-    public func drawSolidPolygon(points: [Point],
+    public func drawSolidPolygon(_ polygon: SwiftPlot.Polygon,
                                  fillColor: Color) {
-        precondition(points.count > 2, "drawSolidPolygon: Cannot draw a polygon with \(points.count) points.")
-        
         let polygonPath = CGMutablePath()
-        polygonPath.move(to: CGPoint(x: Double(points[0].x + xOffset), y: Double(points[0].y + yOffset)))
-        for index in 1..<points.count {
-            polygonPath.addLine(to: CGPoint(x: Double(points[index].x + xOffset), y: Double(points[index].y + yOffset)))
-        }
+        polygonPath.addLines(between: polygon.points.map { CGPoint(x: CGFloat($0.x), y: CGFloat($0.y)) },
+                             transform: CGAffineTransform(translationX: CGFloat(xOffset), y: CGFloat(yOffset)))
         polygonPath.closeSubpath()
         context.setFillColor(fillColor.cgColor)
         context.addPath(polygonPath)
@@ -415,19 +411,23 @@ public class QuartzRenderer: Renderer {
         context.setLineDash(phase: 1, lengths: [])
     }
 
-    public func drawPlotLines(points p: [Point],
+    public func drawPolyline(_ polyline: Polyline,
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
-        precondition(p.count > 1, "drawPlotLines: Cannot draw lines with \(p.count) points.")
-        
-        for i in 0..<p.count-1 {
-            drawLine(startPoint: p[i],
-                     endPoint: p[i+1],
-                     strokeWidth: thickness,
-                     strokeColor: strokeColor,
-                     isDashed: isDashed)
+
+        let linePath = CGMutablePath()
+        linePath.addLines(between: polyline.points.map { CGPoint(x: CGFloat($0.x), y: CGFloat($0.y)) },
+                          transform: CGAffineTransform(translationX: CGFloat(xOffset), y: CGFloat(yOffset)))
+        context.setStrokeColor(strokeColor.cgColor)
+        context.setLineWidth(CGFloat(thickness))
+        context.addPath(linePath)
+        if(isDashed) {
+            let dashes: [ CGFloat ] = [ CGFloat(thickness + 1), CGFloat(thickness + 1) ]
+            context.setLineDash(phase: 1, lengths: dashes)
         }
+        context.strokePath()
+        context.setLineDash(phase: 1, lengths: [])
     }
 
     public func drawText(text s: String,

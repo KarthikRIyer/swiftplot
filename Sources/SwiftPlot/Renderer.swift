@@ -66,17 +66,17 @@ public protocol Renderer: AnyObject{
                   strokeWidth thickness: Float,
                   strokeColor: Color, isDashed: Bool)
 
-    /*drawPlotLines()
-    *params: points p: [Point],
+    /*drawPolyline()
+    *params: polyline: Polyline,
     *        strokeWidth thickness: Float,
     *        strokeColor: Color,
     *        isDashed: Bool
     *description: Draws all the line segments in a single data series for a Line Graph.
     *             This function always operates in the coordinate system with the shifted origin.
     */
-    func drawPlotLines(points p: [Point],
-                       strokeWidth thickness: Float,
-                       strokeColor: Color, isDashed: Bool)
+    func drawPolyline(_ polyline: Polyline,
+                      strokeWidth thickness: Float,
+                      strokeColor: Color, isDashed: Bool)
 
     /*drawText()
     *params: text s: String,
@@ -163,15 +163,15 @@ public protocol Renderer: AnyObject{
                            fillColor: Color)
 
     /*drawSolidPolygon()
-    *params: points: [Point],
-    *                 fillColor: Color,
-    *                 isOriginShifted: Bool
-    *description: Draws a polygon with specified fill color from an array of Points
+    *params: polygon: Polygon,
+    *        fillColor: Color,
+    *        isOriginShifted: Bool
+    *description: Draws a polygon with specified fill color from a Polygon struct
     *             This function can operate in both coordinate systems with and
     *             without shifted origin.
     *             This is decided by the boolean parameter isOriginShifted.
     */
-    func drawSolidPolygon(points: [Point],
+    func drawSolidPolygon(_ polygon: Polygon,
                           fillColor: Color)
 
     /*getTextWidth()
@@ -210,4 +210,42 @@ extension Renderer {
         try perform(self)
         (self.xOffset, self.yOffset) = oldOffset
     }
+}
+
+/// Polygon structure definition
+public struct Polygon {
+    public var points: [Point] {
+        didSet {
+            let count = points.count
+            precondition(count >= 3,
+                         "Polygon: points array should always contain at least 3 points, it now has \(count).")
+        }
+    }
+
+    public init?(_ points: [Point]) {
+        guard points.count >= 3 else { return nil }
+        
+        self.points = points
+    }
+    
+    public init?(_ points: Point...) { self.init(points) }
+}
+
+/// Polyline structure definition
+public struct Polyline {
+    public var points: [Point] {
+        didSet {
+            let count = points.count
+            precondition(count >= 2,
+                         "Polyline: points array should always contain at least 2 points, it now has \(count).")
+        }
+    }
+
+    public init?(_ points: [Point]) {
+        guard points.count >= 2 else { return nil }
+        
+        self.points = points
+    }
+    
+    public init?(_ points: Point...) { self.init(points) }
 }

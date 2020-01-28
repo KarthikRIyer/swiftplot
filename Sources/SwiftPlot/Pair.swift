@@ -10,7 +10,10 @@ public struct Pair<T,U> {
 }
 
 public typealias Point = Pair<Float,Float>
-public let zeroPoint = Point(0.0, 0.0)
+
+extension Point {
+    public static let zero = Point(0.0, 0.0)
+}
 
 public func + (lhs: Point, rhs: Point) -> Point {
     return Point(lhs.x + rhs.x, lhs.y + rhs.y)
@@ -42,7 +45,7 @@ public struct Rect {
 }
 extension Rect {
     
-    public static let empty = Rect(origin: zeroPoint, size: .zero)
+    public static let empty = Rect(origin: .zero, size: .zero)
     
     public var normalized: Rect {
         let normalizedOrigin = Point(origin.x + (size.width < 0 ? size.width : 0),

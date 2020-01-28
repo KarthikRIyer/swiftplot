@@ -81,7 +81,7 @@ extension Histogram: HasGraphLayout {
         
         var barWidth: Float = 0
         let xMargin: Float = 5
-        var origin = zeroPoint
+        var origin: Point = .zero
     }
 
     // functions implementing plotting logic
@@ -274,9 +274,11 @@ extension Histogram: HasGraphLayout {
                 var frontLeftBinHeight = frontHeightsSlice.removeFirst()
                 for ((backRightBinHeight, frontRightBinHeight), x) in zip(zip(backHeightsSlice, frontHeightsSlice), xValues) {
                     func endLine() {
-                        renderer.drawPlotLines(points: line, strokeWidth: strokeWidth,
-                                               strokeColor: allSeriesInfo[seriesIdx].color,
-                                               isDashed: false)
+                        // This algorithm should never produce lines with less than 2 points
+                        guard let polyline = Polyline(line) else { fatalError("Histogram.drawData: Expecting 2 or more points, got \(line.count) instead.") }
+                        renderer.drawPolyline(polyline, strokeWidth: strokeWidth,
+                                              strokeColor: allSeriesInfo[seriesIdx].color,
+                                              isDashed: false)
                         line.removeAll(keepingCapacity: true)
                     }
                     

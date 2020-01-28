@@ -23,8 +23,7 @@ public class SVGRenderer: Renderer{
     static let horizontalHatch: String = #"<defs><pattern id="horizontalHatch" width="10" height="10" patternUnits="userSpaceOnUse"><line x1="0" y1="5" x2="10" y2="5" style="stroke:black; stroke-width:1" /></pattern></defs>"#
     static let gridHatch: String = #"<defs><pattern id="gridHatch" width="10" height="10" patternUnits="userSpaceOnUse"><line x1="0" y1="5" x2="10" y2="5" style="stroke:black; stroke-width:1" /><line x1="5" y1="0" x2="5" y2="10" style="stroke:black; stroke-width:1" /></pattern></defs>"#
     static let crossHatch: String = #"<defs><pattern id="crossHatch" width="10" height="10" patternUnits="userSpaceOnUse"><line x1="0" y1="0" x2="10" y2="10" style="stroke:black; stroke-width:1" /><line x1="0" y1="10" x2="10" y2="0" style="stroke:black; stroke-width:1" /></pattern></defs>"#
-
-    public var offset = zeroPoint
+    public var offset: Point = .zero
     public var imageSize: Size
 
     var hatchingIncluded = Array(repeating: false,
@@ -165,18 +164,17 @@ public class SVGRenderer: Renderer{
         let triangle = #"<polygon points="\#(p1.x),\#(p1.y) \#(p2.x),\#(p2.y) \#(p3.x),\#(p3.y)" style="fill:\#(fillColor.svgColorString);opacity:\#(fillColor.a)" />"#
         lines.append(triangle)
     }
-
-    public func drawSolidPolygon(points: [Point],
+    
+    public func drawSolidPolygon(_ polygon: SwiftPlot.Polygon,
                                  fillColor: Color) {
-        precondition(points.count > 2, "drawSolidPolygon: Cannot draw a polygon with \(points.count) points.")
-        
-        let pts = points.map { convertToSVGCoordinates($0) }
         var pointsString = ""
-        for index in 0..<pts.count {
-            pointsString = pointsString + "\(pts[index].x),\(pts[index].y) "
+        for point in polygon.points {
+            let convertedPoint = convertToSVGCoordinates(point)
+            pointsString.append("\(convertedPoint.x),\(convertedPoint.y) ")
         }
-        let polygon = #"<polygon points="\#(pointsString)" style="fill:\#(fillColor.svgColorString);opacity:\#(fillColor.a)" />"#
-        lines.append(polygon)
+        
+        let polygonString = #"<polygon points="\#(pointsString)" style="fill:\#(fillColor.svgColorString);opacity:\#(fillColor.a)" />"#
+        lines.append(polygonString)
     }
 
     public func drawLine(startPoint p1: Point,
@@ -196,13 +194,11 @@ public class SVGRenderer: Renderer{
         lines.append(line)
     }
 
-    public func drawPlotLines(points p: [Point],
+    public func drawPolyline(_ polyline: Polyline,
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
-        precondition(p.count > 1, "drawPlotLines: Cannot draw lines with \(p.count) points.")
-        
-        let pointsString = p.lazy.map { point in
+        let pointsString = polyline.points.lazy.map { point in
             let convertedPoint = self.convertToSVGCoordinates(point)
             return "\(convertedPoint.x),\(convertedPoint.y)"
         }.joined(separator: " ")

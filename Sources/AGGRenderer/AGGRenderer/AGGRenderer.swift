@@ -4,7 +4,7 @@ import SwiftPlot
 
 public class AGGRenderer: Renderer{
 
-    public var offset = zeroPoint
+    public var offset: Point = .zero
     public var imageSize: Size {
         willSet {
           delete_plot(agg_object);
@@ -156,19 +156,17 @@ public class AGGRenderer: Renderer{
                           agg_object);
     }
 
-    public func drawSolidPolygon(points: [Point],
+    public func drawSolidPolygon(_ polygon: SwiftPlot.Polygon,
                                  fillColor: Color) {
-        precondition(points.count > 2, "drawSolidPolygon: Cannot draw a polygon with \(points.count) points.")
-        
         var x = [Float]()
         var y = [Float]()
-        for index in 0..<points.count {
-            x.append(points[index].x + xOffset)
-            y.append(points[index].y + yOffset)
+        for point in polygon.points {
+            x.append(point.x + xOffset)
+            y.append(point.y + yOffset)
         }
         draw_solid_polygon(x,
                            y,
-                           Int32(points.count),
+                           Int32(x.count),
                            fillColor.r,
                            fillColor.g,
                            fillColor.b,
@@ -200,23 +198,21 @@ public class AGGRenderer: Renderer{
                   agg_object)
     }
 
-    public func drawPlotLines(points p: [Point],
-                              strokeWidth thickness: Float,
-                              strokeColor: Color,
-                              isDashed: Bool) {
-        precondition(p.count > 1, "drawPlotLines: Cannot draw lines with \(p.count) points.")
-        
+    public func drawPolyline(_ polyline: Polyline,
+                             strokeWidth thickness: Float,
+                             strokeColor: Color,
+                             isDashed: Bool) {
         var x = [Float]()
         var y = [Float]()
-
-        for index in 0..<p.count {
-            x.append(p[index].x + xOffset)
-            y.append(p[index].y + yOffset)
+        
+        for point in polyline.points {
+            x.append(point.x + xOffset)
+            y.append(point.y + yOffset)
         }
 
         draw_plot_lines(x,
                         y,
-                        Int32(p.count),
+                        Int32(x.count),
                         thickness,
                         strokeColor.r,
                         strokeColor.g,
