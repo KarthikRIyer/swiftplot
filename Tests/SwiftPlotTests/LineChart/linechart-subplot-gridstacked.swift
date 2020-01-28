@@ -45,21 +45,6 @@ extension LineChartTests {
     
     subPlot.plots = [lineGraph1, lineGraph2, lineGraph3, lineGraph4]
         
-    let svg_renderer = SVGRenderer()
-    try subPlot.drawGraphAndOutput(fileName: svgOutputDirectory+fileName,
-                                   renderer: svg_renderer)
-    verifyImage(name: fileName, renderer: .svg)
-    #if canImport(AGGRenderer)
-    let agg_renderer = AGGRenderer()
-    try subPlot.drawGraphAndOutput(fileName: aggOutputDirectory+fileName,
-                                   renderer: agg_renderer)
-    verifyImage(name: fileName, renderer: .agg)
-    #endif
-    #if canImport(QuartzRenderer)
-    let quartz_renderer = QuartzRenderer()
-    try subPlot.drawGraphAndOutput(fileName: coreGraphicsOutputDirectory+fileName,
-                                   renderer: quartz_renderer)
-    verifyImage(name: fileName, renderer: .coreGraphics)
-    #endif
+    try renderAndVerify(subPlot, fileName: fileName)
   }
 }

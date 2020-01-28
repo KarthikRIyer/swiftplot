@@ -69,7 +69,7 @@ public class SVGRenderer: Renderer{
         lines.append(rectStr)
         drawHatchingRect(rect, hatchPattern: hatchPattern)
     }
-    
+
     func drawHatchingRect(_ rect: Rect,
                           hatchPattern: BarGraphSeriesOptions.Hatching) {
         let patternName: String
@@ -146,6 +146,15 @@ public class SVGRenderer: Renderer{
         lines.append(circle)
     }
 
+    public func drawSolidEllipse(center c: Point,
+                                 radiusX rx: Float,
+                                 radiusY ry: Float,
+                                 fillColor: Color) {
+        let c = convertToSVGCoordinates(c)
+        let circle: String = #"<ellipse cx="\#(c.x)" cy="\#(c.y)" rx="\#(rx)" ry="\#(ry)" style="fill:\#(fillColor.svgColorString);opacity:\#(fillColor.a)" />"#
+        lines.append(circle)
+    }
+
     public func drawSolidTriangle(point1: Point,
                                   point2: Point,
                                   point3: Point,
@@ -159,6 +168,8 @@ public class SVGRenderer: Renderer{
 
     public func drawSolidPolygon(points: [Point],
                                  fillColor: Color) {
+        precondition(points.count > 2, "drawSolidPolygon: Cannot draw a polygon with \(points.count) points.")
+        
         let pts = points.map { convertToSVGCoordinates($0) }
         var pointsString = ""
         for index in 0..<pts.count {
@@ -189,8 +200,8 @@ public class SVGRenderer: Renderer{
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
-        guard p.count > 1 else { return }
-
+        precondition(p.count > 1, "drawPlotLines: Cannot draw lines with \(p.count) points.")
+        
         let pointsString = p.lazy.map { point in
             let convertedPoint = self.convertToSVGCoordinates(point)
             return "\(convertedPoint.x),\(convertedPoint.y)"

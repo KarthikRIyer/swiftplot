@@ -26,21 +26,6 @@ extension LineChartTests {
     lineGraph.plotLabel = PlotLabel(xLabel: "X-AXIS", yLabel: "Y-AXIS")
     lineGraph.plotLineThickness = 3.0
     
-    let svg_renderer = SVGRenderer()
-    try lineGraph.drawGraphAndOutput(fileName: svgOutputDirectory+fileName,
-                                     renderer: svg_renderer)
-    verifyImage(name: fileName, renderer: .svg)
-    #if canImport(AGGRenderer)
-    let agg_renderer = AGGRenderer()
-    try lineGraph.drawGraphAndOutput(fileName: aggOutputDirectory+fileName,
-                                     renderer: agg_renderer)
-    verifyImage(name: fileName, renderer: .agg)
-    #endif
-    #if canImport(QuartzRenderer)
-    let quartz_renderer = QuartzRenderer()
-    try lineGraph.drawGraphAndOutput(fileName: coreGraphicsOutputDirectory+fileName,
-                                     renderer: quartz_renderer)
-    verifyImage(name: fileName, renderer: .coreGraphics)
-    #endif
+    try renderAndVerify(lineGraph, fileName: fileName)
   }
 }

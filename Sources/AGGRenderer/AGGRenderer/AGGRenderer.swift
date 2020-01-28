@@ -123,6 +123,22 @@ public class AGGRenderer: Renderer{
                         agg_object)
     }
 
+   public func drawSolidEllipse(center c: Point,
+                                radiusX rx: Float,
+                                radiusY ry: Float,
+                                fillColor: Color) {
+      draw_solid_ellipse(c.x + xOffset,
+                        c.y + yOffset,
+                        rx,
+                        ry,
+                        fillColor.r,
+                        fillColor.g,
+                        fillColor.b,
+                        fillColor.a,
+                        agg_object)
+    }
+
+
     public func drawSolidTriangle(point1: Point,
                                   point2: Point,
                                   point3: Point,
@@ -142,6 +158,8 @@ public class AGGRenderer: Renderer{
 
     public func drawSolidPolygon(points: [Point],
                                  fillColor: Color) {
+        precondition(points.count > 2, "drawSolidPolygon: Cannot draw a polygon with \(points.count) points.")
+        
         var x = [Float]()
         var y = [Float]()
         for index in 0..<points.count {
@@ -186,6 +204,8 @@ public class AGGRenderer: Renderer{
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
+        precondition(p.count > 1, "drawPlotLines: Cannot draw lines with \(p.count) points.")
+        
         var x = [Float]()
         var y = [Float]()
 

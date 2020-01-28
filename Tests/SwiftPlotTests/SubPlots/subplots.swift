@@ -13,7 +13,7 @@ extension SubPlotTests {
     
     func testNestedSubplots() throws {
         
-        let fileName = "_28_nested_subplots"
+        let fileName = "_29_nested_subplots"
         
         // ScatterPlot.
         let xValues = Array(-50...50).map { Float($0) }
@@ -59,24 +59,6 @@ extension SubPlotTests {
                               plots: [scatterPlot, lineGraph_func, lineGraph_data, innerSubplot])
         
         let imageSize = Size(width: 1000, height: 1000)
-        let svg_renderer = SVGRenderer()
-        try subplot.drawGraphAndOutput(size: imageSize,
-                                       fileName: svgOutputDirectory+fileName,
-                                       renderer: svg_renderer)
-        verifyImage(name: fileName, renderer: .svg)
-        #if canImport(AGGRenderer)
-        let agg_renderer = AGGRenderer()
-        try subplot.drawGraphAndOutput(size: imageSize,
-                                       fileName: aggOutputDirectory+fileName,
-                                       renderer: agg_renderer)
-        verifyImage(name: fileName, renderer: .agg)
-        #endif
-        #if canImport(QuartzRenderer)
-        let quartz_renderer = QuartzRenderer()
-        try subplot.drawGraphAndOutput(size: imageSize,
-                                       fileName: coreGraphicsOutputDirectory+fileName,
-                                       renderer: quartz_renderer)
-        verifyImage(name: fileName, renderer: .coreGraphics)
-        #endif
+        try renderAndVerify(subplot, size: imageSize, fileName: fileName)
     }
 }

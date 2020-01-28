@@ -348,6 +348,18 @@ public class QuartzRenderer: Renderer {
         context.addEllipse(in: rectBound)
         context.drawPath(using: .fill)
     }
+    
+    public func drawSolidEllipse(center c: Point,
+                                 radiusX rx: Float,
+                                 radiusY ry: Float,
+                                 fillColor: Color) {
+        let ellipse = CGMutablePath()
+        ellipse.addEllipse(in: CGRect(x: CGFloat(c.x-rx), y: CGFloat(c.y-ry), width: CGFloat(rx*2), height: CGFloat(ry*2)),
+                           transform: CGAffineTransform(translationX: CGFloat(xOffset), y: CGFloat(yOffset)))
+        context.setFillColor(fillColor.cgColor)
+        context.addPath(ellipse)
+        context.fillPath()
+    }
 
     public func drawSolidTriangle(point1: Point,
                                   point2: Point,
@@ -371,6 +383,8 @@ public class QuartzRenderer: Renderer {
 
     public func drawSolidPolygon(points: [Point],
                                  fillColor: Color) {
+        precondition(points.count > 2, "drawSolidPolygon: Cannot draw a polygon with \(points.count) points.")
+        
         let polygonPath = CGMutablePath()
         polygonPath.move(to: CGPoint(x: Double(points[0].x + xOffset), y: Double(points[0].y + yOffset)))
         for index in 1..<points.count {
@@ -405,7 +419,8 @@ public class QuartzRenderer: Renderer {
                               strokeWidth thickness: Float,
                               strokeColor: Color,
                               isDashed: Bool) {
-        guard !p.isEmpty else { return }
+        precondition(p.count > 1, "drawPlotLines: Cannot draw lines with \(p.count) points.")
+        
         for i in 0..<p.count-1 {
             drawLine(startPoint: p[i],
                      endPoint: p[i+1],
