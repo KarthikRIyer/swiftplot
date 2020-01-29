@@ -220,15 +220,11 @@ public class SVGRenderer: Renderer{
     }
 
     public func getTextLayoutSize(text: String, textSize size: Float) -> Size {
-        var width: Float = 0
-        let scaleFactor = size/100.0
-
-        for i in 0..<text.count {
-          let index =  text.index(text.startIndex, offsetBy: i)
-          guard let asciiVal = text[index].ascii else { continue }
-          width = width + Float(Self.LCARS_CHAR_SIZE_ARRAY[Int(asciiVal)])
+        let width = text.reduce(into: Float(0)) { width, character in
+            guard let asciiVal = character.ascii else { return }
+            width += Float(Self.LCARS_CHAR_SIZE_ARRAY[Int(asciiVal)])
         }
-
+        let scaleFactor = size/100.0
         return Size(width: width*scaleFactor + 25, height: size)
     }
 

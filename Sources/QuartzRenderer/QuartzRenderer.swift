@@ -43,8 +43,6 @@ public class QuartzRenderer: Renderer {
                               height: Int(imageSize.height))
             context.setFillColor(Color.white.cgColor)
             context.fill(rect)
-          self.context.setShouldSmoothFonts(false)
-//          context.setShouldAntialias(false)
         }
     }
 
@@ -66,8 +64,6 @@ public class QuartzRenderer: Renderer {
         self.context.setAllowsFontSmoothing(true)
         self.context.setShouldSmoothFonts(fontSmoothing)
         self.isExternalContext = false
-      self.context.setShouldSmoothFonts(false)
-//      context.setShouldAntialias(false)
     }
     
     /// Creates a renderer with the given external context and dimensions..
