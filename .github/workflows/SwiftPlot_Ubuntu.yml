@@ -25,4 +25,10 @@ jobs:
     - name: Build
       run: swift build -v
     - name: Run tests
-      run: swift test -v 
+      run: swift test -v
+    - name: Upload test artefacts
+      uses: actions/upload-artifact@v1
+      if: always()
+      with:
+        name: images
+        path: ./output
