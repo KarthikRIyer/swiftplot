@@ -306,68 +306,35 @@ extension Histogram: HasGraphLayout {
 
 private extension Histogram {
     
+    /// If the data is not sorted, run through each value in `data`, binary search the right bin and increment its frequency.
+    ///
+    /// Performance: O(n log(m)). n: `data.count`, m: `binFrequency.count`.
+    ///   This algorithm runs through `data` once and for each value in `data` a binary search is performed on the bins' lower x limits.
+    ///   It runs through `binFrequency` array once to get the maximum frequency.
+    ///   It get/sets `binFrequency` value `data.count` amount of times.
     func recalculateBins(series: HistogramSeries<T>,
                          binStart: T,
                          binEnd: T,
                          binInterval: T) -> (binFrequency: [Float], maxFrequency: Float) {
         var binFrequency = [Float](repeating: 0.0, count: series.bins)
-        var maximumFrequency: Float = 0
-        
-        if series.isSorted {
-            /// If `data` is sorted we can keep track of two indices for `data` and one for the `binFrequencies`.
-            /// We run through `data` by incrementing `dataHead` while the value stored at that location is below the current bin's `xUpperLimit`.
-            /// When we find the first value that is higher or equal to the current bin's upper x limit, we store the difference between `binHead` and `binTail` into the current bin.
-            /// Then we set `binTail` to `binHead`, increment `binIndex` and keep incrementing `binHead` while we don't find values higher than the next bin x upper limit.
-            ///
-            /// Performance: O(n + m). n: `data.count`, m: `binFrequency.count`.
-            ///   This algorithm iterates through `data` and `binFrequency` only once.
-            ///   It sets `binFrequency` and checks if it is the maximum frequency `binFrequency.count` amount of times.
-            var dataTail: Int = 0
-            var dataHead: Int = 0
-            let dataEndIndex = series.data.endIndex
-            var binIndex: Int = 0
-            let binEndIndex = binFrequency.endIndex
-            var xUpperLimit = binStart + T(binIndex + 1) * binInterval
-            while binIndex < binEndIndex {
-                if dataHead != dataEndIndex && series.data[dataHead] < xUpperLimit {
-                    dataHead += 1
+        let lastIndex = binFrequency.endIndex - 1
+        for value in series.data {
+            var start = 0
+            var end = lastIndex
+            var current = start + (end - start) / 2
+            while end - start > 1 {
+                if value >= binStart + T(current) * binInterval {
+                    start = current
                 } else {
-                    let count = Float(dataHead - dataTail)
-                    binFrequency[binIndex] = count
-                    maximumFrequency = max(count, maximumFrequency)
-                    dataTail = dataHead
-                    binIndex += 1
-                    if binIndex == binEndIndex {
-                        break
-                    }
-                    xUpperLimit = binStart + T(binIndex + 1) * binInterval
+                    end = current
                 }
+                current = start + (end - start) / 2
             }
-        } else {
-            /// If the data is not sorted, run through each value in `data`, binary search the right bin and increment its frequency.
-            ///
-            /// Performance: O(n log(m) + m). n: `data.count`, m: `binFrequency.count`.
-            ///   This algorithm runs through `data` once and for each value in `data` a binary search is performed on the bins' lower x limits.
-            ///   It runs through `binFrequency` array once to get the maximum frequency.
-            ///   It get/sets `binFrequency` value `data.count` amount of times.
-            let lastIndex = binFrequency.endIndex - 1
-            for value in series.data {
-                var start = 0
-                var end = lastIndex
-                var current = start + (end - start) / 2
-                while end - start > 1 {
-                    if value >= binStart + T(current) * binInterval {
-                        start = current
-                    } else {
-                        end = current
-                    }
-                    current = start + (end - start) / 2
-                }
-                
-                binFrequency[current] += 1
-            }
-            maximumFrequency = binFrequency.max() ?? 0.0
+            
+            binFrequency[current] += 1
         }
+        var maximumFrequency = binFrequency.max() ?? 0.0
+        
         if (isNormalized) {
             let factor = Float(series.data.count)*Float(binInterval)
             for index in 0..<series.bins {

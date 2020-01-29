@@ -11,27 +11,12 @@ import QuartzRenderer
 extension HistogramTests {
     
     /// Performance tests for the `recalculateBins` method on `Histogram`.
-    func testPerformanceHistogramMethodRecalculateBinsSorted() throws {
+    func testPerformanceHistogramCreateSeriesAndRecalculateBins_NonSorting() throws {
+        let histogram = Histogram<Float>(isNormalized: false, enableGrid: false)
         
-        var histogram = Histogram<Float>(isNormalized: false, enableGrid: false)
-        
-        
-        histogram.addSeries(data: histogram_step_values, bins: 50, label: "HISTOGRAM PERFORMANCE `recalculateBins` SORTED DATA")
-        
+        let histogramSeries = HistogramSeries(data: histogram_step_values, bins: 50, label: "HISTOGRAM PERFORMANCE `recalculateBins`", color: .black, histogramType: .bar)
         measure {
-            histogram.testRecalculateBins(series: histogram.histogramSeries, binStart: 40, binEnd: 160, binInterval: (160-40)/Float(histogram.histogramSeries.bins))
-        }
-    }
-    
-    func testPerformanceHistogramMethodRecalculateBins() throws {
-        var histogram = Histogram<Float>(isNormalized: false, enableGrid: false)
-        
-        
-        histogram.addSeries(data: histogram_step_values, bins: 50, label: "HISTOGRAM PERFORMANCE `recalculateBins`")
-        
-        histogram.histogramSeries.data = histogram_step_values // Sets `isSorted` to false internaly
-        measure {
-            histogram.testRecalculateBins(series: histogram.histogramSeries, binStart: 40, binEnd: 160, binInterval: (160-40)/Float(histogram.histogramSeries.bins))
+            histogram.testRecalculateBins(series: histogramSeries, binStart: 40, binEnd: 160, binInterval: (160-40)/Float(histogram.histogramSeries.bins))
         }
     }
 }
