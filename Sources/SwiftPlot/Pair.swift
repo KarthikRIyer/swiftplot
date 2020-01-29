@@ -37,6 +37,11 @@ public struct Size: Hashable {
 extension Size {
     public static let zero = Size(width: 0, height: 0)
 }
+extension Size {
+    public func swappingComponents() -> Size {
+        Size(width: height, height: width)
+    }
+}
 
 /// A Rectangle in a bottom-left coordinate space.
 ///
@@ -175,5 +180,19 @@ extension Rect {
     internal var internalXCoordinates: Range<Float> {
       let norm = normalized
       return norm.origin.x.nextUp..<norm.origin.x.nextUp + norm.size.width
+    }
+}
+
+public enum RectEdge: Equatable, Hashable, CaseIterable {
+    case left
+    case right
+    case top
+    case bottom
+    
+    var isHorizontal: Bool {
+        return self == .top || self == .bottom
+    }
+    var isVertical: Bool {
+        return self == .left || self == .right
     }
 }

@@ -6,59 +6,123 @@ public enum LegendIcon {
 }
 
 public protocol PlotElement {
-  func measure(_ renderer: Renderer) -> Size
-  func draw(_ rect: Rect, renderer: Renderer)
+    
+    /// Returns the minimum size required to display this element.
+    ///
+    /// - parameters:
+    ///		- edge:		The edge on which the element will be displayed.
+    ///		- renderer:	The renderer which will be used to draw the element. Helpful for measuring text.
+    /// - note: The return value's `width` and `height` always correspond to x and y distances, respectively.
+    ///			Rectangular elements will want to swap their horizontal widths and heights when displayed on vertical edges.
+    ///
+    func measure(edge: RectEdge, _ renderer: Renderer) -> Size
+    
+    /// Draws the element in the given `Rect`.
+    ///
+    /// - parameters:
+    ///		- rect:			The region to draw in.
+    ///		- measuredSize:	The minimum size calculated by the last call to `measure`. Helpful if the size is expensive to calculate.
+    ///     - edge:         The edge on which the element will be displayed.
+    ///		- renderer:		The renderer to use when drawing the element.
+    ///
+    func draw(_ rect: Rect, measuredSize: Size, edge: RectEdge, renderer: Renderer)
 }
-struct PaddedPlotElement<T: PlotElement>: PlotElement {
+
+/// A `PlotElement` wrapper which adds padding to an internal `PlotElement`
+///
+private struct PaddedPlotElement<T: PlotElement>: PlotElement {
     var base: T
     var padding: EdgeComponents<Float> = .zero
-    func measure(_ renderer: Renderer) -> Size {
-        var size = base.measure(renderer)
-        size.width += padding.left + padding.right
+    
+    func measure(edge: RectEdge, _ renderer: Renderer) -> Size {
+        var size = base.measure(edge: edge, renderer)
+        size.width  += padding.left + padding.right
         size.height += padding.top + padding.bottom
         return size
     }
-    func draw(_ rect: Rect, renderer: Renderer) {
-        base.draw(rect.inset(by: padding), renderer: renderer)
+    func draw(_ rect: Rect, measuredSize: Size, edge: RectEdge, renderer: Renderer) {
+        var adjustedMeasuredSize = measuredSize
+        adjustedMeasuredSize.width  -= padding.left + padding.right
+        adjustedMeasuredSize.height -= padding.top + padding.bottom
+        let adjustedRect = rect.inset(by: padding)
+        base.draw(adjustedRect, measuredSize: adjustedMeasuredSize, edge: edge, renderer: renderer)
     }
 }
 extension PlotElement {
-    func withPadding(_ padding: EdgeComponents<Float>) -> PlotElement {
+    
+    /// Returns a new `PlotElement` which adds the given padding to this `PlotElement`.
+    ///
+    public func padding(_ padding: EdgeComponents<Float>) -> PlotElement {
     	return PaddedPlotElement(base: self, padding: padding)
     }
 }
 
 public struct Label: PlotElement {
-  var text: String = ""
-  var size: Float  = 12
-  var color: Color = .black
-    
-  public func measure(_ renderer: Renderer) -> Size {
-    return renderer.getTextLayoutSize(text: text, textSize: size)
-  }
-  public func draw(_ rect: Rect, renderer: Renderer) {
-    renderer.drawText(text: text,
-                      location: rect.origin,
-                      textSize: size,
-                      color: color,
-                      strokeWidth: 1.2,
-                      angle: 0) // TODO: 90 for vertical text.
-  }
+    var text: String = ""
+    var size: Float  = 12
+    var color: Color = .black
+
+    public func measure(edge: RectEdge, _ renderer: Renderer) -> Size {
+        let hSize = renderer.getTextLayoutSize(text: text, textSize: size)
+        return edge.isHorizontal ? hSize : hSize.swappingComponents()
+    }
+    public func draw(_ rect: Rect, measuredSize: Size, edge: RectEdge, renderer: Renderer) {
+        var origin = rect.center + Point(-measuredSize.width/2, -measuredSize.height/2)
+        let angle: Float
+        if edge.isHorizontal {
+            angle = 0
+        } else {
+            angle = 90
+            origin += Point(rect.width, 0)
+        }
+        renderer.drawText(text: text, location: origin, textSize: size,
+                          color: color, strokeWidth: 1.2, angle: angle)
+    }
 }
 
+/// A container which has a value at each `RectEdge`.
 public struct EdgeComponents<T> {
     public var left: T
     public var top: T
     public var right: T
     public var bottom: T
     
-    static func all(_ value: T) -> EdgeComponents<T> {
-        EdgeComponents(left: value, top: value, right: value, bottom: value)
+    public subscript(edge: RectEdge) -> T {
+        get {
+            switch edge {
+            case .left:   return left
+            case .right:  return right
+            case .top:    return top
+            case .bottom: return bottom
+            }
+        }
+        set {
+            switch edge {
+            case .left:   left = newValue
+            case .right:  right = newValue
+            case .top:    top = newValue
+            case .bottom: bottom = newValue
+            }
+        }
     }
     
+    /// Returns an `EdgeComponents` which has the given `value` on every edge.
+    ///
+    public static func all(_ value: T) -> EdgeComponents<T> {
+        EdgeComponents(left: value, top: value, right: value, bottom: value)
+    }
+        
+    /// Returns a new `EdgeComponents` by applying the given closure to each edge.
+    ///
+    public func mapByEdge<U>(_ block: (RectEdge, T) throws -> U) rethrows -> EdgeComponents<U> {
+        EdgeComponents<U>(left: try block(.left, left), top: try block(.top, top),
+                          right: try block(.right, right), bottom: try block(.bottom, bottom))
+    }
+    
+    /// Returns a new `EdgeComponents` by applying the given closure to each edge.
+    ///
     public func map<U>(_ block: (T) throws -> U) rethrows -> EdgeComponents<U> {
-        EdgeComponents<U>(left: try block(left), top: try block(top),
-                          right: try block(right), bottom: try block(bottom))
+        try mapByEdge { _, val in try block(val) }
     }
 }
 extension EdgeComponents where T: ExpressibleByIntegerLiteral {
@@ -67,12 +131,6 @@ extension EdgeComponents where T: ExpressibleByIntegerLiteral {
 extension EdgeComponents where T: RangeReplaceableCollection {
     static var empty: Self {
         EdgeComponents(left: .init(), top: .init(), right: .init(), bottom: .init())
-    }
-    mutating func append<S>(contentsOf other: EdgeComponents<S>) where S: Sequence, S.Element == T.Element {
-        left.append(contentsOf: other.left)
-        top.append(contentsOf: other.top)
-        right.append(contentsOf: other.right)
-        bottom.append(contentsOf: other.bottom)
     }
 }
 extension Rect {
@@ -124,20 +182,20 @@ public struct GraphLayout {
         let totalSize: Size
         
         /// The region of the plot which will actually be filled with chart data.
-        var plotBorderRect: Rect
+        let plotBorderRect: Rect
         
-        var elements: EdgeComponents<[PlotElement]>
-        /// The sizes of various labels outside the chart area.
-        /// These must be measured _before_ the `plotBorderRect` can be calculated.
-        var sizes: EdgeComponents<[Size]>
-        var rects: EdgeComponents<[Rect]>
+        // TODO: Try to move this up to GraphLayout itself.
+        let elements: EdgeComponents<[PlotElement]>
         
-        var plotMarkers = PlotMarkers()
+        /// The measured sizes of the plot elements.
+        let sizes: EdgeComponents<[Size]>
+        
+        let plotMarkers: PlotMarkers
+        let legendLabels: [(String, LegendIcon)]
+        
         var xMarkersTextLocation = [Point]()
         var yMarkersTextLocation = [Point]()
         var y2MarkersTextLocation = [Point]()
-        
-        var legendLabels: [(String, LegendIcon)] = []
         var legendRect: Rect?
 
         func resolve(_ coordinate: Coordinate) -> Point {
@@ -177,7 +235,9 @@ extension GraphLayout {
         
         // 1. Calculate the plot size. To do that, we first have measure everything outside of the plot.
         let elements = makePlotElements()
-        let sizes = elements.map { edgeElements in edgeElements.map { $0.measure(renderer) } }
+        let sizes = elements.mapByEdge { edge, edgeElements -> [Size] in
+            return edgeElements.map { $0.measure(edge: edge, renderer) }
+        }
         var plotSize = calcPlotSize(totalSize: size, plotElements: sizes)
         
         // 2. Call back to the plot to lay out its data. It may ask to adjust the plot size.
@@ -185,24 +245,23 @@ extension GraphLayout {
         (drawingData as? AdjustsPlotSize).map { plotSize = adjustPlotSize(plotSize, info: $0) }
         
         // 3. Now that we have the final sizes of everything, we can calculate their locations.
-        var results = Results(totalSize: size, plotBorderRect: Rect(origin: .zero, size: plotSize),
-                              elements: elements, sizes: sizes, rects: .empty)
-        markers.map {
-            var markers = $0
-            roundMarkers(&markers)
-            results.plotMarkers = markers
-        }
-        legendInfo.map { results.legendLabels = $0 }
+        let plotRect = layoutPlotRect(plotSize: plotSize, elementSizes: sizes)
+        let roundedMarkers = markers.map { var m = $0; roundMarkers(&m); return m } ?? PlotMarkers()
         
-        layoutObjects(renderer, &results)
+        var results = Results(totalSize: size,
+                              plotBorderRect: plotRect,
+                              elements: elements,
+                              sizes: sizes,
+                              plotMarkers: roundedMarkers,
+                              legendLabels: legendInfo ?? [])
         calcMarkerTextLocations(renderer: renderer, results: &results)
         calcLegend(results.legendLabels, renderer: renderer, results: &results)
         return (drawingData, results)
     }
     
-    static let xLabelPadding: Float = 10
-    static let yLabelPadding: Float = 10
-    static let titleLabelPadding: Float = 14
+    static let xLabelPadding: Float = 12
+    static let yLabelPadding: Float = 12
+    static let titleLabelPadding: Float = 16
     
     // FIXME: To be removed. These items should already be PlotElements.
     private func makePlotElements() -> EdgeComponents<[PlotElement]> {
@@ -210,22 +269,22 @@ extension GraphLayout {
         // TODO: Currently, only labels are "PlotElements".
         if !plotLabel.xLabel.isEmpty {
             let label = Label(text: plotLabel.xLabel, size: plotLabel.size)
-                          .withPadding(.all(Self.xLabelPadding))
+                          .padding(.all(Self.xLabelPadding))
             elements.bottom.append(label)
         }
         if !plotLabel.yLabel.isEmpty {
             let label = Label(text: plotLabel.yLabel, size: plotLabel.size)
-                          .withPadding(.all(Self.yLabelPadding))
+                          .padding(.all(Self.yLabelPadding))
             elements.left.append(label)
         }
         if !plotLabel.y2Label.isEmpty {
             let label = Label(text: plotLabel.y2Label, size: plotLabel.size)
-                          .withPadding(.all(Self.yLabelPadding))
+                          .padding(.all(Self.yLabelPadding))
             elements.right.append(label)
         }
         if !plotTitle.title.isEmpty {
             let label = Label(text: plotTitle.title, size: plotTitle.size)
-                          .withPadding(.all(Self.titleLabelPadding))
+                          .padding(.all(Self.titleLabelPadding))
             elements.top.append(label)
         }
         return elements
@@ -259,16 +318,14 @@ extension GraphLayout {
         return plotSize
     }
   
-    private func layoutObjects(_ renderer: Renderer, _ results: inout Results) {
-        renderer.drawSolidRect(.init(origin: .zero, size: results.totalSize),
-                               fillColor: Color.random().withAlpha(0.5), hatchPattern: .none)
+    private func layoutPlotRect(plotSize: Size, elementSizes: EdgeComponents<[Size]>) -> Rect {
         // 1. Calculate the plotBorderRect.
         // We already have the size, so we only need to calculate the origin.
         var plotOrigin = Point.zero
         
         // Offset by the left/bottom PlotElements.
-        plotOrigin.x += results.sizes.left.reduce(into: 0) { $0 += $1.width }
-        plotOrigin.y += results.sizes.bottom.reduce(into: 0) { $0 += $1.height }
+        plotOrigin.x += elementSizes.left.reduce(into: 0) { $0 += $1.width }
+        plotOrigin.y += elementSizes.bottom.reduce(into: 0) { $0 += $1.height }
         // Offset by marker sizes (TODO: they are not PlotElements yet, so not handled above).
         let xMarkerHeight = (2 * markerTextSize) + 10 // X markers
         let yMarkerWidth  = yMarkerMaxWidth + 10      // Y markers
@@ -277,78 +334,36 @@ extension GraphLayout {
         // Offset by plot thickness.
         plotOrigin.x += plotBorder.thickness
         plotOrigin.y += plotBorder.thickness
-
-        // These are the final coordinates of the plot's internal space, so update `results`.
-        results.plotBorderRect = Rect(origin: plotOrigin, size: results.plotBorderRect.size)
-
-        // 2. Lay out the PlotElements.
-        var plotExternalRect = results.plotBorderRect
-        plotExternalRect.contract(by: -1 * plotBorder.thickness)
         
-        // Elements are laid out so that [0] is closest to the plot.
-        // Top elements.
-        var t_height: Float = 0
-        for itemSize in results.sizes.top {
-            let rect = Rect(origin: Point(plotExternalRect.minX, plotExternalRect.maxY + t_height),
-                            size: Size(width: plotExternalRect.width, height: itemSize.height))
-            results.rects.top.append(rect)
-            t_height += itemSize.height
-            renderer.drawSolidRect(rect, fillColor: Color.random().withAlpha(1), hatchPattern: .none)
-        }
-        // Bottom elements.
-        var b_height: Float = xMarkerHeight
-        for itemSize in results.sizes.bottom {
-            let rect = Rect(origin: Point(plotExternalRect.minX, plotExternalRect.minY - b_height - itemSize.height),
-                            size: Size(width: plotExternalRect.width, height: itemSize.height))
-            results.rects.bottom.append(rect)
-            b_height += itemSize.height
-            renderer.drawSolidRect(rect, fillColor: Color.random().withAlpha(1), hatchPattern: .none)
-        }
-        // Right elements.
-        var r_width: Float = results.plotMarkers.y2Markers.isEmpty ? 0 : yMarkerWidth
-        for itemSize in results.sizes.right {
-            let rect = Rect(origin: Point(plotExternalRect.maxX + r_width, plotExternalRect.minY),
-                            size: Size(width: itemSize.width, height: plotExternalRect.height))
-            results.rects.right.append(rect)
-            r_width += itemSize.width
-            renderer.drawSolidRect(rect, fillColor: Color.random().withAlpha(1), hatchPattern: .none)
-        }
-        // Left elements.
-        var l_width: Float = yMarkerWidth
-        for itemSize in results.sizes.left {
-            let rect = Rect(origin: Point(plotExternalRect.minX - l_width - itemSize.width, plotExternalRect.minY),
-                            size: Size(width: itemSize.width, height: plotExternalRect.height))
-            results.rects.left.append(rect)
-            l_width += itemSize.width
-            renderer.drawSolidRect(rect, fillColor: Color.random().withAlpha(1), hatchPattern: .none)
-        }
+        // These are the final coordinates of the plot's internal space, so update `results`.
+        return Rect(origin: plotOrigin, size: plotSize)
     }
-  
+    
     /// Makes adjustments to the layout as requested by the plot.
-  private func adjustPlotSize(_ plotSize: Size, info: AdjustsPlotSize) -> Size {
-      if info.desiredPlotSize != .zero {
-        // Validate the requested size.
-        guard info.desiredPlotSize.height <= plotSize.height,
-              info.desiredPlotSize.width <= plotSize.width else {
-                print("Size requested by plot is too large. Cannot fulfill: \(info.desiredPlotSize)")
-                return plotSize
+    private func adjustPlotSize(_ plotSize: Size, info: AdjustsPlotSize) -> Size {
+        if info.desiredPlotSize != .zero {
+            // Validate the requested size.
+            guard info.desiredPlotSize.height <= plotSize.height,
+                info.desiredPlotSize.width <= plotSize.width else {
+                    print("Size requested by plot is too large. Cannot fulfill: \(info.desiredPlotSize)")
+                    return plotSize
+            }
+            return info.desiredPlotSize
         }
-        return info.desiredPlotSize
-      }
-      return plotSize
+        return plotSize
     }
-  
+    
     /// Rounds the given markers to integer pixel locations, for sharper gridlines.
     private func roundMarkers(_ markers: inout PlotMarkers) {
-//      for i in markers.xMarkers.indices {
-//        markers.xMarkers[i].round(.down)
-//      }
-//      for i in markers.yMarkers.indices {
-//        markers.yMarkers[i].round(.down)
-//      }
-//      for i in markers.y2Markers.indices {
-//        markers.y2Markers[i].round(.down)
-//      }
+        //      for i in markers.xMarkers.indices {
+        //        markers.xMarkers[i].round(.down)
+        //      }
+        //      for i in markers.yMarkers.indices {
+        //        markers.yMarkers[i].round(.down)
+        //      }
+        //      for i in markers.y2Markers.indices {
+        //        markers.y2Markers[i].round(.down)
+        //      }
     }
     
     private func calcMarkerTextLocations(renderer: Renderer, results: inout Results) {
@@ -429,6 +444,13 @@ extension GraphLayout {
 }
 
 // Drawing.
+fileprivate var debuggingEnabled = false
+extension Renderer {
+    var debug: Renderer? {
+        guard debuggingEnabled else { _onFastPath(); return nil }
+        return self
+    }
+}
 
 extension GraphLayout {
     
@@ -449,23 +471,61 @@ extension GraphLayout {
         if drawsGridOverForeground {
           drawGrid(results: results, renderer: renderer)
         }
-        drawPlotElements(results: results, renderer: renderer)
+        drawPlotElements(results.elements, plotRect: results.plotBorderRect,
+                         measuredSizes: results.sizes, renderer: renderer)
         drawLegend(results.legendLabels, results: results, renderer: renderer)
         drawAnnotations(resolver: results, renderer: renderer)
     }
     
-    private func drawPlotElements(results: Results, renderer: Renderer) {
-        for (idx, plotElement) in results.elements.left.enumerated() {
-            plotElement.draw(results.rects.left[idx], renderer: renderer)
+    private func drawPlotElements(_ plotElements: EdgeComponents<[PlotElement]>, plotRect: Rect,
+                                  measuredSizes: EdgeComponents<[Size]>, renderer: Renderer) {
+        
+        var plotExternalRect = plotRect
+        plotExternalRect.contract(by: -1 * plotBorder.thickness)
+        
+        let xMarkerHeight = (2 * markerTextSize) + 10 // X markers
+        let yMarkerWidth  = yMarkerMaxWidth + 10      // Y markers
+        
+        // Elements are laid out so that [0] is closest to the plot.
+        // Top elements.
+        var t_height: Float = 0
+        for (item, idx) in zip(plotElements.top, plotElements.top.indices) {
+            let itemSize = measuredSizes.top[idx]
+            let rect = Rect(origin: Point(plotExternalRect.minX, plotExternalRect.maxY + t_height),
+                            size: Size(width: plotExternalRect.width, height: itemSize.height))
+            t_height += itemSize.height
+            renderer.debug?.drawSolidRect(rect, fillColor: Color.random().withAlpha(1), hatchPattern: .none)
+            item.draw(rect, measuredSize: itemSize, edge: .top, renderer: renderer)
         }
-        for (idx, plotElement) in results.elements.top.enumerated() {
-            plotElement.draw(results.rects.top[idx], renderer: renderer)
+        // Bottom elements.
+        var b_height: Float = xMarkerHeight
+        for (item, idx) in zip(plotElements.bottom, plotElements.bottom.indices) {
+            let itemSize = measuredSizes.bottom[idx]
+            let rect = Rect(origin: Point(plotExternalRect.minX, plotExternalRect.minY - b_height - itemSize.height),
+                            size: Size(width: plotExternalRect.width, height: itemSize.height))
+            b_height += itemSize.height
+            renderer.debug?.drawSolidRect(rect, fillColor: Color.random().withAlpha(1), hatchPattern: .none)
+            item.draw(rect, measuredSize: itemSize, edge: .bottom, renderer: renderer)
         }
-        for (idx, plotElement) in results.elements.right.enumerated() {
-            plotElement.draw(results.rects.right[idx], renderer: renderer)
+        // Right elements.
+        var r_width: Float = yMarkerWidth //results.plotMarkers.y2Markers.isEmpty ? 0 : yMarkerWidth
+        for (item, idx) in zip(plotElements.right, plotElements.right.indices) {
+            let itemSize = measuredSizes.right[idx]
+            let rect = Rect(origin: Point(plotExternalRect.maxX + r_width, plotExternalRect.minY),
+                            size: Size(width: itemSize.width, height: plotExternalRect.height))
+            r_width += itemSize.width
+            renderer.debug?.drawSolidRect(rect, fillColor: Color.random().withAlpha(1), hatchPattern: .none)
+            item.draw(rect, measuredSize: itemSize, edge: .right, renderer: renderer)
         }
-        for (idx, plotElement) in results.elements.bottom.enumerated() {
-            plotElement.draw(results.rects.bottom[idx], renderer: renderer)
+        // Left elements.
+        var l_width: Float = yMarkerWidth
+        for (item, idx) in zip(plotElements.left, plotElements.left.indices) {
+            let itemSize = measuredSizes.left[idx]
+            let rect = Rect(origin: Point(plotExternalRect.minX - l_width - itemSize.width, plotExternalRect.minY),
+                            size: Size(width: itemSize.width, height: plotExternalRect.height))
+            l_width += itemSize.width
+            renderer.debug?.drawSolidRect(rect, fillColor: Color.random().withAlpha(1), hatchPattern: .none)
+            item.draw(rect, measuredSize: itemSize, edge: .left, renderer: renderer)
         }
     }
     
