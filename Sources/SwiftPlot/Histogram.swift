@@ -328,7 +328,7 @@ private extension Histogram {
             var binIndex: Int = 0
             let binEndIndex = binFrequency.endIndex
             var xUpperLimit = binStart + T(binIndex + 1) * binInterval
-            while true {
+            while binIndex < binEndIndex {
                 if dataHead != dataEndIndex && series.data[dataHead] < xUpperLimit {
                     dataHead += 1
                 } else {
