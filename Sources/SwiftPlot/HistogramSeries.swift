@@ -1,7 +1,5 @@
 public struct HistogramSeries<T> where T: Comparable {
-    public var data = [T]() { didSet { isSorted = false } }
-    /// `isSorted`: if `data` is undeniably sorted. Set to false if the user sets `data` manually.
-    internal var isSorted: Bool = false
+    public var data = [T]()
     public var bins: Int = 0
     public var label = ""
     public var color: Color = .lightBlue
@@ -12,8 +10,7 @@ public struct HistogramSeries<T> where T: Comparable {
                 label: String,
                 color: Color,
                 histogramType: HistogramSeriesOptions.HistogramType) {
-        self.data = data.sorted()
-        self.isSorted = true
+        self.data = data
         self.bins = bins
         self.label = label
         self.color = color
