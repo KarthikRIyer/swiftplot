@@ -58,8 +58,7 @@ extension HistogramTests {
         ("testHistogramStackedStepLineJoins", testHistogramStackedStepLineJoins),
         ("testHistogramStackedStepOffset", testHistogramStackedStepOffset),
         ("testHistogramStep", testHistogramStep),
-        ("testPerformanceHistogramMethodRecalculateBins", testPerformanceHistogramMethodRecalculateBins),
-        ("testPerformanceHistogramMethodRecalculateBinsSorted", testPerformanceHistogramMethodRecalculateBinsSorted),
+        ("testPerformanceHistogramCreateSeriesAndRecalculateBins_NonSorting", testPerformanceHistogramCreateSeriesAndRecalculateBins_NonSorting),
     ]
 }
 
