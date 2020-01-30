@@ -94,8 +94,8 @@ extension BarGraph: HasGraphLayout {
         var stackSeries_scaledValues = [[Pair<Float,Float>]]()
         var scaleY: Float = 1
         var scaleX: Float = 1
-        var barWidth : Int = 0
-        var origin = zeroPoint
+        var barWidth: Int = 0
+        var origin: Point = .zero
     }
     
     // functions implementing plotting logic
@@ -136,7 +136,7 @@ extension BarGraph: HasGraphLayout {
             }
 
             if (minimumY >= U(0)) {
-                results.origin = zeroPoint
+                results.origin = .zero
                 minimumY = U(0)
             }
             else{
@@ -226,7 +226,7 @@ extension BarGraph: HasGraphLayout {
             }
 
             if minimumX >= U(0) {
-                results.origin = zeroPoint
+                results.origin = .zero
                 minimumX = U(0)
             }
             else{
