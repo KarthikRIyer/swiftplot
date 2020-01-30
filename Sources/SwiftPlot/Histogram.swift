@@ -90,11 +90,25 @@ extension Histogram: HasGraphLayout {
         var results = DrawingData()
         var markers = PlotMarkers()
         
-        var minimumX = histogramSeries.data.first!
-        var maximumX = histogramSeries.data.last!
+        // TODO: Handle `histogramSeries.data` being empty and fix this
+        // because we are going through `histogram.data` twice right now
+        // for each series we have...
+        /// We were depending on `histogram.data` being sorted to get the `minimumX` and `maximumX`
+        /// by getting the `.first`and `.last` element. This led to bugs down the line where it is expected
+        /// that `minimumX < maximumX`. So this is the workaround for now.
+        ///
+        /// This was added as part of PR #113
+        guard var minimumX = histogramSeries.data.min(),
+            var maximumX = histogramSeries.data.max() else {
+                fatalError("Histogram: (temporary) We are not handling the case where the user supplied an empty array.")
+        }
+        
         for series in histogramStackSeries {
-            minimumX = min(minimumX, series.data.first!)
-            maximumX = max(maximumX, series.data.last!)
+            guard let minX = series.data.min(), let maxX = series.data.max() else {
+                    fatalError("Histogram: (temporary) We are not handling the case where the user supplied an empty array.")
+            }
+            minimumX = min(minimumX, minX)
+            maximumX = max(maximumX, maxX)
         }
         minimumX = T(roundFloor10(Float(minimumX)))
         maximumX = T(roundCeil10(Float(maximumX)))
