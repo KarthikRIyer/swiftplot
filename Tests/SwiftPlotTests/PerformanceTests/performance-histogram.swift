@@ -1,17 +1,17 @@
 import XCTest
 @testable import SwiftPlot
-import SVGRenderer
-#if canImport(AGGRenderer)
-import AGGRenderer
-#endif
-#if canImport(QuartzRenderer)
-import QuartzRenderer
-#endif
+//import SVGRenderer
+//#if canImport(AGGRenderer)
+//import AGGRenderer
+//#endif
+//#if canImport(QuartzRenderer)
+//import QuartzRenderer
+//#endif
 
-extension HistogramTests {
+extension PerformanceTests {
     
-    /// Performance tests for the `recalculateBins` method on `Histogram`.
-    func testPerformanceHistogramCreateSeriesAndRecalculateBins_NonSorting() throws {
+    /// Performance tests for the `Histogram.recalculateBins`.
+    func testPerformanceHistogramRecalculateBins() throws {
         let histogram = Histogram<Float>(isNormalized: false, enableGrid: false)
         
         let histogramSeries = HistogramSeries(data: histogram_step_values, bins: 50, label: "HISTOGRAM PERFORMANCE `recalculateBins`", color: .black, histogramType: .bar)
