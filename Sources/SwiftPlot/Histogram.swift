@@ -90,9 +90,9 @@ extension Histogram: HasGraphLayout {
         var results = DrawingData()
         var markers = PlotMarkers()
         
-        // TODO: Handle `histogramSeries.data` being empty and fix this
-        // because we are going through `histogram.data` twice right now
-        // for each series we have...
+        // FIXME: Handle `histogramSeries.data` being empty.
+        // TODO: (Performance) Fix this because we are going through
+        // the data twice right now for each series we have...
         /// We were depending on `histogram.data` being sorted to get the `minimumX` and `maximumX`
         /// by getting the `.first`and `.last` element. This led to bugs down the line where it is expected
         /// that `minimumX < maximumX`. So this is the workaround for now.
