@@ -37,7 +37,7 @@ public struct GraphLayout {
   }
   var markerLabelAlignment = MarkerLabelAlignment.atMarker
     
-    struct Results : CoordinateResolver {
+    struct LayoutPlan : CoordinateResolver {
         /// The size these results have been calculated for; the entire size of the plot.
         let totalSize: Size
         
@@ -83,15 +83,8 @@ public struct GraphLayout {
 
 extension GraphLayout {
     
-    // TODO: refactor "calculateMarkers":
-    // - Should be called "layoutContent" or something like that.
-    // - PlotMarkers return value should be an array of `LayoutComponent`s.
-    // - Legend info should be handled by an annotation.
-    // - Possibly wrap T inside `Results` (as a generic parameter).
-    // - Rename `Results` to `LayoutPlan` or something like that.
-    
     func layout<T>(size: Size, renderer: Renderer,
-                   calculateMarkers: (Size)->(T, PlotMarkers?, [(String, LegendIcon)]?) ) -> (T, Results) {
+                   layoutContent: (Size)->(T, PlotMarkers?, [(String, LegendIcon)]?) ) -> (T, LayoutPlan) {
         
         // 1. Calculate the plot size. To do that, we first have measure everything outside of the plot.
         let components = makeLayoutComponents()
@@ -101,21 +94,21 @@ extension GraphLayout {
         var plotSize = calcPlotSize(totalSize: size, componentSizes: sizes)
         
         // 2. Call back to the plot to lay out its data. It may ask to adjust the plot size.
-        let (drawingData, markers, legendInfo) = calculateMarkers(plotSize)
+        let (drawingData, markers, legendInfo) = layoutContent(plotSize)
         (drawingData as? AdjustsPlotSize).map { plotSize = adjustPlotSize(plotSize, info: $0) }
         
         // 3. Now that we have the final sizes of everything, we can calculate their locations.
         let plotRect = layoutPlotRect(plotSize: plotSize, componentSizes: sizes)
         let roundedMarkers = markers.map { var m = $0; roundMarkers(&m); return m } ?? PlotMarkers()
         
-        var results = Results(totalSize: size,
-                              plotBorderRect: plotRect,
-                              components: components,
-                              sizes: sizes,
-                              plotMarkers: roundedMarkers,
-                              legendLabels: legendInfo ?? [])
-        calcMarkerTextLocations(renderer: renderer, results: &results)
-        calcLegend(results.legendLabels, renderer: renderer, results: &results)
+        var results = LayoutPlan(totalSize: size,
+                                 plotBorderRect: plotRect,
+                                 components: components,
+                                 sizes: sizes,
+                                 plotMarkers: roundedMarkers,
+                                 legendLabels: legendInfo ?? [])
+        calcMarkerTextLocations(renderer: renderer, plan: &results)
+        calcLegend(results.legendLabels, renderer: renderer, plan: &results)
         return (drawingData, results)
     }
     
@@ -226,26 +219,26 @@ extension GraphLayout {
         //      }
     }
     
-    private func calcMarkerTextLocations(renderer: Renderer, results: inout Results) {
+    private func calcMarkerTextLocations(renderer: Renderer, plan: inout LayoutPlan) {
         
-        for i in 0..<results.plotMarkers.xMarkers.count {
-            let textWidth = renderer.getTextWidth(text: results.plotMarkers.xMarkersText[i], textSize: markerTextSize)
-            let markerLocation = results.plotMarkers.xMarkers[i]
+        for i in 0..<plan.plotMarkers.xMarkers.count {
+            let textWidth = renderer.getTextWidth(text: plan.plotMarkers.xMarkersText[i], textSize: markerTextSize)
+            let markerLocation = plan.plotMarkers.xMarkers[i]
             var textLocation   = Point(0, -2.0 * markerTextSize)
             switch markerLabelAlignment {
             case .atMarker:
               textLocation.x = markerLocation - (textWidth/2)
             case .betweenMarkers:
               let nextMarkerLocation: Float
-              if i < results.plotMarkers.xMarkers.endIndex - 1 {
-                nextMarkerLocation = results.plotMarkers.xMarkers[i + 1]
+              if i < plan.plotMarkers.xMarkers.endIndex - 1 {
+                nextMarkerLocation = plan.plotMarkers.xMarkers[i + 1]
               } else {
-                nextMarkerLocation = results.plotBorderRect.width
+                nextMarkerLocation = plan.plotBorderRect.width
               }
               let midpoint = markerLocation + (nextMarkerLocation - markerLocation)/2
               textLocation.x = midpoint - (textWidth/2)
             }
-            results.xMarkersTextLocation.append(textLocation)
+            plan.xMarkersTextLocation.append(textLocation)
         }
       
         /// Vertically aligns the label and returns the optimal Y coordinate to draw at.
@@ -259,33 +252,33 @@ extension GraphLayout {
             if index < markers.endIndex - 1 {
               nextMarkerLocation = markers[index + 1]
             } else {
-              nextMarkerLocation = results.plotBorderRect.height
+              nextMarkerLocation = plan.plotBorderRect.height
             }
             let midpoint = markerLocation + (nextMarkerLocation - markerLocation)/2
             return midpoint - (textSize.height/2)
           }
         }
       
-        for i in 0..<results.plotMarkers.yMarkers.count {
-            var textSize = renderer.getTextLayoutSize(text: results.plotMarkers.yMarkersText[i],
+        for i in 0..<plan.plotMarkers.yMarkers.count {
+            var textSize = renderer.getTextLayoutSize(text: plan.plotMarkers.yMarkersText[i],
                                                       textSize: markerTextSize)
             textSize.width = min(textSize.width, yMarkerMaxWidth)
             var textLocation = Point(-textSize.width - 8, 0)
-            textLocation.y = alignYLabel(markers: results.plotMarkers.yMarkers, index: i, textSize: textSize)
-            results.yMarkersTextLocation.append(textLocation)
+            textLocation.y = alignYLabel(markers: plan.plotMarkers.yMarkers, index: i, textSize: textSize)
+            plan.yMarkersTextLocation.append(textLocation)
         }
         
-        for i in 0..<results.plotMarkers.y2Markers.count {
-            var textSize = renderer.getTextLayoutSize(text: results.plotMarkers.y2MarkersText[i],
+        for i in 0..<plan.plotMarkers.y2Markers.count {
+            var textSize = renderer.getTextLayoutSize(text: plan.plotMarkers.y2MarkersText[i],
                                                       textSize: markerTextSize)
             textSize.width = min(textSize.width, yMarkerMaxWidth)
-            var textLocation = Point(results.plotBorderRect.width + 8, 0)
-            textLocation.y = alignYLabel(markers: results.plotMarkers.y2Markers, index: i, textSize: textSize)
-            results.y2MarkersTextLocation.append(textLocation)
+            var textLocation = Point(plan.plotBorderRect.width + 8, 0)
+            textLocation.y = alignYLabel(markers: plan.plotMarkers.y2Markers, index: i, textSize: textSize)
+            plan.y2MarkersTextLocation.append(textLocation)
         }
     }
     
-    private func calcLegend(_ labels: [(String, LegendIcon)], renderer: Renderer, results: inout Results) {
+    private func calcLegend(_ labels: [(String, LegendIcon)], renderer: Renderer, plan: inout LayoutPlan) {
         guard !labels.isEmpty else { return }
         let maxWidth = labels.lazy.map {
             renderer.getTextWidth(text: $0.0, textSize: self.plotLegend.textSize)
@@ -294,9 +287,9 @@ extension GraphLayout {
         let legendWidth  = maxWidth + 3.5 * plotLegend.textSize
         let legendHeight = (Float(labels.count)*2.0 + 1.0) * plotLegend.textSize
         
-        let legendTopLeft = Point(results.plotBorderRect.minX + Float(20),
-                                  results.plotBorderRect.maxY - Float(20))
-        results.legendRect = Rect(
+        let legendTopLeft = Point(plan.plotBorderRect.minX + Float(20),
+                                  plan.plotBorderRect.maxY - Float(20))
+        plan.legendRect = Rect(
             origin: legendTopLeft,
             size: Size(width: legendWidth, height: -legendHeight)
         ).normalized
@@ -314,27 +307,27 @@ extension Renderer {
 
 extension GraphLayout {
     
-    fileprivate func drawBackground(results: Results, renderer: Renderer) {
-        renderer.drawSolidRect(Rect(origin: .zero, size: results.totalSize),
+    fileprivate func drawBackground(_ plan: LayoutPlan, renderer: Renderer) {
+        renderer.drawSolidRect(Rect(origin: .zero, size: plan.totalSize),
                                fillColor: backgroundColor, hatchPattern: .none)
         if let plotBackgroundColor = plotBackgroundColor {
-            renderer.drawSolidRect(results.plotBorderRect, fillColor: plotBackgroundColor, hatchPattern: .none)
+            renderer.drawSolidRect(plan.plotBorderRect, fillColor: plotBackgroundColor, hatchPattern: .none)
         }
         if !drawsGridOverForeground {
-          drawGrid(results: results, renderer: renderer)
+          drawGrid(plan, renderer: renderer)
         }
-        drawBorder(results: results, renderer: renderer)
-        drawMarkers(results: results, renderer: renderer)
+        drawBorder(plan, renderer: renderer)
+        drawMarkers(plan, renderer: renderer)
     }
     
-    fileprivate func drawForeground(results: Results, renderer: Renderer) {
+    fileprivate func drawForeground(_ plan: LayoutPlan, renderer: Renderer) {
         if drawsGridOverForeground {
-          drawGrid(results: results, renderer: renderer)
+          drawGrid(plan, renderer: renderer)
         }
-        drawLayoutComponents(results.components, plotRect: results.plotBorderRect,
-                             measuredSizes: results.sizes, renderer: renderer)
-        drawLegend(results.legendLabels, results: results, renderer: renderer)
-        drawAnnotations(resolver: results, renderer: renderer)
+        drawLayoutComponents(plan.components, plotRect: plan.plotBorderRect,
+                             measuredSizes: plan.sizes, renderer: renderer)
+        drawLegend(plan.legendLabels, plan: plan, renderer: renderer)
+        drawAnnotations(resolver: plan, renderer: renderer)
     }
     
     private func drawLayoutComponents(_ components: EdgeComponents<[LayoutComponent]>, plotRect: Rect,
@@ -389,21 +382,21 @@ extension GraphLayout {
         }
     }
     
-    private func drawBorder(results: Results, renderer: Renderer) {
+    private func drawBorder(_ plan: LayoutPlan, renderer: Renderer) {
       // The border should be drawn on the _outside_ of `plotBorderRect`.
-        var rect = results.plotBorderRect
+        var rect = plan.plotBorderRect
         rect.contract(by: -plotBorder.thickness/2)
         renderer.drawRect(rect,
                           strokeWidth: plotBorder.thickness,
                           strokeColor: plotBorder.color)
     }
     
-    private func drawGrid(results: Results, renderer: Renderer) {
+    private func drawGrid(_ plan: LayoutPlan, renderer: Renderer) {
         guard enablePrimaryAxisGrid || enablePrimaryAxisGrid else { return }
-        let rect = results.plotBorderRect
-        for index in 0..<results.plotMarkers.xMarkers.count {
-          let p1 = Point(results.plotMarkers.xMarkers[index] + rect.minX, rect.minY)
-          let p2 = Point(results.plotMarkers.xMarkers[index] + rect.minX, rect.maxY)
+        let rect = plan.plotBorderRect
+        for index in 0..<plan.plotMarkers.xMarkers.count {
+          let p1 = Point(plan.plotMarkers.xMarkers[index] + rect.minX, rect.minY)
+          let p2 = Point(plan.plotMarkers.xMarkers[index] + rect.minX, rect.maxY)
           guard rect.internalXCoordinates.contains(p1.x),
                 rect.internalXCoordinates.contains(p2.x) else { continue }
           renderer.drawLine(startPoint: p1,
@@ -414,9 +407,9 @@ extension GraphLayout {
         }
     
         if (enablePrimaryAxisGrid) {
-            for index in 0..<results.plotMarkers.yMarkers.count {
-              let p1 = Point(rect.minX, results.plotMarkers.yMarkers[index] + rect.minY)
-              let p2 = Point(rect.maxX, results.plotMarkers.yMarkers[index] + rect.minY)
+            for index in 0..<plan.plotMarkers.yMarkers.count {
+              let p1 = Point(rect.minX, plan.plotMarkers.yMarkers[index] + rect.minY)
+              let p2 = Point(rect.maxX, plan.plotMarkers.yMarkers[index] + rect.minY)
               guard rect.internalYCoordinates.contains(p1.y),
                     rect.internalYCoordinates.contains(p2.y) else { continue }
               renderer.drawLine(startPoint: p1,
@@ -427,9 +420,9 @@ extension GraphLayout {
             }
         }
         if (enableSecondaryAxisGrid) {
-            for index in 0..<results.plotMarkers.y2Markers.count {
-              let p1 = Point(rect.minX, results.plotMarkers.y2Markers[index] + rect.minY)
-              let p2 = Point(rect.maxX, results.plotMarkers.y2Markers[index] + rect.minY)
+            for index in 0..<plan.plotMarkers.y2Markers.count {
+              let p1 = Point(rect.minX, plan.plotMarkers.y2Markers[index] + rect.minY)
+              let p2 = Point(rect.maxX, plan.plotMarkers.y2Markers[index] + rect.minY)
               guard rect.internalYCoordinates.contains(p1.y),
                     rect.internalYCoordinates.contains(p2.y) else { continue }
               renderer.drawLine(startPoint: p1,
@@ -441,54 +434,54 @@ extension GraphLayout {
         }
     }
 
-    private func drawMarkers(results: Results, renderer: Renderer) {
-        let rect = results.plotBorderRect
+    private func drawMarkers(_ plan: LayoutPlan, renderer: Renderer) {
+        let rect = plan.plotBorderRect
         let border = plotBorder.thickness
-        for index in 0..<results.plotMarkers.xMarkers.count {
-            let p1 = Point(results.plotMarkers.xMarkers[index], -border - 6) + rect.origin
-            let p2 = Point(results.plotMarkers.xMarkers[index], -border) + rect.origin
+        for index in 0..<plan.plotMarkers.xMarkers.count {
+            let p1 = Point(plan.plotMarkers.xMarkers[index], -border - 6) + rect.origin
+            let p2 = Point(plan.plotMarkers.xMarkers[index], -border) + rect.origin
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
                               strokeWidth: markerThickness,
                               strokeColor: plotBorder.color,
                               isDashed: false)
-            renderer.drawText(text: results.plotMarkers.xMarkersText[index],
-                              location: results.xMarkersTextLocation[index] + rect.origin + Pair(0, -border),
+            renderer.drawText(text: plan.plotMarkers.xMarkersText[index],
+                              location: plan.xMarkersTextLocation[index] + rect.origin + Pair(0, -border),
                               textSize: markerTextSize,
                               color: plotBorder.color,
                               strokeWidth: 0.7,
                               angle: 0)
         }
 
-        for index in 0..<results.plotMarkers.yMarkers.count {
-            let p1 = Point(-border - 6, results.plotMarkers.yMarkers[index]) + rect.origin
-            let p2 = Point(-border, results.plotMarkers.yMarkers[index]) + rect.origin
+        for index in 0..<plan.plotMarkers.yMarkers.count {
+            let p1 = Point(-border - 6, plan.plotMarkers.yMarkers[index]) + rect.origin
+            let p2 = Point(-border, plan.plotMarkers.yMarkers[index]) + rect.origin
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
                               strokeWidth: markerThickness,
                               strokeColor: plotBorder.color,
                               isDashed: false)
-            renderer.drawText(text: results.plotMarkers.yMarkersText[index],
-                              location: results.yMarkersTextLocation[index] + rect.origin + Pair(-border, 0),
+            renderer.drawText(text: plan.plotMarkers.yMarkersText[index],
+                              location: plan.yMarkersTextLocation[index] + rect.origin + Pair(-border, 0),
                               textSize: markerTextSize,
                               color: plotBorder.color,
                               strokeWidth: 0.7,
                               angle: 0)
         }
         
-        if !results.plotMarkers.y2Markers.isEmpty {
-            for index in 0..<results.plotMarkers.y2Markers.count {
-                let p1 = Point(results.plotBorderRect.width + border,
-                               (results.plotMarkers.y2Markers[index])) + rect.origin
-                let p2 = Point(results.plotBorderRect.width + border + 6,
-                               (results.plotMarkers.y2Markers[index])) + rect.origin
+        if !plan.plotMarkers.y2Markers.isEmpty {
+            for index in 0..<plan.plotMarkers.y2Markers.count {
+                let p1 = Point(plan.plotBorderRect.width + border,
+                               (plan.plotMarkers.y2Markers[index])) + rect.origin
+                let p2 = Point(plan.plotBorderRect.width + border + 6,
+                               (plan.plotMarkers.y2Markers[index])) + rect.origin
                 renderer.drawLine(startPoint: p1,
                                   endPoint: p2,
                                   strokeWidth: markerThickness,
                                   strokeColor: plotBorder.color,
                                   isDashed: false)
-                renderer.drawText(text: results.plotMarkers.y2MarkersText[index],
-                                  location: results.y2MarkersTextLocation[index]  + rect.origin + Pair(border, 0),
+                renderer.drawText(text: plan.plotMarkers.y2MarkersText[index],
+                                  location: plan.y2MarkersTextLocation[index]  + rect.origin + Pair(border, 0),
                                   textSize: markerTextSize,
                                   color: plotBorder.color,
                                   strokeWidth: 0.7,
@@ -497,9 +490,9 @@ extension GraphLayout {
         }
     }
     
-    private func drawLegend(_ entries: [(String, LegendIcon)], results: Results, renderer: Renderer) {
+    private func drawLegend(_ entries: [(String, LegendIcon)], plan: LayoutPlan, renderer: Renderer) {
         
-        guard let legendRect = results.legendRect else { return }
+        guard let legendRect = plan.legendRect else { return }
         renderer.drawSolidRectWithBorder(legendRect,
                                          strokeWidth: plotLegend.borderThickness,
                                          fillColor: plotLegend.backgroundColor,
@@ -624,16 +617,16 @@ extension HasGraphLayout {
 extension Plot where Self: HasGraphLayout {
     
     public func drawGraph(size: Size, renderer: Renderer) {
-        let (drawingData, results) = layout.layout(size: size, renderer: renderer) {
+        let (drawingData, plan) = layout.layout(size: size, renderer: renderer) {
             size -> (DrawingData, PlotMarkers?, [(String, LegendIcon)]?) in
             let tup = layoutData(size: size, renderer: renderer)
             return (tup.0, tup.1, self.legendLabels)
         }
-        layout.drawBackground(results: results, renderer: renderer)
-        renderer.withAdditionalOffset(results.plotBorderRect.origin) { renderer in
-            drawData(drawingData, size: results.plotBorderRect.size, renderer: renderer)
+        layout.drawBackground(plan, renderer: renderer)
+        renderer.withAdditionalOffset(plan.plotBorderRect.origin) { renderer in
+            drawData(drawingData, size: plan.plotBorderRect.size, renderer: renderer)
         }
-        layout.drawForeground(results: results, renderer: renderer)
+        layout.drawForeground(plan, renderer: renderer)
     }
 
     public mutating func addAnnotation(annotation: Annotation) {
