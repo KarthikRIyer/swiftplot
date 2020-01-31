@@ -6,12 +6,12 @@
 
 /// A heatmap is a plot of 2-dimensional data, where each value is assigned a colour value along a gradient.
 ///
-/// Use the `adapter` property to control how values are graded. For example, if your data structure has
+/// Use the `mapping` property to control how values are graded. For example, if your data structure has
 /// a salient integer or floating-point property, `.keyPath` will allow you to grade values by that property:
 ///
 /// ```swift
 /// let data: [[MyObject]] = ...
-/// data.plots.heatmap(adapter: .keyPath(\.importantProperty)) {
+/// data.plots.heatmap(mapping: .keyPath(\.importantProperty)) {
 ///   $0.colorMap = .fiveColorHeatmap
 /// }
 /// ```
@@ -22,15 +22,16 @@ public struct Heatmap<SeriesType> where SeriesType: Sequence, SeriesType.Element
   public var layout = GraphLayout()
   
   public var values: SeriesType
-  public var adapter: Adapters.Heatmap<Element>
+  public var mapping: Mapping.Heatmap<Element>
   public var colorMap: ColorMap = .fiveColorHeatMap
   
-  public init(values: SeriesType, interpolator: Adapters.Heatmap<Element>) {
+    public init(_ values: SeriesType, mapping: Mapping.Heatmap<Element>, style: (inout Self)->Void = { _ in }) {
     self.values = values
-    self.adapter = interpolator
+    self.mapping = mapping
     self.layout.drawsGridOverForeground = true
     self.layout.markerLabelAlignment = .betweenMarkers
     self.showGrid = false
+    style(&self)
   }
 }
 
@@ -74,8 +75,8 @@ extension Heatmap: HasGraphLayout, Plot {
     for row in values {
       var columnsInRow = 0
       for column in row {
-        maxValue = adapter.compare(maxValue, column) ? column : maxValue
-        minValue = adapter.compare(minValue, column) ? minValue : column
+        maxValue = mapping.compare(maxValue, column) ? column : maxValue
+        minValue = mapping.compare(minValue, column) ? minValue : column
         columnsInRow += 1
       }
       maxColumns = max(maxColumns, columnsInRow)
@@ -127,7 +128,7 @@ extension Heatmap: HasGraphLayout, Plot {
                         Float(rowIdx) * data.itemSize.height),
           size: data.itemSize
         )
-        let offset = adapter.interpolate(element, range.min, range.max)
+        let offset = mapping.interpolate(element, range.min, range.max)
         let color = colorMap.colorForOffset(offset)
         renderer.drawSolidRect(rect, fillColor: color, hatchPattern: .none)
 //        renderer.drawText(text: String(describing: element),
@@ -141,8 +142,23 @@ extension Heatmap: HasGraphLayout, Plot {
   }
 }
 
-// MARK: - SequencePlots API.
+// MARK: - Convenience API.
 
+extension Heatmap where HeatmapConstraints.IsFloat<Element>: Any {
+    
+    public init(_ values: SeriesType, style: (inout Self)->Void = { _ in }) {
+        self.init(values, mapping: .linear, style: style)
+    }
+}
+
+extension Heatmap where HeatmapConstraints.IsInteger<Element>: Any {
+    
+    public init(_ values: SeriesType, style: (inout Self)->Void = { _ in }) {
+        self.init(values, mapping: .linear, style: style)
+    }
+}
+
+// SequencePlots.
 // 2D Datasets.
 
 extension SequencePlots where Base.Element: Sequence {
@@ -150,45 +166,41 @@ extension SequencePlots where Base.Element: Sequence {
     /// Returns a heatmap of values from this 2-dimensional sequence.
     ///
     /// - parameters:
-    ///   	- adapter:	A function or `KeyPath` which maps values to a continuum between 0 and 1.
+    ///   	- mapping:	A function or `KeyPath` which maps values to a continuum between 0 and 1.
     ///		- style:	A closure which applies a style to the heatmap.
     /// - returns:		A heatmap plot of the sequence's inner items.
     ///
     public func heatmap(
-        adapter: Adapters.Heatmap<Base.Element.Element>,
+        mapping: Mapping.Heatmap<Base.Element.Element>,
         style: (inout Heatmap<Base>)->Void = { _ in }
     ) -> Heatmap<Base> {
-        var graph = Heatmap(values: base, interpolator: adapter)
-        style(&graph)
-        return graph
+        return Heatmap(base, mapping: mapping, style: style)
     }
 }
 
-extension SequencePlots where Base.Element: Sequence,
-Base.Element.Element: Strideable, Base.Element.Element.Stride: BinaryFloatingPoint {
+extension SequencePlots where Base.Element: Sequence, HeatmapConstraints.IsFloat<Base.Element.Element>: Any {
     
     /// Returns a heatmap of values from this 2-dimensional sequence.
     ///
     public func heatmap(
         style: (inout Heatmap<Base>)->Void = { _ in }
     ) -> Heatmap<Base> {
-        return heatmap(adapter: .linear, style: style)
+        return heatmap(mapping: .linear, style: style)
     }
 }
 
-extension SequencePlots where Base.Element: Sequence,
-Base.Element.Element: FixedWidthInteger {
+extension SequencePlots where Base.Element: Sequence, HeatmapConstraints.IsInteger<Base.Element.Element>: Any {
     
     /// Returns a heatmap of values from this 2-dimensional sequence.
     ///
     public func heatmap(
         style: (inout Heatmap<Base>)->Void = { _ in }
     ) -> Heatmap<Base> {
-        return heatmap(adapter: .linear, style: style)
+        return heatmap(mapping: .linear, style: style)
     }
 }
 
-// 1D Datasets.
+// 1D Datasets (Collection).
 
 extension SequencePlots where Base: Collection {
     
@@ -196,14 +208,14 @@ extension SequencePlots where Base: Collection {
     ///
     /// - parameters:
     ///   - width:		The width of the heatmap to generate. Must be greater than 0.
-    ///   - adapter:	A function or `KeyPath` which maps values to a continuum between 0 and 1.
+    ///   - mapping:	A function or `KeyPath` which maps values to a continuum between 0 and 1.
     /// - returns:		A heatmap plot of the collection's values.
     /// - complexity: 	O(n). Consider though, that rendering a heatmap or copying to a `RamdomAccessCollection`
     ///               	is also at least O(n), and this does not copy the data.
     ///
     public func heatmap(
         width: Int,
-        adapter: Adapters.Heatmap<Base.Element>,
+        mapping: Mapping.Heatmap<Base.Element>,
         style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
     ) -> Heatmap<[Base.SubSequence]> {
         
@@ -218,12 +230,13 @@ extension SequencePlots where Base: Collection {
             rows.append(base[rowStart..<rowEnd])
             rowStart = rowEnd
         }
-        return rows.plots.heatmap(adapter: adapter, style: style)
+        return rows.plots.heatmap(mapping: mapping, style: style)
     }
 }
 
-extension SequencePlots where Base: Collection,
-Base.Element: Strideable, Base.Element.Stride: BinaryFloatingPoint {
+
+
+extension SequencePlots where Base: Collection, HeatmapConstraints.IsFloat<Base.Element>: Any {
     
     /// Returns a heatmap of this collection's values, generated by slicing rows with the given width.
     ///
@@ -237,12 +250,11 @@ Base.Element: Strideable, Base.Element.Stride: BinaryFloatingPoint {
         width: Int,
         style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
     ) -> Heatmap<[Base.SubSequence]> {
-        return heatmap(width: width, adapter: .linear, style: style)
+        return heatmap(width: width, mapping: .linear, style: style)
     }
 }
 
-extension SequencePlots where Base: Collection,
-Base.Element: FixedWidthInteger {
+extension SequencePlots where Base: Collection, HeatmapConstraints.IsInteger<Base.Element>: Any {
     
     /// Returns a heatmap of this collection's values, generated by slicing rows with the given width.
     ///
@@ -256,9 +268,11 @@ Base.Element: FixedWidthInteger {
         width: Int,
         style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
     ) -> Heatmap<[Base.SubSequence]> {
-        return heatmap(width: width, adapter: .linear, style: style)
+        return heatmap(width: width, mapping: .linear, style: style)
     }
 }
+
+// 1D Datasets (RandomAccessCollection).
 
 extension SequencePlots where Base: RandomAccessCollection {
     
@@ -266,12 +280,12 @@ extension SequencePlots where Base: RandomAccessCollection {
     ///
     /// - parameters:
     ///   - width:		The width of the heatmap to generate. Must be greater than 0.
-    ///   - adapter:	A function or `KeyPath` which maps values to a continuum between 0 and 1.
+    ///   - mapping:	A function or `KeyPath` which maps values to a continuum between 0 and 1.
     /// - returns:		A heatmap plot of the collection's values.
     ///
     public func heatmap(
         width: Int,
-        adapter: Adapters.Heatmap<Base.Element>,
+        mapping: Mapping.Heatmap<Base.Element>,
         style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
     ) -> Heatmap<[Base.SubSequence]> {
         
@@ -289,12 +303,11 @@ extension SequencePlots where Base: RandomAccessCollection {
         let height = Int((Float(base.count) / Float(width)).rounded(.up))
         return (0..<height)
             .map { sliceForRow($0, width: width) }
-            .plots.heatmap(adapter: adapter, style: style)
+            .plots.heatmap(mapping: mapping, style: style)
     }
 }
 
-extension SequencePlots where Base: RandomAccessCollection,
-Base.Element: Strideable, Base.Element.Stride: BinaryFloatingPoint {
+extension SequencePlots where Base: RandomAccessCollection, HeatmapConstraints.IsFloat<Base.Element>: Any {
     
     /// Returns a heatmap of this collection's values, generated by slicing rows with the given width.
     ///
@@ -306,12 +319,11 @@ Base.Element: Strideable, Base.Element.Stride: BinaryFloatingPoint {
         width: Int,
         style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
     ) -> Heatmap<[Base.SubSequence]> {
-        return heatmap(width: width, adapter: .linear, style: style)
+        return heatmap(width: width, mapping: .linear, style: style)
     }
 }
 
-extension SequencePlots where Base: RandomAccessCollection,
-Base.Element: FixedWidthInteger {
+extension SequencePlots where Base: RandomAccessCollection, HeatmapConstraints.IsInteger<Base.Element>: Any {
     
     /// Returns a heatmap of this collection's values, generated by slicing rows with the given width.
     ///
@@ -323,6 +335,6 @@ Base.Element: FixedWidthInteger {
         width: Int,
         style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
     ) -> Heatmap<[Base.SubSequence]> {
-        return heatmap(width: width, adapter: .linear, style: style)
+        return heatmap(width: width, mapping: .linear, style: style)
     }
 }

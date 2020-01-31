@@ -1,2 +1,2 @@
 
-public enum Adapters {}
+public enum Mapping {}
