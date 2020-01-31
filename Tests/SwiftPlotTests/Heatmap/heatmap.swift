@@ -20,8 +20,7 @@ final class HeatmapTests: SwiftPlotTestCase {
     // Example from:
     // https://scipython.com/book/chapter-7-matplotlib/examples/a-heatmap-of-boston-temperatures/
     let data: [[Float]] = median_daily_temp_boston_2012
-    let heatmap = data.plots
-      .heatmap(interpolator: .linear) {
+    let heatmap = data.plots.heatmap() {
         $0.plotTitle.title = "Maximum daily temperatures in Boston, 2012"
         $0.plotLabel.xLabel = "Day of the Month"
         $0.colorMap = ColorMap.fiveColorHeatMap.lightened(by: 0.35)
@@ -33,8 +32,7 @@ final class HeatmapTests: SwiftPlotTestCase {
   
   func testHeatmap2() throws {
     
-    let summer = median_daily_temp_boston_2012[5...7].plots
-      .heatmap(interpolator: .linear) {
+    let summer = median_daily_temp_boston_2012[5...7].plots.heatmap() {
         $0.colorMap = ColorMap.viridis//.lightened(by: 0.2)
         $0.showGrid = true
     }

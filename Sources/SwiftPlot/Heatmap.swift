@@ -3,12 +3,18 @@
 // - Spacing between blocks
 // - Setting X/Y axis labels
 // - Displaying colormap next to plot
-// - Collection slicing by filter closure?
 
 /// A heatmap is a plot of 2-dimensional data, where each value is assigned a colour value along a gradient.
 ///
-/// Use the `interpolator` property to control how values are graded. For example, if your data structure has
-/// a salient integer or floating-point property, `Interpolator.linearByKeyPath` will allow you to grade values by that property.
+/// Use the `adapter` property to control how values are graded. For example, if your data structure has
+/// a salient integer or floating-point property, `.keyPath` will allow you to grade values by that property:
+///
+/// ```swift
+/// let data: [[MyObject]] = ...
+/// data.plots.heatmap(adapter: .keyPath(\.importantProperty)) {
+///   $0.colorMap = .fiveColorHeatmap
+/// }
+/// ```
 public struct Heatmap<SeriesType> where SeriesType: Sequence, SeriesType.Element: Sequence {
   
   public typealias Element = SeriesType.Element.Element
@@ -16,12 +22,12 @@ public struct Heatmap<SeriesType> where SeriesType: Sequence, SeriesType.Element
   public var layout = GraphLayout()
   
   public var values: SeriesType
-  public var interpolator: Interpolator<Element>
+  public var adapter: Adapters.Heatmap<Element>
   public var colorMap: ColorMap = .fiveColorHeatMap
   
-  public init(values: SeriesType, interpolator: Interpolator<Element>) {
+  public init(values: SeriesType, interpolator: Adapters.Heatmap<Element>) {
     self.values = values
-    self.interpolator = interpolator
+    self.adapter = interpolator
     self.layout.drawsGridOverForeground = true
     self.layout.markerLabelAlignment = .betweenMarkers
     self.showGrid = false
@@ -68,8 +74,8 @@ extension Heatmap: HasGraphLayout, Plot {
     for row in values {
       var columnsInRow = 0
       for column in row {
-        maxValue = interpolator.compare(maxValue, column) ? column : maxValue
-        minValue = interpolator.compare(minValue, column) ? minValue : column
+        maxValue = adapter.compare(maxValue, column) ? column : maxValue
+        minValue = adapter.compare(minValue, column) ? minValue : column
         columnsInRow += 1
       }
       maxColumns = max(maxColumns, columnsInRow)
@@ -121,7 +127,7 @@ extension Heatmap: HasGraphLayout, Plot {
                         Float(rowIdx) * data.itemSize.height),
           size: data.itemSize
         )
-        let offset = interpolator.interpolate(element, range.min, range.max)
+        let offset = adapter.interpolate(element, range.min, range.max)
         let color = colorMap.colorForOffset(offset)
         renderer.drawSolidRect(rect, fillColor: color, hatchPattern: .none)
 //        renderer.drawText(text: String(describing: element),
@@ -135,139 +141,188 @@ extension Heatmap: HasGraphLayout, Plot {
   }
 }
 
-// Initialisers with default arguments.
+// MARK: - SequencePlots API.
 
-extension Heatmap
-  where SeriesType: ExpressibleByArrayLiteral, SeriesType.Element: ExpressibleByArrayLiteral,
-        SeriesType.ArrayLiteralElement == SeriesType.Element {
-  
-  public init(interpolator: Interpolator<Element>) {
-    self.init(values: [[]], interpolator: interpolator)
-  }
-}
-
-extension Heatmap
-  where SeriesType: ExpressibleByArrayLiteral, SeriesType.Element: ExpressibleByArrayLiteral,
-        SeriesType.ArrayLiteralElement == SeriesType.Element, Element: FloatConvertible {
-  
-  public init(values: SeriesType) {
-    self.init(values: values, interpolator: .linear)
-  }
-  
-  public init() {
-    self.init(interpolator: .linear)
-  }
-}
-
-extension Heatmap
-  where SeriesType: ExpressibleByArrayLiteral, SeriesType.Element: ExpressibleByArrayLiteral,
-        SeriesType.ArrayLiteralElement == SeriesType.Element, Element: FixedWidthInteger {
-  
-  public init(values: SeriesType) {
-    self.init(values: values, interpolator: .linear)
-  }
-  
-  public init() {
-    self.init(interpolator: .linear)
-  }
-}
-
-// Collection construction shorthand.
+// 2D Datasets.
 
 extension SequencePlots where Base.Element: Sequence {
-  
-  /// Returns a heatmap of values from this 2-dimensional sequence.
-  /// - parameters:
-  ///   - interpolator: A function or `KeyPath` which maps values to a continuum between 0 and 1.
-  /// - returns: A heatmap plot of the sequence's inner items.
-  public func heatmap(
-    interpolator: Interpolator<Base.Element.Element>,
-    style: (inout Heatmap<Base>)->Void = { _ in }
-  ) -> Heatmap<Base> {
     
-    var graph = Heatmap(values: base, interpolator: interpolator)
-    style(&graph)
-    return graph
-  }
+    /// Returns a heatmap of values from this 2-dimensional sequence.
+    ///
+    /// - parameters:
+    ///   	- adapter:	A function or `KeyPath` which maps values to a continuum between 0 and 1.
+    ///		- style:	A closure which applies a style to the heatmap.
+    /// - returns:		A heatmap plot of the sequence's inner items.
+    ///
+    public func heatmap(
+        adapter: Adapters.Heatmap<Base.Element.Element>,
+        style: (inout Heatmap<Base>)->Void = { _ in }
+    ) -> Heatmap<Base> {
+        var graph = Heatmap(values: base, interpolator: adapter)
+        style(&graph)
+        return graph
+    }
 }
 
-extension SequencePlots where Base: Collection {
-  
-  /// Returns a heatmap of this collection's values, generated by slicing rows with the given width.
-  /// - parameters:
-  ///   - width:        The width of the heatmap to generate. Must be greater than 0.
-  ///   - interpolator: A function or `KeyPath` which maps values to a continuum between 0 and 1.
-  /// - returns: A heatmap plot of the collection's values.
-  /// - complexity: O(n). Consider though, that rendering a heatmap or copying to a `RamdomAccessCollection`
-  ///               is also at least O(n), and this does not copy the data.
-  public func heatmap(
-    width: Int,
-    interpolator: Interpolator<Base.Element>,
-    style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
-  ) -> Heatmap<[Base.SubSequence]> {
+extension SequencePlots where Base.Element: Sequence,
+Base.Element.Element: Strideable, Base.Element.Element.Stride: BinaryFloatingPoint {
     
-    precondition(width > 0, "Cannot build a histogram with zero or negative width")
-    var rows = [Base.SubSequence]()
-    var rowStart = base.startIndex
-    while rowStart != base.endIndex {
-      guard let rowEnd = base.index(rowStart, offsetBy: width, limitedBy: base.endIndex) else {
-        rows.append(base[rowStart..<base.endIndex])
-        break
-      }
-      rows.append(base[rowStart..<rowEnd])
-      rowStart = rowEnd
+    /// Returns a heatmap of values from this 2-dimensional sequence.
+    ///
+    public func heatmap(
+        style: (inout Heatmap<Base>)->Void = { _ in }
+    ) -> Heatmap<Base> {
+        return heatmap(adapter: .linear, style: style)
     }
-    return rows.plots.heatmap(interpolator: interpolator, style: style)
-  }
+}
+
+extension SequencePlots where Base.Element: Sequence,
+Base.Element.Element: FixedWidthInteger {
+    
+    /// Returns a heatmap of values from this 2-dimensional sequence.
+    ///
+    public func heatmap(
+        style: (inout Heatmap<Base>)->Void = { _ in }
+    ) -> Heatmap<Base> {
+        return heatmap(adapter: .linear, style: style)
+    }
+}
+
+// 1D Datasets.
+
+extension SequencePlots where Base: Collection {
+    
+    /// Returns a heatmap of this collection's values, generated by slicing rows with the given width.
+    ///
+    /// - parameters:
+    ///   - width:		The width of the heatmap to generate. Must be greater than 0.
+    ///   - adapter:	A function or `KeyPath` which maps values to a continuum between 0 and 1.
+    /// - returns:		A heatmap plot of the collection's values.
+    /// - complexity: 	O(n). Consider though, that rendering a heatmap or copying to a `RamdomAccessCollection`
+    ///               	is also at least O(n), and this does not copy the data.
+    ///
+    public func heatmap(
+        width: Int,
+        adapter: Adapters.Heatmap<Base.Element>,
+        style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
+    ) -> Heatmap<[Base.SubSequence]> {
+        
+        precondition(width > 0, "Cannot build a heatmap with zero or negative width")
+        var rows = [Base.SubSequence]()
+        var rowStart = base.startIndex
+        while rowStart != base.endIndex {
+            guard let rowEnd = base.index(rowStart, offsetBy: width, limitedBy: base.endIndex) else {
+                rows.append(base[rowStart..<base.endIndex])
+                break
+            }
+            rows.append(base[rowStart..<rowEnd])
+            rowStart = rowEnd
+        }
+        return rows.plots.heatmap(adapter: adapter, style: style)
+    }
+}
+
+extension SequencePlots where Base: Collection,
+Base.Element: Strideable, Base.Element.Stride: BinaryFloatingPoint {
+    
+    /// Returns a heatmap of this collection's values, generated by slicing rows with the given width.
+    ///
+    /// - parameters:
+    ///   - width:		The width of the heatmap to generate. Must be greater than 0.
+    /// - returns:		A heatmap plot of the collection's values.
+    /// - complexity:	O(n). Consider though, that rendering a heatmap or copying to a `RamdomAccessCollection`
+    ///               	is also at least O(n), and this does not copy the data.
+    ///
+    public func heatmap(
+        width: Int,
+        style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
+    ) -> Heatmap<[Base.SubSequence]> {
+        return heatmap(width: width, adapter: .linear, style: style)
+    }
+}
+
+extension SequencePlots where Base: Collection,
+Base.Element: FixedWidthInteger {
+    
+    /// Returns a heatmap of this collection's values, generated by slicing rows with the given width.
+    ///
+    /// - parameters:
+    ///   - width:		The width of the heatmap to generate. Must be greater than 0.
+    /// - returns:		A heatmap plot of the collection's values.
+    /// - complexity:	O(n). Consider though, that rendering a heatmap or copying to a `RamdomAccessCollection`
+    ///               	is also at least O(n), and this does not copy the data.
+    ///
+    public func heatmap(
+        width: Int,
+        style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
+    ) -> Heatmap<[Base.SubSequence]> {
+        return heatmap(width: width, adapter: .linear, style: style)
+    }
 }
 
 extension SequencePlots where Base: RandomAccessCollection {
-  
-  /// Returns a heatmap of this collection's values, generated by slicing rows with the given width.
-  /// - parameters:
-  ///   - width:        The width of the heatmap to generate. Must be greater than 0.
-  ///   - interpolator: A function or `KeyPath` which maps values to a continuum between 0 and 1.
-  /// - returns: A heatmap plot of the collection's values.
-  public func heatmap(
-    width: Int,
-    interpolator: Interpolator<Base.Element>,
-    style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
-  ) -> Heatmap<[Base.SubSequence]> {
     
-    precondition(width > 0, "Cannot build a histogram with zero or negative width")
-    let height = Int((Float(base.count) / Float(width)).rounded(.up))
-    return (0..<height)
-      .map { base._sliceForRow($0, width: width) }
-      .plots.heatmap(interpolator: interpolator, style: style)
-  }
-  
-  /// Returns a heatmap of this collection's values, generated by the data in to `height` rows.
-  /// - parameters:
-  ///   - height:        The height of the heatmap to generate. Must be greater than 0.
-  ///   - interpolator: A function or `KeyPath` which maps values to a continuum between 0 and 1.
-  /// - returns: A heatmap plot of the collection's values.
-  public func heatmap(
-    height: Int,
-    interpolator: Interpolator<Base.Element>,
-    style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
-  ) -> Heatmap<[Base.SubSequence]> {
-    
-    precondition(height > 0, "Cannot build a histogram with zero or negative height")
-    let width = Int((Float(base.count) / Float(height)).rounded(.up))
-    return (0..<height)
-      .map { base._sliceForRow($0, width: width) }
-      .plots.heatmap(interpolator: interpolator, style: style)
-  }
+    /// Returns a heatmap of this collection's values, generated by slicing rows with the given width.
+    ///
+    /// - parameters:
+    ///   - width:		The width of the heatmap to generate. Must be greater than 0.
+    ///   - adapter:	A function or `KeyPath` which maps values to a continuum between 0 and 1.
+    /// - returns:		A heatmap plot of the collection's values.
+    ///
+    public func heatmap(
+        width: Int,
+        adapter: Adapters.Heatmap<Base.Element>,
+        style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
+    ) -> Heatmap<[Base.SubSequence]> {
+        
+        func sliceForRow(_ row: Int, width: Int) -> Base.SubSequence {
+            guard let start = base.index(base.startIndex, offsetBy: row * width, limitedBy: base.endIndex) else {
+                return base[base.startIndex..<base.startIndex]
+            }
+            guard let end = base.index(start, offsetBy: width, limitedBy: base.endIndex) else {
+                return base[start..<base.endIndex]
+            }
+            return base[start..<end]
+        }
+        
+        precondition(width > 0, "Cannot build a histogram with zero or negative width")
+        let height = Int((Float(base.count) / Float(width)).rounded(.up))
+        return (0..<height)
+            .map { sliceForRow($0, width: width) }
+            .plots.heatmap(adapter: adapter, style: style)
+    }
 }
 
-extension RandomAccessCollection {
-  fileprivate func _sliceForRow(_ row: Int, width: Int) -> SubSequence {
-    guard let start = index(startIndex, offsetBy: row * width, limitedBy: endIndex) else {
-      return self[startIndex..<startIndex]
+extension SequencePlots where Base: RandomAccessCollection,
+Base.Element: Strideable, Base.Element.Stride: BinaryFloatingPoint {
+    
+    /// Returns a heatmap of this collection's values, generated by slicing rows with the given width.
+    ///
+    /// - parameters:
+    ///   - width:	The width of the heatmap to generate. Must be greater than 0.
+    /// - returns:  A heatmap plot of the collection's values.
+    ///
+    public func heatmap(
+        width: Int,
+        style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
+    ) -> Heatmap<[Base.SubSequence]> {
+        return heatmap(width: width, adapter: .linear, style: style)
     }
-    guard let end = index(start, offsetBy: width, limitedBy: endIndex) else {
-      return self[start..<endIndex]
+}
+
+extension SequencePlots where Base: RandomAccessCollection,
+Base.Element: FixedWidthInteger {
+    
+    /// Returns a heatmap of this collection's values, generated by slicing rows with the given width.
+    ///
+    /// - parameters:
+    ///   - width:	The width of the heatmap to generate. Must be greater than 0.
+    /// - returns:	A heatmap plot of the collection's values.
+    ///
+    public func heatmap(
+        width: Int,
+        style: (inout Heatmap<[Base.SubSequence]>)->Void = { _ in }
+    ) -> Heatmap<[Base.SubSequence]> {
+        return heatmap(width: width, adapter: .linear, style: style)
     }
-    return self[start..<end]
-  }
 }
