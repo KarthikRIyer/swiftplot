@@ -10,7 +10,7 @@ public struct HistogramSeries<T> where T: Comparable {
                 label: String,
                 color: Color,
                 histogramType: HistogramSeriesOptions.HistogramType) {
-        self.data = data.sorted()
+        self.data = data
         self.bins = bins
         self.label = label
         self.color = color
