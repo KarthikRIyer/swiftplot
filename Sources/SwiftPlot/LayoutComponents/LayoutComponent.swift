@@ -52,3 +52,17 @@ extension LayoutComponent {
         return _Padded(base: self, padding: padding)
     }
 }
+
+struct FixedSpace: LayoutComponent {
+    var size: Float
+    func measure(edge: RectEdge, _ renderer: Renderer) -> Size {
+        if edge.isHorizontal {
+            // Only the height is important, so we can say width = 1.
+            return Size(width: 1, height: size)
+        } else {
+            return Size(width: size, height: 1)
+        }
+    }
+    func draw(_ rect: Rect, measuredSize: Size, edge: RectEdge, renderer: Renderer) {
+    }
+}

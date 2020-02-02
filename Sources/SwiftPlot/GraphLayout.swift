@@ -5,6 +5,11 @@ public enum LegendIcon {
     case shape(ScatterPlotSeriesOptions.ScatterPattern, Color)
 }
 
+// TODO: Add layout tests for:
+// - No axes labels
+// - No plot markers
+// - No axes labels or plot markers
+
 /// A component for laying-out and rendering rectangular graphs.
 ///
 /// The principle 3 components of a `GraphLayout` are:
@@ -44,8 +49,8 @@ public struct GraphLayout {
         /// The region of the plot which will actually be filled with chart data.
         let plotBorderRect: Rect
         
-        // TODO: Try to move this up to GraphLayout itself.
-        let components: EdgeComponents<[LayoutComponent]>
+        /// All of the `LayoutComponent`s on this graph, including built-in components.
+        let allComponents: EdgeComponents<[LayoutComponent]>
         
         /// The measured sizes of the plot elements.
         let sizes: EdgeComponents<[Size]>
@@ -101,29 +106,38 @@ extension GraphLayout {
         let plotRect = layoutPlotRect(plotSize: plotSize, componentSizes: sizes)
         let roundedMarkers = markers.map { var m = $0; roundMarkers(&m); return m } ?? PlotMarkers()
         
-        var results = LayoutPlan(totalSize: size,
-                                 plotBorderRect: plotRect,
-                                 components: components,
-                                 sizes: sizes,
-                                 plotMarkers: roundedMarkers,
-                                 legendLabels: legendInfo ?? [])
-        calcMarkerTextLocations(renderer: renderer, plan: &results)
-        calcLegend(results.legendLabels, renderer: renderer, plan: &results)
-        return (drawingData, results)
+        var plan = LayoutPlan(totalSize: size,
+                              plotBorderRect: plotRect,
+                              allComponents: components,
+                              sizes: sizes,
+                              plotMarkers: roundedMarkers,
+                              legendLabels: legendInfo ?? [])
+        calcMarkerTextLocations(renderer: renderer, plan: &plan)
+        calcLegend(plan.legendLabels, renderer: renderer, plan: &plan)
+        return (drawingData, plan)
     }
     
     static let xLabelPadding: Float = 12
     static let yLabelPadding: Float = 12
     static let titleLabelPadding: Float = 16
     
-    // FIXME: To be removed. These items should already be LayoutComponents.
+    static let markerStemLength: Float = 6
+    /// Padding around y marker-labels.
+    static let yMarkerSpace: Float = 4
+    /// Padding around x marker-labels.
+    static let xMarkerSpace: Float = 6
+    
+    // FIXME: To be removed. These items should already be `LayoutComponent`s.
     private func makeLayoutComponents() -> EdgeComponents<[LayoutComponent]> {
         var elements = EdgeComponents<[LayoutComponent]>(left: [], top: [], right: [], bottom: [])
-        // TODO: Currently, only labels are "LayoutComponent"s.
         if !plotLabel.xLabel.isEmpty {
             let label = Label(text: plotLabel.xLabel, size: plotLabel.size)
                           .padding(.all(Self.xLabelPadding))
             elements.bottom.append(label)
+            // Add a space, otherwise the label looks misaligned.
+            elements.bottom.append(FixedSpace(size: Self.titleLabelPadding))
+        } else {
+            elements.bottom.append(FixedSpace(size: Self.xLabelPadding))
         }
         if !plotLabel.yLabel.isEmpty {
             let label = Label(text: plotLabel.yLabel, size: plotLabel.size)
@@ -139,6 +153,8 @@ extension GraphLayout {
             let label = Label(text: plotTitle.title, size: plotTitle.size)
                           .padding(.all(Self.titleLabelPadding))
             elements.top.append(label)
+        } else {
+            elements.top.append(FixedSpace(size: Self.titleLabelPadding))
         }
         return elements
     }
@@ -155,9 +171,9 @@ extension GraphLayout {
         
         // Subtract space for the markers.
         // TODO: Make this more accurate.
-        plotSize.height -= (2 * markerTextSize) + 10 // X markers
-        plotSize.width -= yMarkerMaxWidth + 10 // Y markers
-        plotSize.width -= yMarkerMaxWidth + 10 // Y2 markers
+        plotSize.height -= (Self.markerStemLength + (2 * Self.xMarkerSpace) + markerTextSize) // X markers
+        plotSize.width -= (Self.markerStemLength + (2 * Self.yMarkerSpace) + yMarkerMaxWidth) // Y markers
+        plotSize.width -= (Self.markerStemLength + (2 * Self.yMarkerSpace) + yMarkerMaxWidth) // Y2 markers
         // Subtract space for border thickness.
         plotSize.height -= 2 * plotBorder.thickness
         plotSize.width  -= 2 * plotBorder.thickness
@@ -180,8 +196,8 @@ extension GraphLayout {
         plotOrigin.x += componentSizes.left.reduce(into: 0) { $0 += $1.width }
         plotOrigin.y += componentSizes.bottom.reduce(into: 0) { $0 += $1.height }
         // Offset by marker sizes (TODO: they are not PlotElements yet, so not handled above).
-        let xMarkerHeight = (2 * markerTextSize) + 10 // X markers
-        let yMarkerWidth  = yMarkerMaxWidth + 10      // Y markers
+        let xMarkerHeight = (Self.markerStemLength + (2 * Self.xMarkerSpace) + markerTextSize) // X markers
+        let yMarkerWidth  = (Self.markerStemLength + (2 * Self.yMarkerSpace) + yMarkerMaxWidth)      // Y markers
         plotOrigin.y += xMarkerHeight
         plotOrigin.x += yMarkerWidth
         // Offset by plot thickness.
@@ -189,7 +205,7 @@ extension GraphLayout {
         plotOrigin.y += plotBorder.thickness
         
         // These are the final coordinates of the plot's internal space, so update `results`.
-        return Rect(origin: plotOrigin, size: plotSize)
+        return Rect(origin: plotOrigin, size: plotSize).roundedInwards
     }
     
     /// Makes adjustments to the layout as requested by the plot.
@@ -220,14 +236,15 @@ extension GraphLayout {
     }
     
     private func calcMarkerTextLocations(renderer: Renderer, plan: inout LayoutPlan) {
-        
+        let xLabelOffset = plotBorder.thickness + Self.markerStemLength + Self.xMarkerSpace
+        let yLabelOffset = plotBorder.thickness + Self.markerStemLength + Self.yMarkerSpace
         for i in 0..<plan.plotMarkers.xMarkers.count {
-            let textWidth = renderer.getTextWidth(text: plan.plotMarkers.xMarkersText[i], textSize: markerTextSize)
+            let textSize = renderer.getTextLayoutSize(text: plan.plotMarkers.xMarkersText[i], textSize: markerTextSize)
             let markerLocation = plan.plotMarkers.xMarkers[i]
-            var textLocation   = Point(0, -2.0 * markerTextSize)
+            var textLocation   = Point(0, -xLabelOffset - textSize.height)
             switch markerLabelAlignment {
             case .atMarker:
-              textLocation.x = markerLocation - (textWidth/2)
+                textLocation.x = markerLocation - (textSize.width/2)
             case .betweenMarkers:
               let nextMarkerLocation: Float
               if i < plan.plotMarkers.xMarkers.endIndex - 1 {
@@ -236,7 +253,7 @@ extension GraphLayout {
                 nextMarkerLocation = plan.plotBorderRect.width
               }
               let midpoint = markerLocation + (nextMarkerLocation - markerLocation)/2
-              textLocation.x = midpoint - (textWidth/2)
+              textLocation.x = midpoint - (textSize.width/2)
             }
             plan.xMarkersTextLocation.append(textLocation)
         }
@@ -263,7 +280,7 @@ extension GraphLayout {
             var textSize = renderer.getTextLayoutSize(text: plan.plotMarkers.yMarkersText[i],
                                                       textSize: markerTextSize)
             textSize.width = min(textSize.width, yMarkerMaxWidth)
-            var textLocation = Point(-textSize.width - 8, 0)
+            var textLocation = Point(-yLabelOffset - textSize.width, 0)
             textLocation.y = alignYLabel(markers: plan.plotMarkers.yMarkers, index: i, textSize: textSize)
             plan.yMarkersTextLocation.append(textLocation)
         }
@@ -272,7 +289,7 @@ extension GraphLayout {
             var textSize = renderer.getTextLayoutSize(text: plan.plotMarkers.y2MarkersText[i],
                                                       textSize: markerTextSize)
             textSize.width = min(textSize.width, yMarkerMaxWidth)
-            var textLocation = Point(plan.plotBorderRect.width + 8, 0)
+            var textLocation = Point(yLabelOffset + plan.plotBorderRect.width, 0)
             textLocation.y = alignYLabel(markers: plan.plotMarkers.y2Markers, index: i, textSize: textSize)
             plan.y2MarkersTextLocation.append(textLocation)
         }
@@ -324,7 +341,7 @@ extension GraphLayout {
         if drawsGridOverForeground {
           drawGrid(plan, renderer: renderer)
         }
-        drawLayoutComponents(plan.components, plotRect: plan.plotBorderRect,
+        drawLayoutComponents(plan.allComponents, plotRect: plan.plotBorderRect,
                              measuredSizes: plan.sizes, renderer: renderer)
         drawLegend(plan.legendLabels, plan: plan, renderer: renderer)
         drawAnnotations(resolver: plan, renderer: renderer)
@@ -438,15 +455,16 @@ extension GraphLayout {
         let rect = plan.plotBorderRect
         let border = plotBorder.thickness
         for index in 0..<plan.plotMarkers.xMarkers.count {
-            let p1 = Point(plan.plotMarkers.xMarkers[index], -border - 6) + rect.origin
-            let p2 = Point(plan.plotMarkers.xMarkers[index], -border) + rect.origin
+            // Draw stem.
+            let p1 = Point(plan.plotMarkers.xMarkers[index], -border) + rect.origin
+            let p2 = Point(plan.plotMarkers.xMarkers[index], -border - Self.markerStemLength) + rect.origin
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
                               strokeWidth: markerThickness,
                               strokeColor: plotBorder.color,
                               isDashed: false)
             renderer.drawText(text: plan.plotMarkers.xMarkersText[index],
-                              location: plan.xMarkersTextLocation[index] + rect.origin + Pair(0, -border),
+                              location: plan.xMarkersTextLocation[index] + rect.origin,
                               textSize: markerTextSize,
                               color: plotBorder.color,
                               strokeWidth: 0.7,
@@ -454,7 +472,7 @@ extension GraphLayout {
         }
 
         for index in 0..<plan.plotMarkers.yMarkers.count {
-            let p1 = Point(-border - 6, plan.plotMarkers.yMarkers[index]) + rect.origin
+            let p1 = Point(-border - Self.markerStemLength, plan.plotMarkers.yMarkers[index]) + rect.origin
             let p2 = Point(-border, plan.plotMarkers.yMarkers[index]) + rect.origin
             renderer.drawLine(startPoint: p1,
                               endPoint: p2,
@@ -462,7 +480,7 @@ extension GraphLayout {
                               strokeColor: plotBorder.color,
                               isDashed: false)
             renderer.drawText(text: plan.plotMarkers.yMarkersText[index],
-                              location: plan.yMarkersTextLocation[index] + rect.origin + Pair(-border, 0),
+                              location: plan.yMarkersTextLocation[index] + rect.origin,
                               textSize: markerTextSize,
                               color: plotBorder.color,
                               strokeWidth: 0.7,
@@ -471,17 +489,15 @@ extension GraphLayout {
         
         if !plan.plotMarkers.y2Markers.isEmpty {
             for index in 0..<plan.plotMarkers.y2Markers.count {
-                let p1 = Point(plan.plotBorderRect.width + border,
-                               (plan.plotMarkers.y2Markers[index])) + rect.origin
-                let p2 = Point(plan.plotBorderRect.width + border + 6,
-                               (plan.plotMarkers.y2Markers[index])) + rect.origin
+                let p1 = Point(rect.width + border, plan.plotMarkers.y2Markers[index]) + rect.origin
+                let p2 = Point(rect.width + border + Self.markerStemLength, plan.plotMarkers.y2Markers[index]) + rect.origin
                 renderer.drawLine(startPoint: p1,
                                   endPoint: p2,
                                   strokeWidth: markerThickness,
                                   strokeColor: plotBorder.color,
                                   isDashed: false)
                 renderer.drawText(text: plan.plotMarkers.y2MarkersText[index],
-                                  location: plan.y2MarkersTextLocation[index]  + rect.origin + Pair(border, 0),
+                                  location: plan.y2MarkersTextLocation[index]  + rect.origin,
                                   textSize: markerTextSize,
                                   color: plotBorder.color,
                                   strokeWidth: 0.7,
