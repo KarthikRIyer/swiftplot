@@ -1,4 +1,3 @@
-
 /// An object which maps a value in the range `0...1` to a `Color`.
 ///
 /// This object wraps a conformer to `ColorMapProtocol`, and is used instead of `ColorMapProtocol` directly
@@ -8,11 +7,10 @@
 ///
 public struct ColorMap: ColorMapProtocol {
     var base: ColorMapProtocol
-    
+
     public init(_ base: ColorMapProtocol) {
         // If base is already wrapped, do not re-wrap it.
-        if let existing = base as? ColorMap { self = existing }
-        else { self.base = base }
+        if let existing = base as? ColorMap { self = existing } else { self.base = base }
     }
     public func colorForOffset(_ offset: Double) -> Color {
         let offset = min(max(offset, 0), 1)
@@ -35,8 +33,8 @@ extension ColorMapProtocol {
 
 private struct ColorTransformer: ColorMapProtocol {
     var base: ColorMapProtocol
-    var transform: (Color)->Color
-    init(_ base: ColorMapProtocol, transform: @escaping (Color)->Color) {
+    var transform: (Color) -> Color
+    init(_ base: ColorMapProtocol, transform: @escaping (Color) -> Color) {
         self.base = base; self.transform = transform
     }
     func colorForOffset(_ offset: Double) -> Color {
@@ -45,13 +43,13 @@ private struct ColorTransformer: ColorMapProtocol {
 }
 
 extension ColorMap {
-    
+
     /// Returns a `ColorMap` whose output is transformed by the given closure.
     ///
-    public func withTransform(_ transform: @escaping (Color)->Color) -> ColorMap {
+    public func withTransform(_ transform: @escaping (Color) -> Color) -> ColorMap {
         return ColorMap(ColorTransformer(base, transform: transform))
     }
-    
+
     /// Returns a `ColorMap` whose output colors' alpha components are given by `alpha`.
     ///
     public func withAlpha(_ alpha: Float) -> ColorMap {
@@ -63,7 +61,7 @@ extension ColorMap {
     public func lightened(by amount: Float) -> ColorMap {
         return withTransform { $0.linearBlend(with: .white, offset: amount) }
     }
-    
+
     /// Returns a `ColorMap` whose output colors are darkened by the given `amount`.
     ///
     public func darkened(by amount: Float) -> ColorMap {
@@ -75,8 +73,8 @@ extension ColorMap {
 
 private struct ColorMapOffsetTransformer: ColorMapProtocol {
     var base: ColorMapProtocol
-    var transform: (Double)->Double
-    init(_ base: ColorMapProtocol, transform: @escaping (Double)->Double) {
+    var transform: (Double) -> Double
+    init(_ base: ColorMapProtocol, transform: @escaping (Double) -> Double) {
         self.base = base; self.transform = transform
     }
     func colorForOffset(_ offset: Double) -> Color {
@@ -88,11 +86,11 @@ private struct ColorMapOffsetTransformer: ColorMapProtocol {
 }
 
 extension ColorMap {
-    
+
     private func withOffsetTransform(_ transform: @escaping (Double) -> Double) -> ColorMap {
         return ColorMap(ColorMapOffsetTransformer(base, transform: transform))
     }
-    
+
     /// Returns a `ColorMap` whose output at offset `x` is equal to this `ColorMap`'s output at `1 - x`.
     ///
     public func reversed() -> ColorMap {
@@ -110,11 +108,11 @@ private struct SingleColorMap: ColorMapProtocol {
 }
 
 extension ColorMap {
-    
+
     /// Returns a `ColorMap` which always returns the same color.
     ///
     public static func color(_ color: Color) -> ColorMap {
-    	return ColorMap(SingleColorMap(color: color))
+        return ColorMap(SingleColorMap(color: color))
     }
 }
 
@@ -132,7 +130,7 @@ public struct GradientStop {
 
 private struct LinearGradient: ColorMapProtocol {
     var stops: [GradientStop]
-    
+
     init(stops: [GradientStop]) {
         self.stops = stops.sorted { $0.position < $1.position }
     }
@@ -147,29 +145,29 @@ private struct LinearGradient: ColorMapProtocol {
         guard rightStopIdx > stops.startIndex else { return rightStop.color }
         let leftStop = stops[stops.index(before: rightStopIdx)]
         assert(leftStop.position <= offset)
-        
+
         let distance = rightStop.position - leftStop.position
         guard distance > 0 else { return rightStop.color }
-        
+
         let offset = (offset - leftStop.position) / distance
         return leftStop.color.linearBlend(with: rightStop.color, offset: Float(offset))
     }
 }
 
 extension ColorMap {
-    
+
     /// Returns a `ColorMap` whose output is a linear gradient with the given stops.
     ///
     public static func linearGradient(_ stops: [GradientStop]) -> ColorMap {
         return ColorMap(LinearGradient(stops: stops))
     }
-    
+
     /// Returns a `ColorMap` whose output is a linear gradient between the given colors.
     ///
     public static func linearGradient(_ start: Color, _ end: Color) -> ColorMap {
         return ColorMap(LinearGradient(start: start, end: end))
     }
-    
+
     /// A standard, five-color heat map.
     ///
     public static let fiveColorHeatMap = ColorMap.linearGradient([
@@ -192,4 +190,3 @@ extension ColorMap {
         GradientStop(Color(1, 1, 1, 1), at: 1)
     ])
 }
-

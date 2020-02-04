@@ -1,8 +1,7 @@
-
 /// A visual element which occupies space in a layout object.
 ///
 public protocol LayoutComponent {
-    
+
     /// Returns the minimum size required to display this element.
     ///
     /// - parameters:
@@ -12,7 +11,7 @@ public protocol LayoutComponent {
     ///            Rectangular elements will want to swap their horizontal widths and heights when displayed on vertical edges.
     ///
     func measure(edge: RectEdge, _ renderer: Renderer) -> Size
-    
+
     /// Draws the element in the given `Rect`.
     ///
     /// - parameters:

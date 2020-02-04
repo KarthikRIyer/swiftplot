@@ -1,8 +1,7 @@
-
 public struct Size: Hashable {
     public var width: Float
     public var height: Float
-    
+
     public init(width: Float, height: Float) {
         self.width = width
         self.height = height
@@ -14,7 +13,7 @@ extension Size {
 }
 
 extension Size {
-    
+
     /// Returns a `Size` whose `width` is equal to this size's `height`,
     ///  and whose `height` is equal to this size's `width`.
     ///

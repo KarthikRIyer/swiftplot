@@ -1,14 +1,13 @@
-
 extension Mapping {
-    
+
     /// An adapter which maps values to a continuum between 0 and 1
     ///
     public struct Heatmap<Element> {
-        
+
         /// Returns whether or not the two elements are in increasing order.
         ///
         public var compare: (Element, Element) -> Bool
-        
+
         /// Maps a value to an offset within an overall value space.
         ///
         /// - parameters:
@@ -18,10 +17,10 @@ extension Mapping {
         ///	- returns:			The value's offset within the value space.
         ///
         public var interpolate: (Element, Element, Element) -> Float
-        
+
         public init(
             compare areInIncreasingOrder: @escaping (Element, Element) -> Bool,
-            interpolate: @escaping (Element, Element, Element)->Float
+            interpolate: @escaping (Element, Element, Element) -> Float
         ) {
             self.compare = areInIncreasingOrder
             self.interpolate = interpolate
@@ -30,9 +29,9 @@ extension Mapping {
 }
 
 extension Mapping.Heatmap where Element: Comparable {
-  public init(interpolate: @escaping (Element, Element, Element)->Float) {
-    self.init(compare: <, interpolate: interpolate)
-  }
+    public init(interpolate: @escaping (Element, Element, Element) -> Float) {
+        self.init(compare: <, interpolate: interpolate)
+    }
 }
 
 // Linear mapping for numeric types.
@@ -58,9 +57,9 @@ extension Mapping.Heatmap where HeatmapConstraints.IsFloat<Element>: Any {
     public static var linear: Self {
         Self { value, min, max in
             let totalDistance = min.distance(to: max)
-            let valueOffset   = min.distance(to: value)
-            guard totalDistance != 0 else { return 0 } // value == min == max
-            return Float(valueOffset/totalDistance)
+            let valueOffset = min.distance(to: value)
+            guard totalDistance != 0 else { return 0 }  // value == min == max
+            return Float(valueOffset / totalDistance)
         }
     }
 }
@@ -68,9 +67,9 @@ extension Mapping.Heatmap where HeatmapConstraints.IsInteger<Element>: Any {
     public static var linear: Self {
         Self { value, min, max in
             let totalDistance = min.distance(to: max)
-            let valueOffset   = min.distance(to: value)
-            guard totalDistance != 0 else { return 0 } // value == min == max
-            return Float(valueOffset)/Float(totalDistance)
+            let valueOffset = min.distance(to: value)
+            guard totalDistance != 0 else { return 0 }  // value == min == max
+            return Float(valueOffset) / Float(totalDistance)
         }
     }
 }
@@ -78,32 +77,31 @@ extension Mapping.Heatmap where HeatmapConstraints.IsInteger<Element>: Any {
 // Mapping by key-paths.
 
 extension Mapping.Heatmap {
-    
+
     public static func keyPath<T>(_ kp: KeyPath<Element, T>) -> Mapping.Heatmap<Element>
-        where HeatmapConstraints.IsFloat<T>: Any {
-            let i = Mapping.Heatmap<T>.linear
-            return Mapping.Heatmap(
-                compare: { $0[keyPath: kp] < $1[keyPath: kp] },
-                interpolate: { value, min, max in
-                    return i.interpolate(value[keyPath: kp], min[keyPath: kp], max[keyPath: kp])
+    where HeatmapConstraints.IsFloat<T>: Any {
+        let i = Mapping.Heatmap<T>.linear
+        return Mapping.Heatmap(
+            compare: { $0[keyPath: kp] < $1[keyPath: kp] },
+            interpolate: { value, min, max in
+                return i.interpolate(value[keyPath: kp], min[keyPath: kp], max[keyPath: kp])
             })
     }
-    
+
     public static func keyPath<T>(_ kp: KeyPath<Element, T>) -> Mapping.Heatmap<Element>
-        where HeatmapConstraints.IsInteger<T>: Any {
-            let i = Mapping.Heatmap<T>.linear
-            return Mapping.Heatmap(
-                compare: { $0[keyPath: kp] < $1[keyPath: kp] },
-                interpolate: { value, min, max in
-                    return i.interpolate(value[keyPath: kp], min[keyPath: kp], max[keyPath: kp])
+    where HeatmapConstraints.IsInteger<T>: Any {
+        let i = Mapping.Heatmap<T>.linear
+        return Mapping.Heatmap(
+            compare: { $0[keyPath: kp] < $1[keyPath: kp] },
+            interpolate: { value, min, max in
+                return i.interpolate(value[keyPath: kp], min[keyPath: kp], max[keyPath: kp])
             })
     }
-    
+
 }
 
-
 extension Mapping.Heatmap {
-    
+
     public var inverted: Self {
         Self(
             compare: { self.compare($0, $1) },
