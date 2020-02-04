@@ -104,13 +104,12 @@ extension GraphLayout {
         
         // 3. Now that we have the final sizes of everything, we can calculate their locations.
         let plotRect = layoutPlotRect(plotSize: plotSize, componentSizes: sizes)
-        let roundedMarkers = markers.map { var m = $0; roundMarkers(&m); return m } ?? PlotMarkers()
         
         var plan = LayoutPlan(totalSize: size,
                               plotBorderRect: plotRect,
                               allComponents: components,
                               sizes: sizes,
-                              plotMarkers: roundedMarkers,
+                              plotMarkers: markers ?? PlotMarkers(),
                               legendLabels: legendInfo ?? [])
         calcMarkerTextLocations(renderer: renderer, plan: &plan)
         calcLegend(plan.legendLabels, renderer: renderer, plan: &plan)
@@ -220,19 +219,6 @@ extension GraphLayout {
             return info.desiredPlotSize
         }
         return plotSize
-    }
-    
-    /// Rounds the given markers to integer pixel locations, for sharper gridlines.
-    private func roundMarkers(_ markers: inout PlotMarkers) {
-        //      for i in markers.xMarkers.indices {
-        //        markers.xMarkers[i].round(.down)
-        //      }
-        //      for i in markers.yMarkers.indices {
-        //        markers.yMarkers[i].round(.down)
-        //      }
-        //      for i in markers.y2Markers.indices {
-        //        markers.y2Markers[i].round(.down)
-        //      }
     }
     
     private func calcMarkerTextLocations(renderer: Renderer, plan: inout LayoutPlan) {
