@@ -295,13 +295,6 @@ extension GraphLayout {
 }
 
 // Drawing.
-fileprivate var debuggingEnabled = false
-extension Renderer {
-    var debug: Renderer? {
-        guard debuggingEnabled else { _onFastPath(); return nil }
-        return self
-    }
-}
 
 extension GraphLayout {
     
@@ -345,7 +338,7 @@ extension GraphLayout {
             let rect = Rect(origin: Point(plotExternalRect.minX, plotExternalRect.maxY + t_height),
                             size: Size(width: plotExternalRect.width, height: itemSize.height))
             t_height += itemSize.height
-            renderer.debug?.drawSolidRect(rect, fillColor: Color.random().withAlpha(1), hatchPattern: .none)
+            renderer.debugLayoutComponents?.drawSolidRect(rect, fillColor: Color.random().withAlpha(1), hatchPattern: .none)
             item.draw(rect, measuredSize: itemSize, edge: .top, renderer: renderer)
         }
         // Bottom components.
@@ -355,7 +348,7 @@ extension GraphLayout {
             let rect = Rect(origin: Point(plotExternalRect.minX, plotExternalRect.minY - b_height - itemSize.height),
                             size: Size(width: plotExternalRect.width, height: itemSize.height))
             b_height += itemSize.height
-            renderer.debug?.drawSolidRect(rect, fillColor: Color.random().withAlpha(1), hatchPattern: .none)
+            renderer.debugLayoutComponents?.drawSolidRect(rect, fillColor: Color.random().withAlpha(1), hatchPattern: .none)
             item.draw(rect, measuredSize: itemSize, edge: .bottom, renderer: renderer)
         }
         // Right components.
@@ -365,7 +358,7 @@ extension GraphLayout {
             let rect = Rect(origin: Point(plotExternalRect.maxX + r_width, plotExternalRect.minY),
                             size: Size(width: itemSize.width, height: plotExternalRect.height))
             r_width += itemSize.width
-            renderer.debug?.drawSolidRect(rect, fillColor: Color.random().withAlpha(1), hatchPattern: .none)
+            renderer.debugLayoutComponents?.drawSolidRect(rect, fillColor: Color.random().withAlpha(1), hatchPattern: .none)
             item.draw(rect, measuredSize: itemSize, edge: .right, renderer: renderer)
         }
         // Left components.
@@ -375,7 +368,7 @@ extension GraphLayout {
             let rect = Rect(origin: Point(plotExternalRect.minX - l_width - itemSize.width, plotExternalRect.minY),
                             size: Size(width: itemSize.width, height: plotExternalRect.height))
             l_width += itemSize.width
-            renderer.debug?.drawSolidRect(rect, fillColor: Color.random().withAlpha(1), hatchPattern: .none)
+            renderer.debugLayoutComponents?.drawSolidRect(rect, fillColor: Color.random().withAlpha(1), hatchPattern: .none)
             item.draw(rect, measuredSize: itemSize, edge: .left, renderer: renderer)
         }
     }
@@ -528,9 +521,31 @@ extension GraphLayout {
     }
 }
 
+// Debugging.
+
+extension GraphLayout {
+    
+    public struct DebugFlags {
+        /// Draws a different background color behind each `LayoutComponent`.
+        public var debugLayoutComponents = false
+    }
+    
+    /// Debugging flags for `Plot` developers.
+    ///
+    public static var _debugFlags = DebugFlags()
+}
+
+extension Renderer {
+    var debugLayoutComponents: Renderer? {
+        guard GraphLayout._debugFlags.debugLayoutComponents else { _onFastPath(); return nil }
+        return self
+    }
+}
+
 protocol AdjustsPlotSize {
   var desiredPlotSize: Size { get }
 }
+
 public protocol HasGraphLayout {
     
     var layout: GraphLayout { get set }
