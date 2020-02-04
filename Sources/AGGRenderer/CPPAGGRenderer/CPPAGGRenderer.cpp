@@ -506,7 +506,7 @@ namespace CPPAGGRenderer{
         if (outW)
             *outW = x;
         if (outH)
-          *outH = maxY - abs(minY);
+          *outH = abs(maxY - minY);
     }
 
     unsigned save_image(const char *s, const char** errorDesc){

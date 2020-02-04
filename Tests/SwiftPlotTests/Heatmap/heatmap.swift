@@ -30,8 +30,6 @@ final class HeatmapTests: SwiftPlotTestCase {
         }
         try renderAndVerify(heatmap, size: Size(width: 900, height: 450))
     }
-    try renderAndVerify(summer, size: Size(width: 900, height: 450))
-  }
 }
 
 // Data used to generate Heatmaps.

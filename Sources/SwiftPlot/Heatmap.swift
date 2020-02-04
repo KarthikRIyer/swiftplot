@@ -1,6 +1,7 @@
 // Todo list for Heatmap:
 // - Spacing between blocks
 // - Setting X/Y axis labels
+// - Setting element label
 // - Displaying colormap next to plot
 
 /// A heatmap is a plot of 2-dimensional data, where each value is assigned a colour value along a gradient.
@@ -135,12 +136,7 @@ extension Heatmap: HasGraphLayout, Plot {
                 let offset = mapping.interpolate(element, range.min, range.max)
                 let color = colorMap.colorForOffset(offset)
                 renderer.drawSolidRect(rect, fillColor: color, hatchPattern: .none)
-                //        renderer.drawText(text: String(describing: element),
-                //                          location: rect.origin + Point(50,50),
-                //                          textSize: 20,
-                //                          color: .white,
-                //                          strokeWidth: 2,
-                //                          angle: 0)
+                // TODO: Element text.
             }
         }
     }

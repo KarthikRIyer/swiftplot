@@ -5,11 +5,6 @@ public enum LegendIcon {
     case shape(ScatterPlotSeriesOptions.ScatterPattern, Color)
 }
 
-// TODO: Add layout tests for:
-// - No axes labels
-// - No plot markers
-// - No axes labels or plot markers
-
 /// A component for laying-out and rendering rectangular graphs.
 ///
 /// The principle 3 components of a `GraphLayout` are:
@@ -134,7 +129,7 @@ extension GraphLayout {
                           .padding(.all(Self.xLabelPadding))
             elements.bottom.append(label)
             // Add a space, otherwise the label looks misaligned.
-            elements.bottom.append(FixedSpace(size: Self.titleLabelPadding))
+            elements.bottom.append(FixedSpace(size: Self.xLabelPadding/2))
         } else {
             elements.bottom.append(FixedSpace(size: Self.xLabelPadding))
         }
