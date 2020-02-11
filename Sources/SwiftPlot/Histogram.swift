@@ -81,7 +81,7 @@ extension Histogram: HasGraphLayout {
         
         var barWidth: Float = 0
         let xMargin: Float = 5
-        var origin = zeroPoint
+        var origin: Point = .zero
     }
 
     // functions implementing plotting logic
@@ -90,11 +90,25 @@ extension Histogram: HasGraphLayout {
         var results = DrawingData()
         var markers = PlotMarkers()
         
-        var minimumX = histogramSeries.data.first!
-        var maximumX = histogramSeries.data.last!
+        // FIXME: Handle `histogramSeries.data` being empty.
+        // TODO: (Performance) Fix this because we are going through
+        // the data twice right now for each series we have...
+        /// We were depending on `histogram.data` being sorted to get the `minimumX` and `maximumX`
+        /// by getting the `.first`and `.last` element. This led to bugs down the line where it is expected
+        /// that `minimumX < maximumX`. So this is the workaround for now.
+        ///
+        /// This was added as part of PR #113
+        guard var minimumX = histogramSeries.data.min(),
+            var maximumX = histogramSeries.data.max() else {
+                fatalError("Histogram: (temporary) We are not handling the case where the user supplied an empty array.")
+        }
+        
         for series in histogramStackSeries {
-            minimumX = min(minimumX, series.data.first!)
-            maximumX = max(maximumX, series.data.last!)
+            guard let minX = series.data.min(), let maxX = series.data.max() else {
+                    fatalError("Histogram: (temporary) We are not handling the case where the user supplied an empty array.")
+            }
+            minimumX = min(minimumX, minX)
+            maximumX = max(maximumX, maxX)
         }
         minimumX = T(roundFloor10(Float(minimumX)))
         maximumX = T(roundCeil10(Float(maximumX)))
@@ -274,9 +288,11 @@ extension Histogram: HasGraphLayout {
                 var frontLeftBinHeight = frontHeightsSlice.removeFirst()
                 for ((backRightBinHeight, frontRightBinHeight), x) in zip(zip(backHeightsSlice, frontHeightsSlice), xValues) {
                     func endLine() {
-                        renderer.drawPlotLines(points: line, strokeWidth: strokeWidth,
-                                               strokeColor: allSeriesInfo[seriesIdx].color,
-                                               isDashed: false)
+                        // This algorithm should never produce lines with less than 2 points
+                        guard let polyline = Polyline(line) else { fatalError("Histogram.drawData: Expecting 2 or more points, got \(line.count) instead.") }
+                        renderer.drawPolyline(polyline, strokeWidth: strokeWidth,
+                                              strokeColor: allSeriesInfo[seriesIdx].color,
+                                              isDashed: false)
                         line.removeAll(keepingCapacity: true)
                     }
                     
@@ -306,31 +322,53 @@ extension Histogram: HasGraphLayout {
 
 private extension Histogram {
     
+    /// If the data is not sorted, run through each value in `data`, binary search the right bin and increment its frequency.
+    ///
+    /// Performance: O(n log(m)). n: `data.count`, m: `binFrequency.count`.
+    ///   This algorithm runs through `data` once and for each value in `data` a binary search is performed on the bins' lower x limits.
+    ///   It runs through `binFrequency` array once to get the maximum frequency.
+    ///   It get/sets `binFrequency` value `data.count` amount of times.
     func recalculateBins(series: HistogramSeries<T>,
                          binStart: T,
                          binEnd: T,
                          binInterval: T) -> (binFrequency: [Float], maxFrequency: Float) {
-        
-        var maximumFrequency = Float(0)
-        var binFrequency = stride(from: Float(binStart), through: Float(binEnd), by: Float(binInterval)).map {
-            start -> Float in
-            let end = start + Float(binInterval)
-            var count: Float = 0
-            for d in series.data {
-                if(d < T(end) && d >= T(start)) {
-                    count += 1
+        var binFrequency = [Float](repeating: 0.0, count: series.bins)
+        let lastIndex = binFrequency.endIndex - 1
+        for value in series.data {
+            var start = 0
+            var end = lastIndex
+            var current = start + (end - start) / 2
+            while end - start > 1 {
+                if value >= binStart + T(current) * binInterval {
+                    start = current
+                } else {
+                    end = current
                 }
+                current = start + (end - start) / 2
             }
-            maximumFrequency = max(count, maximumFrequency)
-            return count
+            
+            binFrequency[current] += 1
         }
+        var maximumFrequency = binFrequency.max() ?? 0.0
+        
         if (isNormalized) {
             let factor = Float(series.data.count)*Float(binInterval)
-            for index in 0..<binFrequency.count {
+            for index in 0..<series.bins {
                 binFrequency[index]/=factor
             }
             maximumFrequency/=factor
         }
         return (binFrequency, maximumFrequency)
+    }
+}
+
+// For testing private methods.
+
+extension Histogram {
+    func testRecalculateBins(series: HistogramSeries<T>,
+                             binStart: T,
+                             binEnd: T,
+                             binInterval: T) {
+        let (_, _) = recalculateBins(series: series, binStart: binStart, binEnd: binEnd, binInterval: binInterval)
     }
 }

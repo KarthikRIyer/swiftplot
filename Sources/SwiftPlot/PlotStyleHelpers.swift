@@ -184,13 +184,14 @@ struct Arrow: Annotation {
                 let wedgeRotateAngle = -atan2(end.x - start.x, end.y - start.y)
                 p1 = rotatePoint(point: p1, center: start, angleRadians: wedgeRotateAngle + 0.5 * Float.pi)
                 p2 = rotatePoint(point: p2, center: start, angleRadians: wedgeRotateAngle + 0.5 * Float.pi)
-                renderer.drawSolidPolygon(points: [p1, p2, end],
+                let head = Polygon(p1, p2, end)!
+                renderer.drawSolidPolygon(head,
                                           fillColor: color)
             default:
-                renderer.drawPlotLines(points: [start, end],
-                                       strokeWidth: strokeWidth,
-                                       strokeColor: color,
-                                       isDashed: isDashed)
+                renderer.drawPolyline(Polyline(start, end)!,
+                                      strokeWidth: strokeWidth,
+                                      strokeColor: color,
+                                      isDashed: isDashed)
         }
     }
     public func drawHead(renderer: Renderer, a: Point, b: Point) {
@@ -204,17 +205,20 @@ struct Arrow: Annotation {
         // Draws arrow head points.
         switch headStyle {
             case .skeletal:
-                renderer.drawPlotLines(points: [p1, b, p2],
-                                       strokeWidth: strokeWidth,
-                                       strokeColor: color,
-                                       isDashed: isDashed)
+                let head = Polyline(p1, b, p2)!
+                renderer.drawPolyline(head,
+                                      strokeWidth: strokeWidth,
+                                      strokeColor: color,
+                                      isDashed: isDashed)
             case .filled:
-                renderer.drawSolidPolygon(points: [p1, b, p2],
+                let head = Polygon(p1, b, p2)!
+                renderer.drawSolidPolygon(head,
                                           fillColor: color)
             case .dart:
                 var p3 = end + Point(-headLength/2, 0.0)
                 p3 = rotatePoint(point: p3, center: b, angleRadians: rotateAngle + 0.5 * Float.pi)
-                renderer.drawSolidPolygon(points: [p1, p3, p2, b],
+                let head = Polygon(p1, p3, p2, b)!
+                renderer.drawSolidPolygon(head,
                                           fillColor: color)
             default:
                 break

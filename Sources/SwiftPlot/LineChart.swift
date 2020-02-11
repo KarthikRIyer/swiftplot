@@ -154,19 +154,25 @@ extension LineGraph: HasGraphLayout {
     if let axisInfo = data.primaryAxisInfo {
       for dataset in primaryAxis.series {
         let points = dataset.values.map { axisInfo.convertCoordinate(fromData: $0) }
-        renderer.drawPlotLines(points: points,
-                               strokeWidth: plotLineThickness,
-                               strokeColor: dataset.color,
-                               isDashed: false)
+        guard let polyline = Polyline(points) else {
+            fatalError("LineChart.drawData: Expecting 2 or more points, got \(points.count) instead")
+        }
+        renderer.drawPolyline(polyline,
+                              strokeWidth: plotLineThickness,
+                              strokeColor: dataset.color,
+                              isDashed: false)
       }
     }
     if let secondaryAxis = secondaryAxis, let axisInfo = data.secondaryAxisInfo {
       for dataset in secondaryAxis.series {
         let points = dataset.values.map { axisInfo.convertCoordinate(fromData: $0) }
-        renderer.drawPlotLines(points: points,
-                               strokeWidth: plotLineThickness,
-                               strokeColor: dataset.color,
-                               isDashed: true)
+        guard let polyline = Polyline(points) else {
+            fatalError("LineChart.drawData: Expecting 2 or more points, got \(points.count) instead")
+        }
+        renderer.drawPolyline(polyline,
+                              strokeWidth: plotLineThickness,
+                              strokeColor: dataset.color,
+                              isDashed: true)
       }
     }
   }
@@ -184,7 +190,7 @@ extension LineGraph {
     var scaleY: Float = 1
     // The "origin" is just a known value at a known location,
     // used for calculating where other points are located.
-    var origin: Point = zeroPoint
+    var origin: Point = .zero
     var originValue = Pair(T(0), U(0))
     
     init(series: [Series<T, U>], size: Size) {
