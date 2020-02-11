@@ -485,7 +485,8 @@ public class QuartzRenderer: Renderer {
         #endif
         let string = NSAttributedString(string: "\(text)", attributes: attributes)
         let size = string.size()
-        return Size(width: Float(size.width), height: Float(size.height))
+        // FIXME: 'size.height' is always too big and misaligns text.
+        return Size(width: Float(size.width), height: s)
     }
     
     enum WritePNGError: Error {
