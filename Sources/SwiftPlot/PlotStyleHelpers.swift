@@ -296,10 +296,10 @@ struct Bracket: Annotation {
         endLegPoint = rotatePoint(point: endLegPoint, center: endPoint, angleRadians: startLegRotateAngle + 0.5 * Float.pi)
         
         // Draws bracket.
-        renderer.drawPlotLines(points: [startLegPoint, startPoint, endPoint, endLegPoint],
-                               strokeWidth: strokeWidth,
-                               strokeColor: color,
-                               isDashed: isDashed)
+        renderer.drawPolyline(Polyline(startLegPoint, startPoint, endPoint, endLegPoint)!,
+                              strokeWidth: strokeWidth,
+                              strokeColor: color,
+                              isDashed: isDashed)
 
         // Calculate anchor point.
         let anchorPoint = Point((startPoint.x + endPoint.x)/2, (startPoint.y + endPoint.y)/2)
