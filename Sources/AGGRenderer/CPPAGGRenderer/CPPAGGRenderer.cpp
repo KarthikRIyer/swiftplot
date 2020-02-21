@@ -45,6 +45,7 @@ const Color black(0.0,0.0,0.0,1.0);
 const Color blue_light(0.529,0.808,0.922,1.0);
 const Color white(1.0,1.0,1.0,1.0);
 const Color gray_translucent(0.66,0.66,0.66,0.2);
+const Color transparent(1.0, 1.0, 1.0, 0.0);
 
 namespace CPPAGGRenderer{
 
