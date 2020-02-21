@@ -469,7 +469,7 @@ extension Plot where Self: HasGraphLayout {
             let tup = layoutData(size: size, renderer: renderer)
             return (tup.0, tup.1, self.legendLabels)
         }
-        layout.drawBackground(results: results, renderer: renderer)
+        // layout.drawBackground(results: results, renderer: renderer)
         renderer.withAdditionalOffset(results.plotBorderRect.origin) { renderer in
             drawData(drawingData, size: results.plotBorderRect.size, renderer: renderer)
         }
