@@ -187,7 +187,7 @@ extension PolarGraph: HasGraphLayout {
           var points = [Pair<T,U>]()
           points.append(Pair<T,U>(T(0), U(0)))
           points.append(Pair<T,U>(T(maxRadii.toFloat() * cos(angles[i].toFloat())), U(maxRadii.toFloat() * sin(angles[i].toFloat()))))
-          let s = Series<T,U>(values: points, label: label, color: color)
+          let s = Series<T,U>(values: points, label: "Boi", color: .lightBlue)
           addSeries(s, axisType: .primaryAxis)
         }  
           
