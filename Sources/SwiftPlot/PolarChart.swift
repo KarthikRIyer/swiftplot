@@ -173,6 +173,15 @@ extension PolarGraph: HasGraphLayout {
   public func drawData(_ data: DrawingData, size: Size, renderer: Renderer) {
     if let axisInfo = data.primaryAxisInfo {
       for dataset in primaryAxis.series {
+        var angles = [0, 0.25, 0.5, 0.75];
+        var angles2 = angles.map{val in 1+val}
+        angles += angles2
+        angles = angles.map{angle in angle*Double.pi}
+          
+        let maxRadii = dataset.values.map{pair in pair.x}.max()!
+          
+        
+          
         let points = dataset.values.map { axisInfo.convertCoordinate(fromData: $0) }
         var pointOrigin = axisInfo.convertCoordinate(fromData: origin)
         var referenceRadius = axisInfo.convertCoordinate(fromData: reference)
@@ -180,7 +189,6 @@ extension PolarGraph: HasGraphLayout {
                                strokeWidth: plotLineThickness,
                                strokeColor: dataset.color,
                                isDashed: false)
-        let maxRadii = dataset.values.map{pair in pair.x}.max()!
         for i in 1...maxRadii.toInt(){
             renderer.drawEmptyCircle(center: pointOrigin, radius: Float(i)*Float(referenceRadius.x-pointOrigin.x), radius2: Float(i)*Float(referenceRadius.y-pointOrigin.y))
         }
