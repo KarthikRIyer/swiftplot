@@ -176,11 +176,20 @@ extension PolarGraph: HasGraphLayout {
         var angles = [0, 0.25, 0.5, 0.75];
         var angles2 = angles.map{val in 1+val}
         angles += angles2
-        angles = angles.map{angle in angle*Double.pi}
+        theta = angles.map{angle in angle*Double.pi}
           
         let maxRadii = dataset.values.map{pair in pair.x}.max()!
           
-        
+        var x = theta.map{angle in maxRadii.toFloat() * cos(angle.toFloat())}
+        var y = theta.map{angle in maxRadii.toFloat() * sin(angle.toFloat())}
+
+        for i in 0..<angles.count{
+          var points = [Pair<T,U>]()
+          points.append(Pair<T,U>(T(0), U(0)))
+          points.append(Pair<T,U>(T(maxRadii.toFloat() * cos(angles[i].toFloat())), U(maxRadii.toFloat() * sin(angles[i].toFloat()))))
+          let s = Series<T,U>(values: points, label: label, color: color)
+          addSeries(s, axisType: .primaryAxis)
+        }  
           
         let points = dataset.values.map { axisInfo.convertCoordinate(fromData: $0) }
         var pointOrigin = axisInfo.convertCoordinate(fromData: origin)
