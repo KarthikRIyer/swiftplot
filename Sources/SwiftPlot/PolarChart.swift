@@ -176,7 +176,7 @@ extension PolarGraph: HasGraphLayout {
         var angles = [0, 0.25, 0.5, 0.75];
         var angles2 = angles.map{val in 1+val}
         angles += angles2
-        theta = angles.map{angle in angle*Double.pi}
+        var theta = angles.map{angle in angle*Double.pi}
           
         let maxRadii = dataset.values.map{pair in pair.x}.max()!
           
