@@ -146,12 +146,12 @@ extension LineChartTests {
     var lineGraph = LineGraph<Float,Float>(enablePrimaryAxisGrid: true,
                                            enableSecondaryAxisGrid: false)
     let clamp: ClosedRange<Float>? = -150...150
-    lineGraph.addFunction({ pow($0, 2) }, minX: -5, maxX: 5, clampY: clamp, label: "2", color: .lightBlue)
-    lineGraph.addFunction({ pow($0, 3) }, minX: -5, maxX: 5, clampY: clamp, label: "3", color: .orange)
-    lineGraph.addFunction({ pow($0, 4) }, minX: -5, maxX: 5, clampY: clamp, label: "4", color: .red)
-    lineGraph.addFunction({ pow($0, 5) }, minX: -5, maxX: 5, clampY: clamp, label: "5", color: .brown)
-    lineGraph.addFunction({ pow($0 , 6) }, minX: -5, maxX: 5, clampY: clamp, label: "6", color: .purple)
-    lineGraph.addFunction({ pow($0 , 7) }, minX: -5, maxX: 5, clampY: clamp, label: "7", color: .green)
+    lineGraph.addFunction({ pow($0, 2) }, minX: 0, maxX: 5, clampY: clamp, label: "2", color: .lightBlue)
+    lineGraph.addFunction({ pow($0, 3) }, minX: 0, maxX: 5, clampY: clamp, label: "3", color: .orange)
+    lineGraph.addFunction({ pow($0, 4) }, minX: 0, maxX: 5, clampY: clamp, label: "4", color: .red)
+    lineGraph.addFunction({ pow($0, 5) }, minX: 0, maxX: 5, clampY: clamp, label: "5", color: .brown)
+    lineGraph.addFunction({ pow($0 , 6) }, minX: 0, maxX: 5, clampY: clamp, label: "6", color: .purple)
+    lineGraph.addFunction({ pow($0 , 7) }, minX: 0, maxX: 5, clampY: clamp, label: "7", color: .green)
     lineGraph.plotTitle.title = "y = x^n"
     lineGraph.plotLabel.xLabel = "x"
     lineGraph.plotLabel.yLabel = "y"
