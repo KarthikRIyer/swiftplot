@@ -21,6 +21,7 @@ extension AnnotationTests {
         ("testAnnotationArrowWedge", testAnnotationArrowWedge),
         ("testAnnotationText", testAnnotationText),
         ("testAnnotationTextBoundingBox", testAnnotationTextBoundingBox),
+        ("testAnnotationBracket", testAnnotationBracket),
     ]
 }
 
