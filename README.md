@@ -55,7 +55,7 @@ The resultant images are stored in a directory named  `output`. The `Tests` fold
 Add the library to your projects dependencies in the Package.swift file as shown below.
 ```swift
 dependencies: [
-        .package(url: "https://github.com/KarthikRIyer/swiftplot.git", .branch("master")),
+        .package(url: "https://github.com/KarthikRIyer/swiftplot.git", from: "2.0.0")),
     ],
 ```
 
@@ -79,7 +79,7 @@ Add these lines to the first cell:
 ```swift
 %install-swiftpm-flags -Xcc -isystem/usr/include/freetype2 -Xswiftc -lfreetype
 %install '.package(url: "https://github.com/IBM-Swift/BlueCryptor.git", from: "1.0.28")' Cryptor
-%install '.package(url: "https://github.com/KarthikRIyer/swiftplot", .branch("master"))' SwiftPlot AGGRenderer
+%install '.package(url: "https://github.com/KarthikRIyer/swiftplot", from: "2.0.0")' SwiftPlot AGGRenderer
 ```
 In order to display the generated plot in the notebook, add this line to a new cell:
 ```swift
