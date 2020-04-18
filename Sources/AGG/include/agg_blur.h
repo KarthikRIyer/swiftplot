@@ -1487,13 +1487,13 @@ namespace agg
     }
 
     template<class PixFmt>
-    void apply_slight_blur(renderer_base<PixFmt>& img, const rect_i& bounds, double r = 1)
+    void apply_slight_blur(blender_base<PixFmt>& img, const rect_i& bounds, double r = 1)
     {
         if (r > 0) slight_blur<PixFmt>(r).blur(img.ren(), bounds);
     }
 
     template<class PixFmt>
-    void apply_slight_blur(renderer_base<PixFmt>& img, double r = 1)
+    void apply_slight_blur(blender_base<PixFmt>& img, double r = 1)
     {
         if (r > 0) slight_blur<PixFmt>(r).blur(img.ren(), img.clip_box());
     }
