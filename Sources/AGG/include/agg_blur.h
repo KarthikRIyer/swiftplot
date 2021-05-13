@@ -32,6 +32,7 @@
 #include "agg_array.h"
 #include "agg_pixfmt_base.h"
 #include "agg_pixfmt_transposer.h"
+#include "agg_renderer_base.h"
 
 namespace agg
 {
