@@ -309,7 +309,7 @@ extension LineGraph {
         while(abs(xIncrement)*pow(10.0,Float(c))<1.0) {
           c+=1
         }
-        xIncrement = yIncrement/scaleX
+        xIncrement = xIncrement/scaleX
         xIncRound = c+1
       } else if xRange < 1.0 {
         let differenceX = xRange
@@ -318,7 +318,7 @@ extension LineGraph {
         while(abs(xIncrement)*pow(10.0,Float(c))<1.0) {
           c+=1
         }
-        xIncrement = yIncrement/scaleX
+        xIncrement = xIncrement/scaleX
         xIncRound = c+1
       }
       
