@@ -96,7 +96,7 @@ func display(base64EncodedPNG: String) {
   displayImage.Image(data: imageData, format: "png").display()
 }
 ```
-Note that because Google Colab doesn't natively support Swift libraries that produce rich output, we use Swift's Python interop as a workaround. 
+Note that because Google Colab doesn't natively support Swift libraries that produce rich output, we use Swift's Python interop as a workaround.
 
 ## How to setup Docker instance for SwiftPlot
 For computers running MacOS or Windows, Docker instance is to easy to setup and use `swift-jupyter`. Please refer [SwiftPlot_Docker_setup.md](https://github.com/KarthikRIyer/swiftplot/blob/master/Swiftplot_Docker_setup.md) for setup instructions.
@@ -179,7 +179,7 @@ lineGraph2.plotLabel.yLabel = "Y-AXIS"
 lineGraph2.plotLineThickness = 3.0
 
 subplot.plots = [lineGraph1, lineGraph2]
-subPlot.drawGraphAndOutput(fileName: "subPlotsHorizontallyStacked", renderer: agg_renderer)
+subplot.drawGraphAndOutput(fileName: "subPlotsHorizontallyStacked", renderer: agg_renderer)
 ```
 
 <img src="Tests/SwiftPlotTests/Reference/agg/_03_sub_plot_horizontally_stacked_line_chart.png" width="500">
@@ -217,7 +217,7 @@ let y:[Float] = [10,120,500,800]
 let x1:[Float] = [100,200,361,672]
 let y1:[Float] = [150,250,628,800]
 
-var agg_renderer: AGGRenderer = AGGRenderer() 
+var agg_renderer: AGGRenderer = AGGRenderer()
 var lineGraph = LineGraph<Float,Float>()
 lineGraph.addSeries(x1, y1, label: "Plot 1", color: .lightBlue, axisType: .primaryAxis)
 lineGraph.addSeries(x, y, label: "Plot 2", color: .orange, axisType: .secondaryAxis)
@@ -243,7 +243,7 @@ display(base64EncodedPNG: agg_renderer.base64Png())
 ## How does this work
 
 All the plotting code, utility functions, and necessary types are included in the SwiftPlot module. Each Renderer is implemented as a separate module. Each Renderer must have SwiftPlot as its dependency and must conform to the Renderer protocol defined in Renderer.swift in the SwiftPlot module. Each plot type is a generic that accepts data conforming to a protocol, FloatConvertible. At the moment FloatConvertible supports both Float and Double.
-The Renderer protocol defines all the necessary functions that a Renderer needs to implement. 
+The Renderer protocol defines all the necessary functions that a Renderer needs to implement.
 Each Plot must conform to the Plot protocol. At the moment this protocol defines the necessary variablse and functions that each Plot must implement in order to support SubPlots.
 </br></br>
 You can add series to the plots using their respective functions(`addSeries` for LineGraph). This is stored in as an array of Series objects. You can set other properties such as plotTitle, plotLabel, plotDimensions, etc. To actually generate the plot you need to call either the `drawGraph` or `drawGraphAndOutput` function. This calculates all the parameters necessary to generate the plots such as the coordinates of the border, scaled points to plot, etc. Then it sends over this information to the renderer which has functions to draw primitives like lines, rectangles and text.
@@ -256,227 +256,227 @@ In order to display the plots in Jupyter notebook, we encode the image(which is 
 
 ### LineGraph<T: FloatConvertible, U: FloatConvertible>
 
-|Function                                                                            |Description                                 |
-|------------------------------------------------------------------------------------|--------------------------------------------|
-|init(points: [Point], width: Float = 1000, height: Float = 660, enablePrimaryAxisGrid: Bool = false, enableSecondaryAxisGrid: Bool = false)| Initialize a LineGraph with a set of points |
-|init(width: Float = 1000, height: Float = 660, enablePrimaryAxisGrid: Bool = false,enableSecondaryAxisGrid: Bool = false)| Initialize a LineGraph|
-|addSeries(_ s: Series, axisType: Axis.Location = Axis.Location.primaryAxis)| Add a series to the plot                    |
-|addSeries(points p: [Point], label: String, color: Color = Color.lightBlue, axisType: Axis<T,U>.Location = Axis<T,U>.Location.primaryAxis)         |Add a series to the plot with a set of points, a label and a color for the series |
-|addSeries(_ x: [Float], _ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Axis<T,U>.Location = Axis<T,U>.Location.primaryAxis)|Add a series to the plot with a set of x and y coordinates, a label and a color for the series|
-|addSeries(_ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Axis<T,U>.Location = Axis<T,U>.Location.primaryAxis)|Add a series to the plot with only the y-coordinates. The x-coordinates are automatically enumerated [1, 2, 3, ...]|
-|addFunction(_ function: (Float)->Float, minX: Float, maxX: Float, numberOfSamples: Int = 400, label: String, color: Color = Color.lightBlue, axisType: Axis.Location = Axis.Location.primaryAxis)|Add a function to plot along with the range of x-coordinates over which to plot, number of samples of the function to take for plotting, a label, and color for the plot|
-|drawGraphAndOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer)|Generate the plot and save the resultant image|
-|drawGraph(renderer: Renderer)|Generate the plot in memory|
-|drawGraphOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer)|Save the generated plot to disk|
+| Function                                                                                                                                                                                          | Description                                                                                                                                                              |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| init(points: [Point], width: Float = 1000, height: Float = 660, enablePrimaryAxisGrid: Bool = false, enableSecondaryAxisGrid: Bool = false)                                                       | Initialize a LineGraph with a set of points                                                                                                                              |
+| init(width: Float = 1000, height: Float = 660, enablePrimaryAxisGrid: Bool = false,enableSecondaryAxisGrid: Bool = false)                                                                         | Initialize a LineGraph                                                                                                                                                   |
+| addSeries(_ s: Series, axisType: Axis.Location = Axis.Location.primaryAxis)                                                                                                                       | Add a series to the plot                                                                                                                                                 |
+| addSeries(points p: [Point], label: String, color: Color = Color.lightBlue, axisType: Axis<T,U>.Location = Axis<T,U>.Location.primaryAxis)                                                        | Add a series to the plot with a set of points, a label and a color for the series                                                                                        |
+| addSeries(_ x: [Float], _ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Axis<T,U>.Location = Axis<T,U>.Location.primaryAxis)                                               | Add a series to the plot with a set of x and y coordinates, a label and a color for the series                                                                           |
+| addSeries(_ y: [Float], label: String, color: Color = Color.lightBlue, axisType: Axis<T,U>.Location = Axis<T,U>.Location.primaryAxis)                                                             | Add a series to the plot with only the y-coordinates. The x-coordinates are automatically enumerated [1, 2, 3, ...]                                                      |
+| addFunction(_ function: (Float)->Float, minX: Float, maxX: Float, numberOfSamples: Int = 400, label: String, color: Color = Color.lightBlue, axisType: Axis.Location = Axis.Location.primaryAxis) | Add a function to plot along with the range of x-coordinates over which to plot, number of samples of the function to take for plotting, a label, and color for the plot |
+| drawGraphAndOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer)                                                                                                           | Generate the plot and save the resultant image                                                                                                                           |
+| drawGraph(renderer: Renderer)                                                                                                                                                                     | Generate the plot in memory                                                                                                                                              |
+| drawGraphOutput(fileName name: String = "swift_plot_line_graph", renderer: Renderer)                                                                                                              | Save the generated plot to disk                                                                                                                                          |
 
-|Property                                         |
-|-------------------------------------------------|
-|plotTitle: PlotTitle? = nil                      |
-|plotLabel: PlotLabel? = nil                      |
-|var plotDimensions: PlotDimensions               |
-|plotLineThickness: Float = 1.5                   |
-|gridLineThickness: Float = 0.5                   |
-|markerTextSize: Float = 12                       |
-|gridColor: Color = .gray                         |
+| Property                           |
+| ---------------------------------- |
+| plotTitle: PlotTitle? = nil        |
+| plotLabel: PlotLabel? = nil        |
+| var plotDimensions: PlotDimensions |
+| plotLineThickness: Float = 1.5     |
+| gridLineThickness: Float = 0.5     |
+| markerTextSize: Float = 12         |
+| gridColor: Color = .gray           |
 
 ### BarChart<T: LosslessStringConvertible, U: FloatConvertible>
 
-|Function                                                                            |Description                                 |
-|------------------------------------------------------------------------------------|--------------------------------------------|
-|init(width: Float = 1000, height: Float = 660, enableGrid: Bool = false)                                      |Initialize a BarChart                      |
-|addSeries(_ s: Series<T,U>)         |Add a series to the plot .                               |
-|addStackSeries(_ s: Series<T,U>)         |Add a stacked series to the plot                    |
-|addStackSeries(_ x: [U],   label: String, color: Color = .lightBlue, hatchPattern: BarGraphSeriesOptions.Hatching = .none) |Add a stacked series to the plot|
-|addSeries(values: [Pair<T,U>], label: String, color: Color = Color.lightBlue, hatchPattern: BarGraphSeriesOptions.Hatching = .none, graphOrientation: BarGraph.GraphOrientation = .vertical)         |Add a series to the plot using a Pair array|
-|addSeries(_ x: [T], _ y: [U], label: String, color: Color = Color.lightBlue, hatchPattern: BarGraphSeriesOptions.Hatching = .none, graphOrientation: BarGraph.GraphOrientation = .vertical)         |Add a series to the plot using a Pair array|            
-|drawGraphAndOutput(fileName name: String = "swift_plot_bar_graph", renderer: Renderer)|Generate the plot and save the resultant image|
-|drawGraph(renderer: Renderer)|Generate the plot in memory|
-|drawGraphOutput(fileName name: String = "swift_plot_bar_graph", renderer: Renderer)|Save the generated plot to disk|
+| Function                                                                                                                                                                                     | Description                                    |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| init(width: Float = 1000, height: Float = 660, enableGrid: Bool = false)                                                                                                                     | Initialize a BarChart                          |
+| addSeries(_ s: Series<T,U>)                                                                                                                                                                  | Add a series to the plot .                     |
+| addStackSeries(_ s: Series<T,U>)                                                                                                                                                             | Add a stacked series to the plot               |
+| addStackSeries(_ x: [U],   label: String, color: Color = .lightBlue, hatchPattern: BarGraphSeriesOptions.Hatching = .none)                                                                   | Add a stacked series to the plot               |
+| addSeries(values: [Pair<T,U>], label: String, color: Color = Color.lightBlue, hatchPattern: BarGraphSeriesOptions.Hatching = .none, graphOrientation: BarGraph.GraphOrientation = .vertical) | Add a series to the plot using a Pair array    |
+| addSeries(_ x: [T], _ y: [U], label: String, color: Color = Color.lightBlue, hatchPattern: BarGraphSeriesOptions.Hatching = .none, graphOrientation: BarGraph.GraphOrientation = .vertical)  | Add a series to the plot using a Pair array    |
+| drawGraphAndOutput(fileName name: String = "swift_plot_bar_graph", renderer: Renderer)                                                                                                       | Generate the plot and save the resultant image |
+| drawGraph(renderer: Renderer)                                                                                                                                                                | Generate the plot in memory                    |
+| drawGraphOutput(fileName name: String = "swift_plot_bar_graph", renderer: Renderer)                                                                                                          | Save the generated plot to disk                |
 
-|Property                                         |
-|-------------------------------------------------|
-|plotTitle: PlotTitle? = nil                      |
-|plotLabel: PlotLabel? = nil                      |
-|var plotDimensions: PlotDimensions               |
-|space: Int = 20 (Sets the space between two bars)|
-|gridLineThickness: Float = 0.5                   |
-|markerTextSize: Float = 12                       |
-|gridColor: Color = .gray                         |
+| Property                                          |
+| ------------------------------------------------- |
+| plotTitle: PlotTitle? = nil                       |
+| plotLabel: PlotLabel? = nil                       |
+| var plotDimensions: PlotDimensions                |
+| space: Int = 20 (Sets the space between two bars) |
+| gridLineThickness: Float = 0.5                    |
+| markerTextSize: Float = 12                        |
+| gridColor: Color = .gray                          |
 
 ### Histogram<T:FloatConvertible>
 
-|Function                                                                            |Description                                 |
-|------------------------------------------------------------------------------------|--------------------------------------------|
-|init(width: Float = 1000, height: Float = 660, isNormalized: Bool = false, enableGrid: Bool = false)                                      |Initialize a Histogram                      |
-|addSeries(_ s: HistogramSeries<T>)|Add a series to the plot.|
-|addSeries(data: [T], bins: Int, label: String, color: Color = .lightBlue, histogramType: HistogramSeriesOptions.HistogramType = .bar) | Add a series using an array. |
-|addStackSeries(data: [T], label: String, color: Color = .lightBlue) |Add a stacked series to the plot|           
-|drawGraphAndOutput(fileName name: String = "swift_plot_histogram", renderer: Renderer)|Generate the plot and save the resultant image|
-|drawGraph(renderer: Renderer)|Generate the plot in memory|
-|drawGraphOutput(fileName name: String = "swift_plot_histogram", renderer: Renderer)|Save the generated plot to disk|
- 
-|Property                           |
-|-----------------------------------|
-|plotTitle: PlotTitle? = nil        |
-|plotLabel: PlotLabel? = nil        |
-|var plotDimensions: PlotDimensions |
-|var strokeWidth: Float = 2         |
-|gridLineThickness: Float = 0.5     |
-|markerTextSize: Float = 12         |
-|gridColor: Color = .gray           |
+| Function                                                                                                                              | Description                                    |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| init(width: Float = 1000, height: Float = 660, isNormalized: Bool = false, enableGrid: Bool = false)                                  | Initialize a Histogram                         |
+| addSeries(_ s: HistogramSeries<T>)                                                                                                    | Add a series to the plot.                      |
+| addSeries(data: [T], bins: Int, label: String, color: Color = .lightBlue, histogramType: HistogramSeriesOptions.HistogramType = .bar) | Add a series using an array.                   |
+| addStackSeries(data: [T], label: String, color: Color = .lightBlue)                                                                   | Add a stacked series to the plot               |
+| drawGraphAndOutput(fileName name: String = "swift_plot_histogram", renderer: Renderer)                                                | Generate the plot and save the resultant image |
+| drawGraph(renderer: Renderer)                                                                                                         | Generate the plot in memory                    |
+| drawGraphOutput(fileName name: String = "swift_plot_histogram", renderer: Renderer)                                                   | Save the generated plot to disk                |
+
+| Property                           |
+| ---------------------------------- |
+| plotTitle: PlotTitle? = nil        |
+| plotLabel: PlotLabel? = nil        |
+| var plotDimensions: PlotDimensions |
+| var strokeWidth: Float = 2         |
+| gridLineThickness: Float = 0.5     |
+| markerTextSize: Float = 12         |
+| gridColor: Color = .gray           |
 
 ### ScatterPlot<T:FloatConvertible, U:FloatConvertible>
 
-|Function                                                                            |Description                                 |
-|------------------------------------------------------------------------------------|--------------------------------------------|
-|init(width: Float = 1000, height: Float = 660, isNormalized: Bool = false, enableGrid: Bool = false)                                      |Initialize a ScatterPlot.                     |
-|init(points p: [Pair<T,U>], width: Float = 1000, height: Float = 660, enableGrid: Bool = false)                                            |Initialize a ScatterPlot.                     |
-|addSeries(_ s: Series<T,U>)|Add a series to the plot.|
-|addSeries(points: [Pair<T,U>], label: String, color: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle) | Add a series using an array of Pairs. |
-|addSeries(_ x: [T], _ y: [U], label: String, color: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle) | Add a series using separate x and y arrays. |
-|addSeries(_ x: [T], _ y: [U], label: String, startColor: Color = .lightBlue, endColor: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle)) | Add a series using separate x and y arrays and specify a start and end color for the scatter points. |
-|addSeries(_ y: [U], label: String, color: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle) | Add a series using just the y array. It will be plotted against the index of the point. |
-|addSeries(_ y: [U], label: String, startColor: Color = .lightBlue, endColor: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle) | Add a series using just the y array. It will be plotted against the index of the point. Also specify the start and end color for the scatter points.|        
-|drawGraphAndOutput(fileName name: String = "swift_plot_scatter_plot", renderer: Renderer)|Generate the plot and save the resultant image|
-|drawGraph(renderer: Renderer)|Generate the plot in memory|
-|drawGraphOutput(fileName name: String = "swift_plot_scatter_plot", renderer: Renderer)|Save the generated plot to disk|
- 
-|Property                           |
-|-----------------------------------|
-|plotTitle: PlotTitle? = nil        |
-|plotLabel: PlotLabel? = nil        |
-|plotDimensions: PlotDimensions     |
-|scatterPatternSize: Float = 10     |
-|gridLineThickness: Float = 0.5     |
-|markerTextSize: Float = 12         |
-|gridColor: Color = .gray           |
+| Function                                                                                                                                                                       | Description                                                                                                                                          |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| init(width: Float = 1000, height: Float = 660, isNormalized: Bool = false, enableGrid: Bool = false)                                                                           | Initialize a ScatterPlot.                                                                                                                            |
+| init(points p: [Pair<T,U>], width: Float = 1000, height: Float = 660, enableGrid: Bool = false)                                                                                | Initialize a ScatterPlot.                                                                                                                            |
+| addSeries(_ s: Series<T,U>)                                                                                                                                                    | Add a series to the plot.                                                                                                                            |
+| addSeries(points: [Pair<T,U>], label: String, color: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle)                                    | Add a series using an array of Pairs.                                                                                                                |
+| addSeries(_ x: [T], _ y: [U], label: String, color: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle)                                     | Add a series using separate x and y arrays.                                                                                                          |
+| addSeries(_ x: [T], _ y: [U], label: String, startColor: Color = .lightBlue, endColor: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle)) | Add a series using separate x and y arrays and specify a start and end color for the scatter points.                                                 |
+| addSeries(_ y: [U], label: String, color: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle)                                               | Add a series using just the y array. It will be plotted against the index of the point.                                                              |
+| addSeries(_ y: [U], label: String, startColor: Color = .lightBlue, endColor: Color = .lightBlue, scatterPattern: ScatterPlotSeriesOptions.ScatterPattern = .circle)            | Add a series using just the y array. It will be plotted against the index of the point. Also specify the start and end color for the scatter points. |
+| drawGraphAndOutput(fileName name: String = "swift_plot_scatter_plot", renderer: Renderer)                                                                                      | Generate the plot and save the resultant image                                                                                                       |
+| drawGraph(renderer: Renderer)                                                                                                                                                  | Generate the plot in memory                                                                                                                          |
+| drawGraphOutput(fileName name: String = "swift_plot_scatter_plot", renderer: Renderer)                                                                                         | Save the generated plot to disk                                                                                                                      |
+
+| Property                       |
+| ------------------------------ |
+| plotTitle: PlotTitle? = nil    |
+| plotLabel: PlotLabel? = nil    |
+| plotDimensions: PlotDimensions |
+| scatterPatternSize: Float = 10 |
+| gridLineThickness: Float = 0.5 |
+| markerTextSize: Float = 12     |
+| gridColor: Color = .gray       |
 
 ### SubPlot
 
-|enum stackPattern (to be passed in place of stackPattern in the initializer)|
-|----------------------------------------------------------------------------|
-|verticallyStacked                                                           |
-|horizontallyStacked                                                         |
-|gridStacked                                                                 |
+| enum stackPattern (to be passed in place of stackPattern in the initializer) |
+| ---------------------------------------------------------------------------- |
+| verticallyStacked                                                            |
+| horizontallyStacked                                                          |
+| gridStacked                                                                  |
 
-|Function                                                                            |Description                                 |
-|------------------------------------------------------------------------------------|--------------------------------------------|
-|init(width: Float = 1000, height: Float = 660, numberOfPlots n: Int = 1, numberOfRows nR: Int = 1, numberOfColumns nC: Int = 1, stackPattern: Int = 0)|Initialize a SubPlot |
-|draw(plots: [Plot], renderer: Renderer, fileName: String = "subPlot_output")|Generate plot with the plots passed in as Sub Plots and save the image to disk|
+| Function                                                                                                                                               | Description                                                                    |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| init(width: Float = 1000, height: Float = 660, numberOfPlots n: Int = 1, numberOfRows nR: Int = 1, numberOfColumns nC: Int = 1, stackPattern: Int = 0) | Initialize a SubPlot                                                           |
+| draw(plots: [Plot], renderer: Renderer, fileName: String = "subPlot_output")                                                                           | Generate plot with the plots passed in as Sub Plots and save the image to disk |
 
 ### PlotDimensions
 
-|Function                                                  |Description                                                    |
-|----------------------------------------------------------|---------------------------------------------------------------|
-|init(frameWidth : Float = 1000, frameHeight : Float = 660)|Create a PlotDimensions variable with a frame width and height |
+| Function                                                   | Description                                                    |
+| ---------------------------------------------------------- | -------------------------------------------------------------- |
+| init(frameWidth : Float = 1000, frameHeight : Float = 660) | Create a PlotDimensions variable with a frame width and height |
 
 ### Pair<T,U>
 
-|Property |
-|---------|
-|x: T     |
-|y: U     |
+| Property |
+| -------- |
+| x: T     |
+| y: U     |
 
-|Function                    |Description                              |
-|----------------------------|-----------------------------------------|
-|init(_ x: T, _ y: T)        |Create a Pair using x and y              |
+| Function             | Description                 |
+| -------------------- | --------------------------- |
+| init(_ x: T, _ y: T) | Create a Pair using x and y |
 
 
-|typealias                   |
-|----------------------------|
-|Point = Pair<Float, Float>  |
+| typealias                  |
+| -------------------------- |
+| Point = Pair<Float, Float> |
 
-|Property                          |
-|----------------------------------|
-|zeroPoint = Point(0.0, 0.0)       |
+| Property                    |
+| --------------------------- |
+| zeroPoint = Point(0.0, 0.0) |
 
 ### PlotLabel
 
-|Property                          |
-|----------------------------------|
-|xLabel: String = "X-Axis"         |
-|yLabel: String = "Y-Axis"         |
-|labelSize: Float = 15             |
-|xLabelLocation = zeroPoint        |
-|yLabelLocation = zeroPoint        |
+| Property                   |
+| -------------------------- |
+| xLabel: String = "X-Axis"  |
+| yLabel: String = "Y-Axis"  |
+| labelSize: Float = 15      |
+| xLabelLocation = zeroPoint |
+| yLabelLocation = zeroPoint |
 
 ### PlotTitle
 
-|Property                 |
-|-------------------------|
-|title : String = "TITLE" |
-|titleSize : Float = 15   |
-|titleLocation = zeroPoint|
+| Property                  |
+| ------------------------- |
+| title : String = "TITLE"  |
+| titleSize : Float = 15    |
+| titleLocation = zeroPoint |
 
 ### Color
 
-|Function                                            |Description                                                                |
-|----------------------------------------------------|--------------------------------------------------------------------------|
-|init(_ r: Float, _ g: Float, _ b: Float, _ a: Float)|Create a Color with r, g, b and a values. Each of them being between 0.0 and 1.0|
+| Function                                             | Description                                                                      |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------- |
+| init(_ r: Float, _ g: Float, _ b: Float, _ a: Float) | Create a Color with r, g, b and a values. Each of them being between 0.0 and 1.0 |
 
-|Property(only on macOS and iOS)                    |
-|---------------------------------------------------|
-|cgColor: CGColor (return the corresponding CGColor)|
+| Property(only on macOS and iOS)                     |
+| --------------------------------------------------- |
+| cgColor: CGColor (return the corresponding CGColor) |
 
 Built-in Colors can be found [here](https://github.com/KarthikRIyer/swiftplot/blob/master/Sources/SwiftPlot/Color.swift).
 
 
 ### PlotLabel
 
-|Property                          |
-|----------------------------------|
-|xLabel: String = "X-Axis"         |
-|yLabel: String = "Y-Axis"         |
-|labelSize: Float = 15             |
-|xLabelLocation = zeroPoint        |
-|yLabelLocation = zeroPoint        |
+| Property                   |
+| -------------------------- |
+| xLabel: String = "X-Axis"  |
+| yLabel: String = "Y-Axis"  |
+| labelSize: Float = 15      |
+| xLabelLocation = zeroPoint |
+| yLabelLocation = zeroPoint |
 
 ### Axis<T,U>
 
-|enum Location (to be passed into addSeries function in LineGraph)|
-|-----------------------------------------------------------------|
-|primaryAxis                                                      |
-|secondaryAxis                                                    |
+| enum Location (to be passed into addSeries function in LineGraph) |
+| ----------------------------------------------------------------- |
+| primaryAxis                                                       |
+| secondaryAxis                                                     |
 
 ### ScatterPlotSeriesOptions
 
-|enum ScatterPattern (to be passed into addSeries function in ScatterPlot)|
-|-------------------------------------------------------------------------|
-|circle                                                                   |
-|square                                                                   |
-|triangle                                                                 |
-|diamond                                                                  |
-|hexagon                                                                  |
-|pentagon                                                                 |
-|star                                                                     |
+| enum ScatterPattern (to be passed into addSeries function in ScatterPlot) |
+| ------------------------------------------------------------------------- |
+| circle                                                                    |
+| square                                                                    |
+| triangle                                                                  |
+| diamond                                                                   |
+| hexagon                                                                   |
+| pentagon                                                                  |
+| star                                                                      |
 
 
 ### HistogramSeriesOptions
 
-|enum HistogramType: CaseIterable (to be passed into addSeries function in Histogram)|
-|------------------------------------------------------------------------------------|
-|bar                                                                                 |
-|step                                                                                |
+| enum HistogramType: CaseIterable (to be passed into addSeries function in Histogram) |
+| ------------------------------------------------------------------------------------ |
+| bar                                                                                  |
+| step                                                                                 |
 
 ### BarGraphSeriesOptions
 
-|enum Hatching: Int, CaseIterable (to be passed into addSeries function in BarGraph)|
-|------------------------------------------------------------------------------------|
-|none = 0                                                                            |
-|forwardSlash = 1                                                                    |
-|backwardSlash = 2                                                                   |
-|hollowCircle = 3                                                                    |
-|filledCircle = 4                                                                    |
-|vertical = 5                                                                        |
-|horizontal = 6                                                                      |
-|grid = 7                                                                            |
-|cross = 8                                                                           |
+| enum Hatching: Int, CaseIterable (to be passed into addSeries function in BarGraph) |
+| ----------------------------------------------------------------------------------- |
+| none = 0                                                                            |
+| forwardSlash = 1                                                                    |
+| backwardSlash = 2                                                                   |
+| hollowCircle = 3                                                                    |
+| filledCircle = 4                                                                    |
+| vertical = 5                                                                        |
+| horizontal = 6                                                                      |
+| grid = 7                                                                            |
+| cross = 8                                                                           |
 
 ### Base64Encoder
 
-|Function                                            |Description                                                                |
-|----------------------------------------------------|--------------------------------------------------------------------------|
-|encodeBase64PNG(pngBufferPointer: UnsafePointer<UInt8>, bufferSize: Int) -> String|Encode a PNG image into base64 format.|
+| Function                                                                           | Description                            |
+| ---------------------------------------------------------------------------------- | -------------------------------------- |
+| encodeBase64PNG(pngBufferPointer: UnsafePointer<UInt8>, bufferSize: Int) -> String | Encode a PNG image into base64 format. |
 
 ## Limitations
 - FloatConvertible supports only Float and Double. We plan to extend this to Int in the future.
