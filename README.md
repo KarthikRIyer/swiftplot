@@ -179,7 +179,7 @@ lineGraph2.plotLabel.yLabel = "Y-AXIS"
 lineGraph2.plotLineThickness = 3.0
 
 subplot.plots = [lineGraph1, lineGraph2]
-subPlot.drawGraphAndOutput(fileName: "subPlotsHorizontallyStacked", renderer: agg_renderer)
+subplot.drawGraphAndOutput(fileName: "subPlotsHorizontallyStacked", renderer: agg_renderer)
 ```
 
 <img src="Tests/SwiftPlotTests/Reference/agg/_03_sub_plot_horizontally_stacked_line_chart.png" width="500">
