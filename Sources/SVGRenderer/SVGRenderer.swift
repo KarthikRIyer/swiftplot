@@ -56,7 +56,7 @@ public class SVGRenderer: Renderer{
                          strokeWidth thickness: Float,
                          strokeColor: Color = Color.black) {
         let rect = convertToSVGCoordinates(rect)
-        let rectStr = #"<rect x="\#(rect.origin.x)" y="\#(rect.origin.y)" width="\#(rect.size.width)" height="\#(rect.size.height)" style="fill:rgb(255,255,255);stroke-width:\#(thickness);stroke:\#(strokeColor.svgColorString);opacity:1;fill-opacity:0;" />"#
+        let rectStr = #"<rect x="\#(String(format:"%.8f", rect.origin.x))" y="\#(String(format: "%.8f", rect.origin.y))" width="\#(String(format: "%.8f", rect.size.width))" height="\#(String(format: "%.8f", rect.size.height))" style="fill:rgb(255,255,255);stroke-width:\#(String(format: "%.8f", thickness));stroke:\#(strokeColor.svgColorString);opacity:1;fill-opacity:0;" />"#
         lines.append(rectStr)
     }
 
@@ -64,7 +64,7 @@ public class SVGRenderer: Renderer{
                               fillColor: Color = Color.white,
                               hatchPattern: BarGraphSeriesOptions.Hatching) {
         let rect = convertToSVGCoordinates(rect)
-        let rectStr = #"<rect x="\#(rect.origin.x)" y="\#(rect.origin.y)" width="\#(rect.size.width)" height="\#(rect.size.height)" style="fill:\#(fillColor.svgColorString);stroke-width:0;stroke:rgb(0,0,0);opacity:\#(fillColor.a)" />"#
+        let rectStr = #"<rect x="\#(String(format:"%.8f", rect.origin.x))" y="\#(String(format:"%.8f", rect.origin.y))" width="\#(String(format:"%.8f", rect.size.width))" height="\#(String(format:"%.8f", rect.size.height))" style="fill:\#(fillColor.svgColorString);stroke-width:0;stroke:rgb(0,0,0);opacity:\#(String(format:"%.8f", fillColor.a))" />"#
         lines.append(rectStr)
         drawHatchingRect(rect, hatchPattern: hatchPattern)
     }
@@ -124,7 +124,7 @@ public class SVGRenderer: Renderer{
             }
             patternName = "url(#crossHatch)"
         }
-        let rectStr = #"<rect x="\#(rect.origin.x)" y="\#(rect.origin.y)" width="\#(rect.size.width)" height="\#(rect.size.height)" style="fill:\#(patternName);opacity:\#(1)" />"#
+        let rectStr = #"<rect x="\#(String(format:"%.8f", rect.origin.x))" y="\#(String(format:"%.8f", rect.origin.y))" width="\#(String(format:"%.8f", rect.size.width))" height="\#(String(format:"%.8f", rect.size.height))" style="fill:\#(patternName);opacity:\#(1)" />"#
         lines.append(rectStr)
     }
 
@@ -133,7 +133,7 @@ public class SVGRenderer: Renderer{
                                         fillColor: Color = Color.white,
                                         borderColor: Color = Color.black) {
         let rect = convertToSVGCoordinates(rect)
-        let rectStr = #"<rect x="\#(rect.origin.x)" y="\#(rect.origin.y)" width="\#(rect.size.width)" height="\#(rect.size.height)" style="fill:\#(fillColor.svgColorString);stroke-width:\#(thickness);stroke:\#(borderColor.svgColorString);opacity:\#(fillColor.a)" />"#
+        let rectStr = #"<rect x="\#(String(format:"%.8f", rect.origin.x))" y="\#(String(format:"%.8f", rect.origin.y))" width="\#(String(format:"%.8f", rect.size.width))" height="\#(String(format:"%.8f", rect.size.height))" style="fill:\#(fillColor.svgColorString);stroke-width:\#(String(format:"%.8f", thickness));stroke:\#(borderColor.svgColorString);opacity:\#(String(format:"%.8f", fillColor.a))" />"#
         lines.append(rectStr)
     }
 
@@ -141,7 +141,7 @@ public class SVGRenderer: Renderer{
                                 radius r: Float,
                                 fillColor: Color) {
         let c = convertToSVGCoordinates(c)
-        let circle: String = #"<circle cx="\#(c.x)" cy="\#(c.y)" r="\#(r)"  style="fill:\#(fillColor.svgColorString);opacity:\#(fillColor.a)" />"#
+        let circle: String = #"<circle cx="\#(String(format:"%.8f", c.x))" cy="\#(String(format:"%.8f", c.y))" r="\#(String(format:"%.8f", r))"  style="fill:\#(fillColor.svgColorString);opacity:\#(String(format:"%.8f", fillColor.a))" />"#
         lines.append(circle)
     }
 
@@ -150,7 +150,7 @@ public class SVGRenderer: Renderer{
                                  radiusY ry: Float,
                                  fillColor: Color) {
         let c = convertToSVGCoordinates(c)
-        let circle: String = #"<ellipse cx="\#(c.x)" cy="\#(c.y)" rx="\#(rx)" ry="\#(ry)" style="fill:\#(fillColor.svgColorString);opacity:\#(fillColor.a)" />"#
+        let circle: String = #"<ellipse cx="\#(String(format:"%.8f", c.x))" cy="\#(String(format:"%.8f", c.y))" rx="\#(String(format:"%.8f", rx))" ry="\#(String(format:"%.8f", ry))" style="fill:\#(fillColor.svgColorString);opacity:\#(String(format:"%.8f", fillColor.a))" />"#
         lines.append(circle)
     }
 
@@ -161,7 +161,7 @@ public class SVGRenderer: Renderer{
         let p1 = convertToSVGCoordinates(point1)
         let p2 = convertToSVGCoordinates(point2)
         let p3 = convertToSVGCoordinates(point3)
-        let triangle = #"<polygon points="\#(p1.x),\#(p1.y) \#(p2.x),\#(p2.y) \#(p3.x),\#(p3.y)" style="fill:\#(fillColor.svgColorString);opacity:\#(fillColor.a)" />"#
+        let triangle = #"<polygon points="\#(String(format:"%.8f", p1.x)),\#(String(format:"%.8f", p1.y)) \#(String(format:"%.8f", p2.x)),\#(String(format:"%.8f", p2.y)) \#(String(format:"%.8f", p3.x)),\#(String(format:"%.8f", p3.y))" style="fill:\#(fillColor.svgColorString);opacity:\#(String(format:"%.8f", fillColor.a))" />"#
         lines.append(triangle)
     }
     
@@ -170,7 +170,7 @@ public class SVGRenderer: Renderer{
         var pointsString = ""
         for point in polygon.points {
             let convertedPoint = convertToSVGCoordinates(point)
-            pointsString.append("\(convertedPoint.x),\(convertedPoint.y) ")
+            pointsString.append("\(String(format:"%.8f", convertedPoint.x)),\(String(format:"%.8f", convertedPoint.y)) ")
         }
         
         let polygonString = #"<polygon points="\#(pointsString)" style="fill:\#(fillColor.svgColorString);opacity:\#(fillColor.a)" />"#
@@ -186,10 +186,10 @@ public class SVGRenderer: Renderer{
         let p2 = convertToSVGCoordinates(p2)
         var line : String
         if (isDashed) {
-            line = #"<line x1="\#(p1.x)" y1="\#(p1.y)" x2="\#(p2.x)" y2="\#(p2.y)" style="stroke:\#(strokeColor.svgColorString);stroke-width:\#(thickness);opacity:\#(strokeColor.a);stroke-linecap:butt;stroke-dasharray:4 1" />"#
+            line = #"<line x1="\#(String(format:"%.8f", p1.x))" y1="\#(String(format:"%.8f", p1.y))" x2="\#(String(format:"%.8f", p2.x))" y2="\#(String(format:"%.8f", p2.y))" style="stroke:\#(strokeColor.svgColorString);stroke-width:\#(String(format:"%.8f", thickness));opacity:\#(String(format:"%.8f", strokeColor.a));stroke-linecap:butt;stroke-dasharray:4 1" />"#
         }
         else {
-            line = #"<line x1="\#(p1.x)" y1="\#(p1.y)" x2="\#(p2.x)" y2="\#(p2.y)" style="stroke:\#(strokeColor.svgColorString);stroke-width:\#(thickness);opacity:\#(strokeColor.a);stroke-linecap:butt" />"#
+            line = #"<line x1="\#(String(format:"%.8f", p1.x))" y1="\#(String(format:"%.8f", p1.y))" x2="\#(String(format:"%.8f", p2.x))" y2="\#(String(format:"%.8f", p2.y))" style="stroke:\#(strokeColor.svgColorString);stroke-width:\#(String(format:"%.8f", thickness));opacity:\#(String(format:"%.8f", strokeColor.a));stroke-linecap:butt" />"#
         }
         lines.append(line)
     }
@@ -200,12 +200,12 @@ public class SVGRenderer: Renderer{
                               isDashed: Bool) {
         let pointsString = polyline.points.lazy.map { point in
             let convertedPoint = self.convertToSVGCoordinates(point)
-            return "\(convertedPoint.x),\(convertedPoint.y)"
+            return "\(String(format:"%.8f", convertedPoint.x)),\(String(format:"%.8f", convertedPoint.y))"
         }.joined(separator: " ")
 
         let dashedString = isDashed ? "stroke-dasharray:4 1;" : ""
 
-        lines.append(#"<polyline points="\#(pointsString)" style="stroke:\#(strokeColor.svgColorString);stroke-width:\#(thickness);opacity:\#(strokeColor.a);stroke-linecap:butt;fill:none;\#(dashedString)" />"#)
+        lines.append(#"<polyline points="\#(pointsString)" style="stroke:\#(strokeColor.svgColorString);stroke-width:\#(String(format: "%.8f", thickness));opacity:\#(String(format: "%.8f", strokeColor.a));stroke-linecap:butt;fill:none;\#(dashedString)" />"#)
     }
 
     public func drawText(text s: String,
@@ -215,7 +215,7 @@ public class SVGRenderer: Renderer{
                          strokeWidth thickness: Float,
                          angle: Float){
         let p = convertToSVGCoordinates(p)
-        let text = #"<text font-size="\#(size)" font-family="\#(fontFamily)" x="\#(p.x)" y="\#(p.y)" style="stroke:\#(color.svgColorString);stroke-width:\#(thickness/4);fill:\#(color.svgColorString);opacity:\#(color.a);" transform="rotate(\#(-angle),\#(p.x),\#(p.y))">\#(s)</text>"#
+        let text = #"<text font-size="\#(String(format: "%.8f", size))" font-family="\#(fontFamily)" x="\#(String(format: "%.8f", p.x))" y="\#(String(format: "%.8f", p.y))" style="stroke:\#(color.svgColorString);stroke-width:\#(String(format: "%.8f", thickness/4));fill:\#(color.svgColorString);opacity:\#(String(format: "%.8f", color.a));" transform="rotate(\#(String(format: "%.8f", -angle)),\#(String(format: "%.8f", p.x)),\#(String(format: "%.8f", p.y)))">\#(s)</text>"#
         lines.append(text)
     }
 
@@ -235,7 +235,7 @@ public class SVGRenderer: Renderer{
     /// Returns the content of the SVG generated by the renderer
     public var svg: String {
             // Build the document.
-            let header = #"<svg height="\#(imageSize.height)" width="\#(imageSize.width)" version="4.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">"#
+            let header = #"<svg height="\#(String(format: "%.8f", imageSize.height))" width="\#(String(format: "%.8f", imageSize.width))" version="4.0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">"#
                 + "\n" + #"<rect width="100%" height="100%" fill="white"/>"#
             let font = #"<defs><style>@import url("https://fonts.googleapis.com/css?family=\#(fontFamily)");</style></defs>"#
             let image = header + "\n" + font + "\n" + lines.joined(separator: "\n") + "\n</svg>"
@@ -254,6 +254,6 @@ public class SVGRenderer: Renderer{
 
 extension Color {
     var svgColorString: String {
-        return "rgb(\(r*255.0),\(g*255.0),\(b*255.0))"
+        return "rgb(\(String(format: "%.8f", r*255.0)),\(String(format: "%.8f", g*255.0)),\(String(format: "%.8f", b*255.0)))"
     }
 }
