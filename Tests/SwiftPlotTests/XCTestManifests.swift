@@ -87,6 +87,7 @@ extension LineChartTests {
         ("testLineChart_positiveXOrigin", testLineChart_positiveXOrigin),
         ("testLineChart_positiveYOrigin_secondary", testLineChart_positiveYOrigin_secondary),
         ("testLineChart_positiveYOrigin", testLineChart_positiveYOrigin),
+        ("testLineChart_smallXRange", testLineChart_smallXRange),
         ("testLineChartFunctionPlot", testLineChartFunctionPlot),
         ("testLineChartMultipleSeries", testLineChartMultipleSeries),
         ("testLineChartSecondaryAxis", testLineChartSecondaryAxis),

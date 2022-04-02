@@ -159,4 +159,16 @@ extension LineChartTests {
 
     try renderAndVerify(lineGraph, size: Size(width: 800, height: 400))
   }
+
+  func testLineChart_smallXRange() throws {
+    // Verifies the fix from PR #131
+    var lineGraph = LineGraph<Float, Float>()
+
+    lineGraph.addSeries([0, 0.1], [0, 4], label: "series")
+    lineGraph.plotTitle.title = "Small x-range"
+    lineGraph.plotLabel.xLabel = "x"
+    lineGraph.plotLabel.yLabel = "y"
+    
+    try renderAndVerify(lineGraph, size: Size(width: 800, height: 400))
+  }
 }
