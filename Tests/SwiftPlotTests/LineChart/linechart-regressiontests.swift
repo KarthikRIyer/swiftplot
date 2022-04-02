@@ -127,6 +127,9 @@ extension LineChartTests {
     try renderAndVerify(lineGraph_func, size: Size(width: 400, height: 400))
   }
 
+  /*
+  // TODO: This plot seems to yield different results on macOS
+  //       and Linux and is therefore disabled for now.
   func testLineChart_crossY() throws {
     func someFunction(_ x: Float) -> Float { 5 * cos(2 * x * x) / x }
     var lineGraph_func = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
@@ -141,6 +144,7 @@ extension LineChartTests {
     lineGraph_func.plotLabel.yLabel = "Y-AXIS"
     try renderAndVerify(lineGraph_func, size: Size(width: 400, height: 400))
   }
+  */
 
   func testLineChart_crossBothAxes() throws {
     var lineGraph = LineGraph<Float,Float>(enablePrimaryAxisGrid: true,
@@ -157,6 +161,18 @@ extension LineChartTests {
     lineGraph.plotLabel.yLabel = "y"
             lineGraph.backgroundColor = .transparent
 
+    try renderAndVerify(lineGraph, size: Size(width: 800, height: 400))
+  }
+
+  func testLineChart_smallXRange() throws {
+    // Verifies the fix from PR #131
+    var lineGraph = LineGraph<Float, Float>()
+
+    lineGraph.addSeries([0, 0.1], [0, 4], label: "series")
+    lineGraph.plotTitle.title = "Small x-range"
+    lineGraph.plotLabel.xLabel = "x"
+    lineGraph.plotLabel.yLabel = "y"
+    
     try renderAndVerify(lineGraph, size: Size(width: 800, height: 400))
   }
 }

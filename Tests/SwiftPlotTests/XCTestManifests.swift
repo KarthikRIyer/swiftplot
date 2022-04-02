@@ -79,7 +79,6 @@ extension LineChartTests {
     static let __allTests__LineChartTests = [
         ("testLineChart_crossBothAxes", testLineChart_crossBothAxes),
         ("testLineChart_crossX", testLineChart_crossX),
-        ("testLineChart_crossY", testLineChart_crossY),
         ("testLineChart_negativeXOrigin_unsorted", testLineChart_negativeXOrigin_unsorted),
         ("testLineChart_negativeXOrigin", testLineChart_negativeXOrigin),
         ("testLineChart_negativeYOrigin", testLineChart_negativeYOrigin),
@@ -87,6 +86,7 @@ extension LineChartTests {
         ("testLineChart_positiveXOrigin", testLineChart_positiveXOrigin),
         ("testLineChart_positiveYOrigin_secondary", testLineChart_positiveYOrigin_secondary),
         ("testLineChart_positiveYOrigin", testLineChart_positiveYOrigin),
+        ("testLineChart_smallXRange", testLineChart_smallXRange),
         ("testLineChartFunctionPlot", testLineChartFunctionPlot),
         ("testLineChartMultipleSeries", testLineChartMultipleSeries),
         ("testLineChartSecondaryAxis", testLineChartSecondaryAxis),
