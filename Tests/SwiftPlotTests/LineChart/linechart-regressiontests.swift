@@ -127,6 +127,9 @@ extension LineChartTests {
     try renderAndVerify(lineGraph_func, size: Size(width: 400, height: 400))
   }
 
+  /*
+  // TODO: This plot seems to yield different results on macOS
+  //       and Linux and is therefore disabled for now.
   func testLineChart_crossY() throws {
     func someFunction(_ x: Float) -> Float { 5 * cos(2 * x * x) / x }
     var lineGraph_func = LineGraph<Float,Float>(enablePrimaryAxisGrid: true)
@@ -141,6 +144,7 @@ extension LineChartTests {
     lineGraph_func.plotLabel.yLabel = "Y-AXIS"
     try renderAndVerify(lineGraph_func, size: Size(width: 400, height: 400))
   }
+  */
 
   func testLineChart_crossBothAxes() throws {
     var lineGraph = LineGraph<Float,Float>(enablePrimaryAxisGrid: true,
