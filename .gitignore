@@ -6,6 +6,9 @@
 build/
 DerivedData/
 
+## Test generated
+output/
+
 ## Various settings
 *.pbxuser
 !default.pbxuser
