@@ -77,6 +77,7 @@ If the above method doesn't work you can also build and install freetype on your
 
 Add these lines to the first cell:
 ```swift
+%install '.package(url: "https://github.com/pvieito/PythonKit", .branch("master"))' PythonKit
 %install '.package(url: "https://github.com/KarthikRIyer/swiftplot", branch: "master")' SwiftPlot AGGRenderer
 ```
 In order to display the generated plot in the notebook, add this line to a new cell:
