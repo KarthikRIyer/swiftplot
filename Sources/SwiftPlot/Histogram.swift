@@ -280,7 +280,6 @@ extension Histogram: HasGraphLayout {
             var backHeightsSlice = seriesHeightsSlice.removeFirst()[...]
             for (frontHeights, seriesIdx) in zip(seriesHeightsSlice, allSeries.indices.reversed()) {
                 var frontHeightsSlice = frontHeights[...]
-                let series = allSeries[seriesIdx]
                 
                 /// Iterate over bin edges focusing on the height of the left and right bins of the series on the back and in front.
                 var line = [Point]()
