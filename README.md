@@ -9,7 +9,7 @@
   * [Overview](#overview)
   * [License](#license)
   * [How to include the library in your package](#how-to-include-the-library-in-your-package)
-  * [How to include the library in your Jupyter Notebook](#how-to-include-the-library-in-your-jupyter-notebook)
+  * [How to include the library in your Colab Notebook](#how-to-include-the-library-in-your-colab-notebook)
   * [How to setup Docker instance for SwiftPlot](#how-to-setup-docker-instance-for-swiftplot)
   * [Examples](#examples)
     * [Simple Line Graph](#simple-line-graph)
@@ -17,7 +17,7 @@
     * [Line Graph with Sub Plots stacked horizontally](#line-graph-with-sub-plots-stacked-horizontally)
     * [Plot functions using LineGraph](#plot-functions-using-linegraph)
     * [Using a secondary axis in LineGraph](#using-a-secondary-axis-in-linegraph)
-    * [Displaying plots in Jupyter Notebook](#displaying-plots-in-jupyter-notebook)
+    * [Displaying plots in a Jupyter Notebook](#displaying-plots-in-a-jupyter-notebook)
   * [How does this work ?](#how-does-this-work)
   * [Documentation](#documentation)
   * [Limitations](#limitations)
@@ -55,8 +55,8 @@ The resultant images are stored in a directory named  `output`. The `Tests` fold
 Add the library to your projects dependencies in the Package.swift file as shown below.
 ```swift
 dependencies: [
-        .package(url: "https://github.com/KarthikRIyer/swiftplot.git", from: "2.0.0")),
-    ],
+    .package(url: "https://github.com/KarthikRIyer/swiftplot.git", from: "2.0.0")),
+],
 ```
 
 In case you get an error saying that a file <b>ft2build.h</b> is not found, you need to install the freetype development package.
@@ -73,33 +73,22 @@ brew install freetype
 
 If the above method doesn't work you can also build and install freetype on your own. You can find the source code and build instructions [here](https://www.freetype.org/download.html).
 
-## How to include the library in your Jupyter Notebook
+## How to include the library in your Colab Notebook
 
 Add these lines to the first cell:
 ```swift
-%install-swiftpm-flags -Xcc -isystem/usr/include/freetype2 -Xswiftc -lfreetype
-%install '.package(url: "https://github.com/IBM-Swift/BlueCryptor.git", from: "1.0.28")' Cryptor
-%install '.package(url: "https://github.com/KarthikRIyer/swiftplot", from: "2.0.0")' SwiftPlot AGGRenderer
+%install '.package(url: "https://github.com/KarthikRIyer/swiftplot", branch: "master")' SwiftPlot AGGRenderer
 ```
 In order to display the generated plot in the notebook, add this line to a new cell:
 ```swift
-%include "EnableJupyterDisplay.swift"
-```
-If you wish to display the generated plot in a Google Colab environment, add these lines to a new cell instead:
-```swift
-import Python
 %include "EnableIPythonDisplay.swift"
-func display(base64EncodedPNG: String) {
-  let displayImage = Python.import("IPython.display")
-  let codecs = Python.import("codecs")
-  let imageData = codecs.decode(Python.bytes(base64EncodedPNG, encoding: "utf8"), encoding: "base64")
-  displayImage.Image(data: imageData, format: "png").display()
-}
 ```
 Note that because Google Colab doesn't natively support Swift libraries that produce rich output, we use Swift's Python interop as a workaround. 
 
 ## How to setup Docker instance for SwiftPlot
 For computers running MacOS or Windows, Docker instance is to easy to setup and use `swift-jupyter`. Please refer [SwiftPlot_Docker_setup.md](https://github.com/KarthikRIyer/swiftplot/blob/master/Swiftplot_Docker_setup.md) for setup instructions.
+
+> Warning: `swift-jupyter` uses an outdated Swift toolchain and is no longer maintained. Its successor, [Swift-Colab](https://github.com/philipturner/swift-colab), does not currently support Docker. Look at Swift-Colab's repository for up-to-date information on Docker support.
 
 ## Examples
 Here are some examples to provide you with a headstart to using this library. Here we will be looking at plots using only the AGGRenderer, but the procedure will remain the same for SVGRenderer.
@@ -231,10 +220,10 @@ The series plotted on the secondary axis are drawn dashed.
 
 <img src="Tests/SwiftPlotTests/Reference/agg/_07_secondary_axis_line_chart.png" width="500">
 
-#### Displaying plots in Jupyter Notebook
+#### Displaying plots in a Jupyter Notebook
 
-You can display plots in Jupyter Notebook using only the AGGRenderer.
-To do so, create the plots as shown in the above examples and instead of using the `drawGraphAndOutput` function from LineGraph, use the `drawGraph` function, then get a base64 encoded image from the AGGRenderer and pass it to the display function as showm below:
+You can display plots in a Jupyter Notebook using only the AGGRenderer.
+To do so, create the plots as shown in the above examples and instead of using the `drawGraphAndOutput` function from LineGraph, use the `drawGraph` function, then get a base64 encoded image from the AGGRenderer and pass it to the display function as shown below:
 ```swift
 lineGraph.drawGraph(renderer: agg_renderer)
 display(base64EncodedPNG: agg_renderer.base64Png())
