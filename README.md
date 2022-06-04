@@ -10,7 +10,7 @@
   * [License](#license)
   * [How to include the library in your package](#how-to-include-the-library-in-your-package)
   * [How to include the library in your Colab Notebook](#how-to-include-the-library-in-your-colab-notebook)
-  * [How to setup Docker instance for SwiftPlot](#how-to-setup-docker-instance-for-swiftplot)
+  * [How to set up a Docker instance for SwiftPlot](#how-to-set-up-a-docker-instance-for-swiftplot)
   * [Examples](#examples)
     * [Simple Line Graph](#simple-line-graph)
     * [Line Graph with multiple series of data](#line-graph-with-multiple-series-of-data)
@@ -86,7 +86,7 @@ In order to display the generated plot in the notebook, add this line to a new c
 ```
 Note that because Google Colab doesn't natively support Swift libraries that produce rich output, we use Swift's Python interop as a workaround. 
 
-## How to setup Docker instance for SwiftPlot
+## How to set up a Docker instance for SwiftPlot
 For computers running MacOS or Windows, Docker instance is to easy to setup and use `swift-jupyter`. Please refer [SwiftPlot_Docker_setup.md](https://github.com/KarthikRIyer/swiftplot/blob/master/Swiftplot_Docker_setup.md) for setup instructions.
 
 > Warning: `swift-jupyter` uses an outdated Swift toolchain and is no longer maintained. Its successor, [Swift-Colab](https://github.com/philipturner/swift-colab), does not currently support Docker. Look at Swift-Colab's repository for up-to-date information on Docker support.
